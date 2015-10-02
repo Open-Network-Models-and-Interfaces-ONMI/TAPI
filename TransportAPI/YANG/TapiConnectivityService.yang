@@ -1,0 +1,184 @@
+module TapiConnectivityService {
+
+  namespace "urn:onf:Tapi:ConnectivityService:yang";
+  prefix TapiConnectivityService;
+  
+  import TapiInformationModel { prefix Tapi; }
+
+  organization "ONF T-API Group";
+
+  contact "mailto:info@opennetworking.org";
+
+  description
+    "This module contains a collection of YANG definitions for
+     Connectivity Service. It is part of the T-API
+     specification. 
+     Authors List:
+     Ricard Vilalta (CTTC)
+     Victor López (Telefónica)
+     (T-API Team)";
+   
+  revision 2015-09-11 {
+    description
+      "First draft for Transport API Connectivity Service";
+  }
+ 
+  /*****************************************************************
+  * Groupings
+  *****************************************************************/
+  
+  
+  
+   
+ 
+  /*****************************************************************
+  * Main containers
+  *****************************************************************/
+ 
+ 
+  list Connection {
+    description
+    "The ForwardingConstruct (FC) object class models enabled potential for forwarding between two or more LTPs and like the LTP supports any transport protocol including all circuit and packet forms. 
+    At the lowest level of recursion, a FC represents a cross-connection within an NE.";
+  
+    key "guid";
+    uses Tapi:Connection;
+  } 
+ 
+  list Service {
+    description
+    "The ForwardingConstruct (FC) object class models enabled potential for forwarding between two or more LTPs and like the LTP supports any       
+    transport protocol including all circuit and packet forms. 
+    At the lowest level of recursion, a FC represents a cross-connection within an NE.";
+    
+    key "guid";
+    uses Tapi:Service;
+  }  
+  
+  
+  
+  
+  /*****************************************************************
+  * RPC definitions
+  *****************************************************************/
+  rpc getServiceEndPointList {
+    input {
+      leaf guid {
+        description "node-id";
+        type string;
+      }
+    }
+    output {
+      list endPointList {
+        key "guid";
+        uses Tapi:ServiceEndPoint;
+      }
+    }
+  }
+  
+  rpc getServiceList {
+    input {
+      leaf guid {
+        description "node id";
+        type string;
+      }
+    }
+    output {
+      leaf-list service-list {
+        type leafref {
+          path "/Service/guid";
+        }
+      }
+    }
+  }
+  
+  rpc getConnectionList {
+    input {
+      leaf guid {
+        description "node id";
+        type string;
+      }
+    }
+    output {
+      leaf-list connectionList {
+        type leafref {
+          path "/Connection/guid";
+        }
+      }
+    }
+  }
+  
+  rpc getServiceDetails {
+    input {
+      leaf guid {
+        description "service id";
+        type string;
+      }
+    }
+  
+    output {
+      container service {
+        uses Tapi:Service;
+      }
+    }
+  }
+  
+  rpc getConnectionDetails {
+    input {
+      leaf guid {
+        description "connection id";
+        type string;
+      }
+    }
+    output {
+      container connection{
+        uses Tapi:Connection;
+      }
+    }
+  }
+  
+  rpc getPathDetails {
+    input {
+      leaf guid {
+      description "connection id";
+        type string;
+      }
+    }
+    output {
+      leaf-list pathList {
+        type leafref {
+          path "/Connection/pathList/guid";
+        }
+      }
+    }
+  }
+  
+  rpc getServiceEndPointDetails {
+    input {
+      leaf guid {
+      description "service end point id";
+        type string;
+      }
+    }
+    output {
+      container serviceEndPoint {
+        uses Tapi:ServiceEndPoint;
+      }
+    }
+  }
+  
+  rpc getConnectionEndPointDetails {
+    input {
+      leaf guid {
+      description "connection end point id";
+        type string;
+      }
+    }
+    output {
+      container connectionEndPoint {
+        uses Tapi:ConnectionEndPoint;
+      }
+    }
+  }
+ 
+}
