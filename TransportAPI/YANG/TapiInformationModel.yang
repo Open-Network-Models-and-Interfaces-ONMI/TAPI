@@ -7,7 +7,6 @@ module TapiInformationModel {
   //import ietf-inet-types { prefix inet; }
 
   import TapiDataTypes { prefix TapiDt; }
-  import TapiTopologyPacs { prefix TapiPacs; }
 
   organization "ONF T-API Group";
 
@@ -31,6 +30,122 @@ module TapiInformationModel {
   * Groupings
   *****************************************************************/
 
+  // Conditional Pacs associated to TopologicalEntity
+
+  grouping State_Pac {
+
+    leaf operationalState {
+      type TapiDt:LifecycleState;
+    }
+    leaf administrativeState {
+      type TapiDt:AdministrativeState;
+    }
+    leaf lifecycleState {
+      type TapiDt:LifecycleState;
+    }
+    
+  }
+
+  grouping RiskParameter_Pac {
+    
+    list riskCharacteristicList {
+       key "riskCharacteristicName";
+       uses TapiDt:RiskCharacteristic;
+    }
+  }
+
+  grouping TransferCost_Pac {
+    list costCharacteristicList {
+      key "costName";
+      uses TapiDt:CostCharacteristics;
+      min-elements "1";
+
+      }
+  }
+
+  grouping TransferTiming_Pac {
+    
+    leaf fixedLatencyCharacteristic {
+      type string;
+      mandatory true;
+    }
+    leaf jitterCharacteristic {
+      type string;
+    }
+    leaf wanderCharacteristic {
+      type string;
+    }
+    list queuingLatencyList {
+      key "trafficProperty";
+      uses TapiDt:QueuingLatency;
+    }
+  }
+
+  grouping TransferIntegrity_Pac {
+    
+    leaf errorCharacteristic {
+      type string;
+    }
+    leaf lossCharacteristic {
+      type string;
+    }
+    leaf repeatDeliveryCharacteristic {
+      type string;
+    }
+    leaf deliveryOrderCharacteristic {
+      type string;
+    }
+    leaf unavailableTimeCharacteristic {
+      type string;
+      mandatory true;
+    }
+    leaf serverIntegrityProcessCharacteristic {
+      type string;
+    }
+  }
+
+  grouping TransferCapacity_Pac {
+    
+    container totalPotentialCapacity {
+      uses TapiDt:Capacity;
+    }
+    container availableCapacity {
+      uses TapiDt:Capacity;
+    }
+    list capacityAssignedToUserView {
+      key "totalSize";
+      uses TapiDt:Capacity;
+    }
+    leaf capacityInteractionAlgorithm {
+      type string;
+    }
+  }
+
+  grouping Validation_Pac {
+
+    list validationMechanismList {
+      key "validationMechanism";
+      uses TapiDt:ValidationMechanism;
+      min-elements "1";
+    }
+  }
+
+  grouping LayerProtocolTransition_Pac {
+
+    
+    list transitionedLayerProtocolList {
+      key "transitionedLayerProtocol";
+      leaf transitionedLayerProtocol{
+        type TapiDt:LayerProtocolName;
+      }
+    }
+
+    leaf-list _ltpRefList {
+      type leafref {
+        path "/Context/topologyList/node/edgeLtpList/uuid"; // Not clear path
+      }
+    }
+  }    
   
   grouping NodeEdgePoint {
     description
@@ -38,7 +153,10 @@ module TapiInformationModel {
     termination and adaptation functions of one or more transport layers. 
     The structure of LTP supports all transport protocols including circuit and packet forms.";
 
-    uses TapiDt:UniversalId;
+    leaf uuid{
+    	type TapiDt:UniversalId;
+    }
+    
     
     list _IpList{ // Unconsistant
       key "layerProtocol";
@@ -63,11 +181,14 @@ module TapiInformationModel {
     In cases where there is resilience the LinkEnd may convey the resilience role of the access to the Link. 
     The Link can be considered as a component and the LinkEnd as a Port on that component";
     
-    uses TapiDt:UniversalId; // Missing in Tapi UML
+    
+    leaf uuid{
+    	type TapiDt:UniversalId;
+    }
     
     leaf-list _nodeEpRefList {
       type leafref {
-        path "/Context/topologyList/node/edgeLtpList/uuid";
+        path "/Tapi:Context/Tapi:topologyList/Tapi:node/Tapi:edgeLtpList/Tapi:uuid";
       }
       max-elements "1";
       min-elements "1";      
@@ -95,11 +216,13 @@ module TapiInformationModel {
       At the lowest level of recursion, an FD (within a network element (NE)) represents a switch matrix (i.e., a fabric). Note that an NE can encompass multiple switch matrices (FDs). ";
     
 
-    uses TapiDt:UniversalId;
+    leaf uuid{
+    	type TapiDt:UniversalId; // Missing in Tapi UML
+    }
 
     leaf-list _encapTopologyRef {
       type leafref {
-        path "/Context/topologyList/uuid";
+        path "/Tapi:Context/Tapi:topologyList/Tapi:uuid";
       }
       max-elements "1";
     }
@@ -135,42 +258,42 @@ module TapiInformationModel {
     
     container _state_Pac {
       presence "<condition for State_Pac attributes>";
-      uses TapiPacs:State_Pac;
+      uses State_Pac;
     }
     
     container _riskParameter_Pac {
       presence "<condition for RiskParameter_Pac attributes>";
-      uses TapiPacs:RiskParameter_Pac;
+      uses RiskParameter_Pac;
     }
     
     container _transferCost_Pac {
       presence "<condition for TransferCost_Pac attributes>";
-      uses TapiPacs:TransferCost_Pac;
+      uses TransferCost_Pac;
     }
     
     container _transferTiming_Pac {
       presence "<condition for TransferTiming_Pac attributes>";
-      uses TapiPacs:TransferTiming_Pac;
+      uses TransferTiming_Pac;
     }
     
     container _transferCapacity_Pac {
       presence "<condition for TransferCapacity_Pac attributes>";
-      uses TapiPacs:TransferCapacity_Pac;
+      uses TransferCapacity_Pac;
     }
     
     container _transferIntegrity_Pac {
       presence "<condition for TransferIntegrity_Pac attributes>";
-      uses TapiPacs:TransferIntegrity_Pac;
+      uses TransferIntegrity_Pac;
     }
     
     container _validation_Pac {
       presence "<condition for Validation_Pac attributes>";    
-      uses TapiPacs:Validation_Pac;
+      uses Validation_Pac;
     }
     
     container _layerTransition_Pac {
       presence "<condition for LayerProtocolTransition_Pac attributes>";
-      uses TapiPacs:LayerProtocolTransition_Pac;
+      uses LayerProtocolTransition_Pac;
     }
     
   }
@@ -179,8 +302,9 @@ module TapiInformationModel {
     description
     "The Link object class models effective adjacency between two or more ForwardingDomains (FD).";
     
-
-    uses TapiDt:UniversalId;
+    leaf uuid{
+    	type TapiDt:UniversalId;
+    }
 
     list linkEndList {
       key "uuid";
@@ -189,7 +313,7 @@ module TapiInformationModel {
   
     leaf-list _nodeRefList{
       type leafref {
-        path "/Context/topologyList/node/uuid";
+        path "/Tapi:Context/Tapi:topologyList/Tapi:node/Tapi:uuid";
       }
     }
   
@@ -224,50 +348,51 @@ module TapiInformationModel {
     
     container _state_Pac {
       presence "<condition for State_Pac attributes>";
-      uses TapiPacs:State_Pac;
+      uses State_Pac;
     }
     
     container _riskParameter_Pac {
       presence "<condition for RiskParameter_Pac attributes>";
-      uses TapiPacs:RiskParameter_Pac;
+      uses RiskParameter_Pac;
     }
     
     container _transferCost_Pac {
       presence "<condition for TransferCost_Pac attributes>";
-      uses TapiPacs:TransferCost_Pac;
+      uses TransferCost_Pac;
     }
     
     container _transferTiming_Pac {
       presence "<condition for TransferTiming_Pac attributes>";
-      uses TapiPacs:TransferTiming_Pac;
+      uses TransferTiming_Pac;
     }
     
     container _transferCapacity_Pac {
       presence "<condition for TransferCapacity_Pac attributes>";
-      uses TapiPacs:TransferCapacity_Pac;
+      uses TransferCapacity_Pac;
     }
     
     container _transferIntegrity_Pac {
       presence "<condition for TransferIntegrity_Pac attributes>";
-      uses TapiPacs:TransferIntegrity_Pac;
+      uses TransferIntegrity_Pac;
     }
     
     container _validation_Pac {
       presence "<condition for Validation_Pac attributes>";    
-      uses TapiPacs:Validation_Pac;
+      uses Validation_Pac;
     }
     
     container _layerTransition_Pac {
       presence "<condition for LayerProtocolTransition_Pac attributes>";
-      uses TapiPacs:LayerProtocolTransition_Pac;
+      uses LayerProtocolTransition_Pac;
     }
     
   }
   
   grouping Topology {
-
-    uses TapiDt:UniversalId;
-    
+  
+    leaf uuid{
+    	type TapiDt:UniversalId;
+    }
     
     list node {
       key "uuid";
@@ -309,9 +434,9 @@ module TapiInformationModel {
     termination and adaptation functions of one or more transport layers. 
     The structure of LTP supports all transport protocols including circuit and packet forms.";
   
-
-    uses TapiDt:UniversalId;
-
+    leaf uuid{
+    	type TapiDt:UniversalId;
+    }
     
     list _IpList{
       key "layerProtocol";
@@ -325,7 +450,7 @@ module TapiInformationModel {
     
     leaf-list _mappedNodeEpList {
       type leafref {
-        path "/Context/topologyList/node/edgeLtpList/uuid";
+        path "/Tapi:Context/Tapi:topologyList/Tapi:node/Tapi:edgeLtpList/Tapi:uuid";
       }
     }
     
@@ -336,8 +461,9 @@ module TapiInformationModel {
     "The LogicalTerminationPoint (LTP) object class encapsulates the termination and adaptation functions of one or more transport layers. 
     The structure of LTP supports all transport protocols including circuit and packet forms.";
   
-
-    uses TapiDt:UniversalId;
+    leaf uuid{
+    	type TapiDt:UniversalId;
+    }
 
     list _IpList{
       key "layerProtocol";
@@ -351,13 +477,13 @@ module TapiInformationModel {
     
     leaf-list _clientNodeEpList {
       type leafref {
-        path "/Context/topologyList/node/edgeLtpList/uuid";
+        path "/Tapi:Context/Tapi:topologyList/Tapi:node/Tapi:edgeLtpList/Tapi:uuid";
       }
     }
     
     leaf-list _serverNodeEpList {
       type leafref {
-        path "/Context/topologyList/node/edgeLtpList/uuid";
+        path "/Tapi:Context/Tapi:topologyList/Tapi:node/Tapi:edgeLtpList/Tapi:uuid";
       }
     }    
     
@@ -374,7 +500,9 @@ module TapiInformationModel {
     The EP replaces the Protection Unit of a traditional protection model. 
     The ForwadingConstruct can be considered as a component and the EndPoint as a Port on that component";
 
-    uses TapiDt:UniversalId; // Differs
+    leaf uuid{
+    	type TapiDt:UniversalId; // Differs
+    }
     
     container connEpRef { // Differs
       uses ConnectionEndPoint;
@@ -392,7 +520,9 @@ module TapiInformationModel {
 
   grouping ServiceEnd {
   
-    uses TapiDt:UniversalId; // Differs
+    leaf uuid{
+    	type TapiDt:UniversalId; // Differs
+    }
   
     container serviceEpRef { // Differs
       uses ConnectionEndPoint;
@@ -414,11 +544,13 @@ module TapiInformationModel {
     The route of an FC object is represented by a list of FCs at a lower level. 
     Note that depending on the service supported by an FC, an the FC can have multiple routes.";
 
-    uses TapiDt:UniversalId;
+    leaf uuid{
+    	type TapiDt:UniversalId; // Differs
+    }
 
     leaf-list _LowerLevelFcList{
       type leafref {
-        path "/Connection/uuid";
+        path "/Tapi:Connection/Tapi:uuid";
       }
       min-elements "1";
     }
@@ -426,7 +558,9 @@ module TapiInformationModel {
   
   grouping Connection {
 
-    uses TapiDt:UniversalId;
+    leaf uuid{
+    	type TapiDt:UniversalId; // Differs
+    }
 
     list connEndList { // Differs from UML
       key "uuid";
@@ -441,7 +575,7 @@ module TapiInformationModel {
 
     leaf-list _nodeRefList { // Differs from UML (only name)
       type leafref {
-        path "/Context/topologyList/node/uuid";
+        path "/Tapi:Context/Tapi:topologyList/Tapi:node/Tapi:uuid";
       }
     }
     
@@ -453,11 +587,13 @@ module TapiInformationModel {
   
   grouping Service {
 
-    uses TapiDt:UniversalId;
+    leaf uuid{
+    	type TapiDt:UniversalId; // Differs
+    }
 
     leaf-list _connectionRefList {
       type leafref {
-        path "/Connection/uuid";
+        path "/Tapi:Connection/Tapi:uuid";
       }
     }
   
@@ -475,7 +611,9 @@ module TapiInformationModel {
   
   grouping Context {
   
-    uses TapiDt:UniversalId;   
+    leaf uuid{
+    	type TapiDt:UniversalId; // Differs
+    }  
     
     list topologyList { // Differs from UML
       key "uuid";
