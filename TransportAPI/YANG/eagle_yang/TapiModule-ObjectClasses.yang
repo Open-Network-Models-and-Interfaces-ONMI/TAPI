@@ -1,0 +1,268 @@
+module TapiModule-ObjectClasses {
+    namespace 'urn:onf:TapiModule-ObjectClasses';
+    prefix TapiModule-ObjectClasses;
+    container Tapi::Topology {
+        config true;
+        uses Tapi::Topology;
+    }
+    grouping Tapi::Topology {
+        leaf-list _nodeRefList {
+            type leafref {
+                path '/Tapi::Node/localId';
+            }
+        }
+        leaf-list _linkRefList {
+            type leafref {
+                path '/Tapi::Link/localId';
+            }
+        }
+        list layerProtocolNameList {
+            config true;
+            min-elements 1;
+        }
+    }
+    container Tapi::Context {
+        config true;
+        leaf _topologyRefList {
+            type leafref {
+                path '/Tapi::Topology/localId';
+            }
+        }
+    }
+    container Tapi::Node {
+        config true;
+        uses Tapi::Node;
+    }
+    grouping Tapi::Node {
+        container _encapTopologyRef {
+            config true;
+            uses Tapi::Topology;
+        }
+        leaf-list _edgeLtpRefList {
+            type leafref {
+                path '/Tapi::NodeEdgePoint/localId';
+            }
+        }
+        list layerProtocolNameList {
+            config true;
+            min-elements 1;
+        }
+        container _state_Pac {
+            config true;
+        }
+    }
+    container Tapi::Link {
+        config true;
+        uses Tapi::Link;
+    }
+    grouping Tapi::Link {
+        list _linkEndList {
+            key 'localIdList';
+            config true;
+            uses Tapi::LinkEnd;
+            min-elements 2;
+        }
+        leaf-list _nodeRefList {
+            type leafref {
+                path '/Tapi::Node/localId';
+            }
+            min-elements 2;
+        }
+        list layerProtocolNameList {
+            config true;
+            min-elements 1;
+        }
+        container linkDirection {
+            description 'The directionality of the Link. 
+                Is applicable to simple Links where all LinkEnds are BIDIRECTIONAL (the Link will be BIDIRECTIONAL) or UNIDIRECTIONAL (the Link will be UNIDIRECTIONAL). 
+                Is not present in more complex cases.';
+            config true;
+        }
+        container _state_Pac {
+            config true;
+        }
+    }
+    container Tapi::NodeEdgePoint {
+        config true;
+        uses Tapi::NodeEdgePoint;
+    }
+    grouping Tapi::NodeEdgePoint {
+        list _lpList {
+            config true;
+            min-elements 1;
+        }
+        container operationalState {
+            description 'This attribute is generally defined in ITU-T Rec. X.731 and the behaviour description for operationalState in ITU-T Rec. M.3100.
+                See ITU-T Recs. X.731 and M.3100 for details.
+                Default Value: Actual state of resource at the time the object is created. If there is a period of time during the initialization process where the operational state is unknown, then the resource will be considered disabled until initialization has completed and the state updated accordingly.
+                Constraints to Provisioning: N/A.
+                Effect of Change in Value: See ITU-T Recs. X.731 and M.3100.
+                ';
+        }
+        leaf-list physicalPortReference {
+            type string;
+        }
+    }
+    container Tapi::ServiceEndPoint {
+        config true;
+        uses Tapi::ServiceEndPoint;
+    }
+    grouping Tapi::ServiceEndPoint {
+        list _lpList {
+            config true;
+            min-elements 1;
+        }
+        container operationalState {
+            description 'This attribute is generally defined in ITU-T Rec. X.731 and the behaviour description for operationalState in ITU-T Rec. M.3100.
+                See ITU-T Recs. X.731 and M.3100 for details.
+                Default Value: Actual state of resource at the time the object is created. If there is a period of time during the initialization process where the operational state is unknown, then the resource will be considered disabled until initialization has completed and the state updated accordingly.
+                Constraints to Provisioning: N/A.
+                Effect of Change in Value: See ITU-T Recs. X.731 and M.3100.
+                ';
+        }
+        leaf-list _mappedNodeEPList {
+            type leafref {
+                path '/Tapi::NodeEdgePoint/localId';
+            }
+        }
+    }
+    container Tapi::ConnectionEndPoint {
+        config true;
+        uses Tapi::ConnectionEndPoint;
+    }
+    grouping Tapi::ConnectionEndPoint {
+        list _lpList {
+            config true;
+            min-elements 1;
+        }
+        container operationalState {
+            description 'This attribute is generally defined in ITU-T Rec. X.731 and the behaviour description for operationalState in ITU-T Rec. M.3100.
+                See ITU-T Recs. X.731 and M.3100 for details.
+                Default Value: Actual state of resource at the time the object is created. If there is a period of time during the initialization process where the operational state is unknown, then the resource will be considered disabled until initialization has completed and the state updated accordingly.
+                Constraints to Provisioning: N/A.
+                Effect of Change in Value: See ITU-T Recs. X.731 and M.3100.
+                ';
+        }
+        leaf-list _clientNodeEPRefList {
+            type leafref {
+                path '/Tapi::NodeEdgePoint/localId';
+            }
+        }
+        leaf _serverNodeEPRef {
+            type leafref {
+                path '/Tapi::NodeEdgePoint/localId';
+            }
+        }
+    }
+    container Tapi::Service {
+        config true;
+        list _serviceEndList {
+            key 'localIdList';
+            config true;
+            uses Tapi::ServiceEnd;
+            max-elements 2;
+        }
+        leaf-list _connectionRefList {
+            type leafref {
+                path '/Tapi::Connection/localId';
+            }
+        }
+        container layerProtocolName {
+            config true;
+        }
+    }
+    container Tapi::Connection {
+        config true;
+        uses Tapi::Connection;
+    }
+    grouping Tapi::Connection {
+        list _connEndList {
+            key 'localIdList';
+            config true;
+            uses Tapi::ConnectionEnd;
+            max-elements 2;
+        }
+        list _pathList {
+            key 'localIdList';
+            config true;
+            uses Tapi::Path;
+        }
+        leaf _node {
+            type leafref {
+                path '/Tapi::Node/localId';
+            }
+        }
+        container layerProtocolName {
+            config true;
+        }
+    }
+    container Tapi::Path {
+        config true;
+        uses Tapi::Path;
+    }
+    grouping Tapi::Path {
+        list _lowerConnRefList {
+            key 'localId';
+            config true;
+            uses Tapi::Connection;
+            min-elements 1;
+        }
+    }
+    container Tapi::LinkEnd {
+        config true;
+        uses Tapi::LinkEnd;
+    }
+    grouping Tapi::LinkEnd {
+        container role {
+            description 'Each LinkEnd of the Link has a role (e.g., symmetric, hub, spoke, leaf, root)  in the context of the Link with respect to the Link function. ';
+            config true;
+        }
+        container direction {
+            description 'The orientation of defined flow at the LinkEnd.';
+            config true;
+        }
+        leaf _nodeEPRefList {
+            type leafref {
+                path '/Tapi::NodeEdgePoint/localId';
+            }
+        }
+    }
+    container Tapi::ServiceEnd {
+        config true;
+        uses Tapi::ServiceEnd;
+    }
+    grouping Tapi::ServiceEnd {
+        leaf _serviceEPRef {
+            type leafref {
+                path '/Tapi::ServiceEndPoint/localId';
+            }
+        }
+        container role {
+            description 'Each EP of the FC has a role (e.g., working, protection, protected, symmetric, hub, spoke, leaf, root)  in the context of the FC with respect to the FC function. ';
+            config true;
+        }
+        container direction {
+            description 'The orientation of defined flow at the EndPoint.';
+            config true;
+        }
+    }
+    container Tapi::ConnectionEnd {
+        config true;
+        uses Tapi::ConnectionEnd;
+    }
+    grouping Tapi::ConnectionEnd {
+        leaf _connEPRef {
+            type leafref {
+                path '/Tapi::ConnectionEndPoint/localId';
+            }
+        }
+        container role {
+            description 'Each EP of the FC has a role (e.g., working, protection, protected, symmetric, hub, spoke, leaf, root)  in the context of the FC with respect to the FC function. ';
+            config true;
+        }
+        container direction {
+            description 'The orientation of defined flow at the EndPoint.';
+            config true;
+        }
+    }
+}
