@@ -149,9 +149,11 @@ module TapiInformationModel {
   
   grouping NodeEdgePoint {
     description
-    "The LogicalTerminationPoint (LTP) object class encapsulates the 
-    termination and adaptation functions of one or more transport layers. 
-    The structure of LTP supports all transport protocols including circuit and packet forms.";
+    "Node-Edge-Point - represents the node-facing aspect of the edge-port functions for accessing the 
+    forwarding capabilities provided by the Node. 
+    Node-Edge-Point provides an encapsulation of addressing, mapping, termination, adaptation and OAM 
+    functions of one or more transport layers (including circuit and packet forms) performed at the entry/
+    exit points of Node. ";
 
     leaf uuid{
     	type TapiDt:UniversalId;
@@ -212,9 +214,9 @@ module TapiInformationModel {
     
   grouping Node {
     description
-      "The ForwardingDomain (FD) object class models the ForwardingDomain topological component which is used to effect forwarding of transport characteristic information and offers the potential to enable forwarding. 
-      At the lowest level of recursion, an FD (within a network element (NE)) represents a switch matrix (i.e., a fabric). Note that an NE can encompass multiple switch matrices (FDs). ";
-    
+    "Representation of the opaque forwarding-aspects of the Forwarding-Domain (FD) 
+    Node describes the edge ports of the FD (Node-Edge-Point) and the forwarding capabilities between 
+    those edge ports.";
 
     leaf uuid{
     	type TapiDt:UniversalId; // Missing in Tapi UML
@@ -256,6 +258,12 @@ module TapiInformationModel {
       min-elements "1";
     }
     
+    leaf-list _connectionRefList {
+        type leafref {
+            path "/Tapi:ConnectivityService/Tapi:connectionList/Tapi:uuid";
+        }
+    }
+
     container _state_Pac {
       presence "<condition for State_Pac attributes>";
       uses State_Pac;
@@ -300,7 +308,9 @@ module TapiInformationModel {
 
   grouping Link {
     description
-    "The Link object class models effective adjacency between two or more ForwardingDomains (FD).";
+    "Representation of the effective adjacency between two or more associated Nodes in a Topology. 
+    Link is terminated by Node-Edge-Points of the associated Nodes. The Node-Edge-Points have a specific    
+    role with respect to the Link";
     
     leaf uuid{
     	type TapiDt:UniversalId;
@@ -389,7 +399,11 @@ module TapiInformationModel {
   }
   
   grouping Topology {
-  
+    description
+    "Representation of the transparent topological-aspects of a Forwarding-Domain (FD).
+    Topology describes the underlying topological network of Nodes and Links that enable the forwarding 
+    function provided by the FD.";
+
     leaf uuid{
     	type TapiDt:UniversalId;
     }
@@ -430,9 +444,13 @@ module TapiInformationModel {
   
   grouping ServiceEndPoint {
     description
-    "The LogicalTerminationPoint (LTP) object class encapsulates the 
-    termination and adaptation functions of one or more transport layers. 
-    The structure of LTP supports all transport protocols including circuit and packet forms.";
+    "Service-End-Point  - represents the outward-facing aspect of the edge-port functions for accessing the 
+    forwarding capabilities provided by Node.
+    Service-End-Point provides a limited, simplified view of interest to external clients (e.g. client 
+    addressing, capacity, resource availability, etc), that enable the clients to make a connectivity 
+    service request without the need to understand the provider network internals.
+    Service-End-Point have a mapping relationship (one-to-one, one-to-many, many-to-many) to Node-Edge-
+    Points";
   
     leaf uuid{
     	type TapiDt:UniversalId;
@@ -458,8 +476,9 @@ module TapiInformationModel {
   
   grouping ConnectionEndPoint {
     description
-    "The LogicalTerminationPoint (LTP) object class encapsulates the termination and adaptation functions of one or more transport layers. 
-    The structure of LTP supports all transport protocols including circuit and packet forms.";
+    "Connection-End-Point - represents the ingress/egress port functions  for accessing to the forwarding   
+    function provided by the Connection.
+    Connection-End-Point have client-server relationship with Node-Edge-Points";
   
     leaf uuid{
     	type TapiDt:UniversalId;
@@ -475,21 +494,18 @@ module TapiInformationModel {
       type TapiDt:OperationalState;
     }
     
-    leaf-list _clientNodeEpList {
-      type leafref {
-        path "/Tapi:Context/Tapi:topologyList/Tapi:node/Tapi:edgeLtpList/Tapi:uuid";
-      }
+    list _clientNodeEpList {
+        key "uuid";
+        uses NodeEdgePoint;
     }
     
-    leaf-list _serverNodeEpList {
-      type leafref {
-        path "/Tapi:Context/Tapi:topologyList/Tapi:node/Tapi:edgeLtpList/Tapi:uuid";
-      }
+    container _serverNodeEpList {
+        uses NodeEdgePoint;
     }    
     
   }
 
-  grouping ConnectionEnd {
+  grouping ConnectionPort {
     description
     "The association of the FC to LTPs is made via EndPoints.
     The EndPoint (EP) object class models the access to the FC function. 
@@ -501,7 +517,7 @@ module TapiInformationModel {
     The ForwadingConstruct can be considered as a component and the EndPoint as a Port on that component";
 
     leaf uuid{
-    	type TapiDt:UniversalId; // Differs
+    	type TapiDt:UniversalId;
     }
     
     container connEpRef { // Differs
@@ -518,14 +534,14 @@ module TapiInformationModel {
     
   }
 
-  grouping ServiceEnd {
+  grouping ServicePort {
   
     leaf uuid{
-    	type TapiDt:UniversalId; // Differs
+    	type TapiDt:UniversalId; 
     }
   
-    container serviceEpRef { // Differs
-      uses ConnectionEndPoint;
+    container serviceEp { // Differs
+      uses ServiceEndPoint;
     }    
 
     leaf role {
@@ -540,9 +556,9 @@ module TapiInformationModel {
 
   grouping Path {
     description
-    "The FC Route (FcRoute) object class models the individual routes of an FC. 
-    The route of an FC object is represented by a list of FCs at a lower level. 
-    Note that depending on the service supported by an FC, an the FC can have multiple routes.";
+    "Path - represents the route of a Connection through the lower-level Nodes in the underlying Topology
+    Path is described as a list of references to the lower-level Connections.";
+
 
     leaf uuid{
     	type TapiDt:UniversalId; // Differs
@@ -550,25 +566,30 @@ module TapiInformationModel {
 
     leaf-list _LowerLevelFcList{
       type leafref {
-        path "/Tapi:Connection/Tapi:uuid";
+        path "/Tapi:ConnectivityService/Tapi:connectionList/Tapi:uuid";
       }
       min-elements "1";
     }
   }
   
   grouping Connection {
+    description
+    "Connection - represents an enabled (provisioned) potential for forwarding (including all circuit and 
+    packet forms) between two or more Node-Edge-Points of a Node. 
+    Connection is a container for provisioned connectivity that tracks the state of the allocated resources 
+    and is distinct from the connectivity Service request.";
 
     leaf uuid{
     	type TapiDt:UniversalId; // Differs
     }
 
-    list connEndList { // Differs from UML
+    list connectionPortList { 
       key "uuid";
-      uses ConnectionEnd;
+      uses ConnectionPort;
       max-elements "2";
     }
 
-    list pathList { // Differs from UML
+    list pathList {
       key "uuid";
       uses Path;
     }
@@ -583,23 +604,54 @@ module TapiInformationModel {
       type TapiDt:LayerProtocolName;
     } 
     
+    container _state_Pac {
+      presence "<condition for State_Pac attributes>";
+      uses State_Pac;
+    }
+    
+    container _transferCost_Pac {
+      presence "<condition for TransferCost_Pac attributes>";
+      uses TransferCost_Pac;
+    }
+    
+    container _transferTiming_Pac {
+      presence "<condition for TransferTiming_Pac attributes>";
+      uses TransferTiming_Pac;
+    }
+    
+    container _transferCapacity_Pac {
+      presence "<condition for TransferCapacity_Pac attributes>";
+      uses TransferCapacity_Pac;
+    }
+    
+    container _transferIntegrity_Pac {
+      presence "<condition for TransferIntegrity_Pac attributes>";
+      uses TransferIntegrity_Pac;
+    }
+
   }
   
-  grouping Service {
+  grouping ConnectivityService {
+    description
+    "Connectivity Service - represents an “intent-like” request for connectivity between two or more 
+    Service-End-Points.
+    Service is a container for connectivity request details and is distinct from Connection that realizes 
+    the request
+    They refer to different aspects of information exchanged over T-API interface, but within provider they 
+    could be modeled by the same instance if there is one-to-one mapping.";
 
     leaf uuid{
     	type TapiDt:UniversalId; // Differs
     }
 
-    leaf-list _connectionRefList {
-      type leafref {
-        path "/Tapi:Connection/Tapi:uuid";
-      }
+    list connectionList {
+        key "uuid";
+        uses Connection;
     }
   
-    list serviceEndList { //Differs from UML
+    list servicePortList { //Differs from UML
       key "uuid";
-      uses ServiceEnd;
+      uses ServicePort;
       max-elements "2";
     }
     
@@ -607,6 +659,31 @@ module TapiInformationModel {
       type TapiDt:LayerProtocolName;
     }
     
+    container _state_Pac {
+      presence "<condition for State_Pac attributes>";
+      uses State_Pac;
+    }
+    
+    container _transferCost_Pac {
+      presence "<condition for TransferCost_Pac attributes>";
+      uses TransferCost_Pac;
+    }
+    
+    container _transferTiming_Pac {
+      presence "<condition for TransferTiming_Pac attributes>";
+      uses TransferTiming_Pac;
+    }
+    
+    container _transferCapacity_Pac {
+      presence "<condition for TransferCapacity_Pac attributes>";
+      uses TransferCapacity_Pac;
+    }
+    
+    container _transferIntegrity_Pac {
+      presence "<condition for TransferIntegrity_Pac attributes>";
+      uses TransferIntegrity_Pac;
+    }
+
   }
   
   grouping Context {
@@ -626,31 +703,23 @@ module TapiInformationModel {
   /*****************************************************************
   * Main containers
   *****************************************************************/
-  
-    list Connection {
-    description
-    "The ForwardingConstruct (FC) object class models enabled potential for forwarding between two or more LTPs and like the LTP supports any transport protocol including all circuit and packet forms. 
-    At the lowest level of recursion, a FC represents a cross-connection within an NE.";
-  
-    key "uuid";
-    uses Connection;
-  } 
  
-  list Service {
+  list ConnectivityService {
     description
     "The ForwardingConstruct (FC) object class models enabled potential for forwarding between two or more LTPs and like the LTP supports any       
     transport protocol including all circuit and packet forms. 
     At the lowest level of recursion, a FC represents a cross-connection within an NE.";
     
     key "uuid";
-    uses Service;
+    uses ConnectivityService;
   }
   
   list Context {
     description
-    "The Network Control Domain (NCD) object class represents the scope of control that a particular SDN controller 
-    has with respect to a particular network, (i.e., encompassing a designated set of interconnected (virtual) 
-    network elements).";
+    "(API) Context  defines the scope of control and naming that a particular T-API provider or its client  
+    application has with respect to the information exchanged over the interface.
+    This Context is shared between the API provider and its client and determines the makeup of the network 
+    resource abstractions over which the API operates.";
     
     key "uuid";
     uses Context;
