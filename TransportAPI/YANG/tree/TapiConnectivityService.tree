@@ -5,11 +5,11 @@ rpcs:
    |  |  +---w uuid?   TapiDt:UniversalId
    |  +--ro output
    |     +--ro endPointList* [uuid]
-   |        +--ro uuid                 TapiDt:UniversalId
-   |        +--ro _IpList* [layerProtocol]
+   |        +--ro uuid                TapiDt:UniversalId
+   |        +--ro layerProtocol* [layerProtocol]
    |        |  +--ro layerProtocol    string
-   |        +--ro operationalState?    TapiDt:OperationalState
-   |        +--ro _mappedNodeEpList*   -> /Tapi:Context/topologyList/node/edgeLtpList/uuid
+   |        +--ro operationalState?   TapiDt:OperationalState
+   |        +--ro mappedNodeEp*       -> /Tapi:Context/topology/node/nodeEdgePoint/uuid
    +---x getServiceList
    |  +---w input
    |  |  +---w uuid?   TapiDt:UniversalId
@@ -19,47 +19,47 @@ rpcs:
    |  +---w input
    |  |  +---w uuid?   TapiDt:UniversalId
    |  +--ro output
-   |     +--ro connectionList*   -> /Tapi:ConnectivityService/connectionList/uuid
+   |     +--ro connectionList*   -> /Tapi:ConnectivityService/connection/uuid
    +---x getServiceDetails
    |  +---w input
    |  |  +---w uuid?   TapiDt:UniversalId
    |  +--ro output
    |     +--ro service
    |        +--ro uuid?                     TapiDt:UniversalId
-   |        +--ro connectionList* [uuid]
+   |        +--ro connection* [uuid]
    |        |  +--ro uuid                      TapiDt:UniversalId
-   |        |  +--ro connectionPortList* [uuid]
-   |        |  |  +--ro uuid         TapiDt:UniversalId
-   |        |  |  +--ro connEpRef
-   |        |  |  |  +--ro uuid?                TapiDt:UniversalId
-   |        |  |  |  +--ro _IpList* [layerProtocol]
+   |        |  +--ro connectionPort* [uuid]
+   |        |  |  +--ro uuid                  TapiDt:UniversalId
+   |        |  |  +--ro connectionEndPoint
+   |        |  |  |  +--ro uuid?               TapiDt:UniversalId
+   |        |  |  |  +--ro layerProtocol* [layerProtocol]
    |        |  |  |  |  +--ro layerProtocol    string
-   |        |  |  |  +--ro operationalState?    TapiDt:OperationalState
-   |        |  |  |  +--ro _clientNodeEpList* [uuid]
+   |        |  |  |  +--ro operationalState?   TapiDt:OperationalState
+   |        |  |  |  +--ro clientNodeEp* [uuid]
    |        |  |  |  |  +--ro uuid                     TapiDt:UniversalId
-   |        |  |  |  |  +--ro _IpList* [layerProtocol]
+   |        |  |  |  |  +--ro layerProtocol* [layerProtocol]
    |        |  |  |  |  |  +--ro layerProtocol    string
    |        |  |  |  |  +--ro operationalState?        TapiDt:OperationalState
    |        |  |  |  |  +--ro physicalPortReference?   string
-   |        |  |  |  +--ro _serverNodeEpList
+   |        |  |  |  +--ro serverNodeEp
    |        |  |  |     +--ro uuid?                    TapiDt:UniversalId
-   |        |  |  |     +--ro _IpList* [layerProtocol]
+   |        |  |  |     +--ro layerProtocol* [layerProtocol]
    |        |  |  |     |  +--ro layerProtocol    string
    |        |  |  |     +--ro operationalState?        TapiDt:OperationalState
    |        |  |  |     +--ro physicalPortReference?   string
-   |        |  |  +--ro role?        TapiDt:EndRole
-   |        |  |  +--ro direction?   TapiDt:EndDirection
-   |        |  +--ro pathList* [uuid]
-   |        |  |  +--ro uuid                 TapiDt:UniversalId
-   |        |  |  +--ro _LowerLevelFcList*   -> /Tapi:ConnectivityService/connectionList/uuid
-   |        |  +--ro _nodeRefList*             -> /Tapi:Context/topologyList/node/uuid
+   |        |  |  +--ro role?                 TapiDt:EndRole
+   |        |  |  +--ro direction?            TapiDt:EndDirection
+   |        |  +--ro path* [uuid]
+   |        |  |  +--ro uuid                    TapiDt:UniversalId
+   |        |  |  +--ro lowerLevelConnection*   -> /Tapi:ConnectivityService/connection/uuid
+   |        |  +--ro node*                     -> /Tapi:Context/topology/node/uuid
    |        |  +--ro layerProtocolName?        TapiDt:LayerProtocolName
    |        |  +--ro _state_Pac!
    |        |  |  +--ro operationalState?      TapiDt:LifecycleState
    |        |  |  +--ro administrativeState?   TapiDt:AdministrativeState
    |        |  |  +--ro lifecycleState?        TapiDt:LifecycleState
    |        |  +--ro _transferCost_Pac!
-   |        |  |  +--ro costCharacteristicList* [costName]
+   |        |  |  +--ro costCharacteristic* [costName]
    |        |  |     +--ro costName         string
    |        |  |     +--ro costValue        string
    |        |  |     +--ro costAlgorithm?   string
@@ -67,7 +67,7 @@ rpcs:
    |        |  |  +--ro fixedLatencyCharacteristic    string
    |        |  |  +--ro jitterCharacteristic?         string
    |        |  |  +--ro wanderCharacteristic?         string
-   |        |  |  +--ro queuingLatencyList* [trafficProperty]
+   |        |  |  +--ro queuingLatency* [trafficProperty]
    |        |  |     +--ro trafficProperty                  string
    |        |  |     +--ro latencyForTrafficWithProperty    string
    |        |  +--ro _transferCapacity_Pac!
@@ -94,23 +94,18 @@ rpcs:
    |        |     +--ro deliveryOrderCharacteristic?            string
    |        |     +--ro unavailableTimeCharacteristic           string
    |        |     +--ro serverIntegrityProcessCharacteristic?   string
-   |        +--ro servicePortList* [uuid]
-   |        |  +--ro uuid         TapiDt:UniversalId
-   |        |  +--ro serviceEp
-   |        |  |  +--ro uuid?                TapiDt:UniversalId
-   |        |  |  +--ro _IpList* [layerProtocol]
-   |        |  |  |  +--ro layerProtocol    string
-   |        |  |  +--ro operationalState?    TapiDt:OperationalState
-   |        |  |  +--ro _mappedNodeEpList*   -> /Tapi:Context/topologyList/node/edgeLtpList/uuid
-   |        |  +--ro role?        TapiDt:EndRole
-   |        |  +--ro direction?   TapiDt:EndDirection
+   |        +--ro servicePort* [uuid]
+   |        |  +--ro uuid               TapiDt:UniversalId
+   |        |  +--ro serviceEndPoint?   -> /Tapi:Context/serviceEndPoint/uuid
+   |        |  +--ro role?              TapiDt:EndRole
+   |        |  +--ro direction?         TapiDt:EndDirection
    |        +--ro layerProtocolName?        TapiDt:LayerProtocolName
    |        +--ro _state_Pac!
    |        |  +--ro operationalState?      TapiDt:LifecycleState
    |        |  +--ro administrativeState?   TapiDt:AdministrativeState
    |        |  +--ro lifecycleState?        TapiDt:LifecycleState
    |        +--ro _transferCost_Pac!
-   |        |  +--ro costCharacteristicList* [costName]
+   |        |  +--ro costCharacteristic* [costName]
    |        |     +--ro costName         string
    |        |     +--ro costValue        string
    |        |     +--ro costAlgorithm?   string
@@ -118,7 +113,7 @@ rpcs:
    |        |  +--ro fixedLatencyCharacteristic    string
    |        |  +--ro jitterCharacteristic?         string
    |        |  +--ro wanderCharacteristic?         string
-   |        |  +--ro queuingLatencyList* [trafficProperty]
+   |        |  +--ro queuingLatency* [trafficProperty]
    |        |     +--ro trafficProperty                  string
    |        |     +--ro latencyForTrafficWithProperty    string
    |        +--ro _transferCapacity_Pac!
@@ -151,38 +146,38 @@ rpcs:
    |  +--ro output
    |     +--ro connection
    |        +--ro uuid?                     TapiDt:UniversalId
-   |        +--ro connectionPortList* [uuid]
-   |        |  +--ro uuid         TapiDt:UniversalId
-   |        |  +--ro connEpRef
-   |        |  |  +--ro uuid?                TapiDt:UniversalId
-   |        |  |  +--ro _IpList* [layerProtocol]
+   |        +--ro connectionPort* [uuid]
+   |        |  +--ro uuid                  TapiDt:UniversalId
+   |        |  +--ro connectionEndPoint
+   |        |  |  +--ro uuid?               TapiDt:UniversalId
+   |        |  |  +--ro layerProtocol* [layerProtocol]
    |        |  |  |  +--ro layerProtocol    string
-   |        |  |  +--ro operationalState?    TapiDt:OperationalState
-   |        |  |  +--ro _clientNodeEpList* [uuid]
+   |        |  |  +--ro operationalState?   TapiDt:OperationalState
+   |        |  |  +--ro clientNodeEp* [uuid]
    |        |  |  |  +--ro uuid                     TapiDt:UniversalId
-   |        |  |  |  +--ro _IpList* [layerProtocol]
+   |        |  |  |  +--ro layerProtocol* [layerProtocol]
    |        |  |  |  |  +--ro layerProtocol    string
    |        |  |  |  +--ro operationalState?        TapiDt:OperationalState
    |        |  |  |  +--ro physicalPortReference?   string
-   |        |  |  +--ro _serverNodeEpList
+   |        |  |  +--ro serverNodeEp
    |        |  |     +--ro uuid?                    TapiDt:UniversalId
-   |        |  |     +--ro _IpList* [layerProtocol]
+   |        |  |     +--ro layerProtocol* [layerProtocol]
    |        |  |     |  +--ro layerProtocol    string
    |        |  |     +--ro operationalState?        TapiDt:OperationalState
    |        |  |     +--ro physicalPortReference?   string
-   |        |  +--ro role?        TapiDt:EndRole
-   |        |  +--ro direction?   TapiDt:EndDirection
-   |        +--ro pathList* [uuid]
-   |        |  +--ro uuid                 TapiDt:UniversalId
-   |        |  +--ro _LowerLevelFcList*   -> /Tapi:ConnectivityService/connectionList/uuid
-   |        +--ro _nodeRefList*             -> /Tapi:Context/topologyList/node/uuid
+   |        |  +--ro role?                 TapiDt:EndRole
+   |        |  +--ro direction?            TapiDt:EndDirection
+   |        +--ro path* [uuid]
+   |        |  +--ro uuid                    TapiDt:UniversalId
+   |        |  +--ro lowerLevelConnection*   -> /Tapi:ConnectivityService/connection/uuid
+   |        +--ro node*                     -> /Tapi:Context/topology/node/uuid
    |        +--ro layerProtocolName?        TapiDt:LayerProtocolName
    |        +--ro _state_Pac!
    |        |  +--ro operationalState?      TapiDt:LifecycleState
    |        |  +--ro administrativeState?   TapiDt:AdministrativeState
    |        |  +--ro lifecycleState?        TapiDt:LifecycleState
    |        +--ro _transferCost_Pac!
-   |        |  +--ro costCharacteristicList* [costName]
+   |        |  +--ro costCharacteristic* [costName]
    |        |     +--ro costName         string
    |        |     +--ro costValue        string
    |        |     +--ro costAlgorithm?   string
@@ -190,7 +185,7 @@ rpcs:
    |        |  +--ro fixedLatencyCharacteristic    string
    |        |  +--ro jitterCharacteristic?         string
    |        |  +--ro wanderCharacteristic?         string
-   |        |  +--ro queuingLatencyList* [trafficProperty]
+   |        |  +--ro queuingLatency* [trafficProperty]
    |        |     +--ro trafficProperty                  string
    |        |     +--ro latencyForTrafficWithProperty    string
    |        +--ro _transferCapacity_Pac!
@@ -221,35 +216,35 @@ rpcs:
    |  +---w input
    |  |  +---w uuid?   TapiDt:UniversalId
    |  +--ro output
-   |     +--ro pathList*   -> /Tapi:ConnectivityService/connectionList/pathList/uuid
+   |     +--ro pathList*   -> /Tapi:ConnectivityService/connection/path/uuid
    +---x getServiceEndPointDetails
    |  +---w input
    |  |  +---w uuid?   TapiDt:UniversalId
    |  +--ro output
    |     +--ro serviceEndPoint
-   |        +--ro uuid?                TapiDt:UniversalId
-   |        +--ro _IpList* [layerProtocol]
+   |        +--ro uuid?               TapiDt:UniversalId
+   |        +--ro layerProtocol* [layerProtocol]
    |        |  +--ro layerProtocol    string
-   |        +--ro operationalState?    TapiDt:OperationalState
-   |        +--ro _mappedNodeEpList*   -> /Tapi:Context/topologyList/node/edgeLtpList/uuid
+   |        +--ro operationalState?   TapiDt:OperationalState
+   |        +--ro mappedNodeEp*       -> /Tapi:Context/topology/node/nodeEdgePoint/uuid
    +---x getConnectionEndPointDetails
       +---w input
       |  +---w uuid?   TapiDt:UniversalId
       +--ro output
          +--ro connectionEndPoint
-            +--ro uuid?                TapiDt:UniversalId
-            +--ro _IpList* [layerProtocol]
+            +--ro uuid?               TapiDt:UniversalId
+            +--ro layerProtocol* [layerProtocol]
             |  +--ro layerProtocol    string
-            +--ro operationalState?    TapiDt:OperationalState
-            +--ro _clientNodeEpList* [uuid]
+            +--ro operationalState?   TapiDt:OperationalState
+            +--ro clientNodeEp* [uuid]
             |  +--ro uuid                     TapiDt:UniversalId
-            |  +--ro _IpList* [layerProtocol]
+            |  +--ro layerProtocol* [layerProtocol]
             |  |  +--ro layerProtocol    string
             |  +--ro operationalState?        TapiDt:OperationalState
             |  +--ro physicalPortReference?   string
-            +--ro _serverNodeEpList
+            +--ro serverNodeEp
                +--ro uuid?                    TapiDt:UniversalId
-               +--ro _IpList* [layerProtocol]
+               +--ro layerProtocol* [layerProtocol]
                |  +--ro layerProtocol    string
                +--ro operationalState?        TapiDt:OperationalState
                +--ro physicalPortReference?   string
