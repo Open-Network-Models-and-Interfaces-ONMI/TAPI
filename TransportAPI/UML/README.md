@@ -1,0 +1,1 @@
+This copy of Transport API Information Model is a fragment of the ONF Common Information Model (CIM) that is being developed in the ONF Information Modeling Project (IMP). It includes version 1.1 of Core Information Model that was released in November 2015. The TAPI module is a December 17, 2015 snapshot of the corresponding module in the ONF CIM.
