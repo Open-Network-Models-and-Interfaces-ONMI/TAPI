@@ -2,350 +2,447 @@ module: TapiModule-Interfaces-Tapi_ConnectivityService
 rpcs:
    +---x getConnectionDetails
    |  +---w input
-   |  |  +---w connectionId?   string
+   |  |  +---w serviceIdOrName?      string
+   |  |  +---w connectionIdOrName?   string
    |  +--ro output
    |     +--ro connection
-   |        +--ro uuid?                     TapiModule-TypeDefinitions:UniversalId
-   |        +--ro connectionPort* [uuid]
-   |        |  +--ro uuid                  TapiModule-TypeDefinitions:UniversalId
-   |        |  +--ro connectionEndPoint
-   |        |  |  +--ro uuid?               TapiModule-TypeDefinitions:UniversalId
-   |        |  |  +--ro layerProtocol* [layerProtocol]
-   |        |  |  |  +--ro layerProtocol    string
-   |        |  |  +--ro operationalState?   TapiModule-TypeDefinitions:OperationalState
-   |        |  |  +--ro clientNodeEp* [uuid]
-   |        |  |  |  +--ro uuid                     TapiModule-TypeDefinitions:UniversalId
-   |        |  |  |  +--ro layerProtocol* [layerProtocol]
-   |        |  |  |  |  +--ro layerProtocol    string
-   |        |  |  |  +--ro operationalState?        TapiModule-TypeDefinitions:OperationalState
-   |        |  |  |  +--ro physicalPortReference?   string
-   |        |  |  +--ro serverNodeEp
-   |        |  |     +--ro uuid?                    TapiModule-TypeDefinitions:UniversalId
-   |        |  |     +--ro layerProtocol* [layerProtocol]
-   |        |  |     |  +--ro layerProtocol    string
-   |        |  |     +--ro operationalState?        TapiModule-TypeDefinitions:OperationalState
-   |        |  |     +--ro physicalPortReference?   string
-   |        |  +--ro role?                 TapiModule-TypeDefinitions:EndRole
-   |        |  +--ro direction?            TapiModule-TypeDefinitions:EndDirection
-   |        +--ro path* [uuid]
-   |        |  +--ro uuid                    TapiModule-TypeDefinitions:UniversalId
-   |        |  +--ro lowerLevelConnection*   -> /TapiModule-ObjectClasses:Tapi_Context/connectivityService/connection/uuid
-   |        +--ro node*                     -> /TapiModule-ObjectClasses:Tapi_Context/topology/node/uuid
-   |        +--ro layerProtocolName?        TapiModule-TypeDefinitions:LayerProtocolName
-   |        +--ro _state_Pac!
-   |        |  +--ro operationalState?      TapiModule-TypeDefinitions:LifecycleState
-   |        |  +--ro administrativeState?   TapiModule-TypeDefinitions:AdministrativeState
-   |        |  +--ro lifecycleState?        TapiModule-TypeDefinitions:LifecycleState
-   |        +--ro _transferCost_Pac!
-   |        |  +--ro costCharacteristic* [costName]
-   |        |     +--ro costName         string
-   |        |     +--ro costValue        string
-   |        |     +--ro costAlgorithm?   string
-   |        +--ro _transferTiming_Pac!
-   |        |  +--ro fixedLatencyCharacteristic    string
-   |        |  +--ro jitterCharacteristic?         string
-   |        |  +--ro wanderCharacteristic?         string
-   |        |  +--ro queuingLatency* [trafficProperty]
-   |        |     +--ro trafficProperty                  string
-   |        |     +--ro latencyForTrafficWithProperty    string
-   |        +--ro _transferCapacity_Pac!
-   |        |  +--ro totalPotentialCapacity
-   |        |  |  +--ro totalSize                  string
-   |        |  |  +--ro numberOfClientInstances?   string
-   |        |  |  +--ro maximumClientSize?         string
-   |        |  |  +--ro numberingRange?            string
-   |        |  +--ro availableCapacity
-   |        |  |  +--ro totalSize                  string
-   |        |  |  +--ro numberOfClientInstances?   string
-   |        |  |  +--ro maximumClientSize?         string
-   |        |  |  +--ro numberingRange?            string
-   |        |  +--ro capacityAssignedToUserView* [totalSize]
-   |        |  |  +--ro totalSize                  string
-   |        |  |  +--ro numberOfClientInstances?   string
-   |        |  |  +--ro maximumClientSize?         string
-   |        |  |  +--ro numberingRange?            string
-   |        |  +--ro capacityInteractionAlgorithm?   string
-   |        +--ro _transferIntegrity_Pac!
-   |           +--ro errorCharacteristic?                    string
-   |           +--ro lossCharacteristic?                     string
-   |           +--ro repeatDeliveryCharacteristic?           string
-   |           +--ro deliveryOrderCharacteristic?            string
-   |           +--ro unavailableTimeCharacteristic           string
-   |           +--ro serverIntegrityProcessCharacteristic?   string
-   +---x getServiceList
+   |        +--rw _connectionPort* [localId]
+   |        |  +--rw _connectionEndPoint?   -> /Tapi_ConnectionEndPoint/uuid
+   |        |  +--rw localId                string
+   |        |  +--rw role?                  TapiModule-TypeDefinitions:Tapi_PortRole
+   |        |  +--rw direction?             TapiModule-TypeDefinitions:Tapi_PortDirection
+   |        +--rw _path* [localId]
+   |        |  +--rw _lowerConnection*   -> /Tapi_ConnectivityService/_connection/uuid
+   |        |  +--rw localId             string
+   |        +--ro _node?               -> /Tapi_Topology/_node/uuid
+   |        +--ro uuid?                TapiModule-TypeDefinitions:Tapi_UniversalId
+   |        +--rw name* [valueName]
+   |        |  +--rw valueName                    string
+   |        |  +--rw value?                       string
+   |        |  +--rw _nameAndValueAuthorityRef?   string
+   |        +--rw label* [valueName]
+   |        |  +--rw valueName                    string
+   |        |  +--rw value?                       string
+   |        |  +--rw _nameAndValueAuthorityRef?   string
+   |        +--rw extension* [valueName]
+   |        |  +--rw valueName                    string
+   |        |  +--rw value?                       string
+   |        |  +--rw _nameAndValueAuthorityRef?   string
+   |        +--ro layerProtocolName?   TapiModule-TypeDefinitions:Tapi_LayerProtocolName
+   |        +--ro direction?           TapiModule-TypeDefinitions:Tapi_ForwardingDirection
+   |        +--ro operationalState?    TapiModule-TypeDefinitions:Tapi_OperationalState
+   |        +--ro lifecycleState?      TapiModule-TypeDefinitions:Tapi_LifecycleState
+   +---x getConnectivityServiceList
    |  +--ro output
    |     +--ro serviceList*
-   |        +--ro uuid?                     TapiModule-TypeDefinitions:UniversalId
-   |        +--ro connection* [uuid]
-   |        |  +--ro uuid                      TapiModule-TypeDefinitions:UniversalId
-   |        |  +--ro connectionPort* [uuid]
-   |        |  |  +--ro uuid                  TapiModule-TypeDefinitions:UniversalId
-   |        |  |  +--ro connectionEndPoint
-   |        |  |  |  +--ro uuid?               TapiModule-TypeDefinitions:UniversalId
-   |        |  |  |  +--ro layerProtocol* [layerProtocol]
-   |        |  |  |  |  +--ro layerProtocol    string
-   |        |  |  |  +--ro operationalState?   TapiModule-TypeDefinitions:OperationalState
-   |        |  |  |  +--ro clientNodeEp* [uuid]
-   |        |  |  |  |  +--ro uuid                     TapiModule-TypeDefinitions:UniversalId
-   |        |  |  |  |  +--ro layerProtocol* [layerProtocol]
-   |        |  |  |  |  |  +--ro layerProtocol    string
-   |        |  |  |  |  +--ro operationalState?        TapiModule-TypeDefinitions:OperationalState
-   |        |  |  |  |  +--ro physicalPortReference?   string
-   |        |  |  |  +--ro serverNodeEp
-   |        |  |  |     +--ro uuid?                    TapiModule-TypeDefinitions:UniversalId
-   |        |  |  |     +--ro layerProtocol* [layerProtocol]
-   |        |  |  |     |  +--ro layerProtocol    string
-   |        |  |  |     +--ro operationalState?        TapiModule-TypeDefinitions:OperationalState
-   |        |  |  |     +--ro physicalPortReference?   string
-   |        |  |  +--ro role?                 TapiModule-TypeDefinitions:EndRole
-   |        |  |  +--ro direction?            TapiModule-TypeDefinitions:EndDirection
-   |        |  +--ro path* [uuid]
-   |        |  |  +--ro uuid                    TapiModule-TypeDefinitions:UniversalId
-   |        |  |  +--ro lowerLevelConnection*   -> /TapiModule-ObjectClasses:Tapi_Context/connectivityService/connection/uuid
-   |        |  +--ro node*                     -> /TapiModule-ObjectClasses:Tapi_Context/topology/node/uuid
-   |        |  +--ro layerProtocolName?        TapiModule-TypeDefinitions:LayerProtocolName
-   |        |  +--ro _state_Pac!
-   |        |  |  +--ro operationalState?      TapiModule-TypeDefinitions:LifecycleState
-   |        |  |  +--ro administrativeState?   TapiModule-TypeDefinitions:AdministrativeState
-   |        |  |  +--ro lifecycleState?        TapiModule-TypeDefinitions:LifecycleState
-   |        |  +--ro _transferCost_Pac!
-   |        |  |  +--ro costCharacteristic* [costName]
-   |        |  |     +--ro costName         string
-   |        |  |     +--ro costValue        string
-   |        |  |     +--ro costAlgorithm?   string
-   |        |  +--ro _transferTiming_Pac!
-   |        |  |  +--ro fixedLatencyCharacteristic    string
-   |        |  |  +--ro jitterCharacteristic?         string
-   |        |  |  +--ro wanderCharacteristic?         string
-   |        |  |  +--ro queuingLatency* [trafficProperty]
-   |        |  |     +--ro trafficProperty                  string
-   |        |  |     +--ro latencyForTrafficWithProperty    string
-   |        |  +--ro _transferCapacity_Pac!
-   |        |  |  +--ro totalPotentialCapacity
-   |        |  |  |  +--ro totalSize                  string
-   |        |  |  |  +--ro numberOfClientInstances?   string
-   |        |  |  |  +--ro maximumClientSize?         string
-   |        |  |  |  +--ro numberingRange?            string
-   |        |  |  +--ro availableCapacity
-   |        |  |  |  +--ro totalSize                  string
-   |        |  |  |  +--ro numberOfClientInstances?   string
-   |        |  |  |  +--ro maximumClientSize?         string
-   |        |  |  |  +--ro numberingRange?            string
-   |        |  |  +--ro capacityAssignedToUserView* [totalSize]
-   |        |  |  |  +--ro totalSize                  string
-   |        |  |  |  +--ro numberOfClientInstances?   string
-   |        |  |  |  +--ro maximumClientSize?         string
-   |        |  |  |  +--ro numberingRange?            string
-   |        |  |  +--ro capacityInteractionAlgorithm?   string
-   |        |  +--ro _transferIntegrity_Pac!
-   |        |     +--ro errorCharacteristic?                    string
-   |        |     +--ro lossCharacteristic?                     string
-   |        |     +--ro repeatDeliveryCharacteristic?           string
-   |        |     +--ro deliveryOrderCharacteristic?            string
-   |        |     +--ro unavailableTimeCharacteristic           string
-   |        |     +--ro serverIntegrityProcessCharacteristic?   string
-   |        +--ro servicePort* [uuid]
-   |        |  +--ro uuid               TapiModule-TypeDefinitions:UniversalId
-   |        |  +--ro serviceEndPoint?   -> /TapiModule-ObjectClasses:Tapi_Context/serviceEndPoint/uuid
-   |        |  +--ro role?              TapiModule-TypeDefinitions:EndRole
-   |        |  +--ro direction?         TapiModule-TypeDefinitions:EndDirection
-   |        +--ro layerProtocolName?        TapiModule-TypeDefinitions:LayerProtocolName
-   |        +--ro _state_Pac!
-   |        |  +--ro operationalState?      TapiModule-TypeDefinitions:LifecycleState
-   |        |  +--ro administrativeState?   TapiModule-TypeDefinitions:AdministrativeState
-   |        |  +--ro lifecycleState?        TapiModule-TypeDefinitions:LifecycleState
-   |        +--ro _transferCost_Pac!
-   |        |  +--ro costCharacteristic* [costName]
-   |        |     +--ro costName         string
-   |        |     +--ro costValue        string
-   |        |     +--ro costAlgorithm?   string
-   |        +--ro _transferTiming_Pac!
-   |        |  +--ro fixedLatencyCharacteristic    string
-   |        |  +--ro jitterCharacteristic?         string
-   |        |  +--ro wanderCharacteristic?         string
-   |        |  +--ro queuingLatency* [trafficProperty]
-   |        |     +--ro trafficProperty                  string
-   |        |     +--ro latencyForTrafficWithProperty    string
-   |        +--ro _transferCapacity_Pac!
-   |        |  +--ro totalPotentialCapacity
-   |        |  |  +--ro totalSize                  string
-   |        |  |  +--ro numberOfClientInstances?   string
-   |        |  |  +--ro maximumClientSize?         string
-   |        |  |  +--ro numberingRange?            string
-   |        |  +--ro availableCapacity
-   |        |  |  +--ro totalSize                  string
-   |        |  |  +--ro numberOfClientInstances?   string
-   |        |  |  +--ro maximumClientSize?         string
-   |        |  |  +--ro numberingRange?            string
-   |        |  +--ro capacityAssignedToUserView* [totalSize]
-   |        |  |  +--ro totalSize                  string
-   |        |  |  +--ro numberOfClientInstances?   string
-   |        |  |  +--ro maximumClientSize?         string
-   |        |  |  +--ro numberingRange?            string
-   |        |  +--ro capacityInteractionAlgorithm?   string
-   |        +--ro _transferIntegrity_Pac!
-   |           +--ro errorCharacteristic?                    string
-   |           +--ro lossCharacteristic?                     string
-   |           +--ro repeatDeliveryCharacteristic?           string
-   |           +--ro deliveryOrderCharacteristic?            string
-   |           +--ro unavailableTimeCharacteristic           string
-   |           +--ro serverIntegrityProcessCharacteristic?   string
+   |        +--rw _servicePort* [localId]
+   |        |  +--rw _serviceEndPoint?   -> /Tapi_ServiceEndPoint/uuid
+   |        |  +--rw localId             string
+   |        |  +--rw role?               TapiModule-TypeDefinitions:Tapi_PortRole
+   |        |  +--rw direction?          TapiModule-TypeDefinitions:Tapi_PortDirection
+   |        |  +--rw serviceLayer?       TapiModule-TypeDefinitions:Tapi_LayerProtocolName
+   |        +--rw _connection* [uuid]
+   |        |  +--rw _connectionPort* [localId]
+   |        |  |  +--rw _connectionEndPoint?   -> /Tapi_ConnectionEndPoint/uuid
+   |        |  |  +--rw localId                string
+   |        |  |  +--rw role?                  TapiModule-TypeDefinitions:Tapi_PortRole
+   |        |  |  +--rw direction?             TapiModule-TypeDefinitions:Tapi_PortDirection
+   |        |  +--rw _path* [localId]
+   |        |  |  +--rw _lowerConnection*   -> /Tapi_ConnectivityService/_connection/uuid
+   |        |  |  +--rw localId             string
+   |        |  +--rw _node?               -> /Tapi_Topology/_node/uuid
+   |        |  +--rw uuid                 TapiModule-TypeDefinitions:Tapi_UniversalId
+   |        |  +--rw name* [valueName]
+   |        |  |  +--rw valueName                    string
+   |        |  |  +--rw value?                       string
+   |        |  |  +--rw _nameAndValueAuthorityRef?   string
+   |        |  +--rw label* [valueName]
+   |        |  |  +--rw valueName                    string
+   |        |  |  +--rw value?                       string
+   |        |  |  +--rw _nameAndValueAuthorityRef?   string
+   |        |  +--rw extension* [valueName]
+   |        |  |  +--rw valueName                    string
+   |        |  |  +--rw value?                       string
+   |        |  |  +--rw _nameAndValueAuthorityRef?   string
+   |        |  +--rw layerProtocolName?   TapiModule-TypeDefinitions:Tapi_LayerProtocolName
+   |        |  +--rw direction?           TapiModule-TypeDefinitions:Tapi_ForwardingDirection
+   |        |  +--rw operationalState?    TapiModule-TypeDefinitions:Tapi_OperationalState
+   |        |  +--rw lifecycleState?      TapiModule-TypeDefinitions:Tapi_LifecycleState
+   |        +--ro uuid?                  TapiModule-TypeDefinitions:Tapi_UniversalId
+   |        +--rw name* [valueName]
+   |        |  +--rw valueName                    string
+   |        |  +--rw value?                       string
+   |        |  +--rw _nameAndValueAuthorityRef?   string
+   |        +--rw label* [valueName]
+   |        |  +--rw valueName                    string
+   |        |  +--rw value?                       string
+   |        |  +--rw _nameAndValueAuthorityRef?   string
+   |        +--rw extension* [valueName]
+   |        |  +--rw valueName                    string
+   |        |  +--rw value?                       string
+   |        |  +--rw _nameAndValueAuthorityRef?   string
+   |        +--ro layerProtocolName?     TapiModule-TypeDefinitions:Tapi_LayerProtocolName
+   |        +--ro direction?             TapiModule-TypeDefinitions:Tapi_ForwardingDirection
+   |        +--ro administrativeState?   TapiModule-TypeDefinitions:Tapi_AdministrativeState
+   |        +--ro operationalState?      TapiModule-TypeDefinitions:Tapi_OperationalState
+   |        +--ro lifecycleState?        TapiModule-TypeDefinitions:Tapi_LifecycleState
    +---x getConnectionEndPointDetails
    |  +---w input
-   |  |  +---w connEPId?   string
+   |  |  +---w serviceIdOrName?      string
+   |  |  +---w connectionIdOrName?   string
+   |  |  +---w connEPIdOrName?       string
    |  +--ro output
    |     +--ro connEP
-   |        +--ro uuid?               TapiModule-TypeDefinitions:UniversalId
-   |        +--ro layerProtocol* [layerProtocol]
-   |        |  +--ro layerProtocol    string
-   |        +--ro operationalState?   TapiModule-TypeDefinitions:OperationalState
-   |        +--ro clientNodeEp* [uuid]
-   |        |  +--ro uuid                     TapiModule-TypeDefinitions:UniversalId
-   |        |  +--ro layerProtocol* [layerProtocol]
-   |        |  |  +--ro layerProtocol    string
-   |        |  +--ro operationalState?        TapiModule-TypeDefinitions:OperationalState
-   |        |  +--ro physicalPortReference?   string
-   |        +--ro serverNodeEp
-   |           +--ro uuid?                    TapiModule-TypeDefinitions:UniversalId
-   |           +--ro layerProtocol* [layerProtocol]
-   |           |  +--ro layerProtocol    string
-   |           +--ro operationalState?        TapiModule-TypeDefinitions:OperationalState
-   |           +--ro physicalPortReference?   string
+   |        +--rw _layerProtocol* [localId]
+   |        |  +--rw _lpSpec?                string
+   |        |  +--rw localId                 string
+   |        |  +--rw layerProtocolName?      TapiModule-TypeDefinitions:Tapi_LayerProtocolName
+   |        |  +--rw terminationDirection?   TapiModule-TypeDefinitions:Tapi_TerminationDirection
+   |        |  +--rw terminationState?       TapiModule-TypeDefinitions:Tapi_TerminationState
+   |        +--ro _clientNodeEdgePoint*      -> /Tapi_Topology/_node/_ownedNodeEdgePoint/uuid
+   |        +--ro _serverNodeEdgePoint?      -> /Tapi_Topology/_node/_ownedNodeEdgePoint/uuid
+   |        +--ro _peerConnectionEndPoint?   -> /Tapi_ConnectionEndPoint/uuid
+   |        +--ro uuid?                      TapiModule-TypeDefinitions:Tapi_UniversalId
+   |        +--rw label* [valueName]
+   |        |  +--rw valueName                    string
+   |        |  +--rw value?                       string
+   |        |  +--rw _nameAndValueAuthorityRef?   string
+   |        +--rw name* [valueName]
+   |        |  +--rw valueName                    string
+   |        |  +--rw value?                       string
+   |        |  +--rw _nameAndValueAuthorityRef?   string
+   |        +--rw extension* [valueName]
+   |        |  +--rw valueName                    string
+   |        |  +--rw value?                       string
+   |        |  +--rw _nameAndValueAuthorityRef?   string
+   |        +--ro direction?                 TapiModule-TypeDefinitions:Tapi_TerminationDirection
+   |        +--ro operationalState?          TapiModule-TypeDefinitions:Tapi_OperationalState
    +---x getServiceEndPointDetails
    |  +---w input
-   |  |  +---w serviceEPId?   string
+   |  |  +---w serviceEPIdOrName?   string
    |  +--ro output
    |     +--ro serviceEP
-   |        +--ro uuid?               TapiModule-TypeDefinitions:UniversalId
-   |        +--ro layerProtocol* [layerProtocol]
-   |        |  +--ro layerProtocol    string
-   |        +--ro operationalState?   TapiModule-TypeDefinitions:OperationalState
-   |        +--ro mappedNodeEp*       -> /TapiModule-ObjectClasses:Tapi_Context/topology/node/nodeEdgePoint/uuid
-   +---x getServiceDetails
+   |        +--rw _layerProtocol* [localId]
+   |        |  +--rw _lpSpec?                string
+   |        |  +--rw localId                 string
+   |        |  +--rw layerProtocolName?      TapiModule-TypeDefinitions:Tapi_LayerProtocolName
+   |        |  +--rw terminationDirection?   TapiModule-TypeDefinitions:Tapi_TerminationDirection
+   |        |  +--rw terminationState?       TapiModule-TypeDefinitions:Tapi_TerminationState
+   |        +--ro _mappedNodeEdgePoint*   -> /Tapi_Topology/_node/_ownedNodeEdgePoint/uuid
+   |        +--ro uuid?                   TapiModule-TypeDefinitions:Tapi_UniversalId
+   |        +--rw label* [valueName]
+   |        |  +--rw valueName                    string
+   |        |  +--rw value?                       string
+   |        |  +--rw _nameAndValueAuthorityRef?   string
+   |        +--rw name* [valueName]
+   |        |  +--rw valueName                    string
+   |        |  +--rw value?                       string
+   |        |  +--rw _nameAndValueAuthorityRef?   string
+   |        +--rw extension* [valueName]
+   |        |  +--rw valueName                    string
+   |        |  +--rw value?                       string
+   |        |  +--rw _nameAndValueAuthorityRef?   string
+   |        +--ro direction?              TapiModule-TypeDefinitions:Tapi_TerminationDirection
+   |        +--ro operationalState?       TapiModule-TypeDefinitions:Tapi_OperationalState
+   +---x getConnectivityServiceDetails
    |  +---w input
-   |  |  +---w serviceId?   string
+   |  |  +---w serviceIdOrName?   string
    |  +--ro output
    |     +--ro service
-   |        +--ro uuid?                     TapiModule-TypeDefinitions:UniversalId
-   |        +--ro connection* [uuid]
-   |        |  +--ro uuid                      TapiModule-TypeDefinitions:UniversalId
-   |        |  +--ro connectionPort* [uuid]
-   |        |  |  +--ro uuid                  TapiModule-TypeDefinitions:UniversalId
-   |        |  |  +--ro connectionEndPoint
-   |        |  |  |  +--ro uuid?               TapiModule-TypeDefinitions:UniversalId
-   |        |  |  |  +--ro layerProtocol* [layerProtocol]
-   |        |  |  |  |  +--ro layerProtocol    string
-   |        |  |  |  +--ro operationalState?   TapiModule-TypeDefinitions:OperationalState
-   |        |  |  |  +--ro clientNodeEp* [uuid]
-   |        |  |  |  |  +--ro uuid                     TapiModule-TypeDefinitions:UniversalId
-   |        |  |  |  |  +--ro layerProtocol* [layerProtocol]
-   |        |  |  |  |  |  +--ro layerProtocol    string
-   |        |  |  |  |  +--ro operationalState?        TapiModule-TypeDefinitions:OperationalState
-   |        |  |  |  |  +--ro physicalPortReference?   string
-   |        |  |  |  +--ro serverNodeEp
-   |        |  |  |     +--ro uuid?                    TapiModule-TypeDefinitions:UniversalId
-   |        |  |  |     +--ro layerProtocol* [layerProtocol]
-   |        |  |  |     |  +--ro layerProtocol    string
-   |        |  |  |     +--ro operationalState?        TapiModule-TypeDefinitions:OperationalState
-   |        |  |  |     +--ro physicalPortReference?   string
-   |        |  |  +--ro role?                 TapiModule-TypeDefinitions:EndRole
-   |        |  |  +--ro direction?            TapiModule-TypeDefinitions:EndDirection
-   |        |  +--ro path* [uuid]
-   |        |  |  +--ro uuid                    TapiModule-TypeDefinitions:UniversalId
-   |        |  |  +--ro lowerLevelConnection*   -> /TapiModule-ObjectClasses:Tapi_Context/connectivityService/connection/uuid
-   |        |  +--ro node*                     -> /TapiModule-ObjectClasses:Tapi_Context/topology/node/uuid
-   |        |  +--ro layerProtocolName?        TapiModule-TypeDefinitions:LayerProtocolName
-   |        |  +--ro _state_Pac!
-   |        |  |  +--ro operationalState?      TapiModule-TypeDefinitions:LifecycleState
-   |        |  |  +--ro administrativeState?   TapiModule-TypeDefinitions:AdministrativeState
-   |        |  |  +--ro lifecycleState?        TapiModule-TypeDefinitions:LifecycleState
-   |        |  +--ro _transferCost_Pac!
-   |        |  |  +--ro costCharacteristic* [costName]
-   |        |  |     +--ro costName         string
-   |        |  |     +--ro costValue        string
-   |        |  |     +--ro costAlgorithm?   string
-   |        |  +--ro _transferTiming_Pac!
-   |        |  |  +--ro fixedLatencyCharacteristic    string
-   |        |  |  +--ro jitterCharacteristic?         string
-   |        |  |  +--ro wanderCharacteristic?         string
-   |        |  |  +--ro queuingLatency* [trafficProperty]
-   |        |  |     +--ro trafficProperty                  string
-   |        |  |     +--ro latencyForTrafficWithProperty    string
-   |        |  +--ro _transferCapacity_Pac!
-   |        |  |  +--ro totalPotentialCapacity
-   |        |  |  |  +--ro totalSize                  string
-   |        |  |  |  +--ro numberOfClientInstances?   string
-   |        |  |  |  +--ro maximumClientSize?         string
-   |        |  |  |  +--ro numberingRange?            string
-   |        |  |  +--ro availableCapacity
-   |        |  |  |  +--ro totalSize                  string
-   |        |  |  |  +--ro numberOfClientInstances?   string
-   |        |  |  |  +--ro maximumClientSize?         string
-   |        |  |  |  +--ro numberingRange?            string
-   |        |  |  +--ro capacityAssignedToUserView* [totalSize]
-   |        |  |  |  +--ro totalSize                  string
-   |        |  |  |  +--ro numberOfClientInstances?   string
-   |        |  |  |  +--ro maximumClientSize?         string
-   |        |  |  |  +--ro numberingRange?            string
-   |        |  |  +--ro capacityInteractionAlgorithm?   string
-   |        |  +--ro _transferIntegrity_Pac!
-   |        |     +--ro errorCharacteristic?                    string
-   |        |     +--ro lossCharacteristic?                     string
-   |        |     +--ro repeatDeliveryCharacteristic?           string
-   |        |     +--ro deliveryOrderCharacteristic?            string
-   |        |     +--ro unavailableTimeCharacteristic           string
-   |        |     +--ro serverIntegrityProcessCharacteristic?   string
-   |        +--ro servicePort* [uuid]
-   |        |  +--ro uuid               TapiModule-TypeDefinitions:UniversalId
-   |        |  +--ro serviceEndPoint?   -> /TapiModule-ObjectClasses:Tapi_Context/serviceEndPoint/uuid
-   |        |  +--ro role?              TapiModule-TypeDefinitions:EndRole
-   |        |  +--ro direction?         TapiModule-TypeDefinitions:EndDirection
-   |        +--ro layerProtocolName?        TapiModule-TypeDefinitions:LayerProtocolName
-   |        +--ro _state_Pac!
-   |        |  +--ro operationalState?      TapiModule-TypeDefinitions:LifecycleState
-   |        |  +--ro administrativeState?   TapiModule-TypeDefinitions:AdministrativeState
-   |        |  +--ro lifecycleState?        TapiModule-TypeDefinitions:LifecycleState
-   |        +--ro _transferCost_Pac!
-   |        |  +--ro costCharacteristic* [costName]
-   |        |     +--ro costName         string
-   |        |     +--ro costValue        string
-   |        |     +--ro costAlgorithm?   string
-   |        +--ro _transferTiming_Pac!
-   |        |  +--ro fixedLatencyCharacteristic    string
-   |        |  +--ro jitterCharacteristic?         string
-   |        |  +--ro wanderCharacteristic?         string
-   |        |  +--ro queuingLatency* [trafficProperty]
-   |        |     +--ro trafficProperty                  string
-   |        |     +--ro latencyForTrafficWithProperty    string
-   |        +--ro _transferCapacity_Pac!
-   |        |  +--ro totalPotentialCapacity
-   |        |  |  +--ro totalSize                  string
-   |        |  |  +--ro numberOfClientInstances?   string
-   |        |  |  +--ro maximumClientSize?         string
-   |        |  |  +--ro numberingRange?            string
-   |        |  +--ro availableCapacity
-   |        |  |  +--ro totalSize                  string
-   |        |  |  +--ro numberOfClientInstances?   string
-   |        |  |  +--ro maximumClientSize?         string
-   |        |  |  +--ro numberingRange?            string
-   |        |  +--ro capacityAssignedToUserView* [totalSize]
-   |        |  |  +--ro totalSize                  string
-   |        |  |  +--ro numberOfClientInstances?   string
-   |        |  |  +--ro maximumClientSize?         string
-   |        |  |  +--ro numberingRange?            string
-   |        |  +--ro capacityInteractionAlgorithm?   string
-   |        +--ro _transferIntegrity_Pac!
-   |           +--ro errorCharacteristic?                    string
-   |           +--ro lossCharacteristic?                     string
-   |           +--ro repeatDeliveryCharacteristic?           string
-   |           +--ro deliveryOrderCharacteristic?            string
-   |           +--ro unavailableTimeCharacteristic           string
-   |           +--ro serverIntegrityProcessCharacteristic?   string
+   |        +--rw _servicePort* [localId]
+   |        |  +--rw _serviceEndPoint?   -> /Tapi_ServiceEndPoint/uuid
+   |        |  +--rw localId             string
+   |        |  +--rw role?               TapiModule-TypeDefinitions:Tapi_PortRole
+   |        |  +--rw direction?          TapiModule-TypeDefinitions:Tapi_PortDirection
+   |        |  +--rw serviceLayer?       TapiModule-TypeDefinitions:Tapi_LayerProtocolName
+   |        +--rw _connection* [uuid]
+   |        |  +--rw _connectionPort* [localId]
+   |        |  |  +--rw _connectionEndPoint?   -> /Tapi_ConnectionEndPoint/uuid
+   |        |  |  +--rw localId                string
+   |        |  |  +--rw role?                  TapiModule-TypeDefinitions:Tapi_PortRole
+   |        |  |  +--rw direction?             TapiModule-TypeDefinitions:Tapi_PortDirection
+   |        |  +--rw _path* [localId]
+   |        |  |  +--rw _lowerConnection*   -> /Tapi_ConnectivityService/_connection/uuid
+   |        |  |  +--rw localId             string
+   |        |  +--rw _node?               -> /Tapi_Topology/_node/uuid
+   |        |  +--rw uuid                 TapiModule-TypeDefinitions:Tapi_UniversalId
+   |        |  +--rw name* [valueName]
+   |        |  |  +--rw valueName                    string
+   |        |  |  +--rw value?                       string
+   |        |  |  +--rw _nameAndValueAuthorityRef?   string
+   |        |  +--rw label* [valueName]
+   |        |  |  +--rw valueName                    string
+   |        |  |  +--rw value?                       string
+   |        |  |  +--rw _nameAndValueAuthorityRef?   string
+   |        |  +--rw extension* [valueName]
+   |        |  |  +--rw valueName                    string
+   |        |  |  +--rw value?                       string
+   |        |  |  +--rw _nameAndValueAuthorityRef?   string
+   |        |  +--rw layerProtocolName?   TapiModule-TypeDefinitions:Tapi_LayerProtocolName
+   |        |  +--rw direction?           TapiModule-TypeDefinitions:Tapi_ForwardingDirection
+   |        |  +--rw operationalState?    TapiModule-TypeDefinitions:Tapi_OperationalState
+   |        |  +--rw lifecycleState?      TapiModule-TypeDefinitions:Tapi_LifecycleState
+   |        +--ro uuid?                  TapiModule-TypeDefinitions:Tapi_UniversalId
+   |        +--rw name* [valueName]
+   |        |  +--rw valueName                    string
+   |        |  +--rw value?                       string
+   |        |  +--rw _nameAndValueAuthorityRef?   string
+   |        +--rw label* [valueName]
+   |        |  +--rw valueName                    string
+   |        |  +--rw value?                       string
+   |        |  +--rw _nameAndValueAuthorityRef?   string
+   |        +--rw extension* [valueName]
+   |        |  +--rw valueName                    string
+   |        |  +--rw value?                       string
+   |        |  +--rw _nameAndValueAuthorityRef?   string
+   |        +--ro layerProtocolName?     TapiModule-TypeDefinitions:Tapi_LayerProtocolName
+   |        +--ro direction?             TapiModule-TypeDefinitions:Tapi_ForwardingDirection
+   |        +--ro administrativeState?   TapiModule-TypeDefinitions:Tapi_AdministrativeState
+   |        +--ro operationalState?      TapiModule-TypeDefinitions:Tapi_OperationalState
+   |        +--ro lifecycleState?        TapiModule-TypeDefinitions:Tapi_LifecycleState
    +---x getServiceEndPointList
+   |  +--ro output
+   |     +--ro serviceEPList*
+   |        +--rw _layerProtocol* [localId]
+   |        |  +--rw _lpSpec?                string
+   |        |  +--rw localId                 string
+   |        |  +--rw layerProtocolName?      TapiModule-TypeDefinitions:Tapi_LayerProtocolName
+   |        |  +--rw terminationDirection?   TapiModule-TypeDefinitions:Tapi_TerminationDirection
+   |        |  +--rw terminationState?       TapiModule-TypeDefinitions:Tapi_TerminationState
+   |        +--ro _mappedNodeEdgePoint*   -> /Tapi_Topology/_node/_ownedNodeEdgePoint/uuid
+   |        +--ro uuid?                   TapiModule-TypeDefinitions:Tapi_UniversalId
+   |        +--rw label* [valueName]
+   |        |  +--rw valueName                    string
+   |        |  +--rw value?                       string
+   |        |  +--rw _nameAndValueAuthorityRef?   string
+   |        +--rw name* [valueName]
+   |        |  +--rw valueName                    string
+   |        |  +--rw value?                       string
+   |        |  +--rw _nameAndValueAuthorityRef?   string
+   |        +--rw extension* [valueName]
+   |        |  +--rw valueName                    string
+   |        |  +--rw value?                       string
+   |        |  +--rw _nameAndValueAuthorityRef?   string
+   |        +--ro direction?              TapiModule-TypeDefinitions:Tapi_TerminationDirection
+   |        +--ro operationalState?       TapiModule-TypeDefinitions:Tapi_OperationalState
+   +---x createConnectivityService
+   |  +---w input
+   |  |  +---w servicePort*
+   |  |  |  +---w _serviceEndPoint?   -> /Tapi_ServiceEndPoint/uuid
+   |  |  |  +---w localId?            string
+   |  |  |  +---w role?               TapiModule-TypeDefinitions:Tapi_PortRole
+   |  |  |  +---w direction?          TapiModule-TypeDefinitions:Tapi_PortDirection
+   |  |  |  +---w serviceLayer?       TapiModule-TypeDefinitions:Tapi_LayerProtocolName
+   |  |  +---w connConstraint
+   |  |  |  +---w serviceType?             TapiModule-TypeDefinitions:Tapi_ServiceType
+   |  |  |  +---w requestedCapacity
+   |  |  |  |  +---w totalSize?               string
+   |  |  |  |  +---w maximumUsageInstances?   string
+   |  |  |  |  +---w maximumUsageSize?        string
+   |  |  |  |  +---w numberingRange?          string
+   |  |  |  +---w serviceLevel?            string
+   |  |  |  +---w serviceLayer*            TapiModule-TypeDefinitions:Tapi_LayerProtocolName
+   |  |  |  +---w costCharacteristic* [costName]
+   |  |  |  |  +---w costName         string
+   |  |  |  |  +---w costValue?       string
+   |  |  |  |  +---w costAlgorithm?   string
+   |  |  |  +---w riskCharacteristic* [riskCharacteristicName]
+   |  |  |  |  +---w riskCharacteristicName    string
+   |  |  |  |  +---w riskIdentifierList*       string
+   |  |  |  +---w latencyCharacteristic* [trafficPropertyName]
+   |  |  |  |  +---w trafficPropertyName    string
+   |  |  |  |  +---w latencyValue?          string
+   |  |  |  +---w includePath*             -> /Tapi_Path/uuid
+   |  |  |  +---w excludePath*             -> /Tapi_Path/uuid
+   |  |  +---w connSchedule
+   |  |     +---w startTime?   string
+   |  |     +---w endTime?     string
+   |  +--ro output
+   |     +--ro connService
+   |        +--rw _servicePort* [localId]
+   |        |  +--rw _serviceEndPoint?   -> /Tapi_ServiceEndPoint/uuid
+   |        |  +--rw localId             string
+   |        |  +--rw role?               TapiModule-TypeDefinitions:Tapi_PortRole
+   |        |  +--rw direction?          TapiModule-TypeDefinitions:Tapi_PortDirection
+   |        |  +--rw serviceLayer?       TapiModule-TypeDefinitions:Tapi_LayerProtocolName
+   |        +--rw _connection* [uuid]
+   |        |  +--rw _connectionPort* [localId]
+   |        |  |  +--rw _connectionEndPoint?   -> /Tapi_ConnectionEndPoint/uuid
+   |        |  |  +--rw localId                string
+   |        |  |  +--rw role?                  TapiModule-TypeDefinitions:Tapi_PortRole
+   |        |  |  +--rw direction?             TapiModule-TypeDefinitions:Tapi_PortDirection
+   |        |  +--rw _path* [localId]
+   |        |  |  +--rw _lowerConnection*   -> /Tapi_ConnectivityService/_connection/uuid
+   |        |  |  +--rw localId             string
+   |        |  +--rw _node?               -> /Tapi_Topology/_node/uuid
+   |        |  +--rw uuid                 TapiModule-TypeDefinitions:Tapi_UniversalId
+   |        |  +--rw name* [valueName]
+   |        |  |  +--rw valueName                    string
+   |        |  |  +--rw value?                       string
+   |        |  |  +--rw _nameAndValueAuthorityRef?   string
+   |        |  +--rw label* [valueName]
+   |        |  |  +--rw valueName                    string
+   |        |  |  +--rw value?                       string
+   |        |  |  +--rw _nameAndValueAuthorityRef?   string
+   |        |  +--rw extension* [valueName]
+   |        |  |  +--rw valueName                    string
+   |        |  |  +--rw value?                       string
+   |        |  |  +--rw _nameAndValueAuthorityRef?   string
+   |        |  +--rw layerProtocolName?   TapiModule-TypeDefinitions:Tapi_LayerProtocolName
+   |        |  +--rw direction?           TapiModule-TypeDefinitions:Tapi_ForwardingDirection
+   |        |  +--rw operationalState?    TapiModule-TypeDefinitions:Tapi_OperationalState
+   |        |  +--rw lifecycleState?      TapiModule-TypeDefinitions:Tapi_LifecycleState
+   |        +--ro uuid?                  TapiModule-TypeDefinitions:Tapi_UniversalId
+   |        +--rw name* [valueName]
+   |        |  +--rw valueName                    string
+   |        |  +--rw value?                       string
+   |        |  +--rw _nameAndValueAuthorityRef?   string
+   |        +--rw label* [valueName]
+   |        |  +--rw valueName                    string
+   |        |  +--rw value?                       string
+   |        |  +--rw _nameAndValueAuthorityRef?   string
+   |        +--rw extension* [valueName]
+   |        |  +--rw valueName                    string
+   |        |  +--rw value?                       string
+   |        |  +--rw _nameAndValueAuthorityRef?   string
+   |        +--ro layerProtocolName?     TapiModule-TypeDefinitions:Tapi_LayerProtocolName
+   |        +--ro direction?             TapiModule-TypeDefinitions:Tapi_ForwardingDirection
+   |        +--ro administrativeState?   TapiModule-TypeDefinitions:Tapi_AdministrativeState
+   |        +--ro operationalState?      TapiModule-TypeDefinitions:Tapi_OperationalState
+   |        +--ro lifecycleState?        TapiModule-TypeDefinitions:Tapi_LifecycleState
+   +---x updateConnectivityService
+   |  +---w input
+   |  |  +---w serviceIdOrName?   string
+   |  |  +---w connConstraint
+   |  |  |  +---w serviceType?             TapiModule-TypeDefinitions:Tapi_ServiceType
+   |  |  |  +---w requestedCapacity
+   |  |  |  |  +---w totalSize?               string
+   |  |  |  |  +---w maximumUsageInstances?   string
+   |  |  |  |  +---w maximumUsageSize?        string
+   |  |  |  |  +---w numberingRange?          string
+   |  |  |  +---w serviceLevel?            string
+   |  |  |  +---w serviceLayer*            TapiModule-TypeDefinitions:Tapi_LayerProtocolName
+   |  |  |  +---w costCharacteristic* [costName]
+   |  |  |  |  +---w costName         string
+   |  |  |  |  +---w costValue?       string
+   |  |  |  |  +---w costAlgorithm?   string
+   |  |  |  +---w riskCharacteristic* [riskCharacteristicName]
+   |  |  |  |  +---w riskCharacteristicName    string
+   |  |  |  |  +---w riskIdentifierList*       string
+   |  |  |  +---w latencyCharacteristic* [trafficPropertyName]
+   |  |  |  |  +---w trafficPropertyName    string
+   |  |  |  |  +---w latencyValue?          string
+   |  |  |  +---w includePath*             -> /Tapi_Path/uuid
+   |  |  |  +---w excludePath*             -> /Tapi_Path/uuid
+   |  |  +---w connSchedule
+   |  |     +---w startTime?   string
+   |  |     +---w endTime?     string
+   |  +--ro output
+   |     +--ro connService
+   |        +--rw _servicePort* [localId]
+   |        |  +--rw _serviceEndPoint?   -> /Tapi_ServiceEndPoint/uuid
+   |        |  +--rw localId             string
+   |        |  +--rw role?               TapiModule-TypeDefinitions:Tapi_PortRole
+   |        |  +--rw direction?          TapiModule-TypeDefinitions:Tapi_PortDirection
+   |        |  +--rw serviceLayer?       TapiModule-TypeDefinitions:Tapi_LayerProtocolName
+   |        +--rw _connection* [uuid]
+   |        |  +--rw _connectionPort* [localId]
+   |        |  |  +--rw _connectionEndPoint?   -> /Tapi_ConnectionEndPoint/uuid
+   |        |  |  +--rw localId                string
+   |        |  |  +--rw role?                  TapiModule-TypeDefinitions:Tapi_PortRole
+   |        |  |  +--rw direction?             TapiModule-TypeDefinitions:Tapi_PortDirection
+   |        |  +--rw _path* [localId]
+   |        |  |  +--rw _lowerConnection*   -> /Tapi_ConnectivityService/_connection/uuid
+   |        |  |  +--rw localId             string
+   |        |  +--rw _node?               -> /Tapi_Topology/_node/uuid
+   |        |  +--rw uuid                 TapiModule-TypeDefinitions:Tapi_UniversalId
+   |        |  +--rw name* [valueName]
+   |        |  |  +--rw valueName                    string
+   |        |  |  +--rw value?                       string
+   |        |  |  +--rw _nameAndValueAuthorityRef?   string
+   |        |  +--rw label* [valueName]
+   |        |  |  +--rw valueName                    string
+   |        |  |  +--rw value?                       string
+   |        |  |  +--rw _nameAndValueAuthorityRef?   string
+   |        |  +--rw extension* [valueName]
+   |        |  |  +--rw valueName                    string
+   |        |  |  +--rw value?                       string
+   |        |  |  +--rw _nameAndValueAuthorityRef?   string
+   |        |  +--rw layerProtocolName?   TapiModule-TypeDefinitions:Tapi_LayerProtocolName
+   |        |  +--rw direction?           TapiModule-TypeDefinitions:Tapi_ForwardingDirection
+   |        |  +--rw operationalState?    TapiModule-TypeDefinitions:Tapi_OperationalState
+   |        |  +--rw lifecycleState?      TapiModule-TypeDefinitions:Tapi_LifecycleState
+   |        +--ro uuid?                  TapiModule-TypeDefinitions:Tapi_UniversalId
+   |        +--rw name* [valueName]
+   |        |  +--rw valueName                    string
+   |        |  +--rw value?                       string
+   |        |  +--rw _nameAndValueAuthorityRef?   string
+   |        +--rw label* [valueName]
+   |        |  +--rw valueName                    string
+   |        |  +--rw value?                       string
+   |        |  +--rw _nameAndValueAuthorityRef?   string
+   |        +--rw extension* [valueName]
+   |        |  +--rw valueName                    string
+   |        |  +--rw value?                       string
+   |        |  +--rw _nameAndValueAuthorityRef?   string
+   |        +--ro layerProtocolName?     TapiModule-TypeDefinitions:Tapi_LayerProtocolName
+   |        +--ro direction?             TapiModule-TypeDefinitions:Tapi_ForwardingDirection
+   |        +--ro administrativeState?   TapiModule-TypeDefinitions:Tapi_AdministrativeState
+   |        +--ro operationalState?      TapiModule-TypeDefinitions:Tapi_OperationalState
+   |        +--ro lifecycleState?        TapiModule-TypeDefinitions:Tapi_LifecycleState
+   +---x deleteConnectivityService
+      +---w input
+      |  +---w serviceIdOrName?   string
       +--ro output
-         +--ro serviceEPList*
-            +--ro uuid?               TapiModule-TypeDefinitions:UniversalId
-            +--ro layerProtocol* [layerProtocol]
-            |  +--ro layerProtocol    string
-            +--ro operationalState?   TapiModule-TypeDefinitions:OperationalState
-            +--ro mappedNodeEp*       -> /TapiModule-ObjectClasses:Tapi_Context/topology/node/nodeEdgePoint/uuid
+         +--ro connService
+            +--rw _servicePort* [localId]
+            |  +--rw _serviceEndPoint?   -> /Tapi_ServiceEndPoint/uuid
+            |  +--rw localId             string
+            |  +--rw role?               TapiModule-TypeDefinitions:Tapi_PortRole
+            |  +--rw direction?          TapiModule-TypeDefinitions:Tapi_PortDirection
+            |  +--rw serviceLayer?       TapiModule-TypeDefinitions:Tapi_LayerProtocolName
+            +--rw _connection* [uuid]
+            |  +--rw _connectionPort* [localId]
+            |  |  +--rw _connectionEndPoint?   -> /Tapi_ConnectionEndPoint/uuid
+            |  |  +--rw localId                string
+            |  |  +--rw role?                  TapiModule-TypeDefinitions:Tapi_PortRole
+            |  |  +--rw direction?             TapiModule-TypeDefinitions:Tapi_PortDirection
+            |  +--rw _path* [localId]
+            |  |  +--rw _lowerConnection*   -> /Tapi_ConnectivityService/_connection/uuid
+            |  |  +--rw localId             string
+            |  +--rw _node?               -> /Tapi_Topology/_node/uuid
+            |  +--rw uuid                 TapiModule-TypeDefinitions:Tapi_UniversalId
+            |  +--rw name* [valueName]
+            |  |  +--rw valueName                    string
+            |  |  +--rw value?                       string
+            |  |  +--rw _nameAndValueAuthorityRef?   string
+            |  +--rw label* [valueName]
+            |  |  +--rw valueName                    string
+            |  |  +--rw value?                       string
+            |  |  +--rw _nameAndValueAuthorityRef?   string
+            |  +--rw extension* [valueName]
+            |  |  +--rw valueName                    string
+            |  |  +--rw value?                       string
+            |  |  +--rw _nameAndValueAuthorityRef?   string
+            |  +--rw layerProtocolName?   TapiModule-TypeDefinitions:Tapi_LayerProtocolName
+            |  +--rw direction?           TapiModule-TypeDefinitions:Tapi_ForwardingDirection
+            |  +--rw operationalState?    TapiModule-TypeDefinitions:Tapi_OperationalState
+            |  +--rw lifecycleState?      TapiModule-TypeDefinitions:Tapi_LifecycleState
+            +--ro uuid?                  TapiModule-TypeDefinitions:Tapi_UniversalId
+            +--rw name* [valueName]
+            |  +--rw valueName                    string
+            |  +--rw value?                       string
+            |  +--rw _nameAndValueAuthorityRef?   string
+            +--rw label* [valueName]
+            |  +--rw valueName                    string
+            |  +--rw value?                       string
+            |  +--rw _nameAndValueAuthorityRef?   string
+            +--rw extension* [valueName]
+            |  +--rw valueName                    string
+            |  +--rw value?                       string
+            |  +--rw _nameAndValueAuthorityRef?   string
+            +--ro layerProtocolName?     TapiModule-TypeDefinitions:Tapi_LayerProtocolName
+            +--ro direction?             TapiModule-TypeDefinitions:Tapi_ForwardingDirection
+            +--ro administrativeState?   TapiModule-TypeDefinitions:Tapi_AdministrativeState
+            +--ro operationalState?      TapiModule-TypeDefinitions:Tapi_OperationalState
+            +--ro lifecycleState?        TapiModule-TypeDefinitions:Tapi_LifecycleState
