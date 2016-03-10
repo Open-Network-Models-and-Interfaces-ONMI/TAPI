@@ -1,0 +1,654 @@
+module TapiModule-ObjectClasses {
+    namespace 'urn:onf:TapiModule-ObjectClasses';
+    prefix TapiModule-ObjectClasses;
+    import TapiModule-TypeDefinitions {
+        prefix TapiModule-TypeDefinitions;
+    }
+    organization "ONF T-API Group";
+    contact "mailto:info@opennetworking.org";
+    description
+        "This module contains Transport API Object Classes. It is part of the T-API specification.
+        Authors List:
+            Ricard Vilalta (CTTC)
+            Victor López (Telefónica)
+            (T-API Team)";
+    revision 2016-01-19 {
+        description
+            "First version for Transport API Object Classes";
+    }
+    grouping LayerProtocol {
+        leaf layerProtocol {
+            type string;
+        }
+    }
+    grouping NameAndValue {
+        leaf value {
+            type string;
+        }
+        leaf valueName {
+            type string;
+        }
+    }  
+    grouping Capacity {
+        leaf totalSize {
+            type string;
+            mandatory true;
+        }
+        leaf numberOfClientInstances {
+            type string;
+        }
+        leaf maximumClientSize {
+            type string;
+        }
+        leaf numberingRange {
+            type string;
+        }
+    }
+    grouping CostCharacteristics {
+        leaf costName {
+            type string;
+            mandatory true;
+        }
+        leaf costValue {
+            type string;
+            mandatory true;
+        }
+        leaf costAlgorithm {
+            type string; 
+        }
+    }
+    grouping RiskCharacteristic {
+        leaf riskCharacteristicName {
+            type string;
+            mandatory true;
+        }
+        list riskIdentifierList {
+            key "ristIdentifier";
+            leaf ristIdentifier{
+                type string;
+            }
+            min-elements "1";
+        }
+    }
+    grouping ValidationMechanism {
+        leaf validationMechanism {
+            type string;
+            mandatory true;
+        }
+        leaf layerProtocolAdjacencyValidated {
+            type string;
+            mandatory true;
+        }
+        leaf validationRobustness {
+            type string;
+            mandatory true;
+        }
+    }
+    grouping QueuingLatency {
+        leaf trafficProperty {
+            type string;
+            mandatory true;
+        }
+        leaf latencyForTrafficWithProperty {
+            type string;
+            mandatory true;
+        }
+    }
+    grouping State_Pac {
+        leaf operationalState {
+            type TapiModule-TypeDefinitions:LifecycleState;
+        }
+        leaf administrativeState {
+            type TapiModule-TypeDefinitions:AdministrativeState;
+        }
+        leaf lifecycleState {
+            type TapiModule-TypeDefinitions:LifecycleState;
+        }  
+    }
+    grouping RiskParameter_Pac {
+        list riskCharacteristic {
+            key "riskCharacteristicName";
+            uses RiskCharacteristic;
+        }
+    }
+    grouping TransferCost_Pac {
+        list costCharacteristic {
+            key "costName";
+            uses CostCharacteristics;
+            min-elements "1";
+        }
+    }
+    grouping TransferTiming_Pac {
+        leaf fixedLatencyCharacteristic {
+            type string;
+            mandatory true;
+        }
+        leaf jitterCharacteristic {
+            type string;
+        }
+        leaf wanderCharacteristic {
+            type string;
+        }
+        list queuingLatency {
+            key "trafficProperty";
+            uses QueuingLatency;
+        }
+    }
+    grouping TransferIntegrity_Pac {
+        leaf errorCharacteristic {
+            type string;
+        }
+        leaf lossCharacteristic {
+            type string;
+        }
+        leaf repeatDeliveryCharacteristic {
+            type string;
+        }
+        leaf deliveryOrderCharacteristic {
+            type string;
+        }
+        leaf unavailableTimeCharacteristic {
+            type string;
+            mandatory true;
+        }
+        leaf serverIntegrityProcessCharacteristic {
+            type string;
+        }
+    }
+    grouping TransferCapacity_Pac {
+        container totalPotentialCapacity {
+            uses Capacity;
+        }
+        container availableCapacity {
+            uses Capacity;
+        }
+        list capacityAssignedToUserView {
+            key "totalSize";
+            uses Capacity;
+        }
+        leaf capacityInteractionAlgorithm {
+            type string;
+        }
+    }
+    grouping Validation_Pac {
+        list validationMechanism {
+            key "validationMechanism";
+            uses ValidationMechanism;
+            min-elements "1";
+        }
+    }
+    grouping LayerProtocolTransition_Pac {
+        list transitionedLayerProtocol {
+            key "transitionedLayerProtocol";
+            leaf transitionedLayerProtocol{
+                type TapiModule-TypeDefinitions:LayerProtocolName;
+            }
+        }
+        leaf-list nodeEdgePoint {
+            type leafref {
+                path "/TapiModule-ObjectClasses:Tapi_Context/TapiModule-ObjectClasses:topology/TapiModule-ObjectClasses:node/TapiModule-ObjectClasses:nodeEdgePoint/TapiModule-ObjectClasses:uuid";
+            }
+        }
+    }    
+    grouping Tapi_NodeEdgePoint {
+        description
+            "Node-Edge-Point - represents the node-facing aspect of the edge-port functions for accessing the 
+            forwarding capabilities provided by the Node. 
+            Node-Edge-Point provides an encapsulation of addressing, mapping, termination, adaptation and OAM 
+            functions of one or more transport layers (including circuit and packet forms) performed at the entry/
+            exit points of Node. ";
+        leaf uuid{
+            type TapiModule-TypeDefinitions:UniversalId;
+        }
+        list layerProtocol{ 
+            key "layerProtocol";
+            uses LayerProtocol;
+        }
+        leaf operationalState {
+            type TapiModule-TypeDefinitions:OperationalState;
+        }
+        leaf physicalPortReference {
+            type string;
+        }
+    }
+    grouping Tapi_LinkPort {
+        description
+            "The association of the Link to LTPs is made via LinkPort.
+            The LinkPort object class models the access to the Link function. 
+            The traffic forwarding between the associated LinkPorts of the Link depends upon the type of Link.  
+            In cases where there is resilience the LinkPort may convey the resilience role of the access to the Link. 
+            The Link can be considered as a component and the LinkPort as a Port on that component";
+        leaf uuid{
+            type TapiModule-TypeDefinitions:UniversalId;
+        }
+        leaf-list nodeEdgePoint {
+            type leafref {
+                path "/TapiModule-ObjectClasses:Tapi_Context/TapiModule-ObjectClasses:topology/TapiModule-ObjectClasses:node/TapiModule-ObjectClasses:nodeEdgePoint/TapiModule-ObjectClasses:uuid";
+            }
+            max-elements "1";
+            min-elements "1";      
+        }
+        leaf role {
+            type TapiModule-TypeDefinitions:EndRole;
+        }
+        leaf direction {
+            type TapiModule-TypeDefinitions:EndDirection;
+        }
+        list localId {
+            key "valueName";
+            uses NameAndValue;
+            min-elements "1";
+        }
+    }
+    
+    grouping Tapi_Node {
+        description
+            "Representation of the opaque forwarding-aspects of the Forwarding-Domain (FD) 
+            Node describes the edge ports of the FD (Node-Edge-Point) and the forwarding capabilities between 
+            those edge ports.";
+        leaf uuid{
+            type TapiModule-TypeDefinitions:UniversalId;
+        }
+        leaf-list encapTopology {
+            type leafref {
+                path "/TapiModule-ObjectClasses:Tapi_Context/TapiModule-ObjectClasses:topology/TapiModule-ObjectClasses:uuid";
+            }
+            max-elements "1";
+        }
+        list nodeEdgePoint { 
+            key "uuid";
+            uses Tapi_NodeEdgePoint;     
+        }
+        list name {
+            key "valueName";
+            uses NameAndValue;
+            min-elements "1";
+        }
+        list label {
+            key "valueName";
+            uses NameAndValue;
+        }
+        list extension {
+            key "valueName";
+            uses NameAndValue;
+        }    
+        list layerProtocolName {
+            key "layerProtocolName";
+            leaf layerProtocolName {
+                type TapiModule-TypeDefinitions:LayerProtocolName;
+            }
+            min-elements "1";
+        }
+        leaf-list connection {
+            type leafref {
+                path "/TapiModule-ObjectClasses:Tapi_Context/TapiModule-ObjectClasses:connectivityService/TapiModule-ObjectClasses:connection/TapiModule-ObjectClasses:uuid";
+            }
+        }
+        container _state_Pac {
+            presence "<condition for State_Pac attributes>";
+            uses State_Pac;
+        }
+        container _riskParameter_Pac {
+            presence "<condition for RiskParameter_Pac attributes>";
+            uses RiskParameter_Pac;
+        }
+        container _transferCost_Pac {
+            presence "<condition for TransferCost_Pac attributes>";
+            uses TransferCost_Pac;
+        }
+        container _transferTiming_Pac {
+            presence "<condition for TransferTiming_Pac attributes>";
+            uses TransferTiming_Pac;
+        }
+        container _transferCapacity_Pac {
+            presence "<condition for TransferCapacity_Pac attributes>";
+            uses TransferCapacity_Pac;
+        }
+        container _transferIntegrity_Pac {
+            presence "<condition for TransferIntegrity_Pac attributes>";
+            uses TransferIntegrity_Pac;
+        }
+        container _validation_Pac {
+            presence "<condition for Validation_Pac attributes>";    
+            uses Validation_Pac;
+        }
+        container _layerTransition_Pac {
+            presence "<condition for LayerProtocolTransition_Pac attributes>";
+            uses LayerProtocolTransition_Pac;
+        }
+    }
+    grouping Tapi_Link {
+        description
+            "Representation of the effective adjacency between two or more associated Nodes in a Topology. 
+            Link is terminated by Node-Edge-Points of the associated Nodes. The Node-Edge-Points have a specific    
+            role with respect to the Link";
+        leaf uuid{
+            type TapiModule-TypeDefinitions:UniversalId;
+        }
+        list linkPort {
+            key "uuid";
+            uses Tapi_LinkPort;
+        }
+        leaf-list node{
+            type leafref {
+                path "/TapiModule-ObjectClasses:Tapi_Context/TapiModule-ObjectClasses:topology/TapiModule-ObjectClasses:node/TapiModule-ObjectClasses:uuid";
+            }
+        }
+        list name {
+            key "valueName";
+            uses NameAndValue;
+            min-elements "1";
+        }
+        list label {
+            key "valueName";
+            uses NameAndValue;
+        }
+        list extension {
+            key "valueName";
+            uses NameAndValue;
+        }
+        list layerProtocolName {
+            key "layerProtocolName";
+            leaf layerProtocolName {
+                type TapiModule-TypeDefinitions:LayerProtocolName;
+            }
+            min-elements "1";
+        }
+        leaf linkDirection {
+            type TapiModule-TypeDefinitions:ForwardingDirection;
+        }
+        container _state_Pac {
+            presence "<condition for State_Pac attributes>";
+            uses State_Pac;
+        }
+        container _riskParameter_Pac {
+            presence "<condition for RiskParameter_Pac attributes>";
+            uses RiskParameter_Pac;
+        }
+        container _transferCost_Pac {
+            presence "<condition for TransferCost_Pac attributes>";
+            uses TransferCost_Pac;
+        }
+        container _transferTiming_Pac {
+            presence "<condition for TransferTiming_Pac attributes>";
+            uses TransferTiming_Pac;
+        }
+        container _transferCapacity_Pac {
+            presence "<condition for TransferCapacity_Pac attributes>";
+            uses TransferCapacity_Pac;
+        }
+        container _transferIntegrity_Pac {
+            presence "<condition for TransferIntegrity_Pac attributes>";
+            uses TransferIntegrity_Pac;
+        }
+        container _validation_Pac {
+            presence "<condition for Validation_Pac attributes>";    
+            uses Validation_Pac;
+        }
+        container _layerTransition_Pac {
+            presence "<condition for LayerProtocolTransition_Pac attributes>";
+            uses LayerProtocolTransition_Pac;
+        }
+    }
+    grouping Tapi_Topology {
+        description
+            "Representation of the transparent topological-aspects of a Forwarding-Domain (FD).
+            Topology describes the underlying topological network of Nodes and Links that enable the forwarding 
+            function provided by the FD.";
+        leaf uuid{
+            type TapiModule-TypeDefinitions:UniversalId;
+        }
+        list node {
+            key "uuid";
+            uses Tapi_Node;
+        }
+        list link {
+            key "uuid";
+            uses Tapi_Link;
+        }
+        list name {
+            key "valueName";
+            uses NameAndValue;
+            min-elements "1";
+        }
+        list label {
+            key "valueName";
+            uses NameAndValue;
+        }
+        list extension {
+            key "valueName";
+            uses NameAndValue;
+        }    
+        list layerProtocolName {
+            key "layerProtocolName";
+            leaf layerProtocolName {
+                type TapiModule-TypeDefinitions:LayerProtocolName;
+            }
+        }
+    }
+    grouping Tapi_ServiceEndPoint {
+        description
+            "Service-End-Point  - represents the outward-facing aspect of the edge-port functions for accessing the 
+            forwarding capabilities provided by Node.
+            Service-End-Point provides a limited, simplified view of interest to external clients (e.g. client 
+            addressing, capacity, resource availability, etc), that enable the clients to make a connectivity 
+            service request without the need to understand the provider network internals.
+            Service-End-Point have a mapping relationship (one-to-one, one-to-many, many-to-many) to Node-Edge-
+            Points";
+        leaf uuid{
+            type TapiModule-TypeDefinitions:UniversalId;
+        }
+        list layerProtocol {
+            key "layerProtocol";
+            uses LayerProtocol;
+            min-elements "1";
+        }
+        leaf operationalState {
+            type TapiModule-TypeDefinitions:OperationalState;
+        }
+        leaf-list mappedNodeEp {
+            type leafref {
+                path "/TapiModule-ObjectClasses:Tapi_Context/TapiModule-ObjectClasses:topology/TapiModule-ObjectClasses:node/TapiModule-ObjectClasses:nodeEdgePoint/TapiModule-ObjectClasses:uuid";
+            }
+        }
+    }
+    grouping Tapi_ConnectionEndPoint {
+        description
+            "Connection-End-Point - represents the ingress/egress port functions  for accessing to the forwarding   
+            function provided by the Connection.
+            Connection-End-Point have client-server relationship with Node-Edge-Points";
+        leaf uuid{
+            type TapiModule-TypeDefinitions:UniversalId;
+        }
+        list layerProtocol{
+            key "layerProtocol";
+            uses LayerProtocol;
+            min-elements "1";
+        }
+        leaf operationalState {
+            type TapiModule-TypeDefinitions:OperationalState;
+        }
+        list clientNodeEp {
+            key "uuid";
+            uses Tapi_NodeEdgePoint;
+        }
+        container serverNodeEp {
+            uses Tapi_NodeEdgePoint;
+        }
+    }
+    grouping Tapi_ConnectionPort {
+        description
+            "The association of the FC to LTPs is made via EndPoints.
+            The EndPoint (EP) object class models the access to the FC function. 
+            The traffic forwarding between the associated EPs of the FC depends upon the type of FC and may be associated 
+            with  FcSwitch object instances.  
+            In cases where there is resilience the EndPoint may convey the resilience role of the access to the FC. 
+            It can represent a protected (resilient/reliable) point or a protecting (unreliable working or protection) point.
+            The EP replaces the Protection Unit of a traditional protection model. 
+            The ForwadingConstruct can be considered as a component and the EndPoint as a Port on that component";
+        leaf uuid{
+            type TapiModule-TypeDefinitions:UniversalId;
+        }
+        container connectionEndPoint {
+            uses Tapi_ConnectionEndPoint;
+        }
+        leaf role {
+            type TapiModule-TypeDefinitions:EndRole;
+        }
+        leaf direction {
+            type TapiModule-TypeDefinitions:EndDirection;
+        }
+    }
+    grouping Tapi_ServicePort {
+        leaf uuid{
+            type TapiModule-TypeDefinitions:UniversalId; 
+        }
+        leaf serviceEndPoint {
+            type leafref {
+                path "/TapiModule-ObjectClasses:Tapi_Context/TapiModule-ObjectClasses:serviceEndPoint/TapiModule-ObjectClasses:uuid";
+            }
+        }
+        leaf role {
+            type TapiModule-TypeDefinitions:EndRole;
+        }
+        leaf direction {
+            type TapiModule-TypeDefinitions:EndDirection;
+        }
+    }
+    grouping Path {
+        description
+            "Path - represents the route of a Connection through the lower-level Nodes in the underlying Topology
+            Path is described as a list of references to the lower-level Connections.";
+        leaf uuid{
+            type TapiModule-TypeDefinitions:UniversalId;
+        }
+        leaf-list lowerLevelConnection{
+            type leafref {
+                path "/TapiModule-ObjectClasses:Tapi_Context/TapiModule-ObjectClasses:connectivityService/TapiModule-ObjectClasses:connection/TapiModule-ObjectClasses:uuid";
+            }
+            min-elements "1";
+        }
+    }
+    grouping Tapi_Connection {
+        description
+            "Connection - represents an enabled (provisioned) potential for forwarding (including all circuit and 
+            packet forms) between two or more Node-Edge-Points of a Node. 
+            Connection is a container for provisioned connectivity that tracks the state of the allocated resources 
+            and is distinct from the connectivity Service request.";
+        leaf uuid{
+            type TapiModule-TypeDefinitions:UniversalId;
+        }
+        list connectionPort { 
+            key "uuid";
+            uses Tapi_ConnectionPort;
+            max-elements "2";
+        }
+        list path {
+            key "uuid";
+            uses Path;
+        }
+        leaf-list node {
+            type leafref {
+                path "/TapiModule-ObjectClasses:Tapi_Context/TapiModule-ObjectClasses:topology/TapiModule-ObjectClasses:node/TapiModule-ObjectClasses:uuid";
+            }
+        }
+        leaf layerProtocolName {
+            type TapiModule-TypeDefinitions:LayerProtocolName;
+        } 
+        container _state_Pac {
+            presence "<condition for State_Pac attributes>";
+            uses State_Pac;
+        }
+        container _transferCost_Pac {
+            presence "<condition for TransferCost_Pac attributes>";
+            uses TransferCost_Pac;
+        }
+        container _transferTiming_Pac {
+            presence "<condition for TransferTiming_Pac attributes>";
+            uses TransferTiming_Pac;
+        }
+        container _transferCapacity_Pac {
+            presence "<condition for TransferCapacity_Pac attributes>";
+            uses TransferCapacity_Pac;
+        }
+        container _transferIntegrity_Pac {
+            presence "<condition for TransferIntegrity_Pac attributes>";
+            uses TransferIntegrity_Pac;
+        }
+    }
+    grouping Tapi_ConnectivityService {
+        description
+            "Connectivity Service - represents an “intent-like” request for connectivity between two or more 
+            Service-End-Points.
+            Service is a container for connectivity request details and is distinct from Connection that realizes 
+            the request
+            They refer to different aspects of information exchanged over T-API interface, but within provider they 
+            could be modeled by the same instance if there is one-to-one mapping.";
+        leaf uuid{
+            type TapiModule-TypeDefinitions:UniversalId; 
+        }
+        list connection {
+            key "uuid";
+            uses Tapi_Connection;
+        }
+        list servicePort {
+            key "uuid";
+            uses Tapi_ServicePort;
+            max-elements "2";
+        }
+        leaf layerProtocolName {
+            type TapiModule-TypeDefinitions:LayerProtocolName;
+        }
+        container _state_Pac {
+            presence "<condition for State_Pac attributes>";
+            uses State_Pac;
+        }
+        container _transferCost_Pac {
+            presence "<condition for TransferCost_Pac attributes>";
+            uses TransferCost_Pac;
+        }
+        container _transferTiming_Pac {
+            presence "<condition for TransferTiming_Pac attributes>";
+            uses TransferTiming_Pac;
+        }
+        container _transferCapacity_Pac {
+            presence "<condition for TransferCapacity_Pac attributes>";
+            uses TransferCapacity_Pac;
+        }
+        container _transferIntegrity_Pac {
+            presence "<condition for TransferIntegrity_Pac attributes>";
+            uses TransferIntegrity_Pac;
+        }
+    }
+    grouping Tapi_Context {
+        leaf uuid{
+            type TapiModule-TypeDefinitions:UniversalId; 
+        }
+        list topology {
+            key "uuid";
+            uses Tapi_Topology;
+            max-elements "1";
+        }
+        list serviceEndPoint {
+            key "uuid";
+            uses Tapi_ServiceEndPoint;
+        }
+        list connectivityService {
+            key "uuid";
+            uses Tapi_ConnectivityService;
+        }
+    }
+    /*****************************************************************
+    * Main containers
+    *****************************************************************/
+    list Tapi_Context {
+        description
+            "(API) Context  defines the scope of control and naming that a particular T-API provider or its client  
+            application has with respect to the information exchanged over the interface.
+            This Context is shared between the API provider and its client and determines the makeup of the network 
+            resource abstractions over which the API operates.";
+        key "uuid";
+        uses Tapi_Context;
+    }
+}
+
