@@ -1,0 +1,112 @@
+module TapiModule-ObjectClasses-TopologyPac {
+    namespace "uri:onf:TapiModule-ObjectClasses-TopologyPac";
+    prefix TapiModule-ObjectClasses-TopologyPac;
+    import TapiModule-TypeDefinitions {
+        prefix TapiModule-TypeDefinitions;
+    }
+    revision 2016-03-10{}
+    grouping G_Tapi_TransferCostPac {
+        list costCharacteristic {
+            description "The list of costs where each cost relates to some aspect of the TopologicalEntity.";
+            key 'costName';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_CostCharacteristic;
+            min-elements 1;
+        }
+    }
+    grouping G_Tapi_RiskParameterPac {
+        list riskCharacteristic {
+            description "A list of risk characteristics for consideration in an analysis of shared risk. Each element of the list represents a specific risk consideration.";
+            key 'riskCharacteristicName';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_RiskCharacteristic;
+            min-elements 1;
+        }
+    }
+    grouping G_Tapi_TransferTimingPac {
+        leaf fixedLatencyCharacteristic {
+            type string;
+            description "A TopologicalEntity suffers delay caused by the realization of the servers (e.g. distance related; FEC encoding etc.) along with some client specific processing. This is the total average latency effect of the TopologicalEntity";
+        }
+        leaf jitterCharacteristic {
+            type string;
+            description "High frequency deviation from true periodicity of a signal and therefore a small high rate of change of transfer latency.
+                Applies to TDM systems (and not packet).";
+        }
+        leaf wanderCharacteristic {
+            type string;
+            description "Low frequency deviation from true periodicity of a signal and therefore a small low rate of change of transfer latency.
+                Applies to TDM systems (and not packet).";
+        }
+        leaf-list queuingLatency {
+            description "The effect on the latency of a queuing process. This only has significant effect for packet based systems and has a complex characteristic.";
+            ordered-by system;
+            type string;
+        }
+    }
+    grouping G_Tapi_TransferIntegrityPac {
+        leaf errorCharacteristic {
+            type string;
+            description "Describes the degree to which the signal propagated can be errored. 
+                Applies to TDM systems as the errored signal will be propagated and not packet as errored packets will be discarded.";
+        }
+        leaf lossCharacteristic {
+            type string;
+            description "Describes the acceptable characteristic of lost packets where loss may result from discard due to errors or overflow.
+                Applies to packet systems and not TDM (as for TDM errored signals are propagated unless grossly errored and overflow/underflow turns into timing slips).";
+        }
+        leaf repeatDeliveryCharacteristic {
+            type string;
+            description "Primarily applies to packet systems where a packet may be delivered more than once (in fault recovery for example). 
+                It can also apply to TDM where several frames may be received twice due to switching in a system with a large differential propagation delay.";
+        }
+        leaf deliveryOrderCharacteristic {
+            type string;
+            description "Describes the degree to which packets will be delivered out of sequence.
+                Does not apply to TDM as the TDM protocols maintain strict order.";
+        }
+        leaf unavailableTimeCharacteristic {
+            type string;
+            description "Describes the duration for which there may be no valid signal propagated.";
+        }
+        leaf serverIntegrityProcessCharacteristic {
+            type string;
+            description "Describes the effect of any server integrity enhancement process on the characteristics of the TopologicalEntity.";
+        }
+    }
+    grouping G_Tapi_TransferCapacityPac {
+        container totalPotentialCapacity {
+            description "An optimistic view of the capacity of the TopologicalEntity assuming that any shared capacity is available to be taken.";
+            config true;
+            uses TapiModule-TypeDefinitions:G_Tapi_Capacity;
+        }
+        container availableCapacity {
+            description "Capacity available to be assigned.";
+            config true;
+            uses TapiModule-TypeDefinitions:G_Tapi_Capacity;
+        }
+        list capacityAssignedToUserView {
+            description "Capacity already assigned";
+            key 'totalSize';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_Capacity;
+        }
+        leaf capacityInteractionAlgorithm {
+            type string;
+            description "A reference to an algorithm that describes how various chunks of allocated capacity interact (e.g. when shared)";
+        }
+    }
+    grouping G_Tapi_ValidationPac {
+        list validationMechanism {
+            description "Provides details of the specific validation mechanism(s) used to confirm the presence of an intended topologicalEntity.";
+            key 'validationMechanism';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_ValidationMechanism;
+            min-elements 1;
+        }
+    }
+}

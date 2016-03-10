@@ -4,10 +4,13 @@ module TapiModule-ObjectClasses {
     import TapiModule-TypeDefinitions {
         prefix TapiModule-TypeDefinitions;
     }
-    import TapiModule-ObjectClasses-TopologyPacs {
-        prefix TapiModule-ObjectClasses-TopologyPacs;
+    import TapiModule-ObjectClasses-StatePac {
+        prefix TapiModule-ObjectClasses-StatePac;
     }
-    revision 2016-03-09{}
+    import TapiModule-ObjectClasses-TopologyPac {
+        prefix TapiModule-ObjectClasses-TopologyPac;
+    }
+    revision 2016-03-10{}
     list Tapi_Topology {
         key 'uuid';
         config true;
@@ -16,13 +19,11 @@ module TapiModule-ObjectClasses {
     }
     grouping G_Tapi_Topology {
         list _node {
-            key 'uuid';
             config true;
             ordered-by system;
             uses G_Tapi_Node;
         }
         list _link {
-            key 'uuid';
             config true;
             ordered-by system;
             uses G_Tapi_Link;
@@ -97,6 +98,7 @@ module TapiModule-ObjectClasses {
         }
     }
     grouping G_Tapi_Node {
+        uses G_Tapi_GlobalComponent;
         list _ownedNodeEdgePoint {
             key 'uuid';
             config true;
@@ -114,67 +116,35 @@ module TapiModule-ObjectClasses {
                 path '/Tapi_Topology/uuid';
             }
         }
-        leaf uuid {
-            type TapiModule-TypeDefinitions:Tapi_UniversalId;
-            description "UUID: An identifier that is universally unique
-                (consider in the context of Identifier: A property of an entity/role with a value that is unique within an identifier space, where the identifier space is itself globally unique, and immutable. An identifier carries no semantics with respect to the purpose or state of the entity)";
-        }
-        list name {
-            description "List of names. A property of an entity with a value that is unique in some namespace but may change during the life of the entity. A name carries no semantics with respect to the purpose of the entity.";
-            key 'valueName';
+        container _stateSpec {
             config true;
-            ordered-by system;
-            uses TapiModule-TypeDefinitions:G_Tapi_NameAndValue;
-            min-elements 1;
+            uses TapiModule-ObjectClasses-StatePac:G_Tapi_AdminStatePac;
         }
-        list label {
-            description "List of labels.A property of an entity with a value that is not expected to be unique and is allowed to change. A label carries no semantics with respect to the purpose of the entity and has no effect on the entity behavior or state.";
-            key 'valueName';
+        container _transferCapacitySpec {
             config true;
-            ordered-by system;
-            uses TapiModule-TypeDefinitions:G_Tapi_NameAndValue;
+            uses TapiModule-ObjectClasses-TopologyPac:G_Tapi_TransferCapacityPac;
         }
-        list extension {
-            description "List of simple name-value extentions. Extension provides an opportunity to define properties not declared in the class that extend the class enabling a realization with simple ad-hoc extension of standard classes to be conformant.";
-            key 'valueName';
+        container _transferCostSpec {
             config true;
-            ordered-by system;
-            uses TapiModule-TypeDefinitions:G_Tapi_NameAndValue;
+            uses TapiModule-ObjectClasses-TopologyPac:G_Tapi_TransferCostPac;
+        }
+        container _transferIntegritySpec {
+            config true;
+            uses TapiModule-ObjectClasses-TopologyPac:G_Tapi_TransferIntegrityPac;
+        }
+        container _transferTimingSpec {
+            config true;
+            uses TapiModule-ObjectClasses-TopologyPac:G_Tapi_TransferTimingPac;
         }
         leaf-list layerProtocolName {
             ordered-by system;
             type TapiModule-TypeDefinitions:Tapi_LayerProtocolName;
             min-elements 1;
         }
-        leaf administrativeState {
-            type TapiModule-TypeDefinitions:Tapi_AdministrativeState;
-        }
-        leaf operationalState {
-            type TapiModule-TypeDefinitions:Tapi_OperationalState;
-        }
-        leaf lifecycleState {
-            type TapiModule-TypeDefinitions:Tapi_LifecycleState;
-        }
-        container _transferCapacity {
-            config true;
-            uses TapiModule-ObjectClasses-TopologyPacs:G_Tapi_TransferCapacityPac;
-        }
-        container _transferCost {
-            config true;
-            uses TapiModule-ObjectClasses-TopologyPacs:G_Tapi_TransferCostPac;
-        }
-        container _transferTiming {
-            config true;
-            uses TapiModule-ObjectClasses-TopologyPacs:G_Tapi_TransferTimingPac;
-        }
-        container _transferIntegrity {
-            config true;
-            uses TapiModule-ObjectClasses-TopologyPacs:G_Tapi_TransferIntegrityPac;
-        }
     }
     grouping G_Tapi_Link {
+        uses G_Tapi_GlobalComponent;
         list _linkPort {
-            key 'localId';
             config true;
             ordered-by system;
             uses G_Tapi_LinkPort;
@@ -183,36 +153,41 @@ module TapiModule-ObjectClasses {
         leaf-list _node {
             ordered-by system;
             type leafref {
-                path '/Tapi_Topology/_node/uuid';
+                path '/Tapi_Topology/_node/';
             }
             min-elements 2;
         }
-        leaf uuid {
-            type TapiModule-TypeDefinitions:Tapi_UniversalId;
-            description "UUID: An identifier that is universally unique
-                (consider in the context of Identifier: A property of an entity/role with a value that is unique within an identifier space, where the identifier space is itself globally unique, and immutable. An identifier carries no semantics with respect to the purpose or state of the entity)";
-        }
-        list name {
-            description "List of names. A property of an entity with a value that is unique in some namespace but may change during the life of the entity. A name carries no semantics with respect to the purpose of the entity.";
-            key 'valueName';
+        container _stateSpec {
             config true;
-            ordered-by system;
-            uses TapiModule-TypeDefinitions:G_Tapi_NameAndValue;
-            min-elements 1;
+            uses TapiModule-ObjectClasses-StatePac:G_Tapi_AdminStatePac;
         }
-        list label {
-            description "List of labels.A property of an entity with a value that is not expected to be unique and is allowed to change. A label carries no semantics with respect to the purpose of the entity and has no effect on the entity behavior or state.";
-            key 'valueName';
+        container _transferCapacitySpec {
             config true;
-            ordered-by system;
-            uses TapiModule-TypeDefinitions:G_Tapi_NameAndValue;
+            uses TapiModule-ObjectClasses-TopologyPac:G_Tapi_TransferCapacityPac;
         }
-        list extension {
-            description "List of simple name-value extentions. Extension provides an opportunity to define properties not declared in the class that extend the class enabling a realization with simple ad-hoc extension of standard classes to be conformant.";
-            key 'valueName';
+        container _transferCostSpec {
             config true;
-            ordered-by system;
-            uses TapiModule-TypeDefinitions:G_Tapi_NameAndValue;
+            uses TapiModule-ObjectClasses-TopologyPac:G_Tapi_TransferCostPac;
+        }
+        container _transferIntegritySpec {
+            config true;
+            uses TapiModule-ObjectClasses-TopologyPac:G_Tapi_TransferIntegrityPac;
+        }
+        container _transferTimingSpec {
+            config true;
+            uses TapiModule-ObjectClasses-TopologyPac:G_Tapi_TransferTimingPac;
+        }
+        container _riskParameterSpec {
+            config true;
+            uses TapiModule-ObjectClasses-TopologyPac:G_Tapi_RiskParameterPac;
+        }
+        container _validationSpec {
+            config true;
+            uses TapiModule-ObjectClasses-TopologyPac:G_Tapi_ValidationPac;
+        }
+        container _lpTransitionSpec {
+            config true;
+            uses G_Tapi_LayerProtocolTransitionPac;
         }
         leaf-list layerProtocolName {
             ordered-by system;
@@ -225,47 +200,10 @@ module TapiModule-ObjectClasses {
                 Is applicable to simple Links where all LinkEnds are BIDIRECTIONAL (the Link will be BIDIRECTIONAL) or UNIDIRECTIONAL (the Link will be UNIDIRECTIONAL). 
                 Is not present in more complex cases.";
         }
-        leaf administrativeState {
-            type TapiModule-TypeDefinitions:Tapi_AdministrativeState;
-        }
-        leaf operationalState {
-            type TapiModule-TypeDefinitions:Tapi_OperationalState;
-        }
-        leaf lifecycleState {
-            type TapiModule-TypeDefinitions:Tapi_LifecycleState;
-        }
-        container _transferCapacity {
-            config true;
-            uses TapiModule-ObjectClasses-TopologyPacs:G_Tapi_TransferCapacityPac;
-        }
-        container _transferCost {
-            config true;
-            uses TapiModule-ObjectClasses-TopologyPacs:G_Tapi_TransferCostPac;
-        }
-        container _transferTiming {
-            config true;
-            uses TapiModule-ObjectClasses-TopologyPacs:G_Tapi_TransferTimingPac;
-        }
-        container _transferIntegrity {
-            config true;
-            uses TapiModule-ObjectClasses-TopologyPacs:G_Tapi_TransferIntegrityPac;
-        }
-        container _risk {
-            config true;
-            uses TapiModule-ObjectClasses-TopologyPacs:G_Tapi_RiskParameterPac;
-        }
-        container _validation {
-            config true;
-            uses TapiModule-ObjectClasses-TopologyPacs:G_Tapi_ValidationPac;
-        }
-        container _layerTransition {
-            config true;
-            uses G_Tapi_LayerProtocolTransitionPac;
-        }
     }
     grouping G_Tapi_NodeEdgePoint {
         list _layerProtocol {
-            key 'localId';
+            key 'layerProtocolName';
             config true;
             ordered-by system;
             uses G_Tapi_LayerProtocol;
@@ -323,7 +261,7 @@ module TapiModule-ObjectClasses {
     }
     grouping G_Tapi_ServiceEndPoint {
         list _layerProtocol {
-            key 'localId';
+            key 'layerProtocolName';
             config true;
             ordered-by system;
             uses G_Tapi_LayerProtocol;
@@ -377,7 +315,7 @@ module TapiModule-ObjectClasses {
     }
     grouping G_Tapi_ConnectionEndPoint {
         list _layerProtocol {
-            key 'localId';
+            key 'layerProtocolName';
             config true;
             ordered-by system;
             uses G_Tapi_LayerProtocol;
@@ -441,7 +379,6 @@ module TapiModule-ObjectClasses {
     }
     grouping G_Tapi_ConnectivityService {
         list _servicePort {
-            key 'localId';
             config true;
             ordered-by system;
             uses G_Tapi_ServicePort;
@@ -498,21 +435,20 @@ module TapiModule-ObjectClasses {
     }
     grouping G_Tapi_Connection {
         list _connectionPort {
-            key 'localId';
             config true;
             ordered-by system;
             uses G_Tapi_ConnectionPort;
             min-elements 2;
         }
         list _path {
-            key 'localId';
+            key '_lowerConnection';
             config true;
             ordered-by system;
             uses G_Tapi_Route;
         }
         leaf _node {
             type leafref {
-                path '/Tapi_Topology/_node/uuid';
+                path '/Tapi_Topology/_node/';
             }
         }
         leaf uuid {
@@ -556,6 +492,7 @@ module TapiModule-ObjectClasses {
         }
     }
     grouping G_Tapi_Route {
+        uses G_Tapi_LocalComponent;
         leaf-list _lowerConnection {
             ordered-by system;
             type leafref {
@@ -563,22 +500,13 @@ module TapiModule-ObjectClasses {
             }
             min-elements 1;
         }
-        leaf localId {
-            type string;
-            description "An identifier that is unique in the context of some scope that is less than the global scope.
-                (consider in the context of Identifier: A property of an entity/role with a value that is unique within an identifier space, where the identifier space is itself unique, and immutable. The identifier therefore represents the identity of the entity/role. An identifier carries no semantics with respect to the purpose of the entity.)";
-        }
     }
     grouping G_Tapi_LinkPort {
+        uses G_Tapi_LocalComponent;
         leaf _nodeEdgePoint {
             type leafref {
                 path '/Tapi_Topology/_node/_ownedNodeEdgePoint/uuid';
             }
-        }
-        leaf localId {
-            type string;
-            description "An identifier that is unique in the context of some scope that is less than the global scope.
-                (consider in the context of Identifier: A property of an entity/role with a value that is unique within an identifier space, where the identifier space is itself unique, and immutable. The identifier therefore represents the identity of the entity/role. An identifier carries no semantics with respect to the purpose of the entity.)";
         }
         leaf role {
             type TapiModule-TypeDefinitions:Tapi_PortRole;
@@ -590,15 +518,11 @@ module TapiModule-ObjectClasses {
         }
     }
     grouping G_Tapi_ServicePort {
+        uses G_Tapi_LocalComponent;
         leaf _serviceEndPoint {
             type leafref {
                 path '/Tapi_ServiceEndPoint/uuid';
             }
-        }
-        leaf localId {
-            type string;
-            description "An identifier that is unique in the context of some scope that is less than the global scope.
-                (consider in the context of Identifier: A property of an entity/role with a value that is unique within an identifier space, where the identifier space is itself unique, and immutable. The identifier therefore represents the identity of the entity/role. An identifier carries no semantics with respect to the purpose of the entity.)";
         }
         leaf role {
             type TapiModule-TypeDefinitions:Tapi_PortRole;
@@ -613,15 +537,11 @@ module TapiModule-ObjectClasses {
         }
     }
     grouping G_Tapi_ConnectionPort {
+        uses G_Tapi_LocalComponent;
         leaf _connectionEndPoint {
             type leafref {
                 path '/Tapi_ConnectionEndPoint/uuid';
             }
-        }
-        leaf localId {
-            type string;
-            description "An identifier that is unique in the context of some scope that is less than the global scope.
-                (consider in the context of Identifier: A property of an entity/role with a value that is unique within an identifier space, where the identifier space is itself unique, and immutable. The identifier therefore represents the identity of the entity/role. An identifier carries no semantics with respect to the purpose of the entity.)";
         }
         leaf role {
             type TapiModule-TypeDefinitions:Tapi_PortRole;
@@ -633,14 +553,10 @@ module TapiModule-ObjectClasses {
         }
     }
     grouping G_Tapi_LayerProtocol {
+        uses G_Tapi_LocalComponent;
         leaf _lpSpec {
             type string;
             description "The LpSpec identifies the interna structure of the LP explaining internal flexibilities, degree of termination and degree of adaptation on both client and server side.";
-        }
-        leaf localId {
-            type string;
-            description "An identifier that is unique in the context of some scope that is less than the global scope.
-                (consider in the context of Identifier: A property of an entity/role with a value that is unique within an identifier space, where the identifier space is itself unique, and immutable. The identifier therefore represents the identity of the entity/role. An identifier carries no semantics with respect to the purpose of the entity.)";
         }
         leaf layerProtocolName {
             type TapiModule-TypeDefinitions:Tapi_LayerProtocolName;
@@ -675,10 +591,11 @@ module TapiModule-ObjectClasses {
         }
     }
     grouping G_Tapi_TeLink {
+        uses G_Tapi_LocalComponent;
         leaf-list _node {
             ordered-by system;
             type leafref {
-                path '/Tapi_Topology/_node/uuid';
+                path '/Tapi_Topology/_node/';
             }
             max-elements 2;
             min-elements 2;
@@ -686,19 +603,14 @@ module TapiModule-ObjectClasses {
         leaf-list _linkPort {
             ordered-by system;
             type leafref {
-                path '/Tapi_Topology/_link/_linkPort/localId';
+                path '/Tapi_Topology/_link/_linkPort/';
             }
             max-elements 2;
         }
         leaf _link {
             type leafref {
-                path '/Tapi_Topology/_link/uuid';
+                path '/Tapi_Topology/_link/';
             }
-        }
-        leaf uuid {
-            type TapiModule-TypeDefinitions:Tapi_UniversalId;
-            description "UUID: An identifier that is universally unique
-                (consider in the context of Identifier: A property of an entity/role with a value that is unique within an identifier space, where the identifier space is itself globally unique, and immutable. An identifier carries no semantics with respect to the purpose or state of the entity)";
         }
     }
     list Tapi_Path {
@@ -709,7 +621,7 @@ module TapiModule-ObjectClasses {
     }
     grouping G_Tapi_Path {
         list _telink {
-            key 'uuid';
+            key '_link';
             config true;
             ordered-by system;
             uses G_Tapi_TeLink;
@@ -723,6 +635,41 @@ module TapiModule-ObjectClasses {
         container routingConstraint {
             config true;
             uses G_Tapi_ConnectivityConstraint;
+        }
+    }
+    list Tapi_GlobalComponent {
+        key 'uuid';
+        config true;
+        ordered-by system;
+        uses G_Tapi_GlobalComponent;
+    }
+    grouping G_Tapi_GlobalComponent {
+        leaf uuid {
+            type TapiModule-TypeDefinitions:Tapi_UniversalId;
+            description "UUID: An identifier that is universally unique
+                (consider in the context of Identifier: A property of an entity/role with a value that is unique within an identifier space, where the identifier space is itself globally unique, and immutable. An identifier carries no semantics with respect to the purpose or state of the entity)";
+        }
+        list name {
+            description "List of names. A property of an entity with a value that is unique in some namespace but may change during the life of the entity. A name carries no semantics with respect to the purpose of the entity.";
+            key 'valueName';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_NameAndValue;
+            min-elements 1;
+        }
+        list label {
+            description "List of labels.A property of an entity with a value that is not expected to be unique and is allowed to change. A label carries no semantics with respect to the purpose of the entity and has no effect on the entity behavior or state.";
+            key 'valueName';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_NameAndValue;
+        }
+        list extension {
+            description "List of simple name-value extentions. Extension provides an opportunity to define properties not declared in the class that extend the class enabling a realization with simple ad-hoc extension of standard classes to be conformant.";
+            key 'valueName';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_NameAndValue;
         }
     }
     grouping G_Tapi_ConnectivityConstraint {
@@ -773,6 +720,17 @@ module TapiModule-ObjectClasses {
             type leafref {
                 path '/Tapi_Path/uuid';
             }
+        }
+    }
+    list Tapi_LocalComponent {
+        key 'localId';
+        config true;
+        ordered-by system;
+        uses G_Tapi_LocalComponent;
+    }
+    grouping G_Tapi_LocalComponent {
+        leaf localId {
+            type string;
         }
     }
 }

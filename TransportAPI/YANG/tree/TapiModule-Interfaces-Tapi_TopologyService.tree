@@ -5,12 +5,25 @@ rpcs:
    |  |  +---w topologyIdOrName?   string
    |  +--ro output
    |     +--ro topology
-   |        +--rw _node* [uuid]
+   |        +--rw _node*
+   |        |  +--rw uuid?                       TapiModule-TypeDefinitions:Tapi_UniversalId
+   |        |  +--rw name* [valueName]
+   |        |  |  +--rw valueName                    string
+   |        |  |  +--rw value?                       string
+   |        |  |  +--rw _nameAndValueAuthorityRef?   string
+   |        |  +--rw label* [valueName]
+   |        |  |  +--rw valueName                    string
+   |        |  |  +--rw value?                       string
+   |        |  |  +--rw _nameAndValueAuthorityRef?   string
+   |        |  +--rw extension* [valueName]
+   |        |  |  +--rw valueName                    string
+   |        |  |  +--rw value?                       string
+   |        |  |  +--rw _nameAndValueAuthorityRef?   string
    |        |  +--rw _ownedNodeEdgePoint* [uuid]
-   |        |  |  +--rw _layerProtocol* [localId]
+   |        |  |  +--rw _layerProtocol* [layerProtocolName]
+   |        |  |  |  +--rw localId?                string
    |        |  |  |  +--rw _lpSpec?                string
-   |        |  |  |  +--rw localId                 string
-   |        |  |  |  +--rw layerProtocolName?      TapiModule-TypeDefinitions:Tapi_LayerProtocolName
+   |        |  |  |  +--rw layerProtocolName       TapiModule-TypeDefinitions:Tapi_LayerProtocolName
    |        |  |  |  +--rw terminationDirection?   TapiModule-TypeDefinitions:Tapi_TerminationDirection
    |        |  |  |  +--rw terminationState?       TapiModule-TypeDefinitions:Tapi_TerminationState
    |        |  |  +--rw _clientNodeEdgePoint*   string
@@ -33,24 +46,11 @@ rpcs:
    |        |  |  +--rw lifecycleState?         TapiModule-TypeDefinitions:Tapi_LifecycleState
    |        |  +--rw _aggregatedNodeEdgePoint*   -> /Tapi_Topology/_node/_ownedNodeEdgePoint/uuid
    |        |  +--rw _encapTopology?             -> /Tapi_Topology/uuid
-   |        |  +--rw uuid                        TapiModule-TypeDefinitions:Tapi_UniversalId
-   |        |  +--rw name* [valueName]
-   |        |  |  +--rw valueName                    string
-   |        |  |  +--rw value?                       string
-   |        |  |  +--rw _nameAndValueAuthorityRef?   string
-   |        |  +--rw label* [valueName]
-   |        |  |  +--rw valueName                    string
-   |        |  |  +--rw value?                       string
-   |        |  |  +--rw _nameAndValueAuthorityRef?   string
-   |        |  +--rw extension* [valueName]
-   |        |  |  +--rw valueName                    string
-   |        |  |  +--rw value?                       string
-   |        |  |  +--rw _nameAndValueAuthorityRef?   string
-   |        |  +--rw layerProtocolName*          TapiModule-TypeDefinitions:Tapi_LayerProtocolName
-   |        |  +--rw administrativeState?        TapiModule-TypeDefinitions:Tapi_AdministrativeState
-   |        |  +--rw operationalState?           TapiModule-TypeDefinitions:Tapi_OperationalState
-   |        |  +--rw lifecycleState?             TapiModule-TypeDefinitions:Tapi_LifecycleState
-   |        |  +--rw _transferCapacity
+   |        |  +--rw _stateSpec
+   |        |  |  +--rw administrativeState?   TapiModule-TypeDefinitions:Tapi_AdministrativeState
+   |        |  |  +--rw operationalState?      TapiModule-TypeDefinitions:Tapi_OperationalState
+   |        |  |  +--rw lifecycleState?        TapiModule-TypeDefinitions:Tapi_LifecycleState
+   |        |  +--rw _transferCapacitySpec
    |        |  |  +--rw totalPotentialCapacity
    |        |  |  |  +--rw totalSize?               string
    |        |  |  |  +--rw maximumUsageInstances?   string
@@ -67,94 +67,96 @@ rpcs:
    |        |  |  |  +--rw maximumUsageSize?        string
    |        |  |  |  +--rw numberingRange?          string
    |        |  |  +--rw capacityInteractionAlgorithm?   string
-   |        |  +--rw _transferCost
-   |        |  |  +--rw costCharacteristicList* [costName]
+   |        |  +--rw _transferCostSpec
+   |        |  |  +--rw costCharacteristic* [costName]
    |        |  |     +--rw costName         string
    |        |  |     +--rw costValue?       string
    |        |  |     +--rw costAlgorithm?   string
-   |        |  +--rw _transferTiming
-   |        |  |  +--rw fixedLatencyCharacteristic?   string
-   |        |  |  +--rw jitterCharacteristic?         string
-   |        |  |  +--rw wanderCharacteristic?         string
-   |        |  |  +--rw queuingLatency*               string
-   |        |  +--rw _transferIntegrity
-   |        |     +--rw errorCharacteristic?                    string
-   |        |     +--rw lossCharacteristic?                     string
-   |        |     +--rw repeatDeliveryCharacteristic?           string
-   |        |     +--rw deliveryOrderCharacteristic?            string
-   |        |     +--rw unavailableTimeCharacteristic?          string
-   |        |     +--rw serverIntegrityProcessCharacteristic?   string
-   |        +--rw _link* [uuid]
-   |        |  +--rw _linkPort* [localId]
-   |        |  |  +--rw _nodeEdgePoint?   -> /Tapi_Topology/_node/_ownedNodeEdgePoint/uuid
-   |        |  |  +--rw localId           string
-   |        |  |  +--rw role?             TapiModule-TypeDefinitions:Tapi_PortRole
-   |        |  |  +--rw direction?        TapiModule-TypeDefinitions:Tapi_PortDirection
-   |        |  +--rw _node*                 -> /Tapi_Topology/_node/uuid
-   |        |  +--rw uuid                   TapiModule-TypeDefinitions:Tapi_UniversalId
-   |        |  +--rw name* [valueName]
-   |        |  |  +--rw valueName                    string
-   |        |  |  +--rw value?                       string
-   |        |  |  +--rw _nameAndValueAuthorityRef?   string
-   |        |  +--rw label* [valueName]
-   |        |  |  +--rw valueName                    string
-   |        |  |  +--rw value?                       string
-   |        |  |  +--rw _nameAndValueAuthorityRef?   string
-   |        |  +--rw extension* [valueName]
-   |        |  |  +--rw valueName                    string
-   |        |  |  +--rw value?                       string
-   |        |  |  +--rw _nameAndValueAuthorityRef?   string
-   |        |  +--rw layerProtocolName*     TapiModule-TypeDefinitions:Tapi_LayerProtocolName
-   |        |  +--rw direction?             TapiModule-TypeDefinitions:Tapi_ForwardingDirection
-   |        |  +--rw administrativeState?   TapiModule-TypeDefinitions:Tapi_AdministrativeState
-   |        |  +--rw operationalState?      TapiModule-TypeDefinitions:Tapi_OperationalState
-   |        |  +--rw lifecycleState?        TapiModule-TypeDefinitions:Tapi_LifecycleState
-   |        |  +--rw _transferCapacity
-   |        |  |  +--rw totalPotentialCapacity
-   |        |  |  |  +--rw totalSize?               string
-   |        |  |  |  +--rw maximumUsageInstances?   string
-   |        |  |  |  +--rw maximumUsageSize?        string
-   |        |  |  |  +--rw numberingRange?          string
-   |        |  |  +--rw availableCapacity
-   |        |  |  |  +--rw totalSize?               string
-   |        |  |  |  +--rw maximumUsageInstances?   string
-   |        |  |  |  +--rw maximumUsageSize?        string
-   |        |  |  |  +--rw numberingRange?          string
-   |        |  |  +--rw capacityAssignedToUserView* [totalSize]
-   |        |  |  |  +--rw totalSize                string
-   |        |  |  |  +--rw maximumUsageInstances?   string
-   |        |  |  |  +--rw maximumUsageSize?        string
-   |        |  |  |  +--rw numberingRange?          string
-   |        |  |  +--rw capacityInteractionAlgorithm?   string
-   |        |  +--rw _transferCost
-   |        |  |  +--rw costCharacteristicList* [costName]
-   |        |  |     +--rw costName         string
-   |        |  |     +--rw costValue?       string
-   |        |  |     +--rw costAlgorithm?   string
-   |        |  +--rw _transferTiming
-   |        |  |  +--rw fixedLatencyCharacteristic?   string
-   |        |  |  +--rw jitterCharacteristic?         string
-   |        |  |  +--rw wanderCharacteristic?         string
-   |        |  |  +--rw queuingLatency*               string
-   |        |  +--rw _transferIntegrity
+   |        |  +--rw _transferIntegritySpec
    |        |  |  +--rw errorCharacteristic?                    string
    |        |  |  +--rw lossCharacteristic?                     string
    |        |  |  +--rw repeatDeliveryCharacteristic?           string
    |        |  |  +--rw deliveryOrderCharacteristic?            string
    |        |  |  +--rw unavailableTimeCharacteristic?          string
    |        |  |  +--rw serverIntegrityProcessCharacteristic?   string
-   |        |  +--rw _risk
-   |        |  |  +--rw riskCharacteristicList* [riskCharacteristicName]
+   |        |  +--rw _transferTimingSpec
+   |        |  |  +--rw fixedLatencyCharacteristic?   string
+   |        |  |  +--rw jitterCharacteristic?         string
+   |        |  |  +--rw wanderCharacteristic?         string
+   |        |  |  +--rw queuingLatency*               string
+   |        |  +--rw layerProtocolName*          TapiModule-TypeDefinitions:Tapi_LayerProtocolName
+   |        +--rw _link*
+   |        |  +--rw uuid?                     TapiModule-TypeDefinitions:Tapi_UniversalId
+   |        |  +--rw name* [valueName]
+   |        |  |  +--rw valueName                    string
+   |        |  |  +--rw value?                       string
+   |        |  |  +--rw _nameAndValueAuthorityRef?   string
+   |        |  +--rw label* [valueName]
+   |        |  |  +--rw valueName                    string
+   |        |  |  +--rw value?                       string
+   |        |  |  +--rw _nameAndValueAuthorityRef?   string
+   |        |  +--rw extension* [valueName]
+   |        |  |  +--rw valueName                    string
+   |        |  |  +--rw value?                       string
+   |        |  |  +--rw _nameAndValueAuthorityRef?   string
+   |        |  +--rw _linkPort*
+   |        |  |  +--rw localId?          string
+   |        |  |  +--rw _nodeEdgePoint?   -> /Tapi_Topology/_node/_ownedNodeEdgePoint/uuid
+   |        |  |  +--rw role?             TapiModule-TypeDefinitions:Tapi_PortRole
+   |        |  |  +--rw direction?        TapiModule-TypeDefinitions:Tapi_PortDirection
+   |        |  +--rw _node*                    -> /Tapi_Topology/_node/
+   |        |  +--rw _stateSpec
+   |        |  |  +--rw administrativeState?   TapiModule-TypeDefinitions:Tapi_AdministrativeState
+   |        |  |  +--rw operationalState?      TapiModule-TypeDefinitions:Tapi_OperationalState
+   |        |  |  +--rw lifecycleState?        TapiModule-TypeDefinitions:Tapi_LifecycleState
+   |        |  +--rw _transferCapacitySpec
+   |        |  |  +--rw totalPotentialCapacity
+   |        |  |  |  +--rw totalSize?               string
+   |        |  |  |  +--rw maximumUsageInstances?   string
+   |        |  |  |  +--rw maximumUsageSize?        string
+   |        |  |  |  +--rw numberingRange?          string
+   |        |  |  +--rw availableCapacity
+   |        |  |  |  +--rw totalSize?               string
+   |        |  |  |  +--rw maximumUsageInstances?   string
+   |        |  |  |  +--rw maximumUsageSize?        string
+   |        |  |  |  +--rw numberingRange?          string
+   |        |  |  +--rw capacityAssignedToUserView* [totalSize]
+   |        |  |  |  +--rw totalSize                string
+   |        |  |  |  +--rw maximumUsageInstances?   string
+   |        |  |  |  +--rw maximumUsageSize?        string
+   |        |  |  |  +--rw numberingRange?          string
+   |        |  |  +--rw capacityInteractionAlgorithm?   string
+   |        |  +--rw _transferCostSpec
+   |        |  |  +--rw costCharacteristic* [costName]
+   |        |  |     +--rw costName         string
+   |        |  |     +--rw costValue?       string
+   |        |  |     +--rw costAlgorithm?   string
+   |        |  +--rw _transferIntegritySpec
+   |        |  |  +--rw errorCharacteristic?                    string
+   |        |  |  +--rw lossCharacteristic?                     string
+   |        |  |  +--rw repeatDeliveryCharacteristic?           string
+   |        |  |  +--rw deliveryOrderCharacteristic?            string
+   |        |  |  +--rw unavailableTimeCharacteristic?          string
+   |        |  |  +--rw serverIntegrityProcessCharacteristic?   string
+   |        |  +--rw _transferTimingSpec
+   |        |  |  +--rw fixedLatencyCharacteristic?   string
+   |        |  |  +--rw jitterCharacteristic?         string
+   |        |  |  +--rw wanderCharacteristic?         string
+   |        |  |  +--rw queuingLatency*               string
+   |        |  +--rw _riskParameterSpec
+   |        |  |  +--rw riskCharacteristic* [riskCharacteristicName]
    |        |  |     +--rw riskCharacteristicName    string
    |        |  |     +--rw riskIdentifierList*       string
-   |        |  +--rw _validation
+   |        |  +--rw _validationSpec
    |        |  |  +--rw validationMechanism* [validationMechanism]
    |        |  |     +--rw validationMechanism                string
    |        |  |     +--rw layerProtocolAdjacencyValidated?   string
    |        |  |     +--rw validationRobustness?              string
-   |        |  +--rw _layerTransition
-   |        |     +--rw transitionedLayerProtocolName*   string
-   |        |     +--rw _nodeEdgePoint*                  -> /Tapi_Topology/_node/_ownedNodeEdgePoint/uuid
+   |        |  +--rw _lpTransitionSpec
+   |        |  |  +--rw transitionedLayerProtocolName*   string
+   |        |  |  +--rw _nodeEdgePoint*                  -> /Tapi_Topology/_node/_ownedNodeEdgePoint/uuid
+   |        |  +--rw layerProtocolName*        TapiModule-TypeDefinitions:Tapi_LayerProtocolName
+   |        |  +--rw direction?                TapiModule-TypeDefinitions:Tapi_ForwardingDirection
    |        +--ro uuid?                TapiModule-TypeDefinitions:Tapi_UniversalId
    |        +--rw name* [valueName]
    |        |  +--rw valueName                    string
@@ -175,11 +177,24 @@ rpcs:
    |  |  +---w nodeIdOrName?       string
    |  +--ro output
    |     +--ro node
+   |        +--ro uuid?                       TapiModule-TypeDefinitions:Tapi_UniversalId
+   |        +--rw name* [valueName]
+   |        |  +--rw valueName                    string
+   |        |  +--rw value?                       string
+   |        |  +--rw _nameAndValueAuthorityRef?   string
+   |        +--rw label* [valueName]
+   |        |  +--rw valueName                    string
+   |        |  +--rw value?                       string
+   |        |  +--rw _nameAndValueAuthorityRef?   string
+   |        +--rw extension* [valueName]
+   |        |  +--rw valueName                    string
+   |        |  +--rw value?                       string
+   |        |  +--rw _nameAndValueAuthorityRef?   string
    |        +--rw _ownedNodeEdgePoint* [uuid]
-   |        |  +--rw _layerProtocol* [localId]
+   |        |  +--rw _layerProtocol* [layerProtocolName]
+   |        |  |  +--rw localId?                string
    |        |  |  +--rw _lpSpec?                string
-   |        |  |  +--rw localId                 string
-   |        |  |  +--rw layerProtocolName?      TapiModule-TypeDefinitions:Tapi_LayerProtocolName
+   |        |  |  +--rw layerProtocolName       TapiModule-TypeDefinitions:Tapi_LayerProtocolName
    |        |  |  +--rw terminationDirection?   TapiModule-TypeDefinitions:Tapi_TerminationDirection
    |        |  |  +--rw terminationState?       TapiModule-TypeDefinitions:Tapi_TerminationState
    |        |  +--rw _clientNodeEdgePoint*   string
@@ -202,24 +217,11 @@ rpcs:
    |        |  +--rw lifecycleState?         TapiModule-TypeDefinitions:Tapi_LifecycleState
    |        +--ro _aggregatedNodeEdgePoint*   -> /Tapi_Topology/_node/_ownedNodeEdgePoint/uuid
    |        +--ro _encapTopology?             -> /Tapi_Topology/uuid
-   |        +--ro uuid?                       TapiModule-TypeDefinitions:Tapi_UniversalId
-   |        +--rw name* [valueName]
-   |        |  +--rw valueName                    string
-   |        |  +--rw value?                       string
-   |        |  +--rw _nameAndValueAuthorityRef?   string
-   |        +--rw label* [valueName]
-   |        |  +--rw valueName                    string
-   |        |  +--rw value?                       string
-   |        |  +--rw _nameAndValueAuthorityRef?   string
-   |        +--rw extension* [valueName]
-   |        |  +--rw valueName                    string
-   |        |  +--rw value?                       string
-   |        |  +--rw _nameAndValueAuthorityRef?   string
-   |        +--ro layerProtocolName*          TapiModule-TypeDefinitions:Tapi_LayerProtocolName
-   |        +--ro administrativeState?        TapiModule-TypeDefinitions:Tapi_AdministrativeState
-   |        +--ro operationalState?           TapiModule-TypeDefinitions:Tapi_OperationalState
-   |        +--ro lifecycleState?             TapiModule-TypeDefinitions:Tapi_LifecycleState
-   |        +--rw _transferCapacity
+   |        +--rw _stateSpec
+   |        |  +--rw administrativeState?   TapiModule-TypeDefinitions:Tapi_AdministrativeState
+   |        |  +--rw operationalState?      TapiModule-TypeDefinitions:Tapi_OperationalState
+   |        |  +--rw lifecycleState?        TapiModule-TypeDefinitions:Tapi_LifecycleState
+   |        +--rw _transferCapacitySpec
    |        |  +--rw totalPotentialCapacity
    |        |  |  +--rw totalSize?               string
    |        |  |  +--rw maximumUsageInstances?   string
@@ -236,23 +238,24 @@ rpcs:
    |        |  |  +--rw maximumUsageSize?        string
    |        |  |  +--rw numberingRange?          string
    |        |  +--rw capacityInteractionAlgorithm?   string
-   |        +--rw _transferCost
-   |        |  +--rw costCharacteristicList* [costName]
+   |        +--rw _transferCostSpec
+   |        |  +--rw costCharacteristic* [costName]
    |        |     +--rw costName         string
    |        |     +--rw costValue?       string
    |        |     +--rw costAlgorithm?   string
-   |        +--rw _transferTiming
+   |        +--rw _transferIntegritySpec
+   |        |  +--rw errorCharacteristic?                    string
+   |        |  +--rw lossCharacteristic?                     string
+   |        |  +--rw repeatDeliveryCharacteristic?           string
+   |        |  +--rw deliveryOrderCharacteristic?            string
+   |        |  +--rw unavailableTimeCharacteristic?          string
+   |        |  +--rw serverIntegrityProcessCharacteristic?   string
+   |        +--rw _transferTimingSpec
    |        |  +--rw fixedLatencyCharacteristic?   string
    |        |  +--rw jitterCharacteristic?         string
    |        |  +--rw wanderCharacteristic?         string
    |        |  +--rw queuingLatency*               string
-   |        +--rw _transferIntegrity
-   |           +--rw errorCharacteristic?                    string
-   |           +--rw lossCharacteristic?                     string
-   |           +--rw repeatDeliveryCharacteristic?           string
-   |           +--rw deliveryOrderCharacteristic?            string
-   |           +--rw unavailableTimeCharacteristic?          string
-   |           +--rw serverIntegrityProcessCharacteristic?   string
+   |        +--ro layerProtocolName*          TapiModule-TypeDefinitions:Tapi_LayerProtocolName
    +---x getNodeEdgePointDetails
    |  +---w input
    |  |  +---w topologyIdOrName?   string
@@ -260,10 +263,10 @@ rpcs:
    |  |  +---w epIdOrName?         string
    |  +--ro output
    |     +--ro nodeEdgePoint
-   |        +--rw _layerProtocol* [localId]
+   |        +--rw _layerProtocol* [layerProtocolName]
+   |        |  +--rw localId?                string
    |        |  +--rw _lpSpec?                string
-   |        |  +--rw localId                 string
-   |        |  +--rw layerProtocolName?      TapiModule-TypeDefinitions:Tapi_LayerProtocolName
+   |        |  +--rw layerProtocolName       TapiModule-TypeDefinitions:Tapi_LayerProtocolName
    |        |  +--rw terminationDirection?   TapiModule-TypeDefinitions:Tapi_TerminationDirection
    |        |  +--rw terminationState?       TapiModule-TypeDefinitions:Tapi_TerminationState
    |        +--ro _clientNodeEdgePoint*   string
@@ -290,13 +293,7 @@ rpcs:
       |  +---w linkIdOrName?       string
       +--ro output
          +--ro link
-            +--rw _linkPort* [localId]
-            |  +--rw _nodeEdgePoint?   -> /Tapi_Topology/_node/_ownedNodeEdgePoint/uuid
-            |  +--rw localId           string
-            |  +--rw role?             TapiModule-TypeDefinitions:Tapi_PortRole
-            |  +--rw direction?        TapiModule-TypeDefinitions:Tapi_PortDirection
-            +--ro _node*                 -> /Tapi_Topology/_node/uuid
-            +--ro uuid?                  TapiModule-TypeDefinitions:Tapi_UniversalId
+            +--ro uuid?                     TapiModule-TypeDefinitions:Tapi_UniversalId
             +--rw name* [valueName]
             |  +--rw valueName                    string
             |  +--rw value?                       string
@@ -309,12 +306,17 @@ rpcs:
             |  +--rw valueName                    string
             |  +--rw value?                       string
             |  +--rw _nameAndValueAuthorityRef?   string
-            +--ro layerProtocolName*     TapiModule-TypeDefinitions:Tapi_LayerProtocolName
-            +--ro direction?             TapiModule-TypeDefinitions:Tapi_ForwardingDirection
-            +--ro administrativeState?   TapiModule-TypeDefinitions:Tapi_AdministrativeState
-            +--ro operationalState?      TapiModule-TypeDefinitions:Tapi_OperationalState
-            +--ro lifecycleState?        TapiModule-TypeDefinitions:Tapi_LifecycleState
-            +--rw _transferCapacity
+            +--rw _linkPort*
+            |  +--rw localId?          string
+            |  +--rw _nodeEdgePoint?   -> /Tapi_Topology/_node/_ownedNodeEdgePoint/uuid
+            |  +--rw role?             TapiModule-TypeDefinitions:Tapi_PortRole
+            |  +--rw direction?        TapiModule-TypeDefinitions:Tapi_PortDirection
+            +--ro _node*                    -> /Tapi_Topology/_node/
+            +--rw _stateSpec
+            |  +--rw administrativeState?   TapiModule-TypeDefinitions:Tapi_AdministrativeState
+            |  +--rw operationalState?      TapiModule-TypeDefinitions:Tapi_OperationalState
+            |  +--rw lifecycleState?        TapiModule-TypeDefinitions:Tapi_LifecycleState
+            +--rw _transferCapacitySpec
             |  +--rw totalPotentialCapacity
             |  |  +--rw totalSize?               string
             |  |  +--rw maximumUsageInstances?   string
@@ -331,32 +333,34 @@ rpcs:
             |  |  +--rw maximumUsageSize?        string
             |  |  +--rw numberingRange?          string
             |  +--rw capacityInteractionAlgorithm?   string
-            +--rw _transferCost
-            |  +--rw costCharacteristicList* [costName]
+            +--rw _transferCostSpec
+            |  +--rw costCharacteristic* [costName]
             |     +--rw costName         string
             |     +--rw costValue?       string
             |     +--rw costAlgorithm?   string
-            +--rw _transferTiming
-            |  +--rw fixedLatencyCharacteristic?   string
-            |  +--rw jitterCharacteristic?         string
-            |  +--rw wanderCharacteristic?         string
-            |  +--rw queuingLatency*               string
-            +--rw _transferIntegrity
+            +--rw _transferIntegritySpec
             |  +--rw errorCharacteristic?                    string
             |  +--rw lossCharacteristic?                     string
             |  +--rw repeatDeliveryCharacteristic?           string
             |  +--rw deliveryOrderCharacteristic?            string
             |  +--rw unavailableTimeCharacteristic?          string
             |  +--rw serverIntegrityProcessCharacteristic?   string
-            +--rw _risk
-            |  +--rw riskCharacteristicList* [riskCharacteristicName]
+            +--rw _transferTimingSpec
+            |  +--rw fixedLatencyCharacteristic?   string
+            |  +--rw jitterCharacteristic?         string
+            |  +--rw wanderCharacteristic?         string
+            |  +--rw queuingLatency*               string
+            +--rw _riskParameterSpec
+            |  +--rw riskCharacteristic* [riskCharacteristicName]
             |     +--rw riskCharacteristicName    string
             |     +--rw riskIdentifierList*       string
-            +--rw _validation
+            +--rw _validationSpec
             |  +--rw validationMechanism* [validationMechanism]
             |     +--rw validationMechanism                string
             |     +--rw layerProtocolAdjacencyValidated?   string
             |     +--rw validationRobustness?              string
-            +--rw _layerTransition
-               +--rw transitionedLayerProtocolName*   string
-               +--rw _nodeEdgePoint*                  -> /Tapi_Topology/_node/_ownedNodeEdgePoint/uuid
+            +--rw _lpTransitionSpec
+            |  +--rw transitionedLayerProtocolName*   string
+            |  +--rw _nodeEdgePoint*                  -> /Tapi_Topology/_node/_ownedNodeEdgePoint/uuid
+            +--ro layerProtocolName*        TapiModule-TypeDefinitions:Tapi_LayerProtocolName
+            +--ro direction?                TapiModule-TypeDefinitions:Tapi_ForwardingDirection
