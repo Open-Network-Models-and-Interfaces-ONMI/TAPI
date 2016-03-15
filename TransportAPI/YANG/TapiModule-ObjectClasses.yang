@@ -1,654 +1,860 @@
 module TapiModule-ObjectClasses {
-    namespace 'urn:onf:TapiModule-ObjectClasses';
+    namespace "uri:onf:TapiModule-ObjectClasses";
     prefix TapiModule-ObjectClasses;
     import TapiModule-TypeDefinitions {
         prefix TapiModule-TypeDefinitions;
     }
-    organization "ONF T-API Group";
-    contact "mailto:info@opennetworking.org";
-    description
-        "This module contains Transport API Object Classes. It is part of the T-API specification.
-        Authors List:
-            Ricard Vilalta (CTTC)
-            Victor López (Telefónica)
-            (T-API Team)";
-    revision 2016-01-19 {
-        description
-            "First version for Transport API Object Classes";
+    import TapiModule-ObjectClasses-StatePac {
+        prefix TapiModule-ObjectClasses-StatePac;
     }
-    grouping LayerProtocol {
-        leaf layerProtocol {
-            type string;
+    revision 2016-03-15{}
+    list Tapi_Topology {
+        key 'uuid';
+        config true;
+        ordered-by system;
+        uses G_Tapi_Topology;
+    }
+    grouping G_Tapi_Topology {
+        list _node {
+            key 'uuid';
+            config true;
+            ordered-by system;
+            uses G_Tapi_Node;
+        }
+        list _link {
+            key 'uuid';
+            config true;
+            ordered-by system;
+            uses G_Tapi_Link;
+        }
+        leaf uuid {
+            type TapiModule-TypeDefinitions:Tapi_UniversalId;
+            description "UUID: An identifier that is universally unique
+                (consider in the context of Identifier: A property of an entity/role with a value that is unique within an identifier space, where the identifier space is itself globally unique, and immutable. An identifier carries no semantics with respect to the purpose or state of the entity)";
+        }
+        list name {
+            description "List of names. A property of an entity with a value that is unique in some namespace but may change during the life of the entity. A name carries no semantics with respect to the purpose of the entity.";
+            key 'valueName';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_NameAndValue;
+            min-elements 1;
+        }
+        list label {
+            description "List of labels.A property of an entity with a value that is not expected to be unique and is allowed to change. A label carries no semantics with respect to the purpose of the entity and has no effect on the entity behavior or state.";
+            key 'valueName';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_NameAndValue;
+        }
+        list extension {
+            description "List of simple name-value extentions. Extension provides an opportunity to define properties not declared in the class that extend the class enabling a realization with simple ad-hoc extension of standard classes to be conformant.";
+            key 'valueName';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_NameAndValue;
+        }
+        leaf-list layerProtocolName {
+            ordered-by system;
+            type TapiModule-TypeDefinitions:Tapi_LayerProtocolName;
+            min-elements 1;
         }
     }
-    grouping NameAndValue {
-        leaf value {
-            type string;
-        }
-        leaf valueName {
-            type string;
-        }
-    }  
-    grouping Capacity {
-        leaf totalSize {
-            type string;
-            mandatory true;
-        }
-        leaf numberOfClientInstances {
-            type string;
-        }
-        leaf maximumClientSize {
-            type string;
-        }
-        leaf numberingRange {
-            type string;
-        }
-    }
-    grouping CostCharacteristics {
-        leaf costName {
-            type string;
-            mandatory true;
-        }
-        leaf costValue {
-            type string;
-            mandatory true;
-        }
-        leaf costAlgorithm {
-            type string; 
-        }
-    }
-    grouping RiskCharacteristic {
-        leaf riskCharacteristicName {
-            type string;
-            mandatory true;
-        }
-        list riskIdentifierList {
-            key "ristIdentifier";
-            leaf ristIdentifier{
-                type string;
+    list G_Tapi_Context {
+        key 'uuid';
+        config true;
+        leaf _topology {
+            type leafref {
+                path '/Tapi_Topology/uuid';
             }
-            min-elements "1";
+        }
+        leaf uuid {
+            type TapiModule-TypeDefinitions:Tapi_UniversalId;
+            description "UUID: An identifier that is universally unique
+                (consider in the context of Identifier: A property of an entity/role with a value that is unique within an identifier space, where the identifier space is itself globally unique, and immutable. An identifier carries no semantics with respect to the purpose or state of the entity)";
+        }
+        list name {
+            description "List of names. A property of an entity with a value that is unique in some namespace but may change during the life of the entity. A name carries no semantics with respect to the purpose of the entity.";
+            key 'valueName';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_NameAndValue;
+            min-elements 1;
+        }
+        list label {
+            description "List of labels.A property of an entity with a value that is not expected to be unique and is allowed to change. A label carries no semantics with respect to the purpose of the entity and has no effect on the entity behavior or state.";
+            key 'valueName';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_NameAndValue;
+        }
+        list extension {
+            description "List of simple name-value extentions. Extension provides an opportunity to define properties not declared in the class that extend the class enabling a realization with simple ad-hoc extension of standard classes to be conformant.";
+            key 'valueName';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_NameAndValue;
         }
     }
-    grouping ValidationMechanism {
-        leaf validationMechanism {
-            type string;
-            mandatory true;
+    grouping G_Tapi_Node {
+        uses G_Tapi_GlobalComponent;
+        list _ownedNodeEdgePoint {
+            key 'uuid';
+            config true;
+            ordered-by system;
+            uses G_Tapi_NodeEdgePoint;
         }
-        leaf layerProtocolAdjacencyValidated {
-            type string;
-            mandatory true;
+        leaf-list _aggregatedNodeEdgePoint {
+            ordered-by system;
+            type leafref {
+                path '/Tapi_Topology/_node/_ownedNodeEdgePoint/uuid';
+            }
         }
-        leaf validationRobustness {
-            type string;
-            mandatory true;
+        leaf _encapTopology {
+            type leafref {
+                path '/Tapi_Topology/uuid';
+            }
+        }
+        container _stateSpec {
+            config true;
+            uses TapiModule-ObjectClasses-StatePac:G_Tapi_AdminStatePac;
+        }
+        container _transferCapacitySpec {
+            config true;
+            uses G_Tapi_TransferCapacityPac;
+        }
+        container _transferCostSpec {
+            config true;
+            uses G_Tapi_TransferCostPac;
+        }
+        container _transferIntegritySpec {
+            config true;
+            uses G_Tapi_TransferIntegrityPac;
+        }
+        container _transferTimingSpec {
+            config true;
+            uses G_Tapi_TransferTimingPac;
+        }
+        leaf-list layerProtocolName {
+            ordered-by system;
+            type TapiModule-TypeDefinitions:Tapi_LayerProtocolName;
+            min-elements 1;
         }
     }
-    grouping QueuingLatency {
-        leaf trafficProperty {
-            type string;
-            mandatory true;
+    grouping G_Tapi_Link {
+        uses G_Tapi_GlobalComponent;
+        list _linkPort {
+            key 'localId';
+            config true;
+            ordered-by system;
+            uses G_Tapi_LinkPort;
+            min-elements 2;
         }
-        leaf latencyForTrafficWithProperty {
-            type string;
-            mandatory true;
+        leaf-list _node {
+            ordered-by system;
+            type leafref {
+                path '/Tapi_Topology/_node/uuid';
+            }
+            min-elements 2;
+        }
+        container _stateSpec {
+            config true;
+            uses TapiModule-ObjectClasses-StatePac:G_Tapi_AdminStatePac;
+        }
+        container _transferCapacitySpec {
+            config true;
+            uses G_Tapi_TransferCapacityPac;
+        }
+        container _transferCostSpec {
+            config true;
+            uses G_Tapi_TransferCostPac;
+        }
+        container _transferIntegritySpec {
+            config true;
+            uses G_Tapi_TransferIntegrityPac;
+        }
+        container _transferTimingSpec {
+            config true;
+            uses G_Tapi_TransferTimingPac;
+        }
+        container _riskParameterSpec {
+            config true;
+            uses G_Tapi_RiskParameterPac;
+        }
+        container _validationSpec {
+            config true;
+            uses G_Tapi_ValidationPac;
+        }
+        container _lpTransitionSpec {
+            config true;
+            uses G_Tapi_LayerProtocolTransitionPac;
+        }
+        leaf-list layerProtocolName {
+            ordered-by system;
+            type TapiModule-TypeDefinitions:Tapi_LayerProtocolName;
+            min-elements 1;
+        }
+        leaf direction {
+            type TapiModule-TypeDefinitions:Tapi_ForwardingDirection;
+            description "The directionality of the Link. 
+                Is applicable to simple Links where all LinkEnds are BIDIRECTIONAL (the Link will be BIDIRECTIONAL) or UNIDIRECTIONAL (the Link will be UNIDIRECTIONAL). 
+                Is not present in more complex cases.";
         }
     }
-    grouping State_Pac {
-        leaf operationalState {
-            type TapiModule-TypeDefinitions:LifecycleState;
+    grouping G_Tapi_NodeEdgePoint {
+        list _layerProtocol {
+            key 'localId';
+            config true;
+            ordered-by system;
+            uses G_Tapi_LayerProtocol;
+            min-elements 1;
+        }
+        leaf-list _clientNodeEdgePoint {
+            ordered-by system;
+            type string;
+        }
+        leaf uuid {
+            type TapiModule-TypeDefinitions:Tapi_UniversalId;
+            description "UUID: An identifier that is universally unique
+                (consider in the context of Identifier: A property of an entity/role with a value that is unique within an identifier space, where the identifier space is itself globally unique, and immutable. An identifier carries no semantics with respect to the purpose or state of the entity)";
+        }
+        list name {
+            description "List of names. A property of an entity with a value that is unique in some namespace but may change during the life of the entity. A name carries no semantics with respect to the purpose of the entity.";
+            key 'valueName';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_NameAndValue;
+            min-elements 1;
+        }
+        list label {
+            description "List of labels.A property of an entity with a value that is not expected to be unique and is allowed to change. A label carries no semantics with respect to the purpose of the entity and has no effect on the entity behavior or state.";
+            key 'valueName';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_NameAndValue;
+        }
+        list extension {
+            description "List of simple name-value extentions. Extension provides an opportunity to define properties not declared in the class that extend the class enabling a realization with simple ad-hoc extension of standard classes to be conformant.";
+            key 'valueName';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_NameAndValue;
+        }
+        leaf direction {
+            type TapiModule-TypeDefinitions:Tapi_TerminationDirection;
         }
         leaf administrativeState {
-            type TapiModule-TypeDefinitions:AdministrativeState;
+            type TapiModule-TypeDefinitions:Tapi_AdministrativeState;
+        }
+        leaf operationalState {
+            type TapiModule-TypeDefinitions:Tapi_OperationalState;
         }
         leaf lifecycleState {
-            type TapiModule-TypeDefinitions:LifecycleState;
-        }  
-    }
-    grouping RiskParameter_Pac {
-        list riskCharacteristic {
-            key "riskCharacteristicName";
-            uses RiskCharacteristic;
+            type TapiModule-TypeDefinitions:Tapi_LifecycleState;
         }
     }
-    grouping TransferCost_Pac {
+    list Tapi_ServiceEndPoint {
+        key 'uuid';
+        config true;
+        ordered-by system;
+        uses G_Tapi_ServiceEndPoint;
+    }
+    grouping G_Tapi_ServiceEndPoint {
+        list _layerProtocol {
+            key 'localId';
+            config true;
+            ordered-by system;
+            uses G_Tapi_LayerProtocol;
+            min-elements 1;
+        }
+        leaf-list _mappedNodeEdgePoint {
+            ordered-by system;
+            type leafref {
+                path '/Tapi_Topology/_node/_ownedNodeEdgePoint/uuid';
+            }
+        }
+        leaf uuid {
+            type TapiModule-TypeDefinitions:Tapi_UniversalId;
+            description "UUID: An identifier that is universally unique
+                (consider in the context of Identifier: A property of an entity/role with a value that is unique within an identifier space, where the identifier space is itself globally unique, and immutable. An identifier carries no semantics with respect to the purpose or state of the entity)";
+        }
+        list label {
+            description "List of labels.A property of an entity with a value that is not expected to be unique and is allowed to change. A label carries no semantics with respect to the purpose of the entity and has no effect on the entity behavior or state.";
+            key 'valueName';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_NameAndValue;
+        }
+        list name {
+            description "List of names. A property of an entity with a value that is unique in some namespace but may change during the life of the entity. A name carries no semantics with respect to the purpose of the entity.";
+            key 'valueName';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_NameAndValue;
+            min-elements 1;
+        }
+        list extension {
+            description "List of simple name-value extentions. Extension provides an opportunity to define properties not declared in the class that extend the class enabling a realization with simple ad-hoc extension of standard classes to be conformant.";
+            key 'valueName';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_NameAndValue;
+        }
+        leaf direction {
+            type TapiModule-TypeDefinitions:Tapi_TerminationDirection;
+        }
+        leaf operationalState {
+            type TapiModule-TypeDefinitions:Tapi_OperationalState;
+        }
+    }
+    list Tapi_ConnectionEndPoint {
+        key 'uuid';
+        config true;
+        ordered-by system;
+        uses G_Tapi_ConnectionEndPoint;
+    }
+    grouping G_Tapi_ConnectionEndPoint {
+        list _layerProtocol {
+            key 'localId';
+            config true;
+            ordered-by system;
+            uses G_Tapi_LayerProtocol;
+            min-elements 1;
+        }
+        leaf-list _clientNodeEdgePoint {
+            ordered-by system;
+            type leafref {
+                path '/Tapi_Topology/_node/_ownedNodeEdgePoint/uuid';
+            }
+        }
+        leaf _serverNodeEdgePoint {
+            type leafref {
+                path '/Tapi_Topology/_node/_ownedNodeEdgePoint/uuid';
+            }
+        }
+        leaf _peerConnectionEndPoint {
+            type leafref {
+                path '/Tapi_ConnectionEndPoint/uuid';
+            }
+        }
+        leaf uuid {
+            type TapiModule-TypeDefinitions:Tapi_UniversalId;
+            description "UUID: An identifier that is universally unique
+                (consider in the context of Identifier: A property of an entity/role with a value that is unique within an identifier space, where the identifier space is itself globally unique, and immutable. An identifier carries no semantics with respect to the purpose or state of the entity)";
+        }
+        list label {
+            description "List of labels.A property of an entity with a value that is not expected to be unique and is allowed to change. A label carries no semantics with respect to the purpose of the entity and has no effect on the entity behavior or state.";
+            key 'valueName';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_NameAndValue;
+        }
+        list name {
+            description "List of names. A property of an entity with a value that is unique in some namespace but may change during the life of the entity. A name carries no semantics with respect to the purpose of the entity.";
+            key 'valueName';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_NameAndValue;
+            min-elements 1;
+        }
+        list extension {
+            description "List of simple name-value extentions. Extension provides an opportunity to define properties not declared in the class that extend the class enabling a realization with simple ad-hoc extension of standard classes to be conformant.";
+            key 'valueName';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_NameAndValue;
+        }
+        leaf direction {
+            type TapiModule-TypeDefinitions:Tapi_TerminationDirection;
+        }
+        leaf operationalState {
+            type TapiModule-TypeDefinitions:Tapi_OperationalState;
+        }
+    }
+    list Tapi_ConnectivityService {
+        key 'uuid';
+        config true;
+        ordered-by system;
+        uses G_Tapi_ConnectivityService;
+    }
+    grouping G_Tapi_ConnectivityService {
+        list _servicePort {
+            key 'localId';
+            config true;
+            ordered-by system;
+            uses G_Tapi_ServicePort;
+            min-elements 2;
+        }
+        list _connection {
+            key 'uuid';
+            config true;
+            ordered-by system;
+            uses G_Tapi_Connection;
+        }
+        leaf uuid {
+            type TapiModule-TypeDefinitions:Tapi_UniversalId;
+            description "UUID: An identifier that is universally unique
+                (consider in the context of Identifier: A property of an entity/role with a value that is unique within an identifier space, where the identifier space is itself globally unique, and immutable. An identifier carries no semantics with respect to the purpose or state of the entity)";
+        }
+        list name {
+            description "List of names. A property of an entity with a value that is unique in some namespace but may change during the life of the entity. A name carries no semantics with respect to the purpose of the entity.";
+            key 'valueName';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_NameAndValue;
+            min-elements 1;
+        }
+        list label {
+            description "List of labels.A property of an entity with a value that is not expected to be unique and is allowed to change. A label carries no semantics with respect to the purpose of the entity and has no effect on the entity behavior or state.";
+            key 'valueName';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_NameAndValue;
+        }
+        list extension {
+            description "List of simple name-value extentions. Extension provides an opportunity to define properties not declared in the class that extend the class enabling a realization with simple ad-hoc extension of standard classes to be conformant.";
+            key 'valueName';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_NameAndValue;
+        }
+        leaf layerProtocolName {
+            type TapiModule-TypeDefinitions:Tapi_LayerProtocolName;
+        }
+        leaf direction {
+            type TapiModule-TypeDefinitions:Tapi_ForwardingDirection;
+        }
+        leaf administrativeState {
+            type TapiModule-TypeDefinitions:Tapi_AdministrativeState;
+        }
+        leaf operationalState {
+            type TapiModule-TypeDefinitions:Tapi_OperationalState;
+        }
+        leaf lifecycleState {
+            type TapiModule-TypeDefinitions:Tapi_LifecycleState;
+        }
+    }
+    grouping G_Tapi_Connection {
+        list _connectionPort {
+            key 'localId';
+            config true;
+            ordered-by system;
+            uses G_Tapi_ConnectionPort;
+            min-elements 2;
+        }
+        list _path {
+            key 'localId';
+            config true;
+            ordered-by system;
+            uses G_Tapi_Route;
+        }
+        leaf _node {
+            type leafref {
+                path '/Tapi_Topology/_node/uuid';
+            }
+        }
+        leaf uuid {
+            type TapiModule-TypeDefinitions:Tapi_UniversalId;
+            description "UUID: An identifier that is universally unique
+                (consider in the context of Identifier: A property of an entity/role with a value that is unique within an identifier space, where the identifier space is itself globally unique, and immutable. An identifier carries no semantics with respect to the purpose or state of the entity)";
+        }
+        list name {
+            description "List of names. A property of an entity with a value that is unique in some namespace but may change during the life of the entity. A name carries no semantics with respect to the purpose of the entity.";
+            key 'valueName';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_NameAndValue;
+            min-elements 1;
+        }
+        list label {
+            description "List of labels.A property of an entity with a value that is not expected to be unique and is allowed to change. A label carries no semantics with respect to the purpose of the entity and has no effect on the entity behavior or state.";
+            key 'valueName';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_NameAndValue;
+        }
+        list extension {
+            description "List of simple name-value extentions. Extension provides an opportunity to define properties not declared in the class that extend the class enabling a realization with simple ad-hoc extension of standard classes to be conformant.";
+            key 'valueName';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_NameAndValue;
+        }
+        leaf layerProtocolName {
+            type TapiModule-TypeDefinitions:Tapi_LayerProtocolName;
+        }
+        leaf direction {
+            type TapiModule-TypeDefinitions:Tapi_ForwardingDirection;
+        }
+        leaf operationalState {
+            type TapiModule-TypeDefinitions:Tapi_OperationalState;
+        }
+        leaf lifecycleState {
+            type TapiModule-TypeDefinitions:Tapi_LifecycleState;
+        }
+    }
+    grouping G_Tapi_Route {
+        uses G_Tapi_LocalComponent;
+        leaf-list _lowerConnection {
+            ordered-by system;
+            type leafref {
+                path '/Tapi_ConnectivityService/_connection/uuid';
+            }
+            min-elements 1;
+        }
+    }
+    grouping G_Tapi_LinkPort {
+        uses G_Tapi_LocalComponent;
+        leaf _nodeEdgePoint {
+            type leafref {
+                path '/Tapi_Topology/_node/_ownedNodeEdgePoint/uuid';
+            }
+        }
+        leaf role {
+            type TapiModule-TypeDefinitions:Tapi_PortRole;
+            description "Each LinkEnd of the Link has a role (e.g., symmetric, hub, spoke, leaf, root)  in the context of the Link with respect to the Link function. ";
+        }
+        leaf direction {
+            type TapiModule-TypeDefinitions:Tapi_PortDirection;
+            description "The orientation of defined flow at the LinkEnd.";
+        }
+    }
+    grouping G_Tapi_ServicePort {
+        uses G_Tapi_LocalComponent;
+        leaf _serviceEndPoint {
+            type leafref {
+                path '/Tapi_ServiceEndPoint/uuid';
+            }
+        }
+        leaf role {
+            type TapiModule-TypeDefinitions:Tapi_PortRole;
+            description "Each EP of the FC has a role (e.g., working, protection, protected, symmetric, hub, spoke, leaf, root)  in the context of the FC with respect to the FC function. ";
+        }
+        leaf direction {
+            type TapiModule-TypeDefinitions:Tapi_PortDirection;
+            description "The orientation of defined flow at the EndPoint.";
+        }
+        leaf serviceLayer {
+            type TapiModule-TypeDefinitions:Tapi_LayerProtocolName;
+        }
+    }
+    grouping G_Tapi_ConnectionPort {
+        uses G_Tapi_LocalComponent;
+        leaf _connectionEndPoint {
+            type leafref {
+                path '/Tapi_ConnectionEndPoint/uuid';
+            }
+        }
+        leaf role {
+            type TapiModule-TypeDefinitions:Tapi_PortRole;
+            description "Each EP of the FC has a role (e.g., working, protection, protected, symmetric, hub, spoke, leaf, root)  in the context of the FC with respect to the FC function. ";
+        }
+        leaf direction {
+            type TapiModule-TypeDefinitions:Tapi_PortDirection;
+            description "The orientation of defined flow at the EndPoint.";
+        }
+    }
+    grouping G_Tapi_LayerProtocol {
+        uses G_Tapi_LocalComponent;
+        leaf _lpSpec {
+            type string;
+            description "The LpSpec identifies the interna structure of the LP explaining internal flexibilities, degree of termination and degree of adaptation on both client and server side.";
+        }
+        leaf layerProtocolName {
+            type TapiModule-TypeDefinitions:Tapi_LayerProtocolName;
+            description "Indicate the specific layer-protocol described by the LayerProtocol entity.";
+        }
+        leaf terminationDirection {
+            type TapiModule-TypeDefinitions:Tapi_TerminationDirection;
+            description "The overall directionality of the LP. 
+                - A BIDIRECTIONAL LP will have some SINK and/or SOURCE flowss.
+                - A SINK LP can only contain elements with SINK flows or CONTRA_DIRECTION_SOURCE flows
+                - A SOURCE LP can only contain SOURCE flows or CONTRA_DIRECTION_SINK flows";
+        }
+        leaf terminationState {
+            type TapiModule-TypeDefinitions:Tapi_TerminationState;
+            description "Indicates whether the layer is terminated and if so how.";
+        }
+    }
+    grouping G_Tapi_TransferCostPac {
         list costCharacteristic {
-            key "costName";
-            uses CostCharacteristics;
-            min-elements "1";
+            description "The list of costs where each cost relates to some aspect of the TopologicalEntity.";
+            key 'costAlgorithm';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_CostCharacteristic;
+            min-elements 1;
         }
     }
-    grouping TransferTiming_Pac {
+    grouping G_Tapi_RiskParameterPac {
+        list riskCharacteristic {
+            description "A list of risk characteristics for consideration in an analysis of shared risk. Each element of the list represents a specific risk consideration.";
+            key 'riskCharacteristicName';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_RiskCharacteristic;
+            min-elements 1;
+        }
+    }
+    grouping G_Tapi_LayerProtocolTransitionPac {
+        leaf-list transitionedLayerProtocolName {
+            description "Provides the ordered structure of layer protocol transitions encapsulated in the TopologicalEntity. The ordering relates to the LinkPort role.";
+            ordered-by system;
+            type string;
+            min-elements 1;
+        }
+        leaf-list _nodeEdgePoint {
+            description "Lists the LTPs that define the layer protocol transition of the transitional link.";
+            ordered-by system;
+            type leafref {
+                path '/Tapi_Topology/_node/_ownedNodeEdgePoint/uuid';
+            }
+            min-elements 1;
+        }
+    }
+    grouping G_Tapi_TransferTimingPac {
         leaf fixedLatencyCharacteristic {
             type string;
-            mandatory true;
+            description "A TopologicalEntity suffers delay caused by the realization of the servers (e.g. distance related; FEC encoding etc.) along with some client specific processing. This is the total average latency effect of the TopologicalEntity";
         }
         leaf jitterCharacteristic {
             type string;
+            description "High frequency deviation from true periodicity of a signal and therefore a small high rate of change of transfer latency.
+                Applies to TDM systems (and not packet).";
         }
         leaf wanderCharacteristic {
             type string;
+            description "Low frequency deviation from true periodicity of a signal and therefore a small low rate of change of transfer latency.
+                Applies to TDM systems (and not packet).";
         }
-        list queuingLatency {
-            key "trafficProperty";
-            uses QueuingLatency;
+        leaf-list queuingLatency {
+            description "The effect on the latency of a queuing process. This only has significant effect for packet based systems and has a complex characteristic.";
+            ordered-by system;
+            type string;
         }
     }
-    grouping TransferIntegrity_Pac {
+    grouping G_Tapi_TransferIntegrityPac {
         leaf errorCharacteristic {
             type string;
+            description "Describes the degree to which the signal propagated can be errored. 
+                Applies to TDM systems as the errored signal will be propagated and not packet as errored packets will be discarded.";
         }
         leaf lossCharacteristic {
             type string;
+            description "Describes the acceptable characteristic of lost packets where loss may result from discard due to errors or overflow.
+                Applies to packet systems and not TDM (as for TDM errored signals are propagated unless grossly errored and overflow/underflow turns into timing slips).";
         }
         leaf repeatDeliveryCharacteristic {
             type string;
+            description "Primarily applies to packet systems where a packet may be delivered more than once (in fault recovery for example). 
+                It can also apply to TDM where several frames may be received twice due to switching in a system with a large differential propagation delay.";
         }
         leaf deliveryOrderCharacteristic {
             type string;
+            description "Describes the degree to which packets will be delivered out of sequence.
+                Does not apply to TDM as the TDM protocols maintain strict order.";
         }
         leaf unavailableTimeCharacteristic {
             type string;
-            mandatory true;
+            description "Describes the duration for which there may be no valid signal propagated.";
         }
         leaf serverIntegrityProcessCharacteristic {
             type string;
+            description "Describes the effect of any server integrity enhancement process on the characteristics of the TopologicalEntity.";
         }
     }
-    grouping TransferCapacity_Pac {
+    grouping G_Tapi_TransferCapacityPac {
         container totalPotentialCapacity {
-            uses Capacity;
+            description "An optimistic view of the capacity of the TopologicalEntity assuming that any shared capacity is available to be taken.";
+            config true;
+            uses TapiModule-TypeDefinitions:G_Tapi_Capacity;
         }
         container availableCapacity {
-            uses Capacity;
+            description "Capacity available to be assigned.";
+            config true;
+            uses TapiModule-TypeDefinitions:G_Tapi_Capacity;
         }
         list capacityAssignedToUserView {
-            key "totalSize";
-            uses Capacity;
+            description "Capacity already assigned";
+            key 'numberingRange';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_Capacity;
         }
         leaf capacityInteractionAlgorithm {
             type string;
+            description "A reference to an algorithm that describes how various chunks of allocated capacity interact (e.g. when shared)";
         }
     }
-    grouping Validation_Pac {
+    grouping G_Tapi_ValidationPac {
         list validationMechanism {
-            key "validationMechanism";
-            uses ValidationMechanism;
-            min-elements "1";
+            description "Provides details of the specific validation mechanism(s) used to confirm the presence of an intended topologicalEntity.";
+            key 'validationRobustness';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_ValidationMechanism;
+            min-elements 1;
         }
     }
-    grouping LayerProtocolTransition_Pac {
-        list transitionedLayerProtocol {
-            key "transitionedLayerProtocol";
-            leaf transitionedLayerProtocol{
-                type TapiModule-TypeDefinitions:LayerProtocolName;
-            }
-        }
-        leaf-list nodeEdgePoint {
+    grouping G_Tapi_TeLink {
+        uses G_Tapi_LocalComponent;
+        leaf-list _node {
+            ordered-by system;
             type leafref {
-                path "/TapiModule-ObjectClasses:Tapi_Context/TapiModule-ObjectClasses:topology/TapiModule-ObjectClasses:node/TapiModule-ObjectClasses:nodeEdgePoint/TapiModule-ObjectClasses:uuid";
+                path '/Tapi_Topology/_node/uuid';
+            }
+            max-elements 2;
+            min-elements 2;
+        }
+        leaf-list _linkPort {
+            ordered-by system;
+            type leafref {
+                path '/Tapi_Topology/_link/_linkPort/localId';
+            }
+            max-elements 2;
+        }
+        leaf _link {
+            type leafref {
+                path '/Tapi_Topology/_link/uuid';
             }
         }
-    }    
-    grouping Tapi_NodeEdgePoint {
-        description
-            "Node-Edge-Point - represents the node-facing aspect of the edge-port functions for accessing the 
-            forwarding capabilities provided by the Node. 
-            Node-Edge-Point provides an encapsulation of addressing, mapping, termination, adaptation and OAM 
-            functions of one or more transport layers (including circuit and packet forms) performed at the entry/
-            exit points of Node. ";
-        leaf uuid{
-            type TapiModule-TypeDefinitions:UniversalId;
+    }
+    list Tapi_Path {
+        key 'uuid';
+        config true;
+        ordered-by system;
+        uses G_Tapi_Path;
+    }
+    grouping G_Tapi_Path {
+        list _telink {
+            key 'localId';
+            config true;
+            ordered-by system;
+            uses G_Tapi_TeLink;
+            min-elements 1;
         }
-        list layerProtocol{ 
-            key "layerProtocol";
-            uses LayerProtocol;
+        leaf uuid {
+            type TapiModule-TypeDefinitions:Tapi_UniversalId;
+            description "UUID: An identifier that is universally unique
+                (consider in the context of Identifier: A property of an entity/role with a value that is unique within an identifier space, where the identifier space is itself globally unique, and immutable. An identifier carries no semantics with respect to the purpose or state of the entity)";
         }
-        leaf operationalState {
-            type TapiModule-TypeDefinitions:OperationalState;
+        container routingConstraint {
+            config true;
+            uses G_Tapi_ConnectivityConstraint;
         }
-        leaf physicalPortReference {
+    }
+    grouping G_Tapi_ConnectivityConstraint {
+        leaf serviceType {
+            type TapiModule-TypeDefinitions:Tapi_ServiceType;
+        }
+        container requestedCapacity {
+            config true;
+            uses TapiModule-TypeDefinitions:G_Tapi_Capacity;
+        }
+        leaf serviceLevel {
+            type string;
+            description "An abstract value the meaning of which is mutually agreed – typically represents metrics such as - Class of service, priority, resiliency, availability";
+        }
+        leaf-list serviceLayer {
+            ordered-by system;
+            type TapiModule-TypeDefinitions:Tapi_LayerProtocolName;
+        }
+        list costCharacteristic {
+            description "The list of costs where each cost relates to some aspect of the TopologicalEntity.";
+            key 'costAlgorithm';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_CostCharacteristic;
+        }
+        list riskCharacteristic {
+            description "A list of risk characteristics for consideration in an analysis of shared risk. Each element of the list represents a specific risk consideration.";
+            key 'riskCharacteristicName';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_RiskCharacteristic;
+        }
+        list latencyCharacteristic {
+            description "The effect on the latency of a queuing process. This only has significant effect for packet based systems and has a complex characteristic.";
+            key 'latencyValue';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_QueuingLatency;
+        }
+        leaf-list includePath {
+            ordered-by system;
+            type leafref {
+                path '/Tapi_Path/uuid';
+            }
+        }
+        leaf-list excludePath {
+            ordered-by system;
+            type leafref {
+                path '/Tapi_Path/uuid';
+            }
+        }
+    }
+    grouping G_Tapi_ScheduleInfo {
+        leaf startTime {
+            type string;
+        }
+        leaf endTime {
             type string;
         }
     }
-    grouping Tapi_LinkPort {
-        description
-            "The association of the Link to LTPs is made via LinkPort.
-            The LinkPort object class models the access to the Link function. 
-            The traffic forwarding between the associated LinkPorts of the Link depends upon the type of Link.  
-            In cases where there is resilience the LinkPort may convey the resilience role of the access to the Link. 
-            The Link can be considered as a component and the LinkPort as a Port on that component";
-        leaf uuid{
-            type TapiModule-TypeDefinitions:UniversalId;
-        }
-        leaf-list nodeEdgePoint {
-            type leafref {
-                path "/TapiModule-ObjectClasses:Tapi_Context/TapiModule-ObjectClasses:topology/TapiModule-ObjectClasses:node/TapiModule-ObjectClasses:nodeEdgePoint/TapiModule-ObjectClasses:uuid";
-            }
-            max-elements "1";
-            min-elements "1";      
-        }
-        leaf role {
-            type TapiModule-TypeDefinitions:EndRole;
-        }
-        leaf direction {
-            type TapiModule-TypeDefinitions:EndDirection;
-        }
-        list localId {
-            key "valueName";
-            uses NameAndValue;
-            min-elements "1";
+    grouping G_Tapi_PathOptimizationConstraint {
+        leaf trafficInterruption {
+            type TapiModule-TypeDefinitions:Tapi_DirectiveValue;
         }
     }
-    
-    grouping Tapi_Node {
-        description
-            "Representation of the opaque forwarding-aspects of the Forwarding-Domain (FD) 
-            Node describes the edge ports of the FD (Node-Edge-Point) and the forwarding capabilities between 
-            those edge ports.";
-        leaf uuid{
-            type TapiModule-TypeDefinitions:UniversalId;
+    grouping G_Tapi_PathObjectiveFunction {
+        leaf concurrentPaths {
+            type TapiModule-TypeDefinitions:Tapi_DirectiveValue;
         }
-        leaf-list encapTopology {
-            type leafref {
-                path "/TapiModule-ObjectClasses:Tapi_Context/TapiModule-ObjectClasses:topology/TapiModule-ObjectClasses:uuid";
-            }
-            max-elements "1";
+        leaf bandwidthOptimization {
+            type TapiModule-TypeDefinitions:Tapi_DirectiveValue;
         }
-        list nodeEdgePoint { 
-            key "uuid";
-            uses Tapi_NodeEdgePoint;     
+        leaf costOptimization {
+            type TapiModule-TypeDefinitions:Tapi_DirectiveValue;
+        }
+        leaf linkUtilization {
+            type TapiModule-TypeDefinitions:Tapi_DirectiveValue;
+        }
+        leaf resourceSharing {
+            type TapiModule-TypeDefinitions:Tapi_DirectiveValue;
+        }
+    }
+    grouping G_Tapi_GlobalComponent {
+        leaf uuid {
+            type TapiModule-TypeDefinitions:Tapi_UniversalId;
+            description "UUID: An identifier that is universally unique
+                (consider in the context of Identifier: A property of an entity/role with a value that is unique within an identifier space, where the identifier space is itself globally unique, and immutable. An identifier carries no semantics with respect to the purpose or state of the entity)";
         }
         list name {
-            key "valueName";
-            uses NameAndValue;
-            min-elements "1";
+            description "List of names. A property of an entity with a value that is unique in some namespace but may change during the life of the entity. A name carries no semantics with respect to the purpose of the entity.";
+            key 'valueName';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_NameAndValue;
+            min-elements 1;
         }
         list label {
-            key "valueName";
-            uses NameAndValue;
+            description "List of labels.A property of an entity with a value that is not expected to be unique and is allowed to change. A label carries no semantics with respect to the purpose of the entity and has no effect on the entity behavior or state.";
+            key 'valueName';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_NameAndValue;
         }
         list extension {
-            key "valueName";
-            uses NameAndValue;
-        }    
-        list layerProtocolName {
-            key "layerProtocolName";
-            leaf layerProtocolName {
-                type TapiModule-TypeDefinitions:LayerProtocolName;
-            }
-            min-elements "1";
-        }
-        leaf-list connection {
-            type leafref {
-                path "/TapiModule-ObjectClasses:Tapi_Context/TapiModule-ObjectClasses:connectivityService/TapiModule-ObjectClasses:connection/TapiModule-ObjectClasses:uuid";
-            }
-        }
-        container _state_Pac {
-            presence "<condition for State_Pac attributes>";
-            uses State_Pac;
-        }
-        container _riskParameter_Pac {
-            presence "<condition for RiskParameter_Pac attributes>";
-            uses RiskParameter_Pac;
-        }
-        container _transferCost_Pac {
-            presence "<condition for TransferCost_Pac attributes>";
-            uses TransferCost_Pac;
-        }
-        container _transferTiming_Pac {
-            presence "<condition for TransferTiming_Pac attributes>";
-            uses TransferTiming_Pac;
-        }
-        container _transferCapacity_Pac {
-            presence "<condition for TransferCapacity_Pac attributes>";
-            uses TransferCapacity_Pac;
-        }
-        container _transferIntegrity_Pac {
-            presence "<condition for TransferIntegrity_Pac attributes>";
-            uses TransferIntegrity_Pac;
-        }
-        container _validation_Pac {
-            presence "<condition for Validation_Pac attributes>";    
-            uses Validation_Pac;
-        }
-        container _layerTransition_Pac {
-            presence "<condition for LayerProtocolTransition_Pac attributes>";
-            uses LayerProtocolTransition_Pac;
+            description "List of simple name-value extentions. Extension provides an opportunity to define properties not declared in the class that extend the class enabling a realization with simple ad-hoc extension of standard classes to be conformant.";
+            key 'valueName';
+            config true;
+            ordered-by system;
+            uses TapiModule-TypeDefinitions:G_Tapi_NameAndValue;
         }
     }
-    grouping Tapi_Link {
-        description
-            "Representation of the effective adjacency between two or more associated Nodes in a Topology. 
-            Link is terminated by Node-Edge-Points of the associated Nodes. The Node-Edge-Points have a specific    
-            role with respect to the Link";
-        leaf uuid{
-            type TapiModule-TypeDefinitions:UniversalId;
+    grouping G_Tapi_LocalComponent {
+        leaf localId {
+            type string;
         }
-        list linkPort {
-            key "uuid";
-            uses Tapi_LinkPort;
-        }
-        leaf-list node{
-            type leafref {
-                path "/TapiModule-ObjectClasses:Tapi_Context/TapiModule-ObjectClasses:topology/TapiModule-ObjectClasses:node/TapiModule-ObjectClasses:uuid";
-            }
-        }
-        list name {
-            key "valueName";
-            uses NameAndValue;
-            min-elements "1";
-        }
-        list label {
-            key "valueName";
-            uses NameAndValue;
-        }
-        list extension {
-            key "valueName";
-            uses NameAndValue;
-        }
-        list layerProtocolName {
-            key "layerProtocolName";
-            leaf layerProtocolName {
-                type TapiModule-TypeDefinitions:LayerProtocolName;
-            }
-            min-elements "1";
-        }
-        leaf linkDirection {
-            type TapiModule-TypeDefinitions:ForwardingDirection;
-        }
-        container _state_Pac {
-            presence "<condition for State_Pac attributes>";
-            uses State_Pac;
-        }
-        container _riskParameter_Pac {
-            presence "<condition for RiskParameter_Pac attributes>";
-            uses RiskParameter_Pac;
-        }
-        container _transferCost_Pac {
-            presence "<condition for TransferCost_Pac attributes>";
-            uses TransferCost_Pac;
-        }
-        container _transferTiming_Pac {
-            presence "<condition for TransferTiming_Pac attributes>";
-            uses TransferTiming_Pac;
-        }
-        container _transferCapacity_Pac {
-            presence "<condition for TransferCapacity_Pac attributes>";
-            uses TransferCapacity_Pac;
-        }
-        container _transferIntegrity_Pac {
-            presence "<condition for TransferIntegrity_Pac attributes>";
-            uses TransferIntegrity_Pac;
-        }
-        container _validation_Pac {
-            presence "<condition for Validation_Pac attributes>";    
-            uses Validation_Pac;
-        }
-        container _layerTransition_Pac {
-            presence "<condition for LayerProtocolTransition_Pac attributes>";
-            uses LayerProtocolTransition_Pac;
-        }
-    }
-    grouping Tapi_Topology {
-        description
-            "Representation of the transparent topological-aspects of a Forwarding-Domain (FD).
-            Topology describes the underlying topological network of Nodes and Links that enable the forwarding 
-            function provided by the FD.";
-        leaf uuid{
-            type TapiModule-TypeDefinitions:UniversalId;
-        }
-        list node {
-            key "uuid";
-            uses Tapi_Node;
-        }
-        list link {
-            key "uuid";
-            uses Tapi_Link;
-        }
-        list name {
-            key "valueName";
-            uses NameAndValue;
-            min-elements "1";
-        }
-        list label {
-            key "valueName";
-            uses NameAndValue;
-        }
-        list extension {
-            key "valueName";
-            uses NameAndValue;
-        }    
-        list layerProtocolName {
-            key "layerProtocolName";
-            leaf layerProtocolName {
-                type TapiModule-TypeDefinitions:LayerProtocolName;
-            }
-        }
-    }
-    grouping Tapi_ServiceEndPoint {
-        description
-            "Service-End-Point  - represents the outward-facing aspect of the edge-port functions for accessing the 
-            forwarding capabilities provided by Node.
-            Service-End-Point provides a limited, simplified view of interest to external clients (e.g. client 
-            addressing, capacity, resource availability, etc), that enable the clients to make a connectivity 
-            service request without the need to understand the provider network internals.
-            Service-End-Point have a mapping relationship (one-to-one, one-to-many, many-to-many) to Node-Edge-
-            Points";
-        leaf uuid{
-            type TapiModule-TypeDefinitions:UniversalId;
-        }
-        list layerProtocol {
-            key "layerProtocol";
-            uses LayerProtocol;
-            min-elements "1";
-        }
-        leaf operationalState {
-            type TapiModule-TypeDefinitions:OperationalState;
-        }
-        leaf-list mappedNodeEp {
-            type leafref {
-                path "/TapiModule-ObjectClasses:Tapi_Context/TapiModule-ObjectClasses:topology/TapiModule-ObjectClasses:node/TapiModule-ObjectClasses:nodeEdgePoint/TapiModule-ObjectClasses:uuid";
-            }
-        }
-    }
-    grouping Tapi_ConnectionEndPoint {
-        description
-            "Connection-End-Point - represents the ingress/egress port functions  for accessing to the forwarding   
-            function provided by the Connection.
-            Connection-End-Point have client-server relationship with Node-Edge-Points";
-        leaf uuid{
-            type TapiModule-TypeDefinitions:UniversalId;
-        }
-        list layerProtocol{
-            key "layerProtocol";
-            uses LayerProtocol;
-            min-elements "1";
-        }
-        leaf operationalState {
-            type TapiModule-TypeDefinitions:OperationalState;
-        }
-        list clientNodeEp {
-            key "uuid";
-            uses Tapi_NodeEdgePoint;
-        }
-        container serverNodeEp {
-            uses Tapi_NodeEdgePoint;
-        }
-    }
-    grouping Tapi_ConnectionPort {
-        description
-            "The association of the FC to LTPs is made via EndPoints.
-            The EndPoint (EP) object class models the access to the FC function. 
-            The traffic forwarding between the associated EPs of the FC depends upon the type of FC and may be associated 
-            with  FcSwitch object instances.  
-            In cases where there is resilience the EndPoint may convey the resilience role of the access to the FC. 
-            It can represent a protected (resilient/reliable) point or a protecting (unreliable working or protection) point.
-            The EP replaces the Protection Unit of a traditional protection model. 
-            The ForwadingConstruct can be considered as a component and the EndPoint as a Port on that component";
-        leaf uuid{
-            type TapiModule-TypeDefinitions:UniversalId;
-        }
-        container connectionEndPoint {
-            uses Tapi_ConnectionEndPoint;
-        }
-        leaf role {
-            type TapiModule-TypeDefinitions:EndRole;
-        }
-        leaf direction {
-            type TapiModule-TypeDefinitions:EndDirection;
-        }
-    }
-    grouping Tapi_ServicePort {
-        leaf uuid{
-            type TapiModule-TypeDefinitions:UniversalId; 
-        }
-        leaf serviceEndPoint {
-            type leafref {
-                path "/TapiModule-ObjectClasses:Tapi_Context/TapiModule-ObjectClasses:serviceEndPoint/TapiModule-ObjectClasses:uuid";
-            }
-        }
-        leaf role {
-            type TapiModule-TypeDefinitions:EndRole;
-        }
-        leaf direction {
-            type TapiModule-TypeDefinitions:EndDirection;
-        }
-    }
-    grouping Path {
-        description
-            "Path - represents the route of a Connection through the lower-level Nodes in the underlying Topology
-            Path is described as a list of references to the lower-level Connections.";
-        leaf uuid{
-            type TapiModule-TypeDefinitions:UniversalId;
-        }
-        leaf-list lowerLevelConnection{
-            type leafref {
-                path "/TapiModule-ObjectClasses:Tapi_Context/TapiModule-ObjectClasses:connectivityService/TapiModule-ObjectClasses:connection/TapiModule-ObjectClasses:uuid";
-            }
-            min-elements "1";
-        }
-    }
-    grouping Tapi_Connection {
-        description
-            "Connection - represents an enabled (provisioned) potential for forwarding (including all circuit and 
-            packet forms) between two or more Node-Edge-Points of a Node. 
-            Connection is a container for provisioned connectivity that tracks the state of the allocated resources 
-            and is distinct from the connectivity Service request.";
-        leaf uuid{
-            type TapiModule-TypeDefinitions:UniversalId;
-        }
-        list connectionPort { 
-            key "uuid";
-            uses Tapi_ConnectionPort;
-            max-elements "2";
-        }
-        list path {
-            key "uuid";
-            uses Path;
-        }
-        leaf-list node {
-            type leafref {
-                path "/TapiModule-ObjectClasses:Tapi_Context/TapiModule-ObjectClasses:topology/TapiModule-ObjectClasses:node/TapiModule-ObjectClasses:uuid";
-            }
-        }
-        leaf layerProtocolName {
-            type TapiModule-TypeDefinitions:LayerProtocolName;
-        } 
-        container _state_Pac {
-            presence "<condition for State_Pac attributes>";
-            uses State_Pac;
-        }
-        container _transferCost_Pac {
-            presence "<condition for TransferCost_Pac attributes>";
-            uses TransferCost_Pac;
-        }
-        container _transferTiming_Pac {
-            presence "<condition for TransferTiming_Pac attributes>";
-            uses TransferTiming_Pac;
-        }
-        container _transferCapacity_Pac {
-            presence "<condition for TransferCapacity_Pac attributes>";
-            uses TransferCapacity_Pac;
-        }
-        container _transferIntegrity_Pac {
-            presence "<condition for TransferIntegrity_Pac attributes>";
-            uses TransferIntegrity_Pac;
-        }
-    }
-    grouping Tapi_ConnectivityService {
-        description
-            "Connectivity Service - represents an “intent-like” request for connectivity between two or more 
-            Service-End-Points.
-            Service is a container for connectivity request details and is distinct from Connection that realizes 
-            the request
-            They refer to different aspects of information exchanged over T-API interface, but within provider they 
-            could be modeled by the same instance if there is one-to-one mapping.";
-        leaf uuid{
-            type TapiModule-TypeDefinitions:UniversalId; 
-        }
-        list connection {
-            key "uuid";
-            uses Tapi_Connection;
-        }
-        list servicePort {
-            key "uuid";
-            uses Tapi_ServicePort;
-            max-elements "2";
-        }
-        leaf layerProtocolName {
-            type TapiModule-TypeDefinitions:LayerProtocolName;
-        }
-        container _state_Pac {
-            presence "<condition for State_Pac attributes>";
-            uses State_Pac;
-        }
-        container _transferCost_Pac {
-            presence "<condition for TransferCost_Pac attributes>";
-            uses TransferCost_Pac;
-        }
-        container _transferTiming_Pac {
-            presence "<condition for TransferTiming_Pac attributes>";
-            uses TransferTiming_Pac;
-        }
-        container _transferCapacity_Pac {
-            presence "<condition for TransferCapacity_Pac attributes>";
-            uses TransferCapacity_Pac;
-        }
-        container _transferIntegrity_Pac {
-            presence "<condition for TransferIntegrity_Pac attributes>";
-            uses TransferIntegrity_Pac;
-        }
-    }
-    grouping Tapi_Context {
-        leaf uuid{
-            type TapiModule-TypeDefinitions:UniversalId; 
-        }
-        list topology {
-            key "uuid";
-            uses Tapi_Topology;
-            max-elements "1";
-        }
-        list serviceEndPoint {
-            key "uuid";
-            uses Tapi_ServiceEndPoint;
-        }
-        list connectivityService {
-            key "uuid";
-            uses Tapi_ConnectivityService;
-        }
-    }
-    /*****************************************************************
-    * Main containers
-    *****************************************************************/
-    list Tapi_Context {
-        description
-            "(API) Context  defines the scope of control and naming that a particular T-API provider or its client  
-            application has with respect to the information exchanged over the interface.
-            This Context is shared between the API provider and its client and determines the makeup of the network 
-            resource abstractions over which the API operates.";
-        key "uuid";
-        uses Tapi_Context;
     }
 }
-
