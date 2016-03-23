@@ -2,8 +2,8 @@
     "swagger": "2.0",
     "info": {
         "version": "1.0.0",
-        "description": "TapiModule-Interfaces-Tapi_PathComputationService API generated from TapiModule-Interfaces-Tapi_PathComputationService.yang",
-        "title": "TapiModule-Interfaces-Tapi_PathComputationService API"
+        "description": "Tapi-Interfaces-PathComputationService API generated from Tapi-Interfaces-PathComputationService.yang",
+        "title": "Tapi-Interfaces-PathComputationService API"
     },
     "host": "localhost:8080",
     "basePath": "/restconf",
@@ -20,7 +20,7 @@
                             "properties": {
                                 "path": {
                                     "items": {
-                                        "$ref": "#/definitions/GTapiPath"
+                                        "$ref": "#/definitions/GPath"
                                     },
                                     "type": "array"
                                 }
@@ -42,14 +42,14 @@
                         "schema": {
                             "properties": {
                                 "objectiveFunction": {
-                                    "$ref": "#/definitions/GTapiPathObjectiveFunction"
+                                    "type": "string"
                                 },
                                 "routingConstraint": {
-                                    "$ref": "#/definitions/GTapiConnectivityConstraint"
+                                    "type": "string"
                                 },
                                 "servicePort": {
                                     "items": {
-                                        "$ref": "#/definitions/GTapiServicePort"
+                                        "$ref": "#/definitions/GServicePort"
                                     },
                                     "type": "array"
                                 }
@@ -78,7 +78,7 @@
                             "properties": {
                                 "path": {
                                     "items": {
-                                        "$ref": "#/definitions/GTapiPath"
+                                        "$ref": "#/definitions/GPath"
                                     },
                                     "type": "array"
                                 }
@@ -103,13 +103,13 @@
                                     "type": "string"
                                 },
                                 "optimizationConstraint": {
-                                    "$ref": "#/definitions/GTapiPathOptimizationConstraint"
+                                    "type": "string"
                                 },
                                 "routingConstraint": {
-                                    "$ref": "#/definitions/GTapiConnectivityConstraint"
+                                    "type": "string"
                                 },
                                 "objectiveFunction": {
-                                    "$ref": "#/definitions/GTapiPathObjectiveFunction"
+                                    "type": "string"
                                 }
                             }
                         },
@@ -129,10 +129,10 @@
         }
     },
     "definitions": {
-        "GTapiServicePort": {
+        "GServicePort": {
             "allOf": [
                 {
-                    "$ref": "#/definitions/GTapiLocalComponent"
+                    "$ref": "#/definitions/GLocalClass"
                 },
                 {
                     "properties": {
@@ -147,33 +147,140 @@
                         },
                         "_serviceEndPoint": {
                             "type": "string",
-                            "x-path": "/Tapi_ServiceEndPoint/uuid"
+                            "x-path": "/ServiceEndPoint/uuid"
                         }
                     }
                 }
             ]
         },
-        "GTapiLocalComponent": {
+        "GLocalClass": {
             "properties": {
                 "localId": {
                     "type": "string"
                 }
             }
         },
-        "GTapiConnectivityConstraint": {
+        "GPath": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/GGlobalClass"
+                },
+                {
+                    "properties": {
+                        "_routingConstraint": {
+                            "$ref": "#/definitions/GConnectivityConstraint"
+                        },
+                        "_telink": {
+                            "items": {
+                                "$ref": "#/definitions/GTeLink"
+                            },
+                            "type": "array",
+                            "x-key": "localId"
+                        },
+                        "_objectiveFunction": {
+                            "$ref": "#/definitions/GPathObjectiveFunction"
+                        },
+                        "_optimizationConstraint": {
+                            "$ref": "#/definitions/GPathOptimizationConstraint"
+                        }
+                    }
+                }
+            ]
+        },
+        "GGlobalClass": {
+            "properties": {
+                "label": {
+                    "items": {
+                        "$ref": "#/definitions/GNameAndValue"
+                    },
+                    "type": "array",
+                    "x-key": "valueName"
+                },
+                "uuid": {
+                    "type": "string"
+                },
+                "extension": {
+                    "items": {
+                        "$ref": "#/definitions/GNameAndValue"
+                    },
+                    "type": "array",
+                    "x-key": "valueName"
+                },
+                "name": {
+                    "items": {
+                        "$ref": "#/definitions/GNameAndValue"
+                    },
+                    "type": "array",
+                    "x-key": "valueName"
+                }
+            }
+        },
+        "GNameAndValue": {
+            "properties": {
+                "_nameAndValueAuthorityRef": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                },
+                "valueName": {
+                    "type": "string"
+                }
+            }
+        },
+        "GTeLink": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/GLocalClass"
+                },
+                {
+                    "properties": {
+                        "_node": {
+                            "items": {
+                                "type": "string",
+                                "x-path": "/Topology/_node/uuid"
+                            },
+                            "type": "array"
+                        },
+                        "_link": {
+                            "type": "string",
+                            "x-path": "/Topology/_link/uuid"
+                        },
+                        "_linkPort": {
+                            "items": {
+                                "type": "string",
+                                "x-path": "/Topology/_link/_linkPort/localId"
+                            },
+                            "type": "array"
+                        }
+                    }
+                }
+            ]
+        },
+        "GConnectivityConstraint": {
             "properties": {
                 "serviceType": {
                     "type": "string"
                 },
                 "requestedCapacity": {
-                    "$ref": "#/definitions/GTapiCapacity"
+                    "$ref": "#/definitions/GCapacity"
                 },
                 "costCharacteristic": {
                     "items": {
-                        "$ref": "#/definitions/GTapiCostCharacteristic"
+                        "$ref": "#/definitions/GCostCharacteristic"
                     },
                     "type": "array",
                     "x-key": "costAlgorithm"
+                },
+                "latencyCharacteristic": {
+                    "items": {
+                        "$ref": "#/definitions/GQueuingLatency"
+                    },
+                    "type": "array",
+                    "x-key": "latencyValue"
+                },
+                "serviceLevel": {
+                    "type": "string"
                 },
                 "serviceLayer": {
                     "items": {
@@ -181,40 +288,53 @@
                     },
                     "type": "array"
                 },
-                "serviceLevel": {
-                    "type": "string"
-                },
-                "latencyCharacteristic": {
-                    "items": {
-                        "$ref": "#/definitions/GTapiQueuingLatency"
-                    },
-                    "type": "array",
-                    "x-key": "latencyValue"
-                },
                 "excludePath": {
                     "items": {
                         "type": "string",
-                        "x-path": "/Tapi_Path/uuid"
+                        "x-path": "/Path/uuid"
                     },
                     "type": "array"
                 },
                 "includePath": {
                     "items": {
                         "type": "string",
-                        "x-path": "/Tapi_Path/uuid"
+                        "x-path": "/Path/uuid"
                     },
                     "type": "array"
                 },
                 "riskCharacteristic": {
                     "items": {
-                        "$ref": "#/definitions/GTapiRiskCharacteristic"
+                        "$ref": "#/definitions/GRiskCharacteristic"
                     },
                     "type": "array",
                     "x-key": "riskCharacteristicName"
                 }
             }
         },
-        "GTapiCapacity": {
+        "GCostCharacteristic": {
+            "properties": {
+                "costName": {
+                    "type": "string"
+                },
+                "costAlgorithm": {
+                    "type": "string"
+                },
+                "costValue": {
+                    "type": "string"
+                }
+            }
+        },
+        "GQueuingLatency": {
+            "properties": {
+                "latencyValue": {
+                    "type": "string"
+                },
+                "trafficPropertyName": {
+                    "type": "string"
+                }
+            }
+        },
+        "GCapacity": {
             "properties": {
                 "totalSize": {
                     "type": "string"
@@ -230,20 +350,7 @@
                 }
             }
         },
-        "GTapiCostCharacteristic": {
-            "properties": {
-                "costName": {
-                    "type": "string"
-                },
-                "costAlgorithm": {
-                    "type": "string"
-                },
-                "costValue": {
-                    "type": "string"
-                }
-            }
-        },
-        "GTapiRiskCharacteristic": {
+        "GRiskCharacteristic": {
             "properties": {
                 "riskIdentifierList": {
                     "items": {
@@ -256,17 +363,14 @@
                 }
             }
         },
-        "GTapiQueuingLatency": {
+        "GPathOptimizationConstraint": {
             "properties": {
-                "latencyValue": {
-                    "type": "string"
-                },
-                "trafficPropertyName": {
+                "trafficInterruption": {
                     "type": "string"
                 }
             }
         },
-        "GTapiPathObjectiveFunction": {
+        "GPathObjectiveFunction": {
             "properties": {
                 "linkUtilization": {
                     "type": "string"
@@ -281,59 +385,6 @@
                     "type": "string"
                 },
                 "resourceSharing": {
-                    "type": "string"
-                }
-            }
-        },
-        "GTapiPath": {
-            "properties": {
-                "_telink": {
-                    "items": {
-                        "$ref": "#/definitions/GTapiTeLink"
-                    },
-                    "type": "array",
-                    "x-key": "localId"
-                },
-                "uuid": {
-                    "type": "string"
-                },
-                "routingConstraint": {
-                    "$ref": "#/definitions/GTapiConnectivityConstraint"
-                }
-            }
-        },
-        "GTapiTeLink": {
-            "allOf": [
-                {
-                    "$ref": "#/definitions/GTapiLocalComponent"
-                },
-                {
-                    "properties": {
-                        "_node": {
-                            "items": {
-                                "type": "string",
-                                "x-path": "/Tapi_Topology/_node/uuid"
-                            },
-                            "type": "array"
-                        },
-                        "_link": {
-                            "type": "string",
-                            "x-path": "/Tapi_Topology/_link/uuid"
-                        },
-                        "_linkPort": {
-                            "items": {
-                                "type": "string",
-                                "x-path": "/Tapi_Topology/_link/_linkPort/localId"
-                            },
-                            "type": "array"
-                        }
-                    }
-                }
-            ]
-        },
-        "GTapiPathOptimizationConstraint": {
-            "properties": {
-                "trafficInterruption": {
                     "type": "string"
                 }
             }
