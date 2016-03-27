@@ -4,13 +4,7 @@ module Tapi-ObjectClasses {
     import Tapi-TypeDefinitions {
         prefix Tapi-TypeDefinitions;
     }
-    revision 2016-03-22{}
-    list Topology {
-        key 'uuid';
-        config true;
-        ordered-by system;
-        uses G_Topology;
-    }
+    revision 2016-03-26{}
     grouping G_Topology {
         uses G_GlobalClass;
         list _node {
@@ -35,10 +29,30 @@ module Tapi-ObjectClasses {
         key 'uuid';
         config true;
         uses G_GlobalClass;
-        leaf _topology {
-            type leafref {
-                path '/Topology/uuid';
-            }
+        list _topology {
+            key 'uuid';
+            config true;
+            ordered-by system;
+            uses G_Topology;
+        }
+        list _connectivityService {
+            key 'uuid';
+            config true;
+            ordered-by system;
+            uses G_ConnectivityService;
+        }
+        list _serviceEndPoint {
+            key 'uuid';
+            config true;
+            ordered-by system;
+            uses G_ServiceEndPoint;
+            min-elements 2;
+        }
+        list _path {
+            key 'uuid';
+            config true;
+            ordered-by system;
+            uses G_Path;
         }
     }
     grouping G_Node {
@@ -52,12 +66,12 @@ module Tapi-ObjectClasses {
         leaf-list _aggregatedNodeEdgePoint {
             ordered-by system;
             type leafref {
-                path '/Topology/_node/_ownedNodeEdgePoint/uuid';
+                path '/Context/_topology/_node/_ownedNodeEdgePoint/uuid';
             }
         }
         leaf _encapTopology {
             type leafref {
-                path '/Topology/uuid';
+                path '/Context/_topology/uuid';
             }
         }
         container _state {
@@ -98,7 +112,7 @@ module Tapi-ObjectClasses {
         leaf-list _node {
             ordered-by system;
             type leafref {
-                path '/Topology/_node/uuid';
+                path '/Context/_topology/_node/uuid';
             }
             min-elements 2;
         }
@@ -158,7 +172,7 @@ module Tapi-ObjectClasses {
         leaf-list _clientNodeEdgePoint {
             ordered-by system;
             type leafref {
-                path '/Topology/_node/_ownedNodeEdgePoint/uuid';
+                path '/Context/_topology/_node/_ownedNodeEdgePoint/uuid';
             }
         }
         container _state {
@@ -168,12 +182,6 @@ module Tapi-ObjectClasses {
         leaf direction {
             type Tapi-TypeDefinitions:TerminationDirection;
         }
-    }
-    list ServiceEndPoint {
-        key 'uuid';
-        config true;
-        ordered-by system;
-        uses G_ServiceEndPoint;
     }
     grouping G_ServiceEndPoint {
         uses G_GlobalClass;
@@ -187,8 +195,14 @@ module Tapi-ObjectClasses {
         leaf-list _mappedNodeEdgePoint {
             ordered-by system;
             type leafref {
-                path '/Topology/_node/_ownedNodeEdgePoint/uuid';
+                path '/Context/_topology/_node/_ownedNodeEdgePoint/uuid';
             }
+        }
+        list _connectionEndPoint {
+            key 'uuid';
+            config true;
+            ordered-by system;
+            uses G_ConnectionEndPoint;
         }
         container _state {
             config true;
@@ -197,12 +211,6 @@ module Tapi-ObjectClasses {
         leaf direction {
             type Tapi-TypeDefinitions:TerminationDirection;
         }
-    }
-    list ConnectionEndPoint {
-        key 'uuid';
-        config true;
-        ordered-by system;
-        uses G_ConnectionEndPoint;
     }
     grouping G_ConnectionEndPoint {
         uses G_GlobalClass;
@@ -216,17 +224,17 @@ module Tapi-ObjectClasses {
         leaf-list _clientNodeEdgePoint {
             ordered-by system;
             type leafref {
-                path '/Topology/_node/_ownedNodeEdgePoint/uuid';
+                path '/Context/_topology/_node/_ownedNodeEdgePoint/uuid';
             }
         }
         leaf _serverNodeEdgePoint {
             type leafref {
-                path '/Topology/_node/_ownedNodeEdgePoint/uuid';
+                path '/Context/_topology/_node/_ownedNodeEdgePoint/uuid';
             }
         }
         leaf _peerConnectionEndPoint {
             type leafref {
-                path '/ConnectionEndPoint/uuid';
+                path '/Context/_serviceEndPoint/_connectionEndPoint/uuid';
             }
         }
         container _state {
@@ -236,12 +244,6 @@ module Tapi-ObjectClasses {
         leaf direction {
             type Tapi-TypeDefinitions:TerminationDirection;
         }
-    }
-    list ConnectivityService {
-        key 'uuid';
-        config true;
-        ordered-by system;
-        uses G_ConnectivityService;
     }
     grouping G_ConnectivityService {
         uses G_GlobalClass;
@@ -294,7 +296,7 @@ module Tapi-ObjectClasses {
         }
         leaf _node {
             type leafref {
-                path '/Topology/_node/uuid';
+                path '/Context/_topology/_node/uuid';
             }
         }
         container _state {
@@ -313,7 +315,7 @@ module Tapi-ObjectClasses {
         leaf-list _lowerConnection {
             ordered-by system;
             type leafref {
-                path '/ConnectivityService/_connection/uuid';
+                path '/Context/_connectivityService/_connection/uuid';
             }
             min-elements 1;
         }
@@ -322,7 +324,7 @@ module Tapi-ObjectClasses {
         uses G_LocalClass;
         leaf _nodeEdgePoint {
             type leafref {
-                path '/Topology/_node/_ownedNodeEdgePoint/uuid';
+                path '/Context/_topology/_node/_ownedNodeEdgePoint/uuid';
             }
         }
         leaf role {
@@ -338,7 +340,7 @@ module Tapi-ObjectClasses {
         uses G_LocalClass;
         leaf _serviceEndPoint {
             type leafref {
-                path '/ServiceEndPoint/uuid';
+                path '/Context/_serviceEndPoint/uuid';
             }
         }
         leaf role {
@@ -357,7 +359,7 @@ module Tapi-ObjectClasses {
         uses G_LocalClass;
         leaf _connectionEndPoint {
             type leafref {
-                path '/ConnectionEndPoint/uuid';
+                path '/Context/_serviceEndPoint/_connectionEndPoint/uuid';
             }
         }
         leaf role {
@@ -422,7 +424,7 @@ module Tapi-ObjectClasses {
             description "Lists the LTPs that define the layer protocol transition of the transitional link.";
             ordered-by system;
             type leafref {
-                path '/Topology/_node/_ownedNodeEdgePoint/uuid';
+                path '/Context/_topology/_node/_ownedNodeEdgePoint/uuid';
             }
             min-elements 1;
         }
@@ -516,29 +518,18 @@ module Tapi-ObjectClasses {
         leaf-list _node {
             ordered-by system;
             type leafref {
-                path '/Topology/_node/uuid';
+                path '/Context/_topology/_node/uuid';
             }
             max-elements 2;
             min-elements 2;
         }
-        leaf-list _linkPort {
+        leaf-list _nodeEdgePoint {
             ordered-by system;
             type leafref {
-                path '/Topology/_link/_linkPort/localId';
+                path '/Context/_topology/_node/_ownedNodeEdgePoint/uuid';
             }
             max-elements 2;
         }
-        leaf _link {
-            type leafref {
-                path '/Topology/_link/uuid';
-            }
-        }
-    }
-    list Path {
-        key 'uuid';
-        config true;
-        ordered-by system;
-        uses G_Path;
     }
     grouping G_Path {
         uses G_GlobalClass;
@@ -631,13 +622,13 @@ module Tapi-ObjectClasses {
         leaf-list excludePath {
             ordered-by system;
             type leafref {
-                path '/Path/uuid';
+                path '/Context/_path/uuid';
             }
         }
         leaf-list includePath {
             ordered-by system;
             type leafref {
-                path '/Path/uuid';
+                path '/Context/_path/uuid';
             }
         }
         list latencyCharacteristic {
