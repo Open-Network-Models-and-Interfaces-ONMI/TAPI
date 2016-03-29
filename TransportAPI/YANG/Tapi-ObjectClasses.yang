@@ -4,26 +4,20 @@ module Tapi-ObjectClasses {
     import Tapi-TypeDefinitions {
         prefix Tapi-TypeDefinitions;
     }
-    revision 2016-03-22{}
-    list Topology {
-        key 'uuid';
-        config true;
-        ordered-by system;
-        uses G_Topology;
-    }
-    grouping G_Topology {
-        uses G_GlobalClass;
+    revision 2016-03-28{}
+    grouping Topology {
+        uses GlobalClass;
         list _node {
             key 'uuid';
             config true;
             ordered-by system;
-            uses G_Node;
+            uses Node;
         }
         list _link {
             key 'uuid';
             config true;
             ordered-by system;
-            uses G_Link;
+            uses Link;
         }
         leaf-list layerProtocolName {
             ordered-by system;
@@ -31,54 +25,80 @@ module Tapi-ObjectClasses {
             min-elements 1;
         }
     }
-    list G_Context {
+    list Context {
         key 'uuid';
         config true;
-        uses G_GlobalClass;
-        leaf _topology {
-            type leafref {
-                path '/Topology/uuid';
-            }
+        uses GlobalClass;
+        list _serviceEndPoint {
+            key 'uuid';
+            config true;
+            ordered-by system;
+            uses ServiceEndPoint;
+            min-elements 2;
+        }
+        list _connectivityService {
+            key 'uuid';
+            config true;
+            ordered-by system;
+            uses ConnectivityService;
+        }
+        list _vnwService {
+            key 'uuid';
+            config true;
+            ordered-by system;
+            uses VirtualNetworkService;
+        }
+        list _topology {
+            key 'uuid';
+            config true;
+            ordered-by system;
+            uses Topology;
+        }
+        list _path {
+            key 'uuid';
+            config true;
+            ordered-by system;
+            uses Path;
         }
     }
-    grouping G_Node {
-        uses G_GlobalClass;
+    grouping Node {
+        uses GlobalClass;
         list _ownedNodeEdgePoint {
             key 'uuid';
             config true;
             ordered-by system;
-            uses G_NodeEdgePoint;
+            uses NodeEdgePoint;
         }
         leaf-list _aggregatedNodeEdgePoint {
             ordered-by system;
             type leafref {
-                path '/Topology/_node/_ownedNodeEdgePoint/uuid';
+                path '/Context/_topology/_node/_ownedNodeEdgePoint/uuid';
             }
         }
         leaf _encapTopology {
             type leafref {
-                path '/Topology/uuid';
+                path '/Context/_topology/uuid';
             }
         }
         container _state {
             config true;
-            uses G_AdminStatePac;
+            uses AdminStatePac;
         }
         container _transferCapacity {
             config true;
-            uses G_TransferCapacityPac;
+            uses TransferCapacityPac;
         }
         container _transferCost {
             config true;
-            uses G_TransferCostPac;
+            uses TransferCostPac;
         }
         container _transferIntegrity {
             config true;
-            uses G_TransferIntegrityPac;
+            uses TransferIntegrityPac;
         }
         container _transferTiming {
             config true;
-            uses G_TransferTimingPac;
+            uses TransferTimingPac;
         }
         leaf-list layerProtocolName {
             ordered-by system;
@@ -86,53 +106,53 @@ module Tapi-ObjectClasses {
             min-elements 1;
         }
     }
-    grouping G_Link {
-        uses G_GlobalClass;
+    grouping Link {
+        uses GlobalClass;
         list _linkPort {
             key 'localId';
             config true;
             ordered-by system;
-            uses G_LinkPort;
+            uses LinkPort;
             min-elements 2;
         }
         leaf-list _node {
             ordered-by system;
             type leafref {
-                path '/Topology/_node/uuid';
+                path '/Context/_topology/_node/uuid';
             }
             min-elements 2;
         }
         container _state {
             config true;
-            uses G_AdminStatePac;
+            uses AdminStatePac;
         }
         container _transferCapacity {
             config true;
-            uses G_TransferCapacityPac;
+            uses TransferCapacityPac;
         }
         container _transferCost {
             config true;
-            uses G_TransferCostPac;
+            uses TransferCostPac;
         }
         container _transferIntegrity {
             config true;
-            uses G_TransferIntegrityPac;
+            uses TransferIntegrityPac;
         }
         container _transferTiming {
             config true;
-            uses G_TransferTimingPac;
+            uses TransferTimingPac;
         }
         container _riskParameter {
             config true;
-            uses G_RiskParameterPac;
+            uses RiskParameterPac;
         }
         container _validation {
             config true;
-            uses G_ValidationPac;
+            uses ValidationPac;
         }
         container _lpTransition {
             config true;
-            uses G_LayerProtocolTransitionPac;
+            uses LayerProtocolTransitionPac;
         }
         leaf-list layerProtocolName {
             ordered-by system;
@@ -146,129 +166,117 @@ module Tapi-ObjectClasses {
                 Is not present in more complex cases.";
         }
     }
-    grouping G_NodeEdgePoint {
-        uses G_GlobalClass;
+    grouping NodeEdgePoint {
+        uses GlobalClass;
         list _layerProtocol {
             key 'localId';
             config true;
             ordered-by system;
-            uses G_LayerProtocol;
+            uses LayerProtocol;
             min-elements 1;
         }
         leaf-list _clientNodeEdgePoint {
             ordered-by system;
             type leafref {
-                path '/Topology/_node/_ownedNodeEdgePoint/uuid';
+                path '/Context/_topology/_node/_ownedNodeEdgePoint/uuid';
             }
         }
         container _state {
             config true;
-            uses G_AdminStatePac;
+            uses AdminStatePac;
         }
         leaf direction {
             type Tapi-TypeDefinitions:TerminationDirection;
         }
     }
-    list ServiceEndPoint {
-        key 'uuid';
-        config true;
-        ordered-by system;
-        uses G_ServiceEndPoint;
-    }
-    grouping G_ServiceEndPoint {
-        uses G_GlobalClass;
+    grouping ServiceEndPoint {
+        uses GlobalClass;
         list _layerProtocol {
             key 'localId';
             config true;
             ordered-by system;
-            uses G_LayerProtocol;
+            uses LayerProtocol;
             min-elements 1;
         }
         leaf-list _mappedNodeEdgePoint {
             ordered-by system;
             type leafref {
-                path '/Topology/_node/_ownedNodeEdgePoint/uuid';
+                path '/Context/_topology/_node/_ownedNodeEdgePoint/uuid';
             }
+        }
+        list _connectionEndPoint {
+            key 'uuid';
+            config true;
+            ordered-by system;
+            uses ConnectionEndPoint;
         }
         container _state {
             config true;
-            uses G_LifecycleStatePac;
+            uses LifecycleStatePac;
         }
         leaf direction {
             type Tapi-TypeDefinitions:TerminationDirection;
         }
     }
-    list ConnectionEndPoint {
-        key 'uuid';
-        config true;
-        ordered-by system;
-        uses G_ConnectionEndPoint;
-    }
-    grouping G_ConnectionEndPoint {
-        uses G_GlobalClass;
+    grouping ConnectionEndPoint {
+        uses GlobalClass;
         list _layerProtocol {
             key 'localId';
             config true;
             ordered-by system;
-            uses G_LayerProtocol;
+            uses LayerProtocol;
             min-elements 1;
         }
         leaf-list _clientNodeEdgePoint {
             ordered-by system;
             type leafref {
-                path '/Topology/_node/_ownedNodeEdgePoint/uuid';
+                path '/Context/_topology/_node/_ownedNodeEdgePoint/uuid';
             }
         }
         leaf _serverNodeEdgePoint {
             type leafref {
-                path '/Topology/_node/_ownedNodeEdgePoint/uuid';
+                path '/Context/_topology/_node/_ownedNodeEdgePoint/uuid';
             }
         }
         leaf _peerConnectionEndPoint {
             type leafref {
-                path '/ConnectionEndPoint/uuid';
+                path '/Context/_serviceEndPoint/_connectionEndPoint/uuid';
             }
         }
         container _state {
             config true;
-            uses G_OperationalStatePac;
+            uses OperationalStatePac;
         }
         leaf direction {
             type Tapi-TypeDefinitions:TerminationDirection;
         }
     }
-    list ConnectivityService {
-        key 'uuid';
-        config true;
-        ordered-by system;
-        uses G_ConnectivityService;
-    }
-    grouping G_ConnectivityService {
-        uses G_GlobalClass;
-        list _servicePort {
-            key 'localId';
-            config true;
-            ordered-by system;
-            uses G_ServicePort;
-            min-elements 2;
-        }
+    grouping ConnectivityService {
+        uses GlobalClass;
         list _connection {
             key 'uuid';
             config true;
             ordered-by system;
-            uses G_Connection;
+            uses Connection;
+        }
+        list _servicePort {
+            key 'localId';
+            config true;
+            ordered-by system;
+            uses ConnectivityServicePort;
+            min-elements 2;
         }
         container _connConstraints {
             config true;
-            uses G_ConnectivityConstraint;
+            uses ConnectivityConstraint;
         }
-        container _connSchedule {
+        container _schedule {
             config true;
-            uses G_ScheduleInfo;
+            uses ScheduleInfo;
         }
         container _state {
             config true;
-            uses G_AdminStatePac;
+            uses AdminStatePac;
         }
         leaf layerProtocolName {
             type Tapi-TypeDefinitions:LayerProtocolName;
@@ -277,29 +285,29 @@ module Tapi-ObjectClasses {
             type Tapi-TypeDefinitions:ForwardingDirection;
         }
     }
-    grouping G_Connection {
-        uses G_GlobalClass;
+    grouping Connection {
+        uses GlobalClass;
         list _connectionPort {
             key 'localId';
             config true;
             ordered-by system;
-            uses G_ConnectionPort;
+            uses ConnectionPort;
             min-elements 2;
         }
         list _route {
             key 'localId';
             config true;
             ordered-by system;
-            uses G_Route;
+            uses Route;
         }
         leaf _node {
             type leafref {
-                path '/Topology/_node/uuid';
+                path '/Context/_topology/_node/uuid';
             }
         }
         container _state {
             config true;
-            uses G_OperationalStatePac;
+            uses OperationalStatePac;
         }
         leaf layerProtocolName {
             type Tapi-TypeDefinitions:LayerProtocolName;
@@ -308,21 +316,21 @@ module Tapi-ObjectClasses {
             type Tapi-TypeDefinitions:ForwardingDirection;
         }
     }
-    grouping G_Route {
-        uses G_LocalClass;
+    grouping Route {
+        uses LocalClass;
         leaf-list _lowerConnection {
             ordered-by system;
             type leafref {
-                path '/ConnectivityService/_connection/uuid';
+                path '/Context/_connectivityService/_connection/uuid';
             }
             min-elements 1;
         }
     }
-    grouping G_LinkPort {
-        uses G_LocalClass;
+    grouping LinkPort {
+        uses LocalClass;
         leaf _nodeEdgePoint {
             type leafref {
-                path '/Topology/_node/_ownedNodeEdgePoint/uuid';
+                path '/Context/_topology/_node/_ownedNodeEdgePoint/uuid';
             }
         }
         leaf role {
@@ -334,11 +342,11 @@ module Tapi-ObjectClasses {
             description "The orientation of defined flow at the LinkEnd.";
         }
     }
-    grouping G_ServicePort {
-        uses G_LocalClass;
+    grouping ConnectivityServicePort {
+        uses LocalClass;
         leaf _serviceEndPoint {
             type leafref {
-                path '/ServiceEndPoint/uuid';
+                path '/Context/_serviceEndPoint/uuid';
             }
         }
         leaf role {
@@ -353,11 +361,11 @@ module Tapi-ObjectClasses {
             type Tapi-TypeDefinitions:LayerProtocolName;
         }
     }
-    grouping G_ConnectionPort {
-        uses G_LocalClass;
+    grouping ConnectionPort {
+        uses LocalClass;
         leaf _connectionEndPoint {
             type leafref {
-                path '/ConnectionEndPoint/uuid';
+                path '/Context/_serviceEndPoint/_connectionEndPoint/uuid';
             }
         }
         leaf role {
@@ -369,11 +377,12 @@ module Tapi-ObjectClasses {
             description "The orientation of defined flow at the EndPoint.";
         }
     }
-    grouping G_LayerProtocol {
-        uses G_LocalClass;
+    grouping LayerProtocol {
+        uses LocalClass;
         leaf _lpSpec {
-            type string;
-            description "The LpSpec identifies the interna structure of the LP explaining internal flexibilities, degree of termination and degree of adaptation on both client and server side.";
+            type leafref {
+                path '/LpSpec/';
+            }
         }
         leaf layerProtocolName {
             type Tapi-TypeDefinitions:LayerProtocolName;
@@ -391,27 +400,27 @@ module Tapi-ObjectClasses {
             description "Indicates whether the layer is terminated and if so how.";
         }
     }
-    grouping G_TransferCostPac {
+    grouping TransferCostPac {
         list costCharacteristic {
             description "The list of costs where each cost relates to some aspect of the TopologicalEntity.";
             key 'costAlgorithm';
             config true;
             ordered-by system;
-            uses Tapi-TypeDefinitions:G_CostCharacteristic;
+            uses Tapi-TypeDefinitions:CostCharacteristic;
             min-elements 1;
         }
     }
-    grouping G_RiskParameterPac {
+    grouping RiskParameterPac {
         list riskCharacteristic {
             description "A list of risk characteristics for consideration in an analysis of shared risk. Each element of the list represents a specific risk consideration.";
             key 'riskCharacteristicName';
             config true;
             ordered-by system;
-            uses Tapi-TypeDefinitions:G_RiskCharacteristic;
+            uses Tapi-TypeDefinitions:RiskCharacteristic;
             min-elements 1;
         }
     }
-    grouping G_LayerProtocolTransitionPac {
+    grouping LayerProtocolTransitionPac {
         leaf-list transitionedLayerProtocolName {
             description "Provides the ordered structure of layer protocol transitions encapsulated in the TopologicalEntity. The ordering relates to the LinkPort role.";
             ordered-by system;
@@ -422,12 +431,12 @@ module Tapi-ObjectClasses {
             description "Lists the LTPs that define the layer protocol transition of the transitional link.";
             ordered-by system;
             type leafref {
-                path '/Topology/_node/_ownedNodeEdgePoint/uuid';
+                path '/Context/_topology/_node/_ownedNodeEdgePoint/uuid';
             }
             min-elements 1;
         }
     }
-    grouping G_TransferTimingPac {
+    grouping TransferTimingPac {
         leaf fixedLatencyCharacteristic {
             type string;
             description "A TopologicalEntity suffers delay caused by the realization of the servers (e.g. distance related; FEC encoding etc.) along with some client specific processing. This is the total average latency effect of the TopologicalEntity";
@@ -448,7 +457,7 @@ module Tapi-ObjectClasses {
             type string;
         }
     }
-    grouping G_TransferIntegrityPac {
+    grouping TransferIntegrityPac {
         leaf errorCharacteristic {
             type string;
             description "Describes the degree to which the signal propagated can be errored. 
@@ -478,91 +487,80 @@ module Tapi-ObjectClasses {
             description "Describes the effect of any server integrity enhancement process on the characteristics of the TopologicalEntity.";
         }
     }
-    grouping G_TransferCapacityPac {
+    grouping TransferCapacityPac {
         container totalPotentialCapacity {
             description "An optimistic view of the capacity of the TopologicalEntity assuming that any shared capacity is available to be taken.";
             config true;
-            uses Tapi-TypeDefinitions:G_Capacity;
+            uses Tapi-TypeDefinitions:Capacity;
         }
         container availableCapacity {
             description "Capacity available to be assigned.";
             config true;
-            uses Tapi-TypeDefinitions:G_Capacity;
+            uses Tapi-TypeDefinitions:Capacity;
         }
         list capacityAssignedToUserView {
             description "Capacity already assigned";
             key 'numberingRange';
             config true;
             ordered-by system;
-            uses Tapi-TypeDefinitions:G_Capacity;
+            uses Tapi-TypeDefinitions:Capacity;
         }
         leaf capacityInteractionAlgorithm {
             type string;
             description "A reference to an algorithm that describes how various chunks of allocated capacity interact (e.g. when shared)";
         }
     }
-    grouping G_ValidationPac {
+    grouping ValidationPac {
         list validationMechanism {
             description "Provides details of the specific validation mechanism(s) used to confirm the presence of an intended topologicalEntity.";
             key 'validationRobustness';
             config true;
             ordered-by system;
-            uses Tapi-TypeDefinitions:G_ValidationMechanism;
+            uses Tapi-TypeDefinitions:ValidationMechanism;
             min-elements 1;
         }
     }
-    grouping G_TeLink {
-        uses G_LocalClass;
+    grouping TeLink {
+        uses LocalClass;
         leaf-list _node {
             ordered-by system;
             type leafref {
-                path '/Topology/_node/uuid';
+                path '/Context/_topology/_node/uuid';
             }
             max-elements 2;
             min-elements 2;
         }
-        leaf-list _linkPort {
+        leaf-list _nodeEdgePoint {
             ordered-by system;
             type leafref {
-                path '/Topology/_link/_linkPort/localId';
+                path '/Context/_topology/_node/_ownedNodeEdgePoint/uuid';
             }
             max-elements 2;
         }
-        leaf _link {
-            type leafref {
-                path '/Topology/_link/uuid';
-            }
-        }
     }
-    list Path {
-        key 'uuid';
-        config true;
-        ordered-by system;
-        uses G_Path;
-    }
-    grouping G_Path {
-        uses G_GlobalClass;
+    grouping Path {
+        uses GlobalClass;
         list _telink {
             key 'localId';
             config true;
             ordered-by system;
-            uses G_TeLink;
+            uses TeLink;
             min-elements 1;
         }
         container _routingConstraint {
             config true;
-            uses G_ConnectivityConstraint;
+            uses ConnectivityConstraint;
         }
         container _optimizationConstraint {
             config true;
-            uses G_PathOptimizationConstraint;
+            uses PathOptimizationConstraint;
         }
         container _objectiveFunction {
             config true;
-            uses G_PathObjectiveFunction;
+            uses PathObjectiveFunction;
         }
     }
-    grouping G_GlobalClass {
+    grouping GlobalClass {
         leaf uuid {
             type Tapi-TypeDefinitions:UniversalId;
             description "UUID: An identifier that is universally unique
@@ -573,7 +571,7 @@ module Tapi-ObjectClasses {
             key 'valueName';
             config true;
             ordered-by system;
-            uses Tapi-TypeDefinitions:G_NameAndValue;
+            uses Tapi-TypeDefinitions:NameAndValue;
             min-elements 1;
         }
         list label {
@@ -581,22 +579,22 @@ module Tapi-ObjectClasses {
             key 'valueName';
             config true;
             ordered-by system;
-            uses Tapi-TypeDefinitions:G_NameAndValue;
+            uses Tapi-TypeDefinitions:NameAndValue;
         }
         list extension {
             description "List of simple name-value extentions. Extension provides an opportunity to define properties not declared in the class that extend the class enabling a realization with simple ad-hoc extension of standard classes to be conformant.";
             key 'valueName';
             config true;
             ordered-by system;
-            uses Tapi-TypeDefinitions:G_NameAndValue;
+            uses Tapi-TypeDefinitions:NameAndValue;
         }
     }
-    grouping G_LocalClass {
+    grouping LocalClass {
         leaf localId {
             type string;
         }
     }
-    grouping G_AdminStatePac {
+    grouping AdminStatePac {
         leaf administrativeState {
             type Tapi-TypeDefinitions:AdministrativeState;
         }
@@ -607,12 +605,12 @@ module Tapi-ObjectClasses {
             type Tapi-TypeDefinitions:LifecycleState;
         }
     }
-    grouping G_LifecycleStatePac {
+    grouping LifecycleStatePac {
         leaf lifecycleState {
             type Tapi-TypeDefinitions:LifecycleState;
         }
     }
-    grouping G_OperationalStatePac {
+    grouping OperationalStatePac {
         leaf operationalState {
             type Tapi-TypeDefinitions:OperationalState;
         }
@@ -620,62 +618,74 @@ module Tapi-ObjectClasses {
             type Tapi-TypeDefinitions:LifecycleState;
         }
     }
-    grouping G_ConnectivityConstraint {
+    grouping ConnectivityConstraint {
+        leaf serviceType {
+            type Tapi-TypeDefinitions:ServiceType;
+        }
+        leaf serviceLevel {
+            type string;
+            description "An abstract value the meaning of which is mutually agreed – typically represents metrics such as - Class of service, priority, resiliency, availability";
+        }
+        leaf-list serviceLayer {
+            ordered-by system;
+            type Tapi-TypeDefinitions:LayerProtocolName;
+        }
+        container requestedCapacity {
+            config true;
+            uses Tapi-TypeDefinitions:Capacity;
+        }
         list costCharacteristic {
             description "The list of costs where each cost relates to some aspect of the TopologicalEntity.";
             key 'costAlgorithm';
             config true;
             ordered-by system;
-            uses Tapi-TypeDefinitions:G_CostCharacteristic;
-        }
-        leaf-list excludePath {
-            ordered-by system;
-            type leafref {
-                path '/Path/uuid';
-            }
-        }
-        leaf-list includePath {
-            ordered-by system;
-            type leafref {
-                path '/Path/uuid';
-            }
-        }
-        list latencyCharacteristic {
-            description "The effect on the latency of a queuing process. This only has significant effect for packet based systems and has a complex characteristic.";
-            key 'latencyValue';
-            config true;
-            ordered-by system;
-            uses Tapi-TypeDefinitions:G_QueuingLatency;
-        }
-        container requestedCapacity {
-            config true;
-            uses Tapi-TypeDefinitions:G_Capacity;
+            uses Tapi-TypeDefinitions:CostCharacteristic;
         }
         list riskCharacteristic {
             description "A list of risk characteristics for consideration in an analysis of shared risk. Each element of the list represents a specific risk consideration.";
             key 'riskCharacteristicName';
             config true;
             ordered-by system;
-            uses Tapi-TypeDefinitions:G_RiskCharacteristic;
+            uses Tapi-TypeDefinitions:RiskCharacteristic;
         }
-        leaf-list serviceLayer {
+        list latencyCharacteristic {
+            description "The effect on the latency of a queuing process. This only has significant effect for packet based systems and has a complex characteristic.";
+            key 'latencyValue';
+            config true;
             ordered-by system;
-            type Tapi-TypeDefinitions:LayerProtocolName;
+            uses Tapi-TypeDefinitions:QueuingLatency;
         }
-        leaf serviceLevel {
-            type string;
-            description "An abstract value the meaning of which is mutually agreed – typically represents metrics such as - Class of service, priority, resiliency, availability";
+        leaf-list includeTopology {
+            ordered-by system;
+            type leafref {
+                path '/Context/_topology/uuid';
+            }
         }
-        leaf serviceType {
-            type Tapi-TypeDefinitions:ServiceType;
+        list avoidTopology {
+            key 'uuid';
+            config true;
+            ordered-by system;
+            uses Topology;
+        }
+        leaf-list includePath {
+            ordered-by system;
+            type leafref {
+                path '/Context/_path/uuid';
+            }
+        }
+        leaf-list excludePath {
+            ordered-by system;
+            type leafref {
+                path '/Context/_path/uuid';
+            }
         }
     }
-    grouping G_PathOptimizationConstraint {
+    grouping PathOptimizationConstraint {
         leaf trafficInterruption {
             type Tapi-TypeDefinitions:DirectiveValue;
         }
     }
-    grouping G_PathObjectiveFunction {
+    grouping PathObjectiveFunction {
         leaf bandwidthOptimization {
             type Tapi-TypeDefinitions:DirectiveValue;
         }
@@ -692,12 +702,103 @@ module Tapi-ObjectClasses {
             type Tapi-TypeDefinitions:DirectiveValue;
         }
     }
-    grouping G_ScheduleInfo {
+    grouping ScheduleInfo {
         leaf endTime {
             type Tapi-TypeDefinitions:DateAndTime;
         }
         leaf startTime {
             type Tapi-TypeDefinitions:DateAndTime;
         }
+    }
+    grouping VirtualNetworkService {
+        uses GlobalClass;
+        leaf _topology {
+            type leafref {
+                path '/Context/_topology/uuid';
+            }
+        }
+        list _servicePort {
+            key 'localId';
+            config true;
+            ordered-by system;
+            uses VirtualNetworkServicePort;
+            min-elements 2;
+        }
+        container _vnwConstraint {
+            config true;
+            uses VirtualNetworkConstraint;
+        }
+        container _schedule {
+            config true;
+            uses ScheduleInfo;
+        }
+        container _state {
+            config true;
+            uses AdminStatePac;
+        }
+        leaf-list layerProtocolName {
+            ordered-by system;
+            type Tapi-TypeDefinitions:LayerProtocolName;
+            min-elements 1;
+        }
+    }
+    grouping VirtualNetworkServicePort {
+        uses LocalClass;
+        leaf _serviceEndPoint {
+            type leafref {
+                path '/Context/_serviceEndPoint/uuid';
+            }
+        }
+        leaf role {
+            type Tapi-TypeDefinitions:PortRole;
+            description "Each EP of the FC has a role (e.g., working, protection, protected, symmetric, hub, spoke, leaf, root)  in the context of the FC with respect to the FC function. ";
+        }
+        leaf direction {
+            type Tapi-TypeDefinitions:PortDirection;
+            description "The orientation of defined flow at the EndPoint.";
+        }
+        leaf serviceLayer {
+            type Tapi-TypeDefinitions:LayerProtocolName;
+        }
+    }
+    grouping VirtualNetworkConstraint {
+        leaf serviceType {
+            type Tapi-TypeDefinitions:ServiceType;
+        }
+        leaf serviceLevel {
+            type string;
+            description "An abstract value the meaning of which is mutually agreed – typically represents metrics such as - Class of service, priority, resiliency, availability";
+        }
+        leaf-list serviceLayer {
+            ordered-by system;
+            type Tapi-TypeDefinitions:LayerProtocolName;
+        }
+        container requestedCapacity {
+            config true;
+            uses Tapi-TypeDefinitions:Capacity;
+        }
+        list costCharacteristic {
+            description "The list of costs where each cost relates to some aspect of the TopologicalEntity.";
+            key 'costAlgorithm';
+            config true;
+            ordered-by system;
+            uses Tapi-TypeDefinitions:CostCharacteristic;
+        }
+        list riskCharacteristic {
+            description "A list of risk characteristics for consideration in an analysis of shared risk. Each element of the list represents a specific risk consideration.";
+            key 'riskCharacteristicName';
+            config true;
+            ordered-by system;
+            uses Tapi-TypeDefinitions:RiskCharacteristic;
+        }
+        list latencyCharacteristic {
+            description "The effect on the latency of a queuing process. This only has significant effect for packet based systems and has a complex characteristic.";
+            key 'latencyValue';
+            config true;
+            ordered-by system;
+            uses Tapi-TypeDefinitions:QueuingLatency;
+        }
+    }
+    grouping LpSpec {
     }
 }
