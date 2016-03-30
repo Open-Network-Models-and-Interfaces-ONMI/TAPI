@@ -20,7 +20,7 @@
                             "properties": {
                                 "path": {
                                     "items": {
-                                        "$ref": "#/definitions/GPath"
+                                        "$ref": "#/definitions/Path"
                                     },
                                     "type": "array"
                                 }
@@ -42,14 +42,14 @@
                         "schema": {
                             "properties": {
                                 "objectiveFunction": {
-                                    "type": "string"
+                                    "$ref": "#/definitions/PathObjectiveFunction"
                                 },
                                 "routingConstraint": {
-                                    "type": "string"
+                                    "$ref": "#/definitions/ConnectivityConstraint"
                                 },
                                 "servicePort": {
                                     "items": {
-                                        "$ref": "#/definitions/GServicePort"
+                                        "$ref": "#/definitions/ConnectivityServicePort"
                                     },
                                     "type": "array"
                                 }
@@ -78,7 +78,7 @@
                             "properties": {
                                 "path": {
                                     "items": {
-                                        "$ref": "#/definitions/GPath"
+                                        "$ref": "#/definitions/Path"
                                     },
                                     "type": "array"
                                 }
@@ -103,13 +103,13 @@
                                     "type": "string"
                                 },
                                 "optimizationConstraint": {
-                                    "type": "string"
+                                    "$ref": "#/definitions/PathOptimizationConstraint"
                                 },
                                 "routingConstraint": {
-                                    "type": "string"
+                                    "$ref": "#/definitions/ConnectivityConstraint"
                                 },
                                 "objectiveFunction": {
-                                    "type": "string"
+                                    "$ref": "#/definitions/PathObjectiveFunction"
                                 }
                             }
                         },
@@ -129,10 +129,10 @@
         }
     },
     "definitions": {
-        "GServicePort": {
+        "ConnectivityServicePort": {
             "allOf": [
                 {
-                    "$ref": "#/definitions/GLocalClass"
+                    "$ref": "#/definitions/LocalClass"
                 },
                 {
                     "properties": {
@@ -147,140 +147,33 @@
                         },
                         "_serviceEndPoint": {
                             "type": "string",
-                            "x-path": "/ServiceEndPoint/uuid"
+                            "x-path": "/Context/_serviceEndPoint/uuid"
                         }
                     }
                 }
             ]
         },
-        "GLocalClass": {
+        "LocalClass": {
             "properties": {
                 "localId": {
                     "type": "string"
                 }
             }
         },
-        "GPath": {
-            "allOf": [
-                {
-                    "$ref": "#/definitions/GGlobalClass"
-                },
-                {
-                    "properties": {
-                        "_routingConstraint": {
-                            "$ref": "#/definitions/GConnectivityConstraint"
-                        },
-                        "_telink": {
-                            "items": {
-                                "$ref": "#/definitions/GTeLink"
-                            },
-                            "type": "array",
-                            "x-key": "localId"
-                        },
-                        "_objectiveFunction": {
-                            "$ref": "#/definitions/GPathObjectiveFunction"
-                        },
-                        "_optimizationConstraint": {
-                            "$ref": "#/definitions/GPathOptimizationConstraint"
-                        }
-                    }
-                }
-            ]
-        },
-        "GGlobalClass": {
-            "properties": {
-                "label": {
-                    "items": {
-                        "$ref": "#/definitions/GNameAndValue"
-                    },
-                    "type": "array",
-                    "x-key": "valueName"
-                },
-                "uuid": {
-                    "type": "string"
-                },
-                "extension": {
-                    "items": {
-                        "$ref": "#/definitions/GNameAndValue"
-                    },
-                    "type": "array",
-                    "x-key": "valueName"
-                },
-                "name": {
-                    "items": {
-                        "$ref": "#/definitions/GNameAndValue"
-                    },
-                    "type": "array",
-                    "x-key": "valueName"
-                }
-            }
-        },
-        "GNameAndValue": {
-            "properties": {
-                "_nameAndValueAuthorityRef": {
-                    "type": "string"
-                },
-                "value": {
-                    "type": "string"
-                },
-                "valueName": {
-                    "type": "string"
-                }
-            }
-        },
-        "GTeLink": {
-            "allOf": [
-                {
-                    "$ref": "#/definitions/GLocalClass"
-                },
-                {
-                    "properties": {
-                        "_node": {
-                            "items": {
-                                "type": "string",
-                                "x-path": "/Topology/_node/uuid"
-                            },
-                            "type": "array"
-                        },
-                        "_link": {
-                            "type": "string",
-                            "x-path": "/Topology/_link/uuid"
-                        },
-                        "_linkPort": {
-                            "items": {
-                                "type": "string",
-                                "x-path": "/Topology/_link/_linkPort/localId"
-                            },
-                            "type": "array"
-                        }
-                    }
-                }
-            ]
-        },
-        "GConnectivityConstraint": {
+        "ConnectivityConstraint": {
             "properties": {
                 "serviceType": {
                     "type": "string"
                 },
                 "requestedCapacity": {
-                    "$ref": "#/definitions/GCapacity"
+                    "$ref": "#/definitions/Capacity"
                 },
                 "costCharacteristic": {
                     "items": {
-                        "$ref": "#/definitions/GCostCharacteristic"
+                        "$ref": "#/definitions/CostCharacteristic"
                     },
                     "type": "array",
                     "x-key": "costAlgorithm"
-                },
-                "latencyCharacteristic": {
-                    "items": {
-                        "$ref": "#/definitions/GQueuingLatency"
-                    },
-                    "type": "array",
-                    "x-key": "latencyValue"
-                },
-                "serviceLevel": {
-                    "type": "string"
                 },
                 "serviceLayer": {
                     "items": {
@@ -288,53 +181,54 @@
                     },
                     "type": "array"
                 },
+                "includeTopology": {
+                    "items": {
+                        "type": "string",
+                        "x-path": "/Context/_topology/uuid"
+                    },
+                    "type": "array"
+                },
+                "serviceLevel": {
+                    "type": "string"
+                },
+                "latencyCharacteristic": {
+                    "items": {
+                        "$ref": "#/definitions/QueuingLatency"
+                    },
+                    "type": "array",
+                    "x-key": "latencyValue"
+                },
                 "excludePath": {
                     "items": {
                         "type": "string",
-                        "x-path": "/Path/uuid"
+                        "x-path": "/Context/_path/uuid"
                     },
                     "type": "array"
+                },
+                "avoidTopology": {
+                    "items": {
+                        "$ref": "#/definitions/Topology"
+                    },
+                    "type": "array",
+                    "x-key": "uuid"
                 },
                 "includePath": {
                     "items": {
                         "type": "string",
-                        "x-path": "/Path/uuid"
+                        "x-path": "/Context/_path/uuid"
                     },
                     "type": "array"
                 },
                 "riskCharacteristic": {
                     "items": {
-                        "$ref": "#/definitions/GRiskCharacteristic"
+                        "$ref": "#/definitions/RiskCharacteristic"
                     },
                     "type": "array",
                     "x-key": "riskCharacteristicName"
                 }
             }
         },
-        "GCostCharacteristic": {
-            "properties": {
-                "costName": {
-                    "type": "string"
-                },
-                "costAlgorithm": {
-                    "type": "string"
-                },
-                "costValue": {
-                    "type": "string"
-                }
-            }
-        },
-        "GQueuingLatency": {
-            "properties": {
-                "latencyValue": {
-                    "type": "string"
-                },
-                "trafficPropertyName": {
-                    "type": "string"
-                }
-            }
-        },
-        "GCapacity": {
+        "Capacity": {
             "properties": {
                 "totalSize": {
                     "type": "string"
@@ -350,7 +244,20 @@
                 }
             }
         },
-        "GRiskCharacteristic": {
+        "CostCharacteristic": {
+            "properties": {
+                "costName": {
+                    "type": "string"
+                },
+                "costAlgorithm": {
+                    "type": "string"
+                },
+                "costValue": {
+                    "type": "string"
+                }
+            }
+        },
+        "RiskCharacteristic": {
             "properties": {
                 "riskIdentifierList": {
                     "items": {
@@ -363,14 +270,382 @@
                 }
             }
         },
-        "GPathOptimizationConstraint": {
+        "QueuingLatency": {
             "properties": {
-                "trafficInterruption": {
+                "latencyValue": {
+                    "type": "string"
+                },
+                "trafficPropertyName": {
                     "type": "string"
                 }
             }
         },
-        "GPathObjectiveFunction": {
+        "Topology": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/GlobalClass"
+                },
+                {
+                    "properties": {
+                        "_node": {
+                            "items": {
+                                "$ref": "#/definitions/Node"
+                            },
+                            "type": "array",
+                            "x-key": "uuid"
+                        },
+                        "layerProtocolName": {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
+                        "_link": {
+                            "items": {
+                                "$ref": "#/definitions/Link"
+                            },
+                            "type": "array",
+                            "x-key": "uuid"
+                        }
+                    }
+                }
+            ]
+        },
+        "NameAndValue": {
+            "properties": {
+                "_nameAndValueAuthorityRef": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                },
+                "valueName": {
+                    "type": "string"
+                }
+            }
+        },
+        "Node": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/GlobalClass"
+                },
+                {
+                    "properties": {
+                        "_encapTopology": {
+                            "type": "string",
+                            "x-path": "/Context/_topology/uuid"
+                        },
+                        "_state": {
+                            "$ref": "#/definitions/AdminStatePac"
+                        },
+                        "_transferTiming": {
+                            "$ref": "#/definitions/TransferTimingPac"
+                        },
+                        "_ownedNodeEdgePoint": {
+                            "items": {
+                                "$ref": "#/definitions/NodeEdgePoint"
+                            },
+                            "type": "array",
+                            "x-key": "uuid"
+                        },
+                        "layerProtocolName": {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
+                        "_transferCapacity": {
+                            "$ref": "#/definitions/TransferCapacityPac"
+                        },
+                        "_transferCost": {
+                            "$ref": "#/definitions/TransferCostPac"
+                        },
+                        "_aggregatedNodeEdgePoint": {
+                            "items": {
+                                "type": "string",
+                                "x-path": "/Context/_topology/_node/_ownedNodeEdgePoint/uuid"
+                            },
+                            "type": "array"
+                        },
+                        "_transferIntegrity": {
+                            "$ref": "#/definitions/TransferIntegrityPac"
+                        }
+                    }
+                }
+            ]
+        },
+        "NodeEdgePoint": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/GlobalClass"
+                },
+                {
+                    "properties": {
+                        "_state": {
+                            "$ref": "#/definitions/AdminStatePac"
+                        },
+                        "direction": {
+                            "type": "string"
+                        },
+                        "_layerProtocol": {
+                            "items": {
+                                "$ref": "#/definitions/LayerProtocol"
+                            },
+                            "type": "array",
+                            "x-key": "localId"
+                        },
+                        "_clientNodeEdgePoint": {
+                            "items": {
+                                "type": "string",
+                                "x-path": "/Context/_topology/_node/_ownedNodeEdgePoint/uuid"
+                            },
+                            "type": "array"
+                        }
+                    }
+                }
+            ]
+        },
+        "LayerProtocol": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/LocalClass"
+                },
+                {
+                    "properties": {
+                        "_lpSpec": {
+                            "$ref": "#/definitions/LpSpec"
+                        },
+                        "layerProtocolName": {
+                            "type": "string"
+                        },
+                        "terminationDirection": {
+                            "type": "string"
+                        },
+                        "terminationState": {
+                            "type": "string"
+                        }
+                    }
+                }
+            ]
+        },
+        "LpSpec": {},
+        "AdminStatePac": {
+            "properties": {
+                "administrativeState": {
+                    "type": "string"
+                },
+                "operationalState": {
+                    "type": "string"
+                },
+                "lifecycleState": {
+                    "type": "string"
+                }
+            }
+        },
+        "TransferCapacityPac": {
+            "properties": {
+                "capacityAssignedToUserView": {
+                    "items": {
+                        "$ref": "#/definitions/Capacity"
+                    },
+                    "type": "array",
+                    "x-key": "numberingRange"
+                },
+                "availableCapacity": {
+                    "$ref": "#/definitions/Capacity"
+                },
+                "totalPotentialCapacity": {
+                    "$ref": "#/definitions/Capacity"
+                },
+                "capacityInteractionAlgorithm": {
+                    "type": "string"
+                }
+            }
+        },
+        "TransferCostPac": {
+            "properties": {
+                "costCharacteristic": {
+                    "items": {
+                        "$ref": "#/definitions/CostCharacteristic"
+                    },
+                    "type": "array",
+                    "x-key": "costAlgorithm"
+                }
+            }
+        },
+        "TransferIntegrityPac": {
+            "properties": {
+                "errorCharacteristic": {
+                    "type": "string"
+                },
+                "repeatDeliveryCharacteristic": {
+                    "type": "string"
+                },
+                "lossCharacteristic": {
+                    "type": "string"
+                },
+                "unavailableTimeCharacteristic": {
+                    "type": "string"
+                },
+                "deliveryOrderCharacteristic": {
+                    "type": "string"
+                },
+                "serverIntegrityProcessCharacteristic": {
+                    "type": "string"
+                }
+            }
+        },
+        "TransferTimingPac": {
+            "properties": {
+                "queuingLatency": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "wanderCharacteristic": {
+                    "type": "string"
+                },
+                "fixedLatencyCharacteristic": {
+                    "type": "string"
+                },
+                "jitterCharacteristic": {
+                    "type": "string"
+                }
+            }
+        },
+        "Link": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/GlobalClass"
+                },
+                {
+                    "properties": {
+                        "direction": {
+                            "type": "string"
+                        },
+                        "layerProtocolName": {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
+                        "_validation": {
+                            "$ref": "#/definitions/ValidationPac"
+                        },
+                        "_lpTransition": {
+                            "$ref": "#/definitions/LayerProtocolTransitionPac"
+                        },
+                        "_state": {
+                            "$ref": "#/definitions/AdminStatePac"
+                        },
+                        "_linkPort": {
+                            "items": {
+                                "$ref": "#/definitions/LinkPort"
+                            },
+                            "type": "array",
+                            "x-key": "localId"
+                        },
+                        "_node": {
+                            "items": {
+                                "type": "string",
+                                "x-path": "/Context/_topology/_node/uuid"
+                            },
+                            "type": "array"
+                        },
+                        "_transferCapacity": {
+                            "$ref": "#/definitions/TransferCapacityPac"
+                        },
+                        "_transferCost": {
+                            "$ref": "#/definitions/TransferCostPac"
+                        },
+                        "_riskParameter": {
+                            "$ref": "#/definitions/RiskParameterPac"
+                        },
+                        "_transferTiming": {
+                            "$ref": "#/definitions/TransferTimingPac"
+                        },
+                        "_transferIntegrity": {
+                            "$ref": "#/definitions/TransferIntegrityPac"
+                        }
+                    }
+                }
+            ]
+        },
+        "LinkPort": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/LocalClass"
+                },
+                {
+                    "properties": {
+                        "_nodeEdgePoint": {
+                            "type": "string",
+                            "x-path": "/Context/_topology/_node/_ownedNodeEdgePoint/uuid"
+                        },
+                        "direction": {
+                            "type": "string"
+                        },
+                        "role": {
+                            "type": "string"
+                        }
+                    }
+                }
+            ]
+        },
+        "RiskParameterPac": {
+            "properties": {
+                "riskCharacteristic": {
+                    "items": {
+                        "$ref": "#/definitions/RiskCharacteristic"
+                    },
+                    "type": "array",
+                    "x-key": "riskCharacteristicName"
+                }
+            }
+        },
+        "ValidationPac": {
+            "properties": {
+                "validationMechanism": {
+                    "items": {
+                        "$ref": "#/definitions/ValidationMechanism"
+                    },
+                    "type": "array",
+                    "x-key": "validationRobustness"
+                }
+            }
+        },
+        "ValidationMechanism": {
+            "properties": {
+                "layerProtocolAdjacencyValidated": {
+                    "type": "string"
+                },
+                "validationRobustness": {
+                    "type": "string"
+                },
+                "validationMechanism": {
+                    "type": "string"
+                }
+            }
+        },
+        "LayerProtocolTransitionPac": {
+            "properties": {
+                "_nodeEdgePoint": {
+                    "items": {
+                        "type": "string",
+                        "x-path": "/Context/_topology/_node/_ownedNodeEdgePoint/uuid"
+                    },
+                    "type": "array"
+                },
+                "transitionedLayerProtocolName": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                }
+            }
+        },
+        "PathObjectiveFunction": {
             "properties": {
                 "linkUtilization": {
                     "type": "string"
@@ -385,6 +660,93 @@
                     "type": "string"
                 },
                 "resourceSharing": {
+                    "type": "string"
+                }
+            }
+        },
+        "Path": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/GlobalClass"
+                },
+                {
+                    "properties": {
+                        "_routingConstraint": {
+                            "$ref": "#/definitions/ConnectivityConstraint"
+                        },
+                        "_telink": {
+                            "items": {
+                                "$ref": "#/definitions/TeLink"
+                            },
+                            "type": "array",
+                            "x-key": "localId"
+                        },
+                        "_objectiveFunction": {
+                            "$ref": "#/definitions/PathObjectiveFunction"
+                        },
+                        "_optimizationConstraint": {
+                            "$ref": "#/definitions/PathOptimizationConstraint"
+                        }
+                    }
+                }
+            ]
+        },
+        "GlobalClass": {
+            "properties": {
+                "label": {
+                    "items": {
+                        "$ref": "#/definitions/NameAndValue"
+                    },
+                    "type": "array",
+                    "x-key": "valueName"
+                },
+                "uuid": {
+                    "type": "string"
+                },
+                "extension": {
+                    "items": {
+                        "$ref": "#/definitions/NameAndValue"
+                    },
+                    "type": "array",
+                    "x-key": "valueName"
+                },
+                "name": {
+                    "items": {
+                        "$ref": "#/definitions/NameAndValue"
+                    },
+                    "type": "array",
+                    "x-key": "valueName"
+                }
+            }
+        },
+        "TeLink": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/LocalClass"
+                },
+                {
+                    "properties": {
+                        "_nodeEdgePoint": {
+                            "items": {
+                                "type": "string",
+                                "x-path": "/Context/_topology/_node/_ownedNodeEdgePoint/uuid"
+                            },
+                            "type": "array"
+                        },
+                        "_node": {
+                            "items": {
+                                "type": "string",
+                                "x-path": "/Context/_topology/_node/uuid"
+                            },
+                            "type": "array"
+                        }
+                    }
+                }
+            ]
+        },
+        "PathOptimizationConstraint": {
+            "properties": {
+                "trafficInterruption": {
                     "type": "string"
                 }
             }
