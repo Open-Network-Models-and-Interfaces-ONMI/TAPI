@@ -1,4 +1,4 @@
-# TRANSPORT API (T-API) YANG models
+# TRANSPORT API (T-API) SWAGGER API
 
 ## Overview
 
