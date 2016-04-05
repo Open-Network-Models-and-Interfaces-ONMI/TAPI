@@ -243,77 +243,171 @@
         }
     },
     "definitions": {
-        "Topology": {
+        "LinkPort": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/LocalClass"
+                },
+                {
+                    "properties": {
+                        "_nodeEdgePoint": {
+                            "type": "string",
+                            "x-path": "/Context/_topology/_node/_ownedNodeEdgePoint/uuid"
+                        },
+                        "direction": {
+                            "type": "string"
+                        },
+                        "role": {
+                            "type": "string"
+                        }
+                    }
+                }
+            ]
+        },
+        "VirtualNetworkServicePort": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/LocalClass"
+                },
+                {
+                    "properties": {
+                        "serviceLayer": {
+                            "type": "string"
+                        },
+                        "direction": {
+                            "type": "string"
+                        },
+                        "role": {
+                            "type": "string"
+                        },
+                        "_serviceEndPoint": {
+                            "type": "string",
+                            "x-path": "/Context/_serviceEndPoint/uuid"
+                        }
+                    }
+                }
+            ]
+        },
+        "TransferCostPac": {
+            "properties": {
+                "costCharacteristic": {
+                    "items": {
+                        "$ref": "#/definitions/CostCharacteristic"
+                    },
+                    "type": "array",
+                    "x-key": "costAlgorithm"
+                }
+            }
+        },
+        "LayerProtocolTransitionPac": {
+            "properties": {
+                "_nodeEdgePoint": {
+                    "items": {
+                        "type": "string",
+                        "x-path": "/Context/_topology/_node/_ownedNodeEdgePoint/uuid"
+                    },
+                    "type": "array"
+                },
+                "transitionedLayerProtocolName": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                }
+            }
+        },
+        "TransferTimingPac": {
+            "properties": {
+                "queuingLatency": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "wanderCharacteristic": {
+                    "type": "string"
+                },
+                "fixedLatencyCharacteristic": {
+                    "type": "string"
+                },
+                "jitterCharacteristic": {
+                    "type": "string"
+                }
+            }
+        },
+        "TransferIntegrityPac": {
+            "properties": {
+                "errorCharacteristic": {
+                    "type": "string"
+                },
+                "repeatDeliveryCharacteristic": {
+                    "type": "string"
+                },
+                "lossCharacteristic": {
+                    "type": "string"
+                },
+                "unavailableTimeCharacteristic": {
+                    "type": "string"
+                },
+                "deliveryOrderCharacteristic": {
+                    "type": "string"
+                },
+                "serverIntegrityProcessCharacteristic": {
+                    "type": "string"
+                }
+            }
+        },
+        "LpSpec": {},
+        "AdminStatePac": {
+            "properties": {
+                "administrativeState": {
+                    "type": "string"
+                },
+                "operationalState": {
+                    "type": "string"
+                },
+                "lifecycleState": {
+                    "type": "string"
+                }
+            }
+        },
+        "ServiceEndPoint": {
             "allOf": [
                 {
                     "$ref": "#/definitions/GlobalClass"
                 },
                 {
                     "properties": {
-                        "_node": {
+                        "_mappedNodeEdgePoint": {
                             "items": {
-                                "$ref": "#/definitions/Node"
-                            },
-                            "type": "array",
-                            "x-key": "uuid"
-                        },
-                        "layerProtocolName": {
-                            "items": {
-                                "type": "string"
+                                "type": "string",
+                                "x-path": "/Context/_topology/_node/_ownedNodeEdgePoint/uuid"
                             },
                             "type": "array"
                         },
-                        "_link": {
+                        "_state": {
+                            "$ref": "#/definitions/LifecycleStatePac"
+                        },
+                        "_connectionEndPoint": {
                             "items": {
-                                "$ref": "#/definitions/Link"
+                                "$ref": "#/definitions/ConnectionEndPoint"
                             },
                             "type": "array",
                             "x-key": "uuid"
+                        },
+                        "_layerProtocol": {
+                            "items": {
+                                "$ref": "#/definitions/LayerProtocol"
+                            },
+                            "type": "array",
+                            "x-key": "localId"
+                        },
+                        "direction": {
+                            "type": "string"
                         }
                     }
                 }
             ]
-        },
-        "GlobalClass": {
-            "properties": {
-                "label": {
-                    "items": {
-                        "$ref": "#/definitions/NameAndValue"
-                    },
-                    "type": "array",
-                    "x-key": "valueName"
-                },
-                "uuid": {
-                    "type": "string"
-                },
-                "extension": {
-                    "items": {
-                        "$ref": "#/definitions/NameAndValue"
-                    },
-                    "type": "array",
-                    "x-key": "valueName"
-                },
-                "name": {
-                    "items": {
-                        "$ref": "#/definitions/NameAndValue"
-                    },
-                    "type": "array",
-                    "x-key": "valueName"
-                }
-            }
-        },
-        "NameAndValue": {
-            "properties": {
-                "_nameAndValueAuthorityRef": {
-                    "type": "string"
-                },
-                "value": {
-                    "type": "string"
-                },
-                "valueName": {
-                    "type": "string"
-                }
-            }
         },
         "Node": {
             "allOf": [
@@ -365,30 +459,24 @@
                 }
             ]
         },
-        "NodeEdgePoint": {
+        "TeLink": {
             "allOf": [
                 {
-                    "$ref": "#/definitions/GlobalClass"
+                    "$ref": "#/definitions/LocalClass"
                 },
                 {
                     "properties": {
-                        "_state": {
-                            "$ref": "#/definitions/AdminStatePac"
-                        },
-                        "direction": {
-                            "type": "string"
-                        },
-                        "_layerProtocol": {
-                            "items": {
-                                "$ref": "#/definitions/LayerProtocol"
-                            },
-                            "type": "array",
-                            "x-key": "localId"
-                        },
-                        "_clientNodeEdgePoint": {
+                        "_nodeEdgePoint": {
                             "items": {
                                 "type": "string",
                                 "x-path": "/Context/_topology/_node/_ownedNodeEdgePoint/uuid"
+                            },
+                            "type": "array"
+                        },
+                        "_node": {
+                            "items": {
+                                "type": "string",
+                                "x-path": "/Context/_topology/_node/uuid"
                             },
                             "type": "array"
                         }
@@ -396,143 +484,105 @@
                 }
             ]
         },
-        "LayerProtocol": {
+        "ConnectivityService": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/GlobalClass"
+                },
+                {
+                    "properties": {
+                        "_connection": {
+                            "items": {
+                                "$ref": "#/definitions/Connection"
+                            },
+                            "type": "array",
+                            "x-key": "uuid"
+                        },
+                        "_servicePort": {
+                            "items": {
+                                "$ref": "#/definitions/ConnectivityServicePort"
+                            },
+                            "type": "array",
+                            "x-key": "localId"
+                        },
+                        "direction": {
+                            "type": "string"
+                        },
+                        "layerProtocolName": {
+                            "type": "string"
+                        },
+                        "_schedule": {
+                            "$ref": "#/definitions/ScheduleInfo"
+                        },
+                        "_state": {
+                            "$ref": "#/definitions/AdminStatePac"
+                        },
+                        "_connConstraints": {
+                            "$ref": "#/definitions/ConnectivityConstraint"
+                        }
+                    }
+                }
+            ]
+        },
+        "ConnectionPort": {
             "allOf": [
                 {
                     "$ref": "#/definitions/LocalClass"
                 },
                 {
                     "properties": {
-                        "_lpSpec": {
-                            "$ref": "#/definitions/LpSpec"
-                        },
-                        "layerProtocolName": {
+                        "direction": {
                             "type": "string"
                         },
-                        "terminationDirection": {
-                            "type": "string"
+                        "_connectionEndPoint": {
+                            "type": "string",
+                            "x-path": "/Context/_serviceEndPoint/_connectionEndPoint/uuid"
                         },
-                        "terminationState": {
+                        "role": {
                             "type": "string"
                         }
                     }
                 }
             ]
         },
-        "LpSpec": {},
-        "AdminStatePac": {
-            "properties": {
-                "administrativeState": {
-                    "type": "string"
+        "ConnectionEndPoint": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/GlobalClass"
                 },
-                "operationalState": {
-                    "type": "string"
-                },
-                "lifecycleState": {
-                    "type": "string"
+                {
+                    "properties": {
+                        "direction": {
+                            "type": "string"
+                        },
+                        "_clientNodeEdgePoint": {
+                            "items": {
+                                "type": "string",
+                                "x-path": "/Context/_topology/_node/_ownedNodeEdgePoint/uuid"
+                            },
+                            "type": "array"
+                        },
+                        "_serverNodeEdgePoint": {
+                            "type": "string",
+                            "x-path": "/Context/_topology/_node/_ownedNodeEdgePoint/uuid"
+                        },
+                        "_state": {
+                            "$ref": "#/definitions/OperationalStatePac"
+                        },
+                        "_peerConnectionEndPoint": {
+                            "type": "string",
+                            "x-path": "/Context/_serviceEndPoint/_connectionEndPoint/uuid"
+                        },
+                        "_layerProtocol": {
+                            "items": {
+                                "$ref": "#/definitions/LayerProtocol"
+                            },
+                            "type": "array",
+                            "x-key": "localId"
+                        }
+                    }
                 }
-            }
-        },
-        "TransferCapacityPac": {
-            "properties": {
-                "capacityAssignedToUserView": {
-                    "items": {
-                        "$ref": "#/definitions/Capacity"
-                    },
-                    "type": "array",
-                    "x-key": "numberingRange"
-                },
-                "availableCapacity": {
-                    "$ref": "#/definitions/Capacity"
-                },
-                "totalPotentialCapacity": {
-                    "$ref": "#/definitions/Capacity"
-                },
-                "capacityInteractionAlgorithm": {
-                    "type": "string"
-                }
-            }
-        },
-        "Capacity": {
-            "properties": {
-                "totalSize": {
-                    "type": "string"
-                },
-                "maximumUsageInstances": {
-                    "type": "string"
-                },
-                "numberingRange": {
-                    "type": "string"
-                },
-                "maximumUsageSize": {
-                    "type": "string"
-                }
-            }
-        },
-        "TransferCostPac": {
-            "properties": {
-                "costCharacteristic": {
-                    "items": {
-                        "$ref": "#/definitions/CostCharacteristic"
-                    },
-                    "type": "array",
-                    "x-key": "costAlgorithm"
-                }
-            }
-        },
-        "CostCharacteristic": {
-            "properties": {
-                "costName": {
-                    "type": "string"
-                },
-                "costAlgorithm": {
-                    "type": "string"
-                },
-                "costValue": {
-                    "type": "string"
-                }
-            }
-        },
-        "TransferIntegrityPac": {
-            "properties": {
-                "errorCharacteristic": {
-                    "type": "string"
-                },
-                "repeatDeliveryCharacteristic": {
-                    "type": "string"
-                },
-                "lossCharacteristic": {
-                    "type": "string"
-                },
-                "unavailableTimeCharacteristic": {
-                    "type": "string"
-                },
-                "deliveryOrderCharacteristic": {
-                    "type": "string"
-                },
-                "serverIntegrityProcessCharacteristic": {
-                    "type": "string"
-                }
-            }
-        },
-        "TransferTimingPac": {
-            "properties": {
-                "queuingLatency": {
-                    "items": {
-                        "type": "string"
-                    },
-                    "type": "array"
-                },
-                "wanderCharacteristic": {
-                    "type": "string"
-                },
-                "fixedLatencyCharacteristic": {
-                    "type": "string"
-                },
-                "jitterCharacteristic": {
-                    "type": "string"
-                }
-            }
+            ]
         },
         "Link": {
             "allOf": [
@@ -592,26 +642,307 @@
                 }
             ]
         },
-        "LinkPort": {
+        "LocalClass": {
+            "properties": {
+                "localId": {
+                    "type": "string"
+                }
+            }
+        },
+        "Path": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/GlobalClass"
+                },
+                {
+                    "properties": {
+                        "_routingConstraint": {
+                            "$ref": "#/definitions/ConnectivityConstraint"
+                        },
+                        "_telink": {
+                            "items": {
+                                "$ref": "#/definitions/TeLink"
+                            },
+                            "type": "array",
+                            "x-key": "localId"
+                        },
+                        "_objectiveFunction": {
+                            "$ref": "#/definitions/PathObjectiveFunction"
+                        },
+                        "_optimizationConstraint": {
+                            "$ref": "#/definitions/PathOptimizationConstraint"
+                        }
+                    }
+                }
+            ]
+        },
+        "Topology": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/GlobalClass"
+                },
+                {
+                    "properties": {
+                        "_node": {
+                            "items": {
+                                "$ref": "#/definitions/Node"
+                            },
+                            "type": "array",
+                            "x-key": "uuid"
+                        },
+                        "layerProtocolName": {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
+                        "_link": {
+                            "items": {
+                                "$ref": "#/definitions/Link"
+                            },
+                            "type": "array",
+                            "x-key": "uuid"
+                        }
+                    }
+                }
+            ]
+        },
+        "ConnectivityConstraint": {
+            "properties": {
+                "serviceType": {
+                    "type": "string"
+                },
+                "requestedCapacity": {
+                    "$ref": "#/definitions/Capacity"
+                },
+                "costCharacteristic": {
+                    "items": {
+                        "$ref": "#/definitions/CostCharacteristic"
+                    },
+                    "type": "array",
+                    "x-key": "costAlgorithm"
+                },
+                "serviceLayer": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "includeTopology": {
+                    "items": {
+                        "type": "string",
+                        "x-path": "/Context/_topology/uuid"
+                    },
+                    "type": "array"
+                },
+                "serviceLevel": {
+                    "type": "string"
+                },
+                "latencyCharacteristic": {
+                    "items": {
+                        "$ref": "#/definitions/QueuingLatency"
+                    },
+                    "type": "array",
+                    "x-key": "latencyValue"
+                },
+                "excludePath": {
+                    "items": {
+                        "type": "string",
+                        "x-path": "/Context/_path/uuid"
+                    },
+                    "type": "array"
+                },
+                "avoidTopology": {
+                    "items": {
+                        "$ref": "#/definitions/Topology"
+                    },
+                    "type": "array",
+                    "x-key": "uuid"
+                },
+                "includePath": {
+                    "items": {
+                        "type": "string",
+                        "x-path": "/Context/_path/uuid"
+                    },
+                    "type": "array"
+                },
+                "riskCharacteristic": {
+                    "items": {
+                        "$ref": "#/definitions/RiskCharacteristic"
+                    },
+                    "type": "array",
+                    "x-key": "riskCharacteristicName"
+                }
+            }
+        },
+        "VirtualNetworkService": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/GlobalClass"
+                },
+                {
+                    "properties": {
+                        "_servicePort": {
+                            "items": {
+                                "$ref": "#/definitions/VirtualNetworkServicePort"
+                            },
+                            "type": "array",
+                            "x-key": "localId"
+                        },
+                        "layerProtocolName": {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
+                        "_schedule": {
+                            "$ref": "#/definitions/ScheduleInfo"
+                        },
+                        "_vnwConstraint": {
+                            "$ref": "#/definitions/VirtualNetworkConstraint"
+                        },
+                        "_state": {
+                            "$ref": "#/definitions/AdminStatePac"
+                        },
+                        "_topology": {
+                            "type": "string",
+                            "x-path": "/Context/_topology/uuid"
+                        }
+                    }
+                }
+            ]
+        },
+        "Route": {
             "allOf": [
                 {
                     "$ref": "#/definitions/LocalClass"
                 },
                 {
                     "properties": {
-                        "_nodeEdgePoint": {
-                            "type": "string",
-                            "x-path": "/Context/_topology/_node/_ownedNodeEdgePoint/uuid"
-                        },
-                        "direction": {
-                            "type": "string"
-                        },
-                        "role": {
-                            "type": "string"
+                        "_lowerConnection": {
+                            "items": {
+                                "type": "string",
+                                "x-path": "/Context/_connectivityService/_connection/uuid"
+                            },
+                            "type": "array"
                         }
                     }
                 }
             ]
+        },
+        "Connection": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/GlobalClass"
+                },
+                {
+                    "properties": {
+                        "direction": {
+                            "type": "string"
+                        },
+                        "layerProtocolName": {
+                            "type": "string"
+                        },
+                        "_route": {
+                            "items": {
+                                "$ref": "#/definitions/Route"
+                            },
+                            "type": "array",
+                            "x-key": "localId"
+                        },
+                        "_connectionPort": {
+                            "items": {
+                                "$ref": "#/definitions/ConnectionPort"
+                            },
+                            "type": "array",
+                            "x-key": "localId"
+                        },
+                        "_state": {
+                            "$ref": "#/definitions/OperationalStatePac"
+                        },
+                        "_node": {
+                            "type": "string",
+                            "x-path": "/Context/_topology/_node/uuid"
+                        }
+                    }
+                }
+            ]
+        },
+        "ScheduleInfo": {
+            "properties": {
+                "endTime": {
+                    "type": "string"
+                },
+                "startTime": {
+                    "type": "string"
+                }
+            }
+        },
+        "PathOptimizationConstraint": {
+            "properties": {
+                "trafficInterruption": {
+                    "type": "string"
+                }
+            }
+        },
+        "PathObjectiveFunction": {
+            "properties": {
+                "linkUtilization": {
+                    "type": "string"
+                },
+                "costOptimization": {
+                    "type": "string"
+                },
+                "bandwidthOptimization": {
+                    "type": "string"
+                },
+                "concurrentPaths": {
+                    "type": "string"
+                },
+                "resourceSharing": {
+                    "type": "string"
+                }
+            }
+        },
+        "VirtualNetworkConstraint": {
+            "properties": {
+                "serviceType": {
+                    "type": "string"
+                },
+                "requestedCapacity": {
+                    "$ref": "#/definitions/Capacity"
+                },
+                "costCharacteristic": {
+                    "items": {
+                        "$ref": "#/definitions/CostCharacteristic"
+                    },
+                    "type": "array",
+                    "x-key": "costAlgorithm"
+                },
+                "serviceLayer": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "serviceLevel": {
+                    "type": "string"
+                },
+                "latencyCharacteristic": {
+                    "items": {
+                        "$ref": "#/definitions/QueuingLatency"
+                    },
+                    "type": "array",
+                    "x-key": "latencyValue"
+                },
+                "riskCharacteristic": {
+                    "items": {
+                        "$ref": "#/definitions/RiskCharacteristic"
+                    },
+                    "type": "array",
+                    "x-key": "riskCharacteristicName"
+                }
+            }
         },
         "RiskParameterPac": {
             "properties": {
@@ -621,6 +952,212 @@
                     },
                     "type": "array",
                     "x-key": "riskCharacteristicName"
+                }
+            }
+        },
+        "ConnectivityServicePort": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/LocalClass"
+                },
+                {
+                    "properties": {
+                        "serviceLayer": {
+                            "type": "string"
+                        },
+                        "direction": {
+                            "type": "string"
+                        },
+                        "role": {
+                            "type": "string"
+                        },
+                        "_serviceEndPoint": {
+                            "type": "string",
+                            "x-path": "/Context/_serviceEndPoint/uuid"
+                        }
+                    }
+                }
+            ]
+        },
+        "OperationalStatePac": {
+            "properties": {
+                "operationalState": {
+                    "type": "string"
+                },
+                "lifecycleState": {
+                    "type": "string"
+                }
+            }
+        },
+        "GlobalClass": {
+            "properties": {
+                "label": {
+                    "items": {
+                        "$ref": "#/definitions/NameAndValue"
+                    },
+                    "type": "array",
+                    "x-key": "valueName"
+                },
+                "uuid": {
+                    "type": "string"
+                },
+                "extension": {
+                    "items": {
+                        "$ref": "#/definitions/NameAndValue"
+                    },
+                    "type": "array",
+                    "x-key": "valueName"
+                },
+                "name": {
+                    "items": {
+                        "$ref": "#/definitions/NameAndValue"
+                    },
+                    "type": "array",
+                    "x-key": "valueName"
+                }
+            }
+        },
+        "LayerProtocol": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/LocalClass"
+                },
+                {
+                    "properties": {
+                        "_lpSpec": {
+                            "$ref": "#/definitions/LpSpec"
+                        },
+                        "layerProtocolName": {
+                            "type": "string"
+                        },
+                        "terminationDirection": {
+                            "type": "string"
+                        },
+                        "terminationState": {
+                            "type": "string"
+                        }
+                    }
+                }
+            ]
+        },
+        "TransferCapacityPac": {
+            "properties": {
+                "capacityAssignedToUserView": {
+                    "items": {
+                        "$ref": "#/definitions/Capacity"
+                    },
+                    "type": "array",
+                    "x-key": "numberingRange"
+                },
+                "availableCapacity": {
+                    "$ref": "#/definitions/Capacity"
+                },
+                "totalPotentialCapacity": {
+                    "$ref": "#/definitions/Capacity"
+                },
+                "capacityInteractionAlgorithm": {
+                    "type": "string"
+                }
+            }
+        },
+        "NodeEdgePoint": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/GlobalClass"
+                },
+                {
+                    "properties": {
+                        "_state": {
+                            "$ref": "#/definitions/AdminStatePac"
+                        },
+                        "direction": {
+                            "type": "string"
+                        },
+                        "_layerProtocol": {
+                            "items": {
+                                "$ref": "#/definitions/LayerProtocol"
+                            },
+                            "type": "array",
+                            "x-key": "localId"
+                        },
+                        "_clientNodeEdgePoint": {
+                            "items": {
+                                "type": "string",
+                                "x-path": "/Context/_topology/_node/_ownedNodeEdgePoint/uuid"
+                            },
+                            "type": "array"
+                        }
+                    }
+                }
+            ]
+        },
+        "LifecycleStatePac": {
+            "properties": {
+                "lifecycleState": {
+                    "type": "string"
+                }
+            }
+        },
+        "ValidationPac": {
+            "properties": {
+                "validationMechanism": {
+                    "items": {
+                        "$ref": "#/definitions/ValidationMechanism"
+                    },
+                    "type": "array",
+                    "x-key": "validationRobustness"
+                }
+            }
+        },
+        "QueuingLatency": {
+            "properties": {
+                "latencyValue": {
+                    "type": "string"
+                },
+                "trafficPropertyName": {
+                    "type": "string"
+                }
+            }
+        },
+        "Capacity": {
+            "properties": {
+                "totalSize": {
+                    "type": "string"
+                },
+                "maximumUsageInstances": {
+                    "type": "string"
+                },
+                "numberingRange": {
+                    "type": "string"
+                },
+                "maximumUsageSize": {
+                    "type": "string"
+                }
+            }
+        },
+        "CostCharacteristic": {
+            "properties": {
+                "costName": {
+                    "type": "string"
+                },
+                "costAlgorithm": {
+                    "type": "string"
+                },
+                "costValue": {
+                    "type": "string"
+                }
+            }
+        },
+        "NameAndValue": {
+            "properties": {
+                "_nameAndValueAuthorityRef": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                },
+                "valueName": {
+                    "type": "string"
                 }
             }
         },
@@ -637,17 +1174,6 @@
                 }
             }
         },
-        "ValidationPac": {
-            "properties": {
-                "validationMechanism": {
-                    "items": {
-                        "$ref": "#/definitions/ValidationMechanism"
-                    },
-                    "type": "array",
-                    "x-key": "validationRobustness"
-                }
-            }
-        },
         "ValidationMechanism": {
             "properties": {
                 "layerProtocolAdjacencyValidated": {
@@ -658,23 +1184,6 @@
                 },
                 "validationMechanism": {
                     "type": "string"
-                }
-            }
-        },
-        "LayerProtocolTransitionPac": {
-            "properties": {
-                "_nodeEdgePoint": {
-                    "items": {
-                        "type": "string",
-                        "x-path": "/Context/_topology/_node/_ownedNodeEdgePoint/uuid"
-                    },
-                    "type": "array"
-                },
-                "transitionedLayerProtocolName": {
-                    "items": {
-                        "type": "string"
-                    },
-                    "type": "array"
                 }
             }
         }
