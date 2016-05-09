@@ -4,7 +4,7 @@ module Tapi-ObjectClasses {
     import Tapi-TypeDefinitions {
         prefix Tapi-TypeDefinitions;
     }
-    revision 2016-04-19{}
+    revision 2016-05-09{}
     grouping Topology {
         uses GlobalClass;
         list _node {
@@ -167,6 +167,10 @@ module Tapi-ObjectClasses {
     }
     grouping NodeEdgePoint {
         uses GlobalClass;
+        container _ltpSpecData {
+            config true;
+            uses LtpSpec;
+        }
         list _layerProtocol {
             key 'localId';
             config true;
@@ -190,6 +194,10 @@ module Tapi-ObjectClasses {
     }
     grouping ServiceEndPoint {
         uses GlobalClass;
+        container _ltpSpecData {
+            config true;
+            uses LtpSpec;
+        }
         list _layerProtocol {
             key 'localId';
             config true;
@@ -219,6 +227,10 @@ module Tapi-ObjectClasses {
     }
     grouping ConnectionEndPoint {
         uses GlobalClass;
+        container _ltpSpecData {
+            config true;
+            uses LtpSpec;
+        }
         list _layerProtocol {
             key 'localId';
             config true;
@@ -378,7 +390,7 @@ module Tapi-ObjectClasses {
     }
     grouping LayerProtocol {
         uses LocalClass;
-        container _lpSpec {
+        container _lpSpecData {
             config true;
             uses LpSpec;
         }
@@ -449,10 +461,12 @@ module Tapi-ObjectClasses {
             description "Low frequency deviation from true periodicity of a signal and therefore a small low rate of change of transfer latency.
                 Applies to TDM systems (and not packet).";
         }
-        leaf-list queuingLatency {
+        list queuingLatency {
             description "The effect on the latency of a queuing process. This only has significant effect for packet based systems and has a complex characteristic.";
+            key 'latencyValue';
+            config true;
             ordered-by system;
-            type string;
+            uses Tapi-TypeDefinitions:QueuingLatency;
         }
     }
     grouping TransferIntegrityPac {
@@ -798,5 +812,20 @@ module Tapi-ObjectClasses {
         }
     }
     grouping LpSpec {
+        leaf lpSpecReference {
+            type string;
+        }
+    }
+    grouping LtpSpec {
+        leaf ltpSpecReference {
+            type string;
+        }
+        leaf-list _lpSpec {
+            ordered-by system;
+            type leafref {
+                path '/Context/_topology/_node/_ownedNodeEdgePoint/_layerProtocol/_lpSpecData/lpSpecReference';
+            }
+            min-elements 1;
+        }
     }
 }
