@@ -1,9 +1,9 @@
 {
     "swagger": "2.0",
     "info": {
-        "version": "1.0.0",
         "description": "Tapi-Interfaces-PathComputationService API generated from Tapi-Interfaces-PathComputationService.yang",
-        "title": "Tapi-Interfaces-PathComputationService API"
+        "title": "Tapi-Interfaces-PathComputationService API",
+        "version": "1.0.0"
     },
     "host": "localhost:8080",
     "basePath": "/restconf",
@@ -13,6 +13,26 @@
     "paths": {
         "/operations/computeP2PPath/": {
             "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "summary": "Create computeP2PPath by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "description": "computeP2PPathbody object",
+                        "in": "body",
+                        "required": true,
+                        "name": "computeP2PPath",
+                        "schema": {
+                            "$ref": "#/definitions/ComputeP2PPathRPCInputSchema"
+                        }
+                    }
+                ],
+                "operationId": "createComputeP2PPathById",
+                "description": "Create operation of resource: computeP2PPath",
                 "responses": {
                     "200": {
                         "description": "Successful operation",
@@ -23,31 +43,31 @@
                     "400": {
                         "description": "Internal Error"
                     }
-                },
-                "description": "Create operation of resource: computeP2PPath",
-                "parameters": [
-                    {
-                        "required": true,
-                        "description": "computeP2PPathbody object",
-                        "schema": {
-                            "$ref": "#/definitions/ComputeP2PPathRPCInputSchema"
-                        },
-                        "name": "computeP2PPath",
-                        "in": "body"
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Create computeP2PPath by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "operationId": "createComputeP2PPathById"
+                }
             }
         },
         "/operations/optimizeP2PPath/": {
             "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "summary": "Create optimizeP2PPath by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "description": "optimizeP2PPathbody object",
+                        "in": "body",
+                        "required": true,
+                        "name": "optimizeP2PPath",
+                        "schema": {
+                            "$ref": "#/definitions/OptimizeP2PPathRPCInputSchema"
+                        }
+                    }
+                ],
+                "operationId": "createOptimizeP2PPathById",
+                "description": "Create operation of resource: optimizeP2PPath",
                 "responses": {
                     "200": {
                         "description": "Successful operation",
@@ -58,139 +78,103 @@
                     "400": {
                         "description": "Internal Error"
                     }
-                },
-                "description": "Create operation of resource: optimizeP2PPath",
-                "parameters": [
-                    {
-                        "required": true,
-                        "description": "optimizeP2PPathbody object",
-                        "schema": {
-                            "$ref": "#/definitions/OptimizeP2PPathRPCInputSchema"
-                        },
-                        "name": "optimizeP2PPath",
-                        "in": "body"
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Create optimizeP2PPath by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "operationId": "createOptimizeP2PPathById"
+                }
             }
         }
     },
     "definitions": {
-        "LinkPort": {
-            "allOf": [
-                {
-                    "$ref": "#/definitions/LocalClass"
-                },
-                {
-                    "properties": {
-                        "_nodeEdgePoint": {
-                            "type": "string",
-                            "x-path": "/Context/_topology/_node/_ownedNodeEdgePoint/uuid"
-                        },
-                        "direction": {
-                            "type": "string",
-                            "description": "The orientation of defined flow at the LinkEnd."
-                        },
-                        "role": {
-                            "type": "string",
-                            "description": "Each LinkEnd of the Link has a role (e.g., symmetric, hub, spoke, leaf, root)  in the context of the Link with respect to the Link function. "
-                        }
-                    }
-                }
-            ]
-        },
-        "VirtualNetworkServicePort": {
-            "allOf": [
-                {
-                    "$ref": "#/definitions/LocalClass"
-                },
-                {
-                    "properties": {
-                        "serviceLayer": {
-                            "type": "string"
-                        },
-                        "direction": {
-                            "type": "string",
-                            "description": "The orientation of defined flow at the EndPoint."
-                        },
-                        "role": {
-                            "type": "string",
-                            "description": "Each EP of the FC has a role (e.g., working, protection, protected, symmetric, hub, spoke, leaf, root)  in the context of the FC with respect to the FC function. "
-                        },
-                        "_serviceEndPoint": {
-                            "type": "string",
-                            "x-path": "/Context/_serviceEndPoint/uuid"
-                        }
-                    }
-                }
-            ]
-        },
-        "TransferCostPac": {
+        "TransferCapacityPac": {
             "properties": {
-                "costCharacteristic": {
-                    "items": {
-                        "$ref": "#/definitions/CostCharacteristic"
-                    },
+                "availableCapacity": {
+                    "description": "Capacity available to be assigned.",
+                    "$ref": "#/definitions/Capacity"
+                },
+                "capacityAssignedToUserView": {
                     "type": "array",
-                    "description": "The list of costs where each cost relates to some aspect of the TopologicalEntity.",
-                    "x-key": "costAlgorithm"
+                    "items": {
+                        "$ref": "#/definitions/Capacity"
+                    },
+                    "description": "Capacity already assigned",
+                    "x-key": "numberingRange"
+                },
+                "totalPotentialCapacity": {
+                    "description": "An optimistic view of the capacity of the TopologicalEntity assuming that any shared capacity is available to be taken.",
+                    "$ref": "#/definitions/Capacity"
+                },
+                "capacityInteractionAlgorithm": {
+                    "type": "string",
+                    "description": "A reference to an algorithm that describes how various chunks of allocated capacity interact (e.g. when shared)"
                 }
             }
         },
-        "LayerProtocolTransitionPac": {
-            "properties": {
-                "_nodeEdgePoint": {
-                    "items": {
-                        "type": "string",
-                        "description": "Lists the LTPs that define the layer protocol transition of the transitional link.",
-                        "x-path": "/Context/_topology/_node/_ownedNodeEdgePoint/uuid"
-                    },
-                    "type": "array"
+        "VirtualNetworkService": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/GlobalClass"
                 },
-                "transitionedLayerProtocolName": {
-                    "items": {
-                        "type": "string",
-                        "description": "Provides the ordered structure of layer protocol transitions encapsulated in the TopologicalEntity. The ordering relates to the LinkPort role."
-                    },
-                    "type": "array"
+                {
+                    "properties": {
+                        "_topology": {
+                            "type": "string",
+                            "x-path": "/Context/_topology/uuid"
+                        },
+                        "_servicePort": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/VirtualNetworkServicePort"
+                            },
+                            "x-key": "localId"
+                        },
+                        "_schedule": {
+                            "$ref": "#/definitions/ScheduleInfo"
+                        },
+                        "layerProtocolName": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "_state": {
+                            "$ref": "#/definitions/AdminStatePac"
+                        },
+                        "_vnwConstraint": {
+                            "$ref": "#/definitions/VirtualNetworkConstraint"
+                        }
+                    }
+                }
+            ]
+        },
+        "LifecycleStatePac": {
+            "properties": {
+                "lifecycleState": {
+                    "type": "string"
                 }
             }
         },
-        "TransferTimingPac": {
+        "ValidationPac": {
             "properties": {
-                "queuingLatency": {
+                "validationMechanism": {
+                    "type": "array",
                     "items": {
-                        "type": "string",
-                        "description": "The effect on the latency of a queuing process. This only has significant effect for packet based systems and has a complex characteristic."
+                        "$ref": "#/definitions/ValidationMechanism"
                     },
-                    "type": "array"
-                },
-                "wanderCharacteristic": {
-                    "type": "string",
-                    "description": "Low frequency deviation from true periodicity of a signal and therefore a small low rate of change of transfer latency.\nApplies to TDM systems (and not packet)."
-                },
-                "fixedLatencyCharacteristic": {
-                    "type": "string",
-                    "description": "A TopologicalEntity suffers delay caused by the realization of the servers (e.g. distance related; FEC encoding etc.) along with some client specific processing. This is the total average latency effect of the TopologicalEntity"
-                },
-                "jitterCharacteristic": {
-                    "type": "string",
-                    "description": "High frequency deviation from true periodicity of a signal and therefore a small high rate of change of transfer latency.\nApplies to TDM systems (and not packet)."
+                    "description": "Provides details of the specific validation mechanism(s) used to confirm the presence of an intended topologicalEntity.",
+                    "x-key": "validationRobustness"
+                }
+            }
+        },
+        "PathOptimizationConstraint": {
+            "properties": {
+                "trafficInterruption": {
+                    "type": "string"
                 }
             }
         },
         "TransferIntegrityPac": {
             "properties": {
-                "errorCharacteristic": {
+                "serverIntegrityProcessCharacteristic": {
                     "type": "string",
-                    "description": "Describes the degree to which the signal propagated can be errored. \nApplies to TDM systems as the errored signal will be propagated and not packet as errored packets will be discarded."
+                    "description": "Describes the effect of any server integrity enhancement process on the characteristics of the TopologicalEntity."
                 },
                 "repeatDeliveryCharacteristic": {
                     "type": "string",
@@ -208,109 +192,245 @@
                     "type": "string",
                     "description": "Describes the degree to which packets will be delivered out of sequence.\nDoes not apply to TDM as the TDM protocols maintain strict order."
                 },
-                "serverIntegrityProcessCharacteristic": {
+                "errorCharacteristic": {
                     "type": "string",
-                    "description": "Describes the effect of any server integrity enhancement process on the characteristics of the TopologicalEntity."
+                    "description": "Describes the degree to which the signal propagated can be errored. \nApplies to TDM systems as the errored signal will be propagated and not packet as errored packets will be discarded."
                 }
             }
         },
-        "LpSpec": {},
-        "AdminStatePac": {
-            "properties": {
-                "administrativeState": {
-                    "type": "string"
-                },
-                "operationalState": {
-                    "type": "string"
-                },
-                "lifecycleState": {
-                    "type": "string"
-                }
-            }
-        },
-        "ServiceEndPoint": {
+        "Route": {
             "allOf": [
                 {
-                    "$ref": "#/definitions/GlobalClass"
+                    "$ref": "#/definitions/LocalClass"
                 },
                 {
                     "properties": {
-                        "_mappedNodeEdgePoint": {
+                        "_lowerConnection": {
+                            "type": "array",
                             "items": {
                                 "type": "string",
-                                "x-path": "/Context/_topology/_node/_ownedNodeEdgePoint/uuid"
-                            },
-                            "type": "array"
-                        },
-                        "_state": {
-                            "$ref": "#/definitions/LifecycleStatePac"
-                        },
-                        "_connectionEndPoint": {
-                            "items": {
-                                "$ref": "#/definitions/ConnectionEndPoint"
-                            },
-                            "type": "array",
-                            "x-key": "uuid"
-                        },
-                        "_layerProtocol": {
-                            "items": {
-                                "$ref": "#/definitions/LayerProtocol"
-                            },
-                            "type": "array",
-                            "x-key": "localId"
-                        },
-                        "direction": {
-                            "type": "string"
+                                "x-path": "/Context/_connectivityService/_connection/uuid"
+                            }
                         }
                     }
                 }
             ]
         },
-        "Node": {
+        "Connection": {
             "allOf": [
                 {
                     "$ref": "#/definitions/GlobalClass"
                 },
                 {
                     "properties": {
-                        "_encapTopology": {
+                        "_state": {
+                            "$ref": "#/definitions/OperationalStatePac"
+                        },
+                        "layerProtocolName": {
+                            "type": "string"
+                        },
+                        "_connectionPort": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ConnectionPort"
+                            }
+                        },
+                        "direction": {
+                            "type": "string"
+                        },
+                        "_node": {
                             "type": "string",
-                            "x-path": "/Context/_topology/uuid"
+                            "x-path": "/Context/_topology/_node/uuid"
+                        },
+                        "_route": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Route"
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "Path": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/GlobalClass"
+                },
+                {
+                    "properties": {
+                        "_telink": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/TeLink"
+                            },
+                            "x-key": "localId"
+                        },
+                        "_optimizationConstraint": {
+                            "$ref": "#/definitions/PathOptimizationConstraint"
+                        },
+                        "_objectiveFunction": {
+                            "$ref": "#/definitions/PathObjectiveFunction"
+                        },
+                        "_routingConstraint": {
+                            "$ref": "#/definitions/ConnectivityConstraint"
+                        }
+                    }
+                }
+            ]
+        },
+        "ConnectivityServicePort": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/LocalClass"
+                },
+                {
+                    "properties": {
+                        "role": {
+                            "type": "string",
+                            "description": "Each EP of the FC has a role (e.g., working, protection, protected, symmetric, hub, spoke, leaf, root)  in the context of the FC with respect to the FC function. "
+                        },
+                        "serviceLayer": {
+                            "type": "string"
+                        },
+                        "_serviceEndPoint": {
+                            "type": "string",
+                            "x-path": "/Context/_serviceEndPoint/uuid"
+                        },
+                        "direction": {
+                            "type": "string",
+                            "description": "The orientation of defined flow at the EndPoint."
+                        }
+                    }
+                }
+            ]
+        },
+        "TransferCostPac": {
+            "properties": {
+                "costCharacteristic": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/CostCharacteristic"
+                    },
+                    "description": "The list of costs where each cost relates to some aspect of the TopologicalEntity.",
+                    "x-key": "costAlgorithm"
+                }
+            }
+        },
+        "GlobalClass": {
+            "properties": {
+                "label": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/NameAndValue"
+                    },
+                    "description": "List of labels.A property of an entity with a value that is not expected to be unique and is allowed to change. A label carries no semantics with respect to the purpose of the entity and has no effect on the entity behavior or state.",
+                    "x-key": "valueName"
+                },
+                "uuid": {
+                    "type": "string",
+                    "description": "UUID: An identifier that is universally unique\n(consider in the context of Identifier: A property of an entity/role with a value that is unique within an identifier space, where the identifier space is itself globally unique, and immutable. An identifier carries no semantics with respect to the purpose or state of the entity)"
+                },
+                "name": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/NameAndValue"
+                    },
+                    "description": "List of names. A property of an entity with a value that is unique in some namespace but may change during the life of the entity. A name carries no semantics with respect to the purpose of the entity.",
+                    "x-key": "valueName"
+                },
+                "extension": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/NameAndValue"
+                    },
+                    "description": "List of simple name-value extentions. Extension provides an opportunity to define properties not declared in the class that extend the class enabling a realization with simple ad-hoc extension of standard classes to be conformant.",
+                    "x-key": "valueName"
+                }
+            }
+        },
+        "Topology": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/GlobalClass"
+                },
+                {
+                    "properties": {
+                        "_link": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Link"
+                            }
+                        },
+                        "_node": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Node"
+                            }
+                        },
+                        "layerProtocolName": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "LayerProtocolTransitionPac": {
+            "properties": {
+                "_nodeEdgePoint": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "description": "Lists the LTPs that define the layer protocol transition of the transitional link.",
+                        "x-path": "/Context/_topology/_node/_ownedNodeEdgePoint/uuid"
+                    }
+                },
+                "transitionedLayerProtocolName": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "description": "Provides the ordered structure of layer protocol transitions encapsulated in the TopologicalEntity. The ordering relates to the LinkPort role."
+                    }
+                }
+            }
+        },
+        "ConnectivityService": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/GlobalClass"
+                },
+                {
+                    "properties": {
+                        "_connConstraints": {
+                            "$ref": "#/definitions/ConnectivityConstraint"
+                        },
+                        "_servicePort": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ConnectivityServicePort"
+                            },
+                            "x-key": "localId"
                         },
                         "_state": {
                             "$ref": "#/definitions/AdminStatePac"
                         },
-                        "_transferTiming": {
-                            "$ref": "#/definitions/TransferTimingPac"
-                        },
-                        "_ownedNodeEdgePoint": {
-                            "items": {
-                                "$ref": "#/definitions/NodeEdgePoint"
-                            },
-                            "type": "array",
-                            "x-key": "uuid"
-                        },
                         "layerProtocolName": {
+                            "type": "string"
+                        },
+                        "_schedule": {
+                            "$ref": "#/definitions/ScheduleInfo"
+                        },
+                        "_connection": {
+                            "type": "array",
                             "items": {
-                                "type": "string"
-                            },
-                            "type": "array"
+                                "$ref": "#/definitions/Connection"
+                            }
                         },
-                        "_transferCapacity": {
-                            "$ref": "#/definitions/TransferCapacityPac"
-                        },
-                        "_transferCost": {
-                            "$ref": "#/definitions/TransferCostPac"
-                        },
-                        "_aggregatedNodeEdgePoint": {
-                            "items": {
-                                "type": "string",
-                                "x-path": "/Context/_topology/_node/_ownedNodeEdgePoint/uuid"
-                            },
-                            "type": "array"
-                        },
-                        "_transferIntegrity": {
-                            "$ref": "#/definitions/TransferIntegrityPac"
+                        "direction": {
+                            "type": "string"
                         }
                     }
                 }
@@ -324,58 +444,18 @@
                 {
                     "properties": {
                         "_nodeEdgePoint": {
+                            "type": "array",
                             "items": {
                                 "type": "string",
                                 "x-path": "/Context/_topology/_node/_ownedNodeEdgePoint/uuid"
-                            },
-                            "type": "array"
+                            }
                         },
                         "_node": {
+                            "type": "array",
                             "items": {
                                 "type": "string",
                                 "x-path": "/Context/_topology/_node/uuid"
-                            },
-                            "type": "array"
-                        }
-                    }
-                }
-            ]
-        },
-        "ConnectivityService": {
-            "allOf": [
-                {
-                    "$ref": "#/definitions/GlobalClass"
-                },
-                {
-                    "properties": {
-                        "_connection": {
-                            "items": {
-                                "$ref": "#/definitions/Connection"
-                            },
-                            "type": "array",
-                            "x-key": "uuid"
-                        },
-                        "_servicePort": {
-                            "items": {
-                                "$ref": "#/definitions/ConnectivityServicePort"
-                            },
-                            "type": "array",
-                            "x-key": "localId"
-                        },
-                        "direction": {
-                            "type": "string"
-                        },
-                        "layerProtocolName": {
-                            "type": "string"
-                        },
-                        "_schedule": {
-                            "$ref": "#/definitions/ScheduleInfo"
-                        },
-                        "_state": {
-                            "$ref": "#/definitions/AdminStatePac"
-                        },
-                        "_connConstraints": {
-                            "$ref": "#/definitions/ConnectivityConstraint"
+                            }
                         }
                     }
                 }
@@ -388,345 +468,17 @@
                 },
                 {
                     "properties": {
-                        "direction": {
+                        "role": {
                             "type": "string",
-                            "description": "The orientation of defined flow at the EndPoint."
+                            "description": "Each EP of the FC has a role (e.g., working, protection, protected, symmetric, hub, spoke, leaf, root)  in the context of the FC with respect to the FC function. "
                         },
                         "_connectionEndPoint": {
                             "type": "string",
                             "x-path": "/Context/_serviceEndPoint/_connectionEndPoint/uuid"
                         },
-                        "role": {
-                            "type": "string",
-                            "description": "Each EP of the FC has a role (e.g., working, protection, protected, symmetric, hub, spoke, leaf, root)  in the context of the FC with respect to the FC function. "
-                        }
-                    }
-                }
-            ]
-        },
-        "ConnectionEndPoint": {
-            "allOf": [
-                {
-                    "$ref": "#/definitions/GlobalClass"
-                },
-                {
-                    "properties": {
-                        "direction": {
-                            "type": "string"
-                        },
-                        "_clientNodeEdgePoint": {
-                            "items": {
-                                "type": "string",
-                                "x-path": "/Context/_topology/_node/_ownedNodeEdgePoint/uuid"
-                            },
-                            "type": "array"
-                        },
-                        "_serverNodeEdgePoint": {
-                            "type": "string",
-                            "x-path": "/Context/_topology/_node/_ownedNodeEdgePoint/uuid"
-                        },
-                        "_state": {
-                            "$ref": "#/definitions/OperationalStatePac"
-                        },
-                        "_peerConnectionEndPoint": {
-                            "type": "string",
-                            "x-path": "/Context/_serviceEndPoint/_connectionEndPoint/uuid"
-                        },
-                        "_layerProtocol": {
-                            "items": {
-                                "$ref": "#/definitions/LayerProtocol"
-                            },
-                            "type": "array",
-                            "x-key": "localId"
-                        }
-                    }
-                }
-            ]
-        },
-        "Link": {
-            "allOf": [
-                {
-                    "$ref": "#/definitions/GlobalClass"
-                },
-                {
-                    "properties": {
                         "direction": {
                             "type": "string",
-                            "description": "The directionality of the Link. \nIs applicable to simple Links where all LinkEnds are BIDIRECTIONAL (the Link will be BIDIRECTIONAL) or UNIDIRECTIONAL (the Link will be UNIDIRECTIONAL). \nIs not present in more complex cases."
-                        },
-                        "layerProtocolName": {
-                            "items": {
-                                "type": "string"
-                            },
-                            "type": "array"
-                        },
-                        "_validation": {
-                            "$ref": "#/definitions/ValidationPac"
-                        },
-                        "_lpTransition": {
-                            "$ref": "#/definitions/LayerProtocolTransitionPac"
-                        },
-                        "_state": {
-                            "$ref": "#/definitions/AdminStatePac"
-                        },
-                        "_linkPort": {
-                            "items": {
-                                "$ref": "#/definitions/LinkPort"
-                            },
-                            "type": "array",
-                            "x-key": "localId"
-                        },
-                        "_node": {
-                            "items": {
-                                "type": "string",
-                                "x-path": "/Context/_topology/_node/uuid"
-                            },
-                            "type": "array"
-                        },
-                        "_transferCapacity": {
-                            "$ref": "#/definitions/TransferCapacityPac"
-                        },
-                        "_transferCost": {
-                            "$ref": "#/definitions/TransferCostPac"
-                        },
-                        "_riskParameter": {
-                            "$ref": "#/definitions/RiskParameterPac"
-                        },
-                        "_transferTiming": {
-                            "$ref": "#/definitions/TransferTimingPac"
-                        },
-                        "_transferIntegrity": {
-                            "$ref": "#/definitions/TransferIntegrityPac"
-                        }
-                    }
-                }
-            ]
-        },
-        "LocalClass": {
-            "properties": {
-                "localId": {
-                    "type": "string"
-                }
-            }
-        },
-        "Path": {
-            "allOf": [
-                {
-                    "$ref": "#/definitions/GlobalClass"
-                },
-                {
-                    "properties": {
-                        "_routingConstraint": {
-                            "$ref": "#/definitions/ConnectivityConstraint"
-                        },
-                        "_telink": {
-                            "items": {
-                                "$ref": "#/definitions/TeLink"
-                            },
-                            "type": "array",
-                            "x-key": "localId"
-                        },
-                        "_objectiveFunction": {
-                            "$ref": "#/definitions/PathObjectiveFunction"
-                        },
-                        "_optimizationConstraint": {
-                            "$ref": "#/definitions/PathOptimizationConstraint"
-                        }
-                    }
-                }
-            ]
-        },
-        "Topology": {
-            "allOf": [
-                {
-                    "$ref": "#/definitions/GlobalClass"
-                },
-                {
-                    "properties": {
-                        "_node": {
-                            "items": {
-                                "$ref": "#/definitions/Node"
-                            },
-                            "type": "array",
-                            "x-key": "uuid"
-                        },
-                        "layerProtocolName": {
-                            "items": {
-                                "type": "string"
-                            },
-                            "type": "array"
-                        },
-                        "_link": {
-                            "items": {
-                                "$ref": "#/definitions/Link"
-                            },
-                            "type": "array",
-                            "x-key": "uuid"
-                        }
-                    }
-                }
-            ]
-        },
-        "ConnectivityConstraint": {
-            "properties": {
-                "serviceType": {
-                    "type": "string"
-                },
-                "requestedCapacity": {
-                    "$ref": "#/definitions/Capacity"
-                },
-                "costCharacteristic": {
-                    "items": {
-                        "$ref": "#/definitions/CostCharacteristic"
-                    },
-                    "type": "array",
-                    "description": "The list of costs where each cost relates to some aspect of the TopologicalEntity.",
-                    "x-key": "costAlgorithm"
-                },
-                "serviceLayer": {
-                    "items": {
-                        "type": "string"
-                    },
-                    "type": "array"
-                },
-                "includeTopology": {
-                    "items": {
-                        "type": "string",
-                        "x-path": "/Context/_topology/uuid"
-                    },
-                    "type": "array"
-                },
-                "serviceLevel": {
-                    "type": "string",
-                    "description": "An abstract value the meaning of which is mutually agreed \u2013 typically represents metrics such as - Class of service, priority, resiliency, availability"
-                },
-                "latencyCharacteristic": {
-                    "items": {
-                        "$ref": "#/definitions/QueuingLatency"
-                    },
-                    "type": "array",
-                    "description": "The effect on the latency of a queuing process. This only has significant effect for packet based systems and has a complex characteristic.",
-                    "x-key": "latencyValue"
-                },
-                "excludePath": {
-                    "items": {
-                        "type": "string",
-                        "x-path": "/Context/_path/uuid"
-                    },
-                    "type": "array"
-                },
-                "avoidTopology": {
-                    "items": {
-                        "$ref": "#/definitions/Topology"
-                    },
-                    "type": "array",
-                    "x-key": "uuid"
-                },
-                "includePath": {
-                    "items": {
-                        "type": "string",
-                        "x-path": "/Context/_path/uuid"
-                    },
-                    "type": "array"
-                },
-                "riskCharacteristic": {
-                    "items": {
-                        "$ref": "#/definitions/RiskCharacteristic"
-                    },
-                    "type": "array",
-                    "description": "A list of risk characteristics for consideration in an analysis of shared risk. Each element of the list represents a specific risk consideration.",
-                    "x-key": "riskCharacteristicName"
-                }
-            }
-        },
-        "VirtualNetworkService": {
-            "allOf": [
-                {
-                    "$ref": "#/definitions/GlobalClass"
-                },
-                {
-                    "properties": {
-                        "_servicePort": {
-                            "items": {
-                                "$ref": "#/definitions/VirtualNetworkServicePort"
-                            },
-                            "type": "array",
-                            "x-key": "localId"
-                        },
-                        "layerProtocolName": {
-                            "items": {
-                                "type": "string"
-                            },
-                            "type": "array"
-                        },
-                        "_schedule": {
-                            "$ref": "#/definitions/ScheduleInfo"
-                        },
-                        "_vnwConstraint": {
-                            "$ref": "#/definitions/VirtualNetworkConstraint"
-                        },
-                        "_state": {
-                            "$ref": "#/definitions/AdminStatePac"
-                        },
-                        "_topology": {
-                            "type": "string",
-                            "x-path": "/Context/_topology/uuid"
-                        }
-                    }
-                }
-            ]
-        },
-        "Route": {
-            "allOf": [
-                {
-                    "$ref": "#/definitions/LocalClass"
-                },
-                {
-                    "properties": {
-                        "_lowerConnection": {
-                            "items": {
-                                "type": "string",
-                                "x-path": "/Context/_connectivityService/_connection/uuid"
-                            },
-                            "type": "array"
-                        }
-                    }
-                }
-            ]
-        },
-        "Connection": {
-            "allOf": [
-                {
-                    "$ref": "#/definitions/GlobalClass"
-                },
-                {
-                    "properties": {
-                        "direction": {
-                            "type": "string"
-                        },
-                        "layerProtocolName": {
-                            "type": "string"
-                        },
-                        "_route": {
-                            "items": {
-                                "$ref": "#/definitions/Route"
-                            },
-                            "type": "array",
-                            "x-key": "localId"
-                        },
-                        "_connectionPort": {
-                            "items": {
-                                "$ref": "#/definitions/ConnectionPort"
-                            },
-                            "type": "array",
-                            "x-key": "localId"
-                        },
-                        "_state": {
-                            "$ref": "#/definitions/OperationalStatePac"
-                        },
-                        "_node": {
-                            "type": "string",
-                            "x-path": "/Context/_topology/_node/uuid"
+                            "description": "The orientation of defined flow at the EndPoint."
                         }
                     }
                 }
@@ -742,9 +494,155 @@
                 }
             }
         },
-        "PathOptimizationConstraint": {
+        "OperationalStatePac": {
             "properties": {
-                "trafficInterruption": {
+                "operationalState": {
+                    "type": "string"
+                },
+                "lifecycleState": {
+                    "type": "string"
+                }
+            }
+        },
+        "RiskParameterPac": {
+            "properties": {
+                "riskCharacteristic": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/RiskCharacteristic"
+                    },
+                    "description": "A list of risk characteristics for consideration in an analysis of shared risk. Each element of the list represents a specific risk consideration.",
+                    "x-key": "riskCharacteristicName"
+                }
+            }
+        },
+        "LayerProtocol": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/LocalClass"
+                },
+                {
+                    "properties": {
+                        "_lpSpecData": {
+                            "$ref": "#/definitions/LpSpec"
+                        },
+                        "terminationDirection": {
+                            "type": "string",
+                            "description": "The overall directionality of the LP. \n- A BIDIRECTIONAL LP will have some SINK and/or SOURCE flowss.\n- A SINK LP can only contain elements with SINK flows or CONTRA_DIRECTION_SOURCE flows\n- A SOURCE LP can only contain SOURCE flows or CONTRA_DIRECTION_SINK flows"
+                        },
+                        "terminationState": {
+                            "type": "string",
+                            "description": "Indicates whether the layer is terminated and if so how."
+                        },
+                        "layerProtocolName": {
+                            "type": "string",
+                            "description": "Indicate the specific layer-protocol described by the LayerProtocol entity."
+                        }
+                    }
+                }
+            ]
+        },
+        "NodeEdgePoint": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/GlobalClass"
+                },
+                {
+                    "properties": {
+                        "direction": {
+                            "type": "string"
+                        },
+                        "_ltpSpecData": {
+                            "$ref": "#/definitions/LtpSpec"
+                        },
+                        "_clientNodeEdgePoint": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "x-path": "/Context/_topology/_node/_ownedNodeEdgePoint/uuid"
+                            }
+                        },
+                        "_layerProtocol": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/LayerProtocol"
+                            }
+                        },
+                        "_state": {
+                            "$ref": "#/definitions/AdminStatePac"
+                        }
+                    }
+                }
+            ]
+        },
+        "ServiceEndPoint": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/GlobalClass"
+                },
+                {
+                    "properties": {
+                        "_ltpSpecData": {
+                            "$ref": "#/definitions/LtpSpec"
+                        },
+                        "_state": {
+                            "$ref": "#/definitions/LifecycleStatePac"
+                        },
+                        "direction": {
+                            "type": "string"
+                        },
+                        "_mappedNodeEdgePoint": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "x-path": "/Context/_topology/_node/_ownedNodeEdgePoint/uuid"
+                            }
+                        },
+                        "_connectionEndPoint": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ConnectionEndPoint"
+                            }
+                        },
+                        "_layerProtocol": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/LayerProtocol"
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "VirtualNetworkServicePort": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/LocalClass"
+                },
+                {
+                    "properties": {
+                        "role": {
+                            "type": "string",
+                            "description": "Each EP of the FC has a role (e.g., working, protection, protected, symmetric, hub, spoke, leaf, root)  in the context of the FC with respect to the FC function. "
+                        },
+                        "serviceLayer": {
+                            "type": "string"
+                        },
+                        "_serviceEndPoint": {
+                            "type": "string",
+                            "x-path": "/Context/_serviceEndPoint/uuid"
+                        },
+                        "direction": {
+                            "type": "string",
+                            "description": "The orientation of defined flow at the EndPoint."
+                        }
+                    }
+                }
+            ]
+        },
+        "LocalClass": {
+            "properties": {
+                "localId": {
                     "type": "string"
                 }
             }
@@ -760,16 +658,200 @@
                 "bandwidthOptimization": {
                     "type": "string"
                 },
-                "concurrentPaths": {
-                    "type": "string"
-                },
                 "resourceSharing": {
                     "type": "string"
+                },
+                "concurrentPaths": {
+                    "type": "string"
+                }
+            }
+        },
+        "Node": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/GlobalClass"
+                },
+                {
+                    "properties": {
+                        "_transferTiming": {
+                            "$ref": "#/definitions/TransferTimingPac"
+                        },
+                        "_state": {
+                            "$ref": "#/definitions/AdminStatePac"
+                        },
+                        "layerProtocolName": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "_transferIntegrity": {
+                            "$ref": "#/definitions/TransferIntegrityPac"
+                        },
+                        "_ownedNodeEdgePoint": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/NodeEdgePoint"
+                            }
+                        },
+                        "_transferCapacity": {
+                            "$ref": "#/definitions/TransferCapacityPac"
+                        },
+                        "_transferCost": {
+                            "$ref": "#/definitions/TransferCostPac"
+                        },
+                        "_encapTopology": {
+                            "type": "string",
+                            "x-path": "/Context/_topology/uuid"
+                        },
+                        "_aggregatedNodeEdgePoint": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "x-path": "/Context/_topology/_node/_ownedNodeEdgePoint/uuid"
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "TransferTimingPac": {
+            "properties": {
+                "wanderCharacteristic": {
+                    "type": "string",
+                    "description": "Low frequency deviation from true periodicity of a signal and therefore a small low rate of change of transfer latency.\nApplies to TDM systems (and not packet)."
+                },
+                "queuingLatency": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/QueuingLatency"
+                    },
+                    "description": "The effect on the latency of a queuing process. This only has significant effect for packet based systems and has a complex characteristic.",
+                    "x-key": "latencyValue"
+                },
+                "fixedLatencyCharacteristic": {
+                    "type": "string",
+                    "description": "A TopologicalEntity suffers delay caused by the realization of the servers (e.g. distance related; FEC encoding etc.) along with some client specific processing. This is the total average latency effect of the TopologicalEntity"
+                },
+                "jitterCharacteristic": {
+                    "type": "string",
+                    "description": "High frequency deviation from true periodicity of a signal and therefore a small high rate of change of transfer latency.\nApplies to TDM systems (and not packet)."
+                }
+            }
+        },
+        "LinkPort": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/LocalClass"
+                },
+                {
+                    "properties": {
+                        "_nodeEdgePoint": {
+                            "type": "string",
+                            "x-path": "/Context/_topology/_node/_ownedNodeEdgePoint/uuid"
+                        },
+                        "role": {
+                            "type": "string",
+                            "description": "Each LinkEnd of the Link has a role (e.g., symmetric, hub, spoke, leaf, root)  in the context of the Link with respect to the Link function. "
+                        },
+                        "direction": {
+                            "type": "string",
+                            "description": "The orientation of defined flow at the LinkEnd."
+                        }
+                    }
+                }
+            ]
+        },
+        "ConnectivityConstraint": {
+            "properties": {
+                "riskCharacteristic": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/RiskCharacteristic"
+                    },
+                    "description": "A list of risk characteristics for consideration in an analysis of shared risk. Each element of the list represents a specific risk consideration.",
+                    "x-key": "riskCharacteristicName"
+                },
+                "includePath": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "x-path": "/Context/_path/uuid"
+                    }
+                },
+                "latencyCharacteristic": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/QueuingLatency"
+                    },
+                    "description": "The effect on the latency of a queuing process. This only has significant effect for packet based systems and has a complex characteristic.",
+                    "x-key": "latencyValue"
+                },
+                "serviceType": {
+                    "type": "string"
+                },
+                "avoidTopology": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "x-path": "/Context/_topology/uuid"
+                    }
+                },
+                "requestedCapacity": {
+                    "$ref": "#/definitions/Capacity"
+                },
+                "includeTopology": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "x-path": "/Context/_topology/uuid"
+                    }
+                },
+                "excludePath": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "x-path": "/Context/_path/uuid"
+                    }
+                },
+                "costCharacteristic": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/CostCharacteristic"
+                    },
+                    "description": "The list of costs where each cost relates to some aspect of the TopologicalEntity.",
+                    "x-key": "costAlgorithm"
+                },
+                "serviceLevel": {
+                    "type": "string",
+                    "description": "An abstract value the meaning of which is mutually agreed \u2013 typically represents metrics such as - Class of service, priority, resiliency, availability"
+                },
+                "serviceLayer": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
         "VirtualNetworkConstraint": {
             "properties": {
+                "riskCharacteristic": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/RiskCharacteristic"
+                    },
+                    "description": "A list of risk characteristics for consideration in an analysis of shared risk. Each element of the list represents a specific risk consideration.",
+                    "x-key": "riskCharacteristicName"
+                },
+                "latencyCharacteristic": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/QueuingLatency"
+                    },
+                    "description": "The effect on the latency of a queuing process. This only has significant effect for packet based systems and has a complex characteristic.",
+                    "x-key": "latencyValue"
+                },
                 "serviceType": {
                     "type": "string"
                 },
@@ -777,297 +859,146 @@
                     "$ref": "#/definitions/Capacity"
                 },
                 "costCharacteristic": {
+                    "type": "array",
                     "items": {
                         "$ref": "#/definitions/CostCharacteristic"
                     },
-                    "type": "array",
                     "description": "The list of costs where each cost relates to some aspect of the TopologicalEntity.",
                     "x-key": "costAlgorithm"
-                },
-                "serviceLayer": {
-                    "items": {
-                        "type": "string"
-                    },
-                    "type": "array"
                 },
                 "serviceLevel": {
                     "type": "string",
                     "description": "An abstract value the meaning of which is mutually agreed \u2013 typically represents metrics such as - Class of service, priority, resiliency, availability"
                 },
-                "latencyCharacteristic": {
-                    "items": {
-                        "$ref": "#/definitions/QueuingLatency"
-                    },
+                "serviceLayer": {
                     "type": "array",
-                    "description": "The effect on the latency of a queuing process. This only has significant effect for packet based systems and has a complex characteristic.",
-                    "x-key": "latencyValue"
-                },
-                "riskCharacteristic": {
                     "items": {
-                        "$ref": "#/definitions/RiskCharacteristic"
-                    },
-                    "type": "array",
-                    "description": "A list of risk characteristics for consideration in an analysis of shared risk. Each element of the list represents a specific risk consideration.",
-                    "x-key": "riskCharacteristicName"
-                }
-            }
-        },
-        "RiskParameterPac": {
-            "properties": {
-                "riskCharacteristic": {
-                    "items": {
-                        "$ref": "#/definitions/RiskCharacteristic"
-                    },
-                    "type": "array",
-                    "description": "A list of risk characteristics for consideration in an analysis of shared risk. Each element of the list represents a specific risk consideration.",
-                    "x-key": "riskCharacteristicName"
-                }
-            }
-        },
-        "ConnectivityServicePort": {
-            "allOf": [
-                {
-                    "$ref": "#/definitions/LocalClass"
-                },
-                {
-                    "properties": {
-                        "serviceLayer": {
-                            "type": "string"
-                        },
-                        "direction": {
-                            "type": "string",
-                            "description": "The orientation of defined flow at the EndPoint."
-                        },
-                        "role": {
-                            "type": "string",
-                            "description": "Each EP of the FC has a role (e.g., working, protection, protected, symmetric, hub, spoke, leaf, root)  in the context of the FC with respect to the FC function. "
-                        },
-                        "_serviceEndPoint": {
-                            "type": "string",
-                            "x-path": "/Context/_serviceEndPoint/uuid"
-                        }
+                        "type": "string"
                     }
                 }
-            ]
+            }
         },
-        "OperationalStatePac": {
+        "AdminStatePac": {
             "properties": {
                 "operationalState": {
                     "type": "string"
                 },
                 "lifecycleState": {
                     "type": "string"
+                },
+                "administrativeState": {
+                    "type": "string"
                 }
             }
         },
-        "GlobalClass": {
-            "properties": {
-                "label": {
-                    "items": {
-                        "$ref": "#/definitions/NameAndValue"
-                    },
-                    "type": "array",
-                    "description": "List of labels.A property of an entity with a value that is not expected to be unique and is allowed to change. A label carries no semantics with respect to the purpose of the entity and has no effect on the entity behavior or state.",
-                    "x-key": "valueName"
-                },
-                "uuid": {
-                    "type": "string",
-                    "description": "UUID: An identifier that is universally unique\n(consider in the context of Identifier: A property of an entity/role with a value that is unique within an identifier space, where the identifier space is itself globally unique, and immutable. An identifier carries no semantics with respect to the purpose or state of the entity)"
-                },
-                "extension": {
-                    "items": {
-                        "$ref": "#/definitions/NameAndValue"
-                    },
-                    "type": "array",
-                    "description": "List of simple name-value extentions. Extension provides an opportunity to define properties not declared in the class that extend the class enabling a realization with simple ad-hoc extension of standard classes to be conformant.",
-                    "x-key": "valueName"
-                },
-                "name": {
-                    "items": {
-                        "$ref": "#/definitions/NameAndValue"
-                    },
-                    "type": "array",
-                    "description": "List of names. A property of an entity with a value that is unique in some namespace but may change during the life of the entity. A name carries no semantics with respect to the purpose of the entity.",
-                    "x-key": "valueName"
-                }
-            }
-        },
-        "LayerProtocol": {
-            "allOf": [
-                {
-                    "$ref": "#/definitions/LocalClass"
-                },
-                {
-                    "properties": {
-                        "_lpSpec": {
-                            "$ref": "#/definitions/LpSpec"
-                        },
-                        "layerProtocolName": {
-                            "type": "string",
-                            "description": "Indicate the specific layer-protocol described by the LayerProtocol entity."
-                        },
-                        "terminationDirection": {
-                            "type": "string",
-                            "description": "The overall directionality of the LP. \n- A BIDIRECTIONAL LP will have some SINK and/or SOURCE flowss.\n- A SINK LP can only contain elements with SINK flows or CONTRA_DIRECTION_SOURCE flows\n- A SOURCE LP can only contain SOURCE flows or CONTRA_DIRECTION_SINK flows"
-                        },
-                        "terminationState": {
-                            "type": "string",
-                            "description": "Indicates whether the layer is terminated and if so how."
-                        }
-                    }
-                }
-            ]
-        },
-        "TransferCapacityPac": {
-            "properties": {
-                "capacityAssignedToUserView": {
-                    "items": {
-                        "$ref": "#/definitions/Capacity"
-                    },
-                    "type": "array",
-                    "description": "Capacity already assigned",
-                    "x-key": "numberingRange"
-                },
-                "availableCapacity": {
-                    "description": "Capacity available to be assigned.",
-                    "$ref": "#/definitions/Capacity"
-                },
-                "totalPotentialCapacity": {
-                    "description": "An optimistic view of the capacity of the TopologicalEntity assuming that any shared capacity is available to be taken.",
-                    "$ref": "#/definitions/Capacity"
-                },
-                "capacityInteractionAlgorithm": {
-                    "type": "string",
-                    "description": "A reference to an algorithm that describes how various chunks of allocated capacity interact (e.g. when shared)"
-                }
-            }
-        },
-        "NodeEdgePoint": {
+        "Link": {
             "allOf": [
                 {
                     "$ref": "#/definitions/GlobalClass"
                 },
                 {
                     "properties": {
+                        "_transferCapacity": {
+                            "$ref": "#/definitions/TransferCapacityPac"
+                        },
                         "_state": {
                             "$ref": "#/definitions/AdminStatePac"
                         },
                         "direction": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The directionality of the Link. \nIs applicable to simple Links where all LinkEnds are BIDIRECTIONAL (the Link will be BIDIRECTIONAL) or UNIDIRECTIONAL (the Link will be UNIDIRECTIONAL). \nIs not present in more complex cases."
                         },
-                        "_layerProtocol": {
-                            "items": {
-                                "$ref": "#/definitions/LayerProtocol"
-                            },
+                        "_transferCost": {
+                            "$ref": "#/definitions/TransferCostPac"
+                        },
+                        "_transferIntegrity": {
+                            "$ref": "#/definitions/TransferIntegrityPac"
+                        },
+                        "_transferTiming": {
+                            "$ref": "#/definitions/TransferTimingPac"
+                        },
+                        "_linkPort": {
                             "type": "array",
-                            "x-key": "localId"
+                            "items": {
+                                "$ref": "#/definitions/LinkPort"
+                            }
                         },
-                        "_clientNodeEdgePoint": {
+                        "layerProtocolName": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "_node": {
+                            "type": "array",
                             "items": {
                                 "type": "string",
-                                "x-path": "/Context/_topology/_node/_ownedNodeEdgePoint/uuid"
-                            },
-                            "type": "array"
+                                "x-path": "/Context/_topology/_node/uuid"
+                            }
+                        },
+                        "_lpTransition": {
+                            "$ref": "#/definitions/LayerProtocolTransitionPac"
+                        },
+                        "_riskParameter": {
+                            "$ref": "#/definitions/RiskParameterPac"
+                        },
+                        "_validation": {
+                            "$ref": "#/definitions/ValidationPac"
                         }
                     }
                 }
             ]
         },
-        "LifecycleStatePac": {
-            "properties": {
-                "lifecycleState": {
-                    "type": "string"
+        "ConnectionEndPoint": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/GlobalClass"
+                },
+                {
+                    "properties": {
+                        "_ltpSpecData": {
+                            "$ref": "#/definitions/LtpSpec"
+                        },
+                        "_serverNodeEdgePoint": {
+                            "type": "string",
+                            "x-path": "/Context/_topology/_node/_ownedNodeEdgePoint/uuid"
+                        },
+                        "_state": {
+                            "$ref": "#/definitions/OperationalStatePac"
+                        },
+                        "direction": {
+                            "type": "string"
+                        },
+                        "_peerConnectionEndPoint": {
+                            "type": "string",
+                            "x-path": "/Context/_serviceEndPoint/_connectionEndPoint/uuid"
+                        },
+                        "_clientNodeEdgePoint": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "x-path": "/Context/_topology/_node/_ownedNodeEdgePoint/uuid"
+                            }
+                        },
+                        "_layerProtocol": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/LayerProtocol"
+                            }
+                        }
+                    }
                 }
-            }
-        },
-        "ValidationPac": {
-            "properties": {
-                "validationMechanism": {
-                    "items": {
-                        "$ref": "#/definitions/ValidationMechanism"
-                    },
-                    "type": "array",
-                    "description": "Provides details of the specific validation mechanism(s) used to confirm the presence of an intended topologicalEntity.",
-                    "x-key": "validationRobustness"
-                }
-            }
-        },
-        "QueuingLatency": {
-            "properties": {
-                "latencyValue": {
-                    "type": "string",
-                    "description": "The specific queuing latency for the traffic property."
-                },
-                "trafficPropertyName": {
-                    "type": "string",
-                    "description": "The identifier of the specific traffic property to which the queuing latency applies."
-                }
-            }
-        },
-        "Capacity": {
-            "properties": {
-                "totalSize": {
-                    "type": "string",
-                    "description": "Total capacity of the TopologicalEntity in MB/s"
-                },
-                "maximumUsageInstances": {
-                    "type": "string",
-                    "description": "Where there is some limit to the number of client (e.g. in a channelized case)."
-                },
-                "numberingRange": {
-                    "type": "string",
-                    "description": "Method for identifying units of capacity via some numbering scheme."
-                },
-                "maximumUsageSize": {
-                    "type": "string",
-                    "description": "Where a client is of variable capacity but due to some underlying realization the maximum size of the client is smaller than the totalSize."
-                }
-            }
-        },
-        "CostCharacteristic": {
-            "properties": {
-                "costName": {
-                    "type": "string",
-                    "description": "The cost characteristic will related to some aspect of the TopologicalEntity (e.g. $ cost, routing weight). This aspect will be conveyed by the costName."
-                },
-                "costAlgorithm": {
-                    "type": "string",
-                    "description": "The cost may vary based upon some properties of the TopologicalEntity. The rules for the variation are conveyed by the costAlgorithm."
-                },
-                "costValue": {
-                    "type": "string",
-                    "description": "The specific cost."
-                }
-            }
+            ]
         },
         "NameAndValue": {
             "properties": {
-                "_nameAndValueAuthorityRef": {
+                "valueName": {
                     "type": "string",
-                    "description": "The authority that defines the named value."
+                    "description": "The name of the value. The value need not have a name."
                 },
                 "value": {
                     "type": "string",
                     "description": "The value"
-                },
-                "valueName": {
-                    "type": "string",
-                    "description": "The name of the value. The value need not have a name."
-                }
-            }
-        },
-        "RiskCharacteristic": {
-            "properties": {
-                "riskIdentifierList": {
-                    "items": {
-                        "type": "string",
-                        "description": "A list of the identifiers of each physical/geographic unit (with the specific risk characteristic) that is related to a segment of the TopologicalEntity."
-                    },
-                    "type": "array"
-                },
-                "riskCharacteristicName": {
-                    "type": "string",
-                    "description": "The name of the risk characteristic. The characteristic may be related to a specific degree of closeness. \nFor example a particular characteristic may apply to failures that are localized (e.g. to one side of a road) where as another characteristic may relate to failures that have a broader impact (e.g. both sides of a road that crosses a bridge).\nDepending upon the importance of the traffic being routed different risk characteristics will be evaluated."
                 }
             }
         },
@@ -1077,13 +1008,96 @@
                     "type": "string",
                     "description": "State of validatiion"
                 },
-                "validationRobustness": {
-                    "type": "string",
-                    "description": "Quality of validation (i.e. how likely is the stated validation to be invalid)"
-                },
                 "validationMechanism": {
                     "type": "string",
                     "description": "Name of mechanism used to validate adjacency"
+                },
+                "validationRobustness": {
+                    "type": "string",
+                    "description": "Quality of validation (i.e. how likely is the stated validation to be invalid)"
+                }
+            }
+        },
+        "RiskCharacteristic": {
+            "properties": {
+                "riskCharacteristicName": {
+                    "type": "string",
+                    "description": "The name of the risk characteristic. The characteristic may be related to a specific degree of closeness. \nFor example a particular characteristic may apply to failures that are localized (e.g. to one side of a road) where as another characteristic may relate to failures that have a broader impact (e.g. both sides of a road that crosses a bridge).\nDepending upon the importance of the traffic being routed different risk characteristics will be evaluated."
+                },
+                "riskIdentifierList": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "description": "A list of the identifiers of each physical/geographic unit (with the specific risk characteristic) that is related to a segment of the TopologicalEntity."
+                    }
+                }
+            }
+        },
+        "Capacity": {
+            "properties": {
+                "totalSize": {
+                    "type": "string",
+                    "description": "Total capacity of the TopologicalEntity in MB/s"
+                },
+                "numberingRange": {
+                    "type": "string",
+                    "description": "Method for identifying units of capacity via some numbering scheme."
+                },
+                "maximumUsageInstances": {
+                    "type": "string",
+                    "description": "Where there is some limit to the number of client (e.g. in a channelized case)."
+                },
+                "maximumUsageSize": {
+                    "type": "string",
+                    "description": "Where a client is of variable capacity but due to some underlying realization the maximum size of the client is smaller than the totalSize."
+                }
+            }
+        },
+        "QueuingLatency": {
+            "properties": {
+                "trafficPropertyName": {
+                    "type": "string",
+                    "description": "The identifier of the specific traffic property to which the queuing latency applies."
+                },
+                "latencyValue": {
+                    "type": "string",
+                    "description": "The specific queuing latency for the traffic property."
+                }
+            }
+        },
+        "CostCharacteristic": {
+            "properties": {
+                "costAlgorithm": {
+                    "type": "string",
+                    "description": "The cost may vary based upon some properties of the TopologicalEntity. The rules for the variation are conveyed by the costAlgorithm."
+                },
+                "costName": {
+                    "type": "string",
+                    "description": "The cost characteristic will related to some aspect of the TopologicalEntity (e.g. $ cost, routing weight). This aspect will be conveyed by the costName."
+                },
+                "costValue": {
+                    "type": "string",
+                    "description": "The specific cost."
+                }
+            }
+        },
+        "LtpSpec": {
+            "properties": {
+                "lpSpecReference": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "ltpSpecReference": {
+                    "type": "string"
+                }
+            }
+        },
+        "LpSpec": {
+            "properties": {
+                "lpSpecReference": {
+                    "type": "string"
                 }
             }
         },
@@ -1096,46 +1110,46 @@
                     "$ref": "#/definitions/ConnectivityConstraint"
                 },
                 "servicePort": {
+                    "type": "array",
                     "items": {
                         "$ref": "#/definitions/ConnectivityServicePort"
-                    },
-                    "type": "array"
+                    }
                 }
             }
         },
         "ComputeP2PPathRPCOutputSchema": {
             "properties": {
                 "path": {
+                    "type": "array",
                     "items": {
                         "$ref": "#/definitions/Path"
-                    },
-                    "type": "array"
+                    }
                 }
             }
         },
         "OptimizeP2PPathRPCInputSchema": {
             "properties": {
-                "pathIdOrName": {
-                    "type": "string"
-                },
                 "optimizationConstraint": {
                     "$ref": "#/definitions/PathOptimizationConstraint"
+                },
+                "objectiveFunction": {
+                    "$ref": "#/definitions/PathObjectiveFunction"
                 },
                 "routingConstraint": {
                     "$ref": "#/definitions/ConnectivityConstraint"
                 },
-                "objectiveFunction": {
-                    "$ref": "#/definitions/PathObjectiveFunction"
+                "pathIdOrName": {
+                    "type": "string"
                 }
             }
         },
         "OptimizeP2PPathRPCOutputSchema": {
             "properties": {
                 "path": {
+                    "type": "array",
                     "items": {
                         "$ref": "#/definitions/Path"
-                    },
-                    "type": "array"
+                    }
                 }
             }
         }
