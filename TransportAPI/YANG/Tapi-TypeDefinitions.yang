@@ -1,7 +1,7 @@
 module Tapi-TypeDefinitions {
     namespace "uri:onf:Tapi-TypeDefinitions";
     prefix Tapi-TypeDefinitions;
-    revision 2016-05-22{}
+    revision 2016-05-23{}
     typedef ServiceType {
         type enumeration {
             enum POINT_TO_POINT_CONNECTIVITY;
@@ -10,6 +10,7 @@ module Tapi-TypeDefinitions {
         }
     }
     typedef FixedCapacityValue {
+        description "The Capacity (Bandwidth) values that are applicable for digital layers. ";
         type enumeration {
             enum NOT_APPLICABLE;
             enum 10MBPS;
@@ -24,6 +25,7 @@ module Tapi-TypeDefinitions {
         }
     }
     typedef PortRole {
+        description "The role of an end in the context of the function of the forwarding entity that it bounds";
         type enumeration {
             enum SYMMETRIC;
             enum ROOT;
@@ -31,6 +33,12 @@ module Tapi-TypeDefinitions {
         }
     }
     typedef LayerProtocolName {
+        description "Provides a controlled list of layer protocol names and indicates the naming authority.
+            Note that it is expected that attributes will be added to this structure to convey the naming authority name, the name of the layer protocol using a human readable string and any particular standard reference.
+            Layer protocol names include:
+            -    Layer 1 (L1): OTU, ODU
+            -    Layer 2 (L2): Carrier Grade Ethernet (ETY, ETH), MPLS-TP (MT)
+            ";
         type enumeration {
             enum OCH;
             enum ODU;
@@ -39,6 +47,7 @@ module Tapi-TypeDefinitions {
         }
     }
     grouping NameAndValue {
+        description "A scoped name-value pair";
         leaf valueName {
             type string;
             description "The name of the value. The value need not have a name.";
@@ -49,63 +58,139 @@ module Tapi-TypeDefinitions {
         }
     }
     typedef UniversalId {
+        description "The univeral ID value where the mechanism for generation is defned by some authority not directly referenced in the structure.";
         type string;
     }
     typedef ForwardingDirection {
+        description "The directionality of a Forwarding entity.";
         type enumeration {
-            enum BIDIRECTIONAL;
-            enum UNIDIRECTIONAL;
-            enum UNDEFINED_OR_UNKNOWN;
+            enum BIDIRECTIONAL {
+                description "The Fowarding entity supports both BIDIRECTIONAL flows at all Ports (i.e. all Ports have both an INPUT flow and an OUTPUT flow defined)";
+            }
+            enum UNIDIRECTIONAL {
+                description "The Forwarding entity has Ports that are either INPUT or OUTPUT. It has no BIDIRECTIONAL Ports.";
+            }
+            enum UNDEFINED_OR_UNKNOWN {
+                description "Not a normal state. The system is unable to determine the correct value.";
+            }
         }
     }
     typedef TerminationDirection {
+        description "The directionality of a termination entity";
         type enumeration {
-            enum BIDIRECTIONAL;
-            enum SINK;
-            enum SOURCE;
-            enum UNDEFINED_OR_UNKNOWN;
+            enum BIDIRECTIONAL {
+                description "A Termination with both SINK and SOURCE flows.";
+            }
+            enum SINK {
+                description "The flow is up the layer stack from the server side to the client side. 
+                    Considering an example of a Termination function within the termination entity, a SINK flow:
+                    - will arrive at at the base of the termination function (the server side) where it is essentially at an INPUT to the termination component
+                    - then will be decoded and deconstructed 
+                    - then relevant parts of the flow will be sent out of the termination function (the client side) where it is essentially at an OUTPUT from the termination component
+                    A SINK termination is one that only supports a SINK flow.
+                    A SINK termiation can be bound to an OUTPUT Port of a Forwarding entity";
+            }
+            enum SOURCE {
+                description "The flow is down the layer stack from the server side to the client side. 
+                    Considering an example of a Termination function within the termination entity, a SOURCE flow:
+                    - will arrive at at the top of the termination function (the client side) where it is essentially at an INPUT to the termination component
+                    - then will be assembled with various overheads etc and will be coded 
+                    - then coded form of the assembly of flow will be sent out of the termination function (the server side) where it is essentially at an OUTPUT from the termination component
+                    A SOURCE termination is one that only supports a SOURCE flow.
+                    A SOURCE termiation can be bound to an INPUT Port of a Forwarding entity";
+            }
+            enum UNDEFINED_OR_UNKNOWN {
+                description "Not a normal state. The system is unable to determine the correct value.";
+            }
         }
     }
     typedef PortDirection {
+        description "The orientation of flow at the Port of a Forwarding entity";
         type enumeration {
-            enum BIDIRECTIONAL;
-            enum INPUT;
-            enum OUTPUT;
-            enum UNIDENTIFIED_OR_UNKNOWN;
+            enum BIDIRECTIONAL {
+                description "The Port has both an INPUT flow and an OUTPUT flow defined.";
+            }
+            enum INPUT {
+                description "The Port only has definition for a flow into the Forwarding entity (i.e. an ingress flow).";
+            }
+            enum OUTPUT {
+                description "The Port only has definition for a flow out of the Forwarding entity (i.e. an egress flow).";
+            }
+            enum UNIDENTIFIED_OR_UNKNOWN {
+                description "Not a normal state. The system is unable to determine the correct value.";
+            }
         }
     }
     typedef OperationalState {
+        description "The possible values of the operationalState.";
         type enumeration {
-            enum DISABLED;
-            enum ENABLED;
+            enum DISABLED {
+                description "The resource is unable to meet the SLA of the user of the resource. If no (explicit) SLA is defined the resource is disabled if it is totally inoperable and unable to provide service to the user.";
+            }
+            enum ENABLED {
+                description "The resource is partially or fully operable and available for use";
+            }
         }
     }
     typedef AdministrativeState {
+        description "The possible values of the administrativeState.";
         type enumeration {
-            enum LOCKED;
-            enum UNLOCKED;
+            enum LOCKED {
+                description "Users are administratively prohibited from making use of the resource.";
+            }
+            enum UNLOCKED {
+                description "Users are allowed to use the resource";
+            }
         }
     }
     typedef LifecycleState {
+        description "The possible values of the lifecycleState.";
         type enumeration {
-            enum PLANNED;
-            enum POTENTIAL;
-            enum INSTALLED;
-            enum PENDING_REMOVAL;
+            enum PLANNED {
+                description "The resource is planned but is not present in the network.";
+            }
+            enum POTENTIAL {
+                description "The supporting resources are present in the network but are shared with other clients; or require further configuration before they can be used; or both.
+                    o    When a potential resource is configured and allocated to a client it is moved to the “installed” state for that client.
+                    o    If the potential resource has been consumed (e.g. allocated to another client) it is moved to the “planned” state for all other clients.";
+            }
+            enum INSTALLED {
+                description "The resource is present in the network and is capable of providing the service expected.";
+            }
+            enum PENDING_REMOVAL {
+                description "The resource has been marked for removal";
+            }
         }
     }
     typedef TerminationState {
+        description "Provides support for the range of behaviours and specific states that an LP can take with respect to termination of the signal.
+            Indicates to what degree the LayerTermination is terminated.";
         type enumeration {
-            enum LP_CAN_NEVER_TERMINATE;
-            enum LT_NOT_TERMINATED;
-            enum TERMINATED_SERVER_TO_CLIENT_FLOW;
-            enum TERMINATED_CLIENT_TO_SERVER_FLOW;
-            enum TERMINATED_BIDIRECTIONAL;
-            enum LT_PERMENANTLY_TERMINATED;
-            enum TERMINATION_STATE_UNKNOWN;
+            enum LP_CAN_NEVER_TERMINATE {
+                description "A non-flexible case that can never be terminated.";
+            }
+            enum LT_NOT_TERMINATED {
+                description "A flexible termination that can terminate but is currently not terminated.";
+            }
+            enum TERMINATED_SERVER_TO_CLIENT_FLOW {
+                description "A flexible termination that is currently terminated for server to client flow only.";
+            }
+            enum TERMINATED_CLIENT_TO_SERVER_FLOW {
+                description "A flexible termination that is currently terminated for client to server flow only.";
+            }
+            enum TERMINATED_BIDIRECTIONAL {
+                description "A flexible termination that is currently terminated in both directions of flow.";
+            }
+            enum LT_PERMENANTLY_TERMINATED {
+                description "A non-flexible termination that is always terminated (in both directions of flow for a bidirectional case and in the one direction of flow for both unidirectional cases).";
+            }
+            enum TERMINATION_STATE_UNKNOWN {
+                description "There TerminationState cannot be determined.";
+            }
         }
     }
     grouping Capacity {
+        description "Information on capacity of a particular TopologicalEntity.";
         leaf totalSize {
             type string;
             description "Total capacity of the TopologicalEntity in MB/s";
@@ -124,6 +209,7 @@ module Tapi-TypeDefinitions {
         }
     }
     grouping CostCharacteristic {
+        description "The information for a particular cost characteristic.";
         leaf costName {
             type string;
             description "The cost characteristic will related to some aspect of the TopologicalEntity (e.g. $ cost, routing weight). This aspect will be conveyed by the costName.";
@@ -138,6 +224,7 @@ module Tapi-TypeDefinitions {
         }
     }
     grouping QueuingLatency {
+        description "Provides information on latency characteristic for a particular stated trafficProperty.";
         leaf trafficPropertyName {
             type string;
             description "The identifier of the specific traffic property to which the queuing latency applies.";
@@ -148,6 +235,7 @@ module Tapi-TypeDefinitions {
         }
     }
     grouping RiskCharacteristic {
+        description "The information for a particular risk characteristic where there is a list of risk identifiers related to that characteristic.";
         leaf riskCharacteristicName {
             type string;
             description "The name of the risk characteristic. The characteristic may be related to a specific degree of closeness. 
@@ -156,12 +244,12 @@ module Tapi-TypeDefinitions {
         }
         leaf-list riskIdentifierList {
             description "A list of the identifiers of each physical/geographic unit (with the specific risk characteristic) that is related to a segment of the TopologicalEntity.";
-            ordered-by system;
             type string;
             min-elements 1;
         }
     }
     grouping ValidationMechanism {
+        description "Identifies the validation mechanism and describes the characteristics of that mechanism";
         leaf validationMechanism {
             type string;
             description "Name of mechanism used to validate adjacency";
@@ -185,6 +273,7 @@ module Tapi-TypeDefinitions {
         }
     }
     typedef DateAndTime {
+        description "This primitive type defines the date and time according to the following structure:";
         type string;
     }
 }

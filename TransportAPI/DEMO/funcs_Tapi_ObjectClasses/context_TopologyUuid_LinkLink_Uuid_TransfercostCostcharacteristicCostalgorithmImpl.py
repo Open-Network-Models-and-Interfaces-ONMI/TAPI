@@ -1,0 +1,20 @@
+import os.path, sys
+sys.path.append(os.path.join('/'.join(os.path.dirname(os.path.realpath(__file__)).split('/')[:-1])))
+from backend.backend import Context
+
+
+class Context_TopologyUuid_LinkLink_Uuid_TransfercostCostcharacteristicCostalgorithmImpl:
+
+    @classmethod
+    def get(cls, uuid, link_uuid, costAlgorithm):
+        print 'handling get'
+        if uuid in Context._topology:
+            if link_uuid in Context._topology[uuid]._link:
+                if costAlgorithm in Context._topology[uuid]._link[link_uuid]._transferCost.costCharacteristic:
+                    return Context._topology[uuid]._link[link_uuid]._transferCost.costCharacteristic[costAlgorithm]
+                else:
+                    raise KeyError('costAlgorithm')
+            else:
+                raise KeyError('link_uuid')
+        else:
+            raise KeyError('uuid')
