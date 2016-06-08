@@ -7,16 +7,16 @@ import base64
 import re
 
 # BACKEND FUNCTIONS
-from funcs_Tapi_ObjectClasses.contextExtensionValuenameImpl import ContextExtensionValuenameImpl
-from funcs_Tapi_ObjectClasses.context_PathUuidLabelValuenameImpl import Context_PathUuidLabelValuenameImpl
-from funcs_Tapi_ObjectClasses.context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_LayerprotocolLocalidImpl import Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_LayerprotocolLocalidImpl
-from funcs_Tapi_ObjectClasses.contextNameValuenameImpl import ContextNameValuenameImpl
-from funcs_Tapi_ObjectClasses.context_VnwserviceUuid_VnwconstraintCostcharacteristicCostalgorithmImpl import Context_VnwserviceUuid_VnwconstraintCostcharacteristicCostalgorithmImpl
-from funcs_Tapi_ObjectClasses.context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid_StateImpl import Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid_StateImpl
-from funcs_Tapi_ObjectClasses.context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_UuidExtensionValuenameImpl import Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_UuidExtensionValuenameImpl
-from funcs_Tapi_ObjectClasses.context_ConnectivityserviceUuid_ScheduleImpl import Context_ConnectivityserviceUuid_ScheduleImpl
+from funcs_Tapi_ObjectClasses.context_ConnectivityserviceImpl import Context_ConnectivityserviceImpl
 from funcs_Tapi_ObjectClasses.context_PathUuid_RoutingconstraintImpl import Context_PathUuid_RoutingconstraintImpl
-from funcs_Tapi_ObjectClasses.context_TopologyUuid_NodeNode_UuidNameValuenameImpl import Context_TopologyUuid_NodeNode_UuidNameValuenameImpl
+from funcs_Tapi_ObjectClasses.contextNameValuenameImpl import ContextNameValuenameImpl
+from funcs_Tapi_ObjectClasses.context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid_LtpspecdataImpl import Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid_LtpspecdataImpl
+from funcs_Tapi_ObjectClasses.context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid_StateImpl import Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid_StateImpl
+from funcs_Tapi_ObjectClasses.context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_LayerprotocolLocalidImpl import Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_LayerprotocolLocalidImpl
+from funcs_Tapi_ObjectClasses.context_ConnectivityserviceUuid_ScheduleImpl import Context_ConnectivityserviceUuid_ScheduleImpl
+from funcs_Tapi_ObjectClasses.context_VnwserviceUuid_VnwconstraintCostcharacteristicCostalgorithmImpl import Context_VnwserviceUuid_VnwconstraintCostcharacteristicCostalgorithmImpl
+from funcs_Tapi_ObjectClasses.context_NotifsubscriptionUuidImpl import Context_NotifsubscriptionUuidImpl
+from funcs_Tapi_ObjectClasses.context_NotificationChangedattributesImpl import Context_NotificationChangedattributesImpl
 from funcs_Tapi_ObjectClasses.context_ConnectivityserviceUuid_ConnectionConnection_Uuid_RouteLocalidImpl import Context_ConnectivityserviceUuid_ConnectionConnection_Uuid_RouteLocalidImpl
 from funcs_Tapi_ObjectClasses.context_ServiceendpointUuidNameValuenameImpl import Context_ServiceendpointUuidNameValuenameImpl
 from funcs_Tapi_ObjectClasses.context_TopologyUuid_NodeNode_Uuid_StateImpl import Context_TopologyUuid_NodeNode_Uuid_StateImpl
@@ -26,88 +26,97 @@ from funcs_Tapi_ObjectClasses.context_PathUuid_OptimizationconstraintImpl import
 from funcs_Tapi_ObjectClasses.context_ConnectivityserviceUuid_ConnectionConnection_UuidNameValuenameImpl import Context_ConnectivityserviceUuid_ConnectionConnection_UuidNameValuenameImpl
 from funcs_Tapi_ObjectClasses.context_PathUuidImpl import Context_PathUuidImpl
 from funcs_Tapi_ObjectClasses.context_VnwserviceUuid_ServiceportLocalidImpl import Context_VnwserviceUuid_ServiceportLocalidImpl
-from funcs_Tapi_ObjectClasses.context_PathUuidExtensionValuenameImpl import Context_PathUuidExtensionValuenameImpl
-from funcs_Tapi_ObjectClasses.context_ServiceendpointUuid_StateImpl import Context_ServiceendpointUuid_StateImpl
-from funcs_Tapi_ObjectClasses.context_TopologyUuid_NodeNode_Uuid_TransfercapacityAvailablecapacityImpl import Context_TopologyUuid_NodeNode_Uuid_TransfercapacityAvailablecapacityImpl
-from funcs_Tapi_ObjectClasses.context_TopologyUuidLabelValuenameImpl import Context_TopologyUuidLabelValuenameImpl
-from funcs_Tapi_ObjectClasses.context_TopologyUuid_NodeNode_Uuid_TransfertimingImpl import Context_TopologyUuid_NodeNode_Uuid_TransfertimingImpl
+from funcs_Tapi_ObjectClasses.context_PathUuid_RoutingconstraintLatencycharacteristicLatencyvalueImpl import Context_PathUuid_RoutingconstraintLatencycharacteristicLatencyvalueImpl
+from funcs_Tapi_ObjectClasses.context_TopologyUuid_NodeNode_UuidNameValuenameImpl import Context_TopologyUuid_NodeNode_UuidNameValuenameImpl
+from funcs_Tapi_ObjectClasses.context_ConnectivityserviceUuid_ConnconstraintsCostcharacteristicCostalgorithmImpl import Context_ConnectivityserviceUuid_ConnconstraintsCostcharacteristicCostalgorithmImpl
+from funcs_Tapi_ObjectClasses.context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_UuidImpl import Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_UuidImpl
+from funcs_Tapi_ObjectClasses.context_VnwserviceUuid_ServiceportImpl import Context_VnwserviceUuid_ServiceportImpl
+from funcs_Tapi_ObjectClasses.context_ConnectivityserviceUuid_StateImpl import Context_ConnectivityserviceUuid_StateImpl
+from funcs_Tapi_ObjectClasses.context_VnwserviceUuid_VnwconstraintRiskcharacteristicRiskcharacteristicnameImpl import Context_VnwserviceUuid_VnwconstraintRiskcharacteristicRiskcharacteristicnameImpl
+from funcs_Tapi_ObjectClasses.context_PathUuid_RoutingconstraintRequestedcapacityImpl import Context_PathUuid_RoutingconstraintRequestedcapacityImpl
+from funcs_Tapi_ObjectClasses.context_ConnectivityserviceUuidNameValuenameImpl import Context_ConnectivityserviceUuidNameValuenameImpl
+from funcs_Tapi_ObjectClasses.context_TopologyUuid_LinkLink_Uuid_TransfercapacityCapacityassignedtouserviewNumberingrangeImpl import Context_TopologyUuid_LinkLink_Uuid_TransfercapacityCapacityassignedtouserviewNumberingrangeImpl
+from funcs_Tapi_ObjectClasses.context_TopologyUuid_NodeNode_Uuid_TransfercapacityImpl import Context_TopologyUuid_NodeNode_Uuid_TransfercapacityImpl
 from funcs_Tapi_ObjectClasses.context_TopologyUuid_NodeNode_Uuid_TransferintegrityImpl import Context_TopologyUuid_NodeNode_Uuid_TransferintegrityImpl
-from funcs_Tapi_ObjectClasses.context_ServiceendpointUuidImpl import Context_ServiceendpointUuidImpl
-from funcs_Tapi_ObjectClasses.context_TopologyUuid_LinkLink_Uuid_RiskparameterRiskcharacteristicRiskcharacteristicnameImpl import Context_TopologyUuid_LinkLink_Uuid_RiskparameterRiskcharacteristicRiskcharacteristicnameImpl
-from funcs_Tapi_ObjectClasses.context_TopologyUuid_LinkLink_Uuid_TransferintegrityImpl import Context_TopologyUuid_LinkLink_Uuid_TransferintegrityImpl
 from funcs_Tapi_ObjectClasses.context_ServiceendpointUuid_LayerprotocolLocalidImpl import Context_ServiceendpointUuid_LayerprotocolLocalidImpl
-from funcs_Tapi_ObjectClasses.context_TopologyUuid_LinkLink_UuidLabelValuenameImpl import Context_TopologyUuid_LinkLink_UuidLabelValuenameImpl
-from funcs_Tapi_ObjectClasses.contextLabelValuenameImpl import ContextLabelValuenameImpl
-from funcs_Tapi_ObjectClasses.context_ConnectivityserviceUuid_ConnconstraintsLatencycharacteristicLatencyvalueImpl import Context_ConnectivityserviceUuid_ConnconstraintsLatencycharacteristicLatencyvalueImpl
-from funcs_Tapi_ObjectClasses.context_ConnectivityserviceUuid_ConnconstraintsRequestedcapacityImpl import Context_ConnectivityserviceUuid_ConnconstraintsRequestedcapacityImpl
-from funcs_Tapi_ObjectClasses.context_VnwserviceUuid_StateImpl import Context_VnwserviceUuid_StateImpl
-from funcs_Tapi_ObjectClasses.context_ConnectivityserviceUuidLabelValuenameImpl import Context_ConnectivityserviceUuidLabelValuenameImpl
-from funcs_Tapi_ObjectClasses.context_TopologyUuid_NodeNode_UuidExtensionValuenameImpl import Context_TopologyUuid_NodeNode_UuidExtensionValuenameImpl
-from funcs_Tapi_ObjectClasses.context_TopologyUuid_LinkLink_Uuid_TransfertimingQueuinglatencyLatencyvalueImpl import Context_TopologyUuid_LinkLink_Uuid_TransfertimingQueuinglatencyLatencyvalueImpl
-from funcs_Tapi_ObjectClasses.contextImpl import ContextImpl
-from funcs_Tapi_ObjectClasses.context_ServiceendpointUuidExtensionValuenameImpl import Context_ServiceendpointUuidExtensionValuenameImpl
+from funcs_Tapi_ObjectClasses.context_TopologyUuid_LinkLink_Uuid_TransferintegrityImpl import Context_TopologyUuid_LinkLink_Uuid_TransferintegrityImpl
+from funcs_Tapi_ObjectClasses.context_NotifsubscriptionUuidLabelValuenameImpl import Context_NotifsubscriptionUuidLabelValuenameImpl
+from funcs_Tapi_ObjectClasses.context_ServiceendpointUuidImpl import Context_ServiceendpointUuidImpl
+from funcs_Tapi_ObjectClasses.context_NotificationImpl import Context_NotificationImpl
+from funcs_Tapi_ObjectClasses.context_TopologyUuid_NodeNode_Uuid_TransfertimingImpl import Context_TopologyUuid_NodeNode_Uuid_TransfertimingImpl
+from funcs_Tapi_ObjectClasses.context_TopologyUuidLabelValuenameImpl import Context_TopologyUuidLabelValuenameImpl
+from funcs_Tapi_ObjectClasses.context_TopologyUuid_NodeNode_Uuid_TransfercapacityAvailablecapacityImpl import Context_TopologyUuid_NodeNode_Uuid_TransfercapacityAvailablecapacityImpl
 from funcs_Tapi_ObjectClasses.context_ServiceendpointUuidLabelValuenameImpl import Context_ServiceendpointUuidLabelValuenameImpl
 from funcs_Tapi_ObjectClasses.context_TopologyUuid_NodeNode_Uuid_TransfercapacityTotalpotentialcapacityImpl import Context_TopologyUuid_NodeNode_Uuid_TransfercapacityTotalpotentialcapacityImpl
 from funcs_Tapi_ObjectClasses.context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_UuidLabelValuenameImpl import Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_UuidLabelValuenameImpl
 from funcs_Tapi_ObjectClasses.context_ServiceendpointUuid_LtpspecdataImpl import Context_ServiceendpointUuid_LtpspecdataImpl
 from funcs_Tapi_ObjectClasses.context_VnwserviceUuid_ScheduleImpl import Context_VnwserviceUuid_ScheduleImpl
-from funcs_Tapi_ObjectClasses.context_VnwserviceUuidNameValuenameImpl import Context_VnwserviceUuidNameValuenameImpl
-from funcs_Tapi_ObjectClasses.context_TopologyUuid_NodeNode_Uuid_TransfercapacityImpl import Context_TopologyUuid_NodeNode_Uuid_TransfercapacityImpl
+from funcs_Tapi_ObjectClasses.context_ServiceendpointUuid_StateImpl import Context_ServiceendpointUuid_StateImpl
+from funcs_Tapi_ObjectClasses.context_VnwserviceUuid_VnwconstraintRiskcharacteristicImpl import Context_VnwserviceUuid_VnwconstraintRiskcharacteristicImpl
 from funcs_Tapi_ObjectClasses.context_TopologyUuid_LinkLink_UuidImpl import Context_TopologyUuid_LinkLink_UuidImpl
 from funcs_Tapi_ObjectClasses.context_TopologyUuid_LinkLink_Uuid_TransfertimingImpl import Context_TopologyUuid_LinkLink_Uuid_TransfertimingImpl
 from funcs_Tapi_ObjectClasses.context_PathUuid_ObjectivefunctionImpl import Context_PathUuid_ObjectivefunctionImpl
-from funcs_Tapi_ObjectClasses.context_ConnectivityserviceUuid_ConnectionConnection_UuidExtensionValuenameImpl import Context_ConnectivityserviceUuid_ConnectionConnection_UuidExtensionValuenameImpl
-from funcs_Tapi_ObjectClasses.context_TopologyUuid_LinkLink_Uuid_TransfercostCostcharacteristicCostalgorithmImpl import Context_TopologyUuid_LinkLink_Uuid_TransfercostCostcharacteristicCostalgorithmImpl
-from funcs_Tapi_ObjectClasses.context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_StateImpl import Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_StateImpl
-from funcs_Tapi_ObjectClasses.context_TopologyUuid_NodeNode_Uuid_TransfercostCostcharacteristicCostalgorithmImpl import Context_TopologyUuid_NodeNode_Uuid_TransfercostCostcharacteristicCostalgorithmImpl
+from funcs_Tapi_ObjectClasses.context_ServiceendpointUuid_LayerprotocolLocalid_LpspecdataImpl import Context_ServiceendpointUuid_LayerprotocolLocalid_LpspecdataImpl
+from funcs_Tapi_ObjectClasses.context_VnwserviceImpl import Context_VnwserviceImpl
+from funcs_Tapi_ObjectClasses.context_TopologyUuid_LinkLink_Uuid_TransfercapacityAvailablecapacityImpl import Context_TopologyUuid_LinkLink_Uuid_TransfercapacityAvailablecapacityImpl
+from funcs_Tapi_ObjectClasses.context_ConnectivityserviceUuid_ConnconstraintsRiskcharacteristicRiskcharacteristicnameImpl import Context_ConnectivityserviceUuid_ConnconstraintsRiskcharacteristicRiskcharacteristicnameImpl
+from funcs_Tapi_ObjectClasses.context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_LtpspecdataImpl import Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_LtpspecdataImpl
+from funcs_Tapi_ObjectClasses.context_TopologyUuid_NodeNode_Uuid_TransfercostImpl import Context_TopologyUuid_NodeNode_Uuid_TransfercostImpl
+from funcs_Tapi_ObjectClasses.context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_UuidImpl import Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_UuidImpl
+from funcs_Tapi_ObjectClasses.context_NotifsubscriptionUuid_NotificationChangedattributesImpl import Context_NotifsubscriptionUuid_NotificationChangedattributesImpl
+from funcs_Tapi_ObjectClasses.context_ConnectivityserviceUuid_ConnectionConnection_Uuid_StateImpl import Context_ConnectivityserviceUuid_ConnectionConnection_Uuid_StateImpl
+from funcs_Tapi_ObjectClasses.context_TopologyUuid_LinkLink_Uuid_ValidationValidationmechanismValidationrobustnessImpl import Context_TopologyUuid_LinkLink_Uuid_ValidationValidationmechanismValidationrobustnessImpl
 from funcs_Tapi_ObjectClasses.context_ConnectivityserviceUuid_ConnectionConnection_Uuid_ConnectionportLocalidImpl import Context_ConnectivityserviceUuid_ConnectionConnection_Uuid_ConnectionportLocalidImpl
 from funcs_Tapi_ObjectClasses.context_VnwserviceUuidImpl import Context_VnwserviceUuidImpl
 from funcs_Tapi_ObjectClasses.context_TopologyUuid_NodeNode_UuidLabelValuenameImpl import Context_TopologyUuid_NodeNode_UuidLabelValuenameImpl
 from funcs_Tapi_ObjectClasses.context_ConnectivityserviceUuid_ConnectionConnection_UuidLabelValuenameImpl import Context_ConnectivityserviceUuid_ConnectionConnection_UuidLabelValuenameImpl
+from funcs_Tapi_ObjectClasses.context_PathUuid_TelinkLocalidImpl import Context_PathUuid_TelinkLocalidImpl
+from funcs_Tapi_ObjectClasses.context_VnwserviceUuid_VnwconstraintImpl import Context_VnwserviceUuid_VnwconstraintImpl
+from funcs_Tapi_ObjectClasses.context_NotifsubscriptionUuid_NotificationImpl import Context_NotifsubscriptionUuid_NotificationImpl
+from funcs_Tapi_ObjectClasses.context_ConnectivityserviceUuid_ServiceportImpl import Context_ConnectivityserviceUuid_ServiceportImpl
+from funcs_Tapi_ObjectClasses.context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_StateImpl import Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_StateImpl
+from funcs_Tapi_ObjectClasses.context_TopologyUuid_NodeNode_Uuid_TransfercostCostcharacteristicCostalgorithmImpl import Context_TopologyUuid_NodeNode_Uuid_TransfercostCostcharacteristicCostalgorithmImpl
+from funcs_Tapi_ObjectClasses.context_NotificationTargetobjectnameValuenameImpl import Context_NotificationTargetobjectnameValuenameImpl
+from funcs_Tapi_ObjectClasses.context_TopologyUuid_NodeNode_Uuid_TransfercapacityCapacityassignedtouserviewNumberingrangeImpl import Context_TopologyUuid_NodeNode_Uuid_TransfercapacityCapacityassignedtouserviewNumberingrangeImpl
+from funcs_Tapi_ObjectClasses.context_ConnectivityserviceUuidLabelValuenameImpl import Context_ConnectivityserviceUuidLabelValuenameImpl
+from funcs_Tapi_ObjectClasses.context_VnwserviceUuid_StateImpl import Context_VnwserviceUuid_StateImpl
+from funcs_Tapi_ObjectClasses.context_ConnectivityserviceUuid_ConnconstraintsRequestedcapacityImpl import Context_ConnectivityserviceUuid_ConnconstraintsRequestedcapacityImpl
+from funcs_Tapi_ObjectClasses.context_ConnectivityserviceUuid_ConnconstraintsLatencycharacteristicLatencyvalueImpl import Context_ConnectivityserviceUuid_ConnconstraintsLatencycharacteristicLatencyvalueImpl
+from funcs_Tapi_ObjectClasses.context_VnwserviceUuidNameValuenameImpl import Context_VnwserviceUuidNameValuenameImpl
+from funcs_Tapi_ObjectClasses.contextImpl import ContextImpl
+from funcs_Tapi_ObjectClasses.context_TopologyUuid_LinkLink_Uuid_TransfertimingQueuinglatencyLatencyvalueImpl import Context_TopologyUuid_LinkLink_Uuid_TransfertimingQueuinglatencyLatencyvalueImpl
+from funcs_Tapi_ObjectClasses.context_PathUuidLabelValuenameImpl import Context_PathUuidLabelValuenameImpl
 from funcs_Tapi_ObjectClasses.context_VnwserviceUuidLabelValuenameImpl import Context_VnwserviceUuidLabelValuenameImpl
+from funcs_Tapi_ObjectClasses.context_TopologyUuid_LinkLink_Uuid_TransfercostCostcharacteristicCostalgorithmImpl import Context_TopologyUuid_LinkLink_Uuid_TransfercostCostcharacteristicCostalgorithmImpl
 from funcs_Tapi_ObjectClasses.context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid_LayerprotocolLocalidImpl import Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid_LayerprotocolLocalidImpl
-from funcs_Tapi_ObjectClasses.context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_UuidImpl import Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_UuidImpl
-from funcs_Tapi_ObjectClasses.context_ServiceendpointUuid_LayerprotocolLocalid_LpspecdataImpl import Context_ServiceendpointUuid_LayerprotocolLocalid_LpspecdataImpl
-from funcs_Tapi_ObjectClasses.context_TopologyUuid_NodeNode_Uuid_TransfercostImpl import Context_TopologyUuid_NodeNode_Uuid_TransfercostImpl
-from funcs_Tapi_ObjectClasses.context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_LtpspecdataImpl import Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_LtpspecdataImpl
-from funcs_Tapi_ObjectClasses.context_PathUuid_RoutingconstraintRequestedcapacityImpl import Context_PathUuid_RoutingconstraintRequestedcapacityImpl
-from funcs_Tapi_ObjectClasses.context_ConnectivityserviceUuid_ConnconstraintsRiskcharacteristicRiskcharacteristicnameImpl import Context_ConnectivityserviceUuid_ConnconstraintsRiskcharacteristicRiskcharacteristicnameImpl
-from funcs_Tapi_ObjectClasses.context_TopologyUuid_LinkLink_Uuid_TransfercapacityAvailablecapacityImpl import Context_TopologyUuid_LinkLink_Uuid_TransfercapacityAvailablecapacityImpl
-from funcs_Tapi_ObjectClasses.context_TopologyUuid_LinkLink_Uuid_ValidationValidationmechanismValidationrobustnessImpl import Context_TopologyUuid_LinkLink_Uuid_ValidationValidationmechanismValidationrobustnessImpl
-from funcs_Tapi_ObjectClasses.context_ConnectivityserviceUuid_ConnectionConnection_Uuid_StateImpl import Context_ConnectivityserviceUuid_ConnectionConnection_Uuid_StateImpl
-from funcs_Tapi_ObjectClasses.context_TopologyUuidExtensionValuenameImpl import Context_TopologyUuidExtensionValuenameImpl
-from funcs_Tapi_ObjectClasses.context_TopologyUuid_LinkLink_Uuid_TransfercapacityCapacityassignedtouserviewNumberingrangeImpl import Context_TopologyUuid_LinkLink_Uuid_TransfercapacityCapacityassignedtouserviewNumberingrangeImpl
-from funcs_Tapi_ObjectClasses.context_TopologyUuid_LinkLink_UuidExtensionValuenameImpl import Context_TopologyUuid_LinkLink_UuidExtensionValuenameImpl
-from funcs_Tapi_ObjectClasses.context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_UuidImpl import Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_UuidImpl
-from funcs_Tapi_ObjectClasses.context_ConnectivityserviceUuid_ConnconstraintsCostcharacteristicCostalgorithmImpl import Context_ConnectivityserviceUuid_ConnconstraintsCostcharacteristicCostalgorithmImpl
-from funcs_Tapi_ObjectClasses.context_VnwserviceUuid_VnwconstraintRiskcharacteristicRiskcharacteristicnameImpl import Context_VnwserviceUuid_VnwconstraintRiskcharacteristicRiskcharacteristicnameImpl
+from funcs_Tapi_ObjectClasses.context_NotifsubscriptionImpl import Context_NotifsubscriptionImpl
+from funcs_Tapi_ObjectClasses.context_NotifsubscriptionUuid_NotificationAdditionalinfoValuenameImpl import Context_NotifsubscriptionUuid_NotificationAdditionalinfoValuenameImpl
+from funcs_Tapi_ObjectClasses.context_PathUuid_RoutingconstraintRiskcharacteristicRiskcharacteristicnameImpl import Context_PathUuid_RoutingconstraintRiskcharacteristicRiskcharacteristicnameImpl
+from funcs_Tapi_ObjectClasses.context_VnwserviceUuid_VnwconstraintCostcharacteristicImpl import Context_VnwserviceUuid_VnwconstraintCostcharacteristicImpl
+from funcs_Tapi_ObjectClasses.context_TopologyUuid_LinkLink_Uuid_RiskparameterRiskcharacteristicRiskcharacteristicnameImpl import Context_TopologyUuid_LinkLink_Uuid_RiskparameterRiskcharacteristicRiskcharacteristicnameImpl
 from funcs_Tapi_ObjectClasses.context_PathUuid_RoutingconstraintCostcharacteristicCostalgorithmImpl import Context_PathUuid_RoutingconstraintCostcharacteristicCostalgorithmImpl
-from funcs_Tapi_ObjectClasses.context_ConnectivityserviceUuidNameValuenameImpl import Context_ConnectivityserviceUuidNameValuenameImpl
-from funcs_Tapi_ObjectClasses.context_ConnectivityserviceUuidExtensionValuenameImpl import Context_ConnectivityserviceUuidExtensionValuenameImpl
-from funcs_Tapi_ObjectClasses.context_PathUuid_RoutingconstraintLatencycharacteristicLatencyvalueImpl import Context_PathUuid_RoutingconstraintLatencycharacteristicLatencyvalueImpl
-from funcs_Tapi_ObjectClasses.context_ConnectivityserviceUuid_StateImpl import Context_ConnectivityserviceUuid_StateImpl
+from funcs_Tapi_ObjectClasses.contextLabelValuenameImpl import ContextLabelValuenameImpl
 from funcs_Tapi_ObjectClasses.context_TopologyUuid_LinkLink_Uuid_ValidationImpl import Context_TopologyUuid_LinkLink_Uuid_ValidationImpl
 from funcs_Tapi_ObjectClasses.context_TopologyUuidImpl import Context_TopologyUuidImpl
 from funcs_Tapi_ObjectClasses.context_ConnectivityserviceUuid_ConnectionConnection_UuidImpl import Context_ConnectivityserviceUuid_ConnectionConnection_UuidImpl
 from funcs_Tapi_ObjectClasses.context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_UuidLabelValuenameImpl import Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_UuidLabelValuenameImpl
 from funcs_Tapi_ObjectClasses.context_ConnectivityserviceUuid_ServiceportLocalidImpl import Context_ConnectivityserviceUuid_ServiceportLocalidImpl
 from funcs_Tapi_ObjectClasses.context_TopologyUuid_LinkLink_Uuid_TransfercapacityTotalpotentialcapacityImpl import Context_TopologyUuid_LinkLink_Uuid_TransfercapacityTotalpotentialcapacityImpl
-from funcs_Tapi_ObjectClasses.context_VnwserviceUuidExtensionValuenameImpl import Context_VnwserviceUuidExtensionValuenameImpl
 from funcs_Tapi_ObjectClasses.context_PathUuidNameValuenameImpl import Context_PathUuidNameValuenameImpl
-from funcs_Tapi_ObjectClasses.context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_UuidExtensionValuenameImpl import Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_UuidExtensionValuenameImpl
+from funcs_Tapi_ObjectClasses.context_NotificationAdditionalinfoValuenameImpl import Context_NotificationAdditionalinfoValuenameImpl
 from funcs_Tapi_ObjectClasses.context_VnwserviceUuid_VnwconstraintRequestedcapacityImpl import Context_VnwserviceUuid_VnwconstraintRequestedcapacityImpl
-from funcs_Tapi_ObjectClasses.context_VnwserviceUuid_VnwconstraintImpl import Context_VnwserviceUuid_VnwconstraintImpl
-from funcs_Tapi_ObjectClasses.context_PathUuid_TelinkLocalidImpl import Context_PathUuid_TelinkLocalidImpl
-from funcs_Tapi_ObjectClasses.context_TopologyUuid_NodeNode_Uuid_TransfercapacityCapacityassignedtouserviewNumberingrangeImpl import Context_TopologyUuid_NodeNode_Uuid_TransfercapacityCapacityassignedtouserviewNumberingrangeImpl
+from funcs_Tapi_ObjectClasses.context_TopologyUuid_LinkLink_UuidLabelValuenameImpl import Context_TopologyUuid_LinkLink_UuidLabelValuenameImpl
 from funcs_Tapi_ObjectClasses.context_TopologyUuid_LinkLink_Uuid_TransfercostImpl import Context_TopologyUuid_LinkLink_Uuid_TransfercostImpl
 from funcs_Tapi_ObjectClasses.context_TopologyUuid_LinkLink_Uuid_TransfercapacityImpl import Context_TopologyUuid_LinkLink_Uuid_TransfercapacityImpl
 from funcs_Tapi_ObjectClasses.context_TopologyUuid_LinkLink_UuidNameValuenameImpl import Context_TopologyUuid_LinkLink_UuidNameValuenameImpl
-from funcs_Tapi_ObjectClasses.context_PathUuid_RoutingconstraintRiskcharacteristicRiskcharacteristicnameImpl import Context_PathUuid_RoutingconstraintRiskcharacteristicRiskcharacteristicnameImpl
+from funcs_Tapi_ObjectClasses.context_NotifsubscriptionUuidNameValuenameImpl import Context_NotifsubscriptionUuidNameValuenameImpl
+from funcs_Tapi_ObjectClasses.context_TopologyUuid_NodeNode_UuidImpl import Context_TopologyUuid_NodeNode_UuidImpl
 from funcs_Tapi_ObjectClasses.context_TopologyUuidNameValuenameImpl import Context_TopologyUuidNameValuenameImpl
 from funcs_Tapi_ObjectClasses.context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_LayerprotocolLocalid_LpspecdataImpl import Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_LayerprotocolLocalid_LpspecdataImpl
 from funcs_Tapi_ObjectClasses.context_VnwserviceUuid_VnwconstraintLatencycharacteristicLatencyvalueImpl import Context_VnwserviceUuid_VnwconstraintLatencycharacteristicLatencyvalueImpl
-from funcs_Tapi_ObjectClasses.context_TopologyUuid_NodeNode_UuidImpl import Context_TopologyUuid_NodeNode_UuidImpl
-from funcs_Tapi_ObjectClasses.context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid_LtpspecdataImpl import Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid_LtpspecdataImpl
+from funcs_Tapi_ObjectClasses.context_VnwserviceUuid_VnwconstraintLatencycharacteristicImpl import Context_VnwserviceUuid_VnwconstraintLatencycharacteristicImpl
+from funcs_Tapi_ObjectClasses.context_NotifsubscriptionUuid_SubscriptionfilterImpl import Context_NotifsubscriptionUuid_SubscriptionfilterImpl
+from funcs_Tapi_ObjectClasses.context_NotifsubscriptionUuid_NotificationTargetobjectnameValuenameImpl import Context_NotifsubscriptionUuid_NotificationTargetobjectnameValuenameImpl
 from funcs_Tapi_ObjectClasses.context_TopologyUuid_LinkLink_Uuid_RiskparameterImpl import Context_TopologyUuid_LinkLink_Uuid_RiskparameterImpl
 from funcs_Tapi_ObjectClasses.context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid_LayerprotocolLocalid_LpspecdataImpl import Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid_LayerprotocolLocalid_LpspecdataImpl
 from funcs_Tapi_ObjectClasses.context_TopologyUuid_LinkLink_Uuid_StateImpl import Context_TopologyUuid_LinkLink_Uuid_StateImpl
@@ -122,6 +131,8 @@ from objects_Tapi_ObjectClasses.linkPort import LinkPort
 from objects_Tapi_ObjectClasses.virtualNetworkServicePort import VirtualNetworkServicePort
 from objects_Tapi_ObjectClasses.capacity import Capacity
 from objects_Tapi_ObjectClasses.transferCostPac import TransferCostPac
+from objects_Tapi_ObjectClasses.notification import Notification
+from objects_Tapi_ObjectClasses.timeRange import TimeRange
 from objects_Tapi_ObjectClasses.layerProtocolTransitionPac import LayerProtocolTransitionPac
 from objects_Tapi_ObjectClasses.transferTimingPac import TransferTimingPac
 from objects_Tapi_ObjectClasses.transferIntegrityPac import TransferIntegrityPac
@@ -132,6 +143,7 @@ from objects_Tapi_ObjectClasses.validationMechanism import ValidationMechanism
 from objects_Tapi_ObjectClasses.node import Node
 from objects_Tapi_ObjectClasses.teLink import TeLink
 from objects_Tapi_ObjectClasses.costCharacteristic import CostCharacteristic
+from objects_Tapi_ObjectClasses.transferCapacityPac import TransferCapacityPac
 from objects_Tapi_ObjectClasses.connectivityService import ConnectivityService
 from objects_Tapi_ObjectClasses.connectionPort import ConnectionPort
 from objects_Tapi_ObjectClasses.ltpSpec import LtpSpec
@@ -146,21 +158,22 @@ from objects_Tapi_ObjectClasses.virtualNetworkService import VirtualNetworkServi
 from objects_Tapi_ObjectClasses.route import Route
 from objects_Tapi_ObjectClasses.contextSchema import ContextSchema
 from objects_Tapi_ObjectClasses.connection import Connection
-from objects_Tapi_ObjectClasses.scheduleInfo import ScheduleInfo
 from objects_Tapi_ObjectClasses.pathOptimizationConstraint import PathOptimizationConstraint
 from objects_Tapi_ObjectClasses.pathObjectiveFunction import PathObjectiveFunction
 from objects_Tapi_ObjectClasses.virtualNetworkConstraint import VirtualNetworkConstraint
 from objects_Tapi_ObjectClasses.riskCharacteristic import RiskCharacteristic
 from objects_Tapi_ObjectClasses.riskParameterPac import RiskParameterPac
 from objects_Tapi_ObjectClasses.connectivityServicePort import ConnectivityServicePort
+from objects_Tapi_ObjectClasses.nameAndValueChange import NameAndValueChange
 from objects_Tapi_ObjectClasses.operationalStatePac import OperationalStatePac
 from objects_Tapi_ObjectClasses.globalClass import GlobalClass
 from objects_Tapi_ObjectClasses.layerProtocol import LayerProtocol
-from objects_Tapi_ObjectClasses.transferCapacityPac import TransferCapacityPac
+from objects_Tapi_ObjectClasses.notificationSubscriptionService import NotificationSubscriptionService
 from objects_Tapi_ObjectClasses.nodeEdgePoint import NodeEdgePoint
 from objects_Tapi_ObjectClasses.lpSpec import LpSpec
 from objects_Tapi_ObjectClasses.lifecycleStatePac import LifecycleStatePac
 from objects_Tapi_ObjectClasses.validationPac import ValidationPac
+from objects_Tapi_ObjectClasses.subscriptionFilter import SubscriptionFilter
 
 users = {"admin": "pswd1", "user": "pswd2"}
 
@@ -305,13 +318,27 @@ class Successful(Response):
         self.data = info
 
 
-#/restconf/config/Context/extension/(\w+)/
-class ContextExtensionValuename(MethodView):
+#/restconf/config/Context/_connectivityService/
+class Context_Connectivityservice(MethodView):
 
-    def get(self, valueName):
-        print "Retrieve operation of resource: extension"
+    def get(self, ):
+        print "Retrieve operation of resource: _connectivityService"
         try:
-            response = ContextExtensionValuenameImpl.get(valueName)
+            response = Context_ConnectivityserviceImpl.get()
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_path/(\w+)/_routingConstraint/
+class Context_PathUuid_Routingconstraint(MethodView):
+
+    def get(self, uuid):
+        print "Retrieve operation of resource: _routingConstraint"
+        try:
+            response = Context_PathUuid_RoutingconstraintImpl.get(uuid)
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -319,13 +346,41 @@ class ContextExtensionValuename(MethodView):
             return Successful("Successful operation",json_dumps(js))
 
 
-#/restconf/config/Context/_path/(\w+)/label/(\w+)/
-class Context_PathUuidLabelValuename(MethodView):
+#/restconf/config/Context/name/(\w+)/
+class ContextNameValuename(MethodView):
 
-    def get(self, uuid, valueName):
-        print "Retrieve operation of resource: label"
+    def get(self, valueName):
+        print "Retrieve operation of resource: name"
         try:
-            response = Context_PathUuidLabelValuenameImpl.get(uuid, valueName)
+            response = ContextNameValuenameImpl.get(valueName)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_serviceEndPoint/(\w+)/_connectionEndPoint/(\w+)/_ltpSpecData/
+class Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid_Ltpspecdata(MethodView):
+
+    def get(self, uuid, connectionEndPoint_uuid):
+        print "Retrieve operation of resource: _ltpSpecData"
+        try:
+            response = Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid_LtpspecdataImpl.get(uuid, connectionEndPoint_uuid)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_serviceEndPoint/(\w+)/_connectionEndPoint/(\w+)/_state/
+class Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid_State(MethodView):
+
+    def get(self, uuid, connectionEndPoint_uuid):
+        print "Retrieve operation of resource: _state"
+        try:
+            response = Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid_StateImpl.get(uuid, connectionEndPoint_uuid)
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -347,13 +402,85 @@ class Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uu
             return Successful("Successful operation",json_dumps(js))
 
 
-#/restconf/config/Context/name/(\w+)/
-class ContextNameValuename(MethodView):
+#/restconf/config/Context/_connectivityService/(\w+)/_schedule/
+class Context_ConnectivityserviceUuid_Schedule(MethodView):
 
-    def get(self, valueName):
-        print "Retrieve operation of resource: name"
+    def put(self, uuid):
+        print "Update operation of resource: _schedule"
+        json_struct = request.get_json() #json parser.
         try:
-            response = ContextNameValuenameImpl.get(valueName)
+            existing_object = Context_ConnectivityserviceUuid_ScheduleImpl.get(uuid)
+        except KeyError as inst:
+            if inst.args[0] != 'uuid':
+                return NotFoundError(inst.args[0] + " not found")
+
+            new_object = create_instance(TimeRange, json_struct)
+            if isinstance(new_object, BadRequestError):
+                return new_object
+            elif isinstance(new_object, NotFoundError):
+                return new_object
+            else:
+                try:
+                    Context_ConnectivityserviceUuid_ScheduleImpl.put(uuid, new_object)
+                    js=new_object.json_serializer()
+                except KeyError as inst:
+                    return NotFoundError(inst.args[0] + " not found")
+        else:
+            existing_object = modify_instance(existing_object, json_struct)
+            if isinstance(existing_object, BadRequestError):
+                return existing_object
+            elif isinstance(existing_object, NotFoundError):
+                return existing_object
+            else:
+                try:
+                    Context_ConnectivityserviceUuid_ScheduleImpl.put(uuid, existing_object)
+                    js=existing_object.json_serializer()
+                except KeyError as inst:
+                    return NotFoundError(inst.args[0] + " not found")
+
+        return Successful("Successful operation",json_dumps(js))
+
+
+
+    def post(self, uuid):
+        print "Create operation of resource: _schedule"
+        try:
+            response = Context_ConnectivityserviceUuid_ScheduleImpl.get(uuid)
+        except KeyError as inst:
+            if inst.args[0] != 'uuid':
+                return NotFoundError(inst.args[0] + " not found")
+
+            json_struct = request.get_json() #json parser.
+            new_object = create_instance(TimeRange, json_struct)
+            if isinstance(new_object, BadRequestError):
+                return new_object
+            elif isinstance(new_object, NotFoundError):
+                return new_object
+            else:
+                try:
+                    Context_ConnectivityserviceUuid_ScheduleImpl.post(uuid, new_object)
+                    js=new_object.json_serializer()
+                except KeyError as inst:
+                    return NotFoundError(inst.args[0] + " not found")
+        else:
+            return BadRequestError("Object already exists. For updates use PUT.")
+        return Successful("Successful operation",json_dumps(js))
+
+
+    def delete(self, uuid):
+        print "Delete operation of resource: _schedule"
+        try:
+            response=Context_ConnectivityserviceUuid_ScheduleImpl.delete(uuid)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            return Successful('Successful operation')
+
+
+    def get(self, uuid):
+        print "Retrieve operation of resource: _schedule"
+        try:
+            response = Context_ConnectivityserviceUuid_ScheduleImpl.get(uuid)
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -447,54 +574,26 @@ class Context_VnwserviceUuid_VnwconstraintCostcharacteristicCostalgorithm(Method
             return Successful("Successful operation",json_dumps(js))
 
 
-#/restconf/config/Context/_serviceEndPoint/(\w+)/_connectionEndPoint/(\w+)/_state/
-class Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid_State(MethodView):
-
-    def get(self, uuid, connectionEndPoint_uuid):
-        print "Retrieve operation of resource: _state"
-        try:
-            response = Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid_StateImpl.get(uuid, connectionEndPoint_uuid)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
-#/restconf/config/Context/_serviceEndPoint/(\w+)/_connectionEndPoint/(\w+)/extension/(\w+)/
-class Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_UuidExtensionValuename(MethodView):
-
-    def get(self, uuid, connectionEndPoint_uuid, valueName):
-        print "Retrieve operation of resource: extension"
-        try:
-            response = Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_UuidExtensionValuenameImpl.get(uuid, connectionEndPoint_uuid, valueName)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
-#/restconf/config/Context/_connectivityService/(\w+)/_schedule/
-class Context_ConnectivityserviceUuid_Schedule(MethodView):
+#/restconf/config/Context/_notifSubscription/(\w+)/
+class Context_NotifsubscriptionUuid(MethodView):
 
     def put(self, uuid):
-        print "Update operation of resource: _schedule"
+        print "Update operation of resource: _notifSubscription"
         json_struct = request.get_json() #json parser.
         try:
-            existing_object = Context_ConnectivityserviceUuid_ScheduleImpl.get(uuid)
+            existing_object = Context_NotifsubscriptionUuidImpl.get(uuid)
         except KeyError as inst:
             if inst.args[0] != 'uuid':
                 return NotFoundError(inst.args[0] + " not found")
 
-            new_object = create_instance(ScheduleInfo, json_struct)
+            new_object = create_instance(NotificationSubscriptionService, json_struct)
             if isinstance(new_object, BadRequestError):
                 return new_object
             elif isinstance(new_object, NotFoundError):
                 return new_object
             else:
                 try:
-                    Context_ConnectivityserviceUuid_ScheduleImpl.put(uuid, new_object)
+                    Context_NotifsubscriptionUuidImpl.put(uuid, new_object)
                     js=new_object.json_serializer()
                 except KeyError as inst:
                     return NotFoundError(inst.args[0] + " not found")
@@ -506,7 +605,7 @@ class Context_ConnectivityserviceUuid_Schedule(MethodView):
                 return existing_object
             else:
                 try:
-                    Context_ConnectivityserviceUuid_ScheduleImpl.put(uuid, existing_object)
+                    Context_NotifsubscriptionUuidImpl.put(uuid, existing_object)
                     js=existing_object.json_serializer()
                 except KeyError as inst:
                     return NotFoundError(inst.args[0] + " not found")
@@ -516,22 +615,22 @@ class Context_ConnectivityserviceUuid_Schedule(MethodView):
 
 
     def post(self, uuid):
-        print "Create operation of resource: _schedule"
+        print "Create operation of resource: _notifSubscription"
         try:
-            response = Context_ConnectivityserviceUuid_ScheduleImpl.get(uuid)
+            response = Context_NotifsubscriptionUuidImpl.get(uuid)
         except KeyError as inst:
             if inst.args[0] != 'uuid':
                 return NotFoundError(inst.args[0] + " not found")
 
             json_struct = request.get_json() #json parser.
-            new_object = create_instance(ScheduleInfo, json_struct)
+            new_object = create_instance(NotificationSubscriptionService, json_struct, (uuid,'uuid'))
             if isinstance(new_object, BadRequestError):
                 return new_object
             elif isinstance(new_object, NotFoundError):
                 return new_object
             else:
                 try:
-                    Context_ConnectivityserviceUuid_ScheduleImpl.post(uuid, new_object)
+                    Context_NotifsubscriptionUuidImpl.post(uuid, new_object)
                     js=new_object.json_serializer()
                 except KeyError as inst:
                     return NotFoundError(inst.args[0] + " not found")
@@ -541,9 +640,9 @@ class Context_ConnectivityserviceUuid_Schedule(MethodView):
 
 
     def delete(self, uuid):
-        print "Delete operation of resource: _schedule"
+        print "Delete operation of resource: _notifSubscription"
         try:
-            response=Context_ConnectivityserviceUuid_ScheduleImpl.delete(uuid)
+            response=Context_NotifsubscriptionUuidImpl.delete(uuid)
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -551,9 +650,9 @@ class Context_ConnectivityserviceUuid_Schedule(MethodView):
 
 
     def get(self, uuid):
-        print "Retrieve operation of resource: _schedule"
+        print "Retrieve operation of resource: _notifSubscription"
         try:
-            response = Context_ConnectivityserviceUuid_ScheduleImpl.get(uuid)
+            response = Context_NotifsubscriptionUuidImpl.get(uuid)
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -561,27 +660,13 @@ class Context_ConnectivityserviceUuid_Schedule(MethodView):
             return Successful("Successful operation",json_dumps(js))
 
 
-#/restconf/config/Context/_path/(\w+)/_routingConstraint/
-class Context_PathUuid_Routingconstraint(MethodView):
+#/restconf/config/Context/_notification/changedAttributes/
+class Context_NotificationChangedattributes(MethodView):
 
-    def get(self, uuid):
-        print "Retrieve operation of resource: _routingConstraint"
+    def get(self, ):
+        print "Retrieve operation of resource: changedAttributes"
         try:
-            response = Context_PathUuid_RoutingconstraintImpl.get(uuid)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
-#/restconf/config/Context/_topology/(\w+)/_node/(\w+)/name/(\w+)/
-class Context_TopologyUuid_NodeNode_UuidNameValuename(MethodView):
-
-    def get(self, uuid, node_uuid, valueName):
-        print "Retrieve operation of resource: name"
-        try:
-            response = Context_TopologyUuid_NodeNode_UuidNameValuenameImpl.get(uuid, node_uuid, valueName)
+            response = Context_NotificationChangedattributesImpl.get()
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -787,13 +872,13 @@ class Context_VnwserviceUuid_ServiceportLocalid(MethodView):
             return Successful("Successful operation",json_dumps(js))
 
 
-#/restconf/config/Context/_path/(\w+)/extension/(\w+)/
-class Context_PathUuidExtensionValuename(MethodView):
+#/restconf/config/Context/_path/(\w+)/_routingConstraint/latencyCharacteristic/(\w+)/
+class Context_PathUuid_RoutingconstraintLatencycharacteristicLatencyvalue(MethodView):
 
-    def get(self, uuid, valueName):
-        print "Retrieve operation of resource: extension"
+    def get(self, uuid, latencyValue):
+        print "Retrieve operation of resource: latencyCharacteristic"
         try:
-            response = Context_PathUuidExtensionValuenameImpl.get(uuid, valueName)
+            response = Context_PathUuid_RoutingconstraintLatencycharacteristicLatencyvalueImpl.get(uuid, latencyValue)
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -801,13 +886,141 @@ class Context_PathUuidExtensionValuename(MethodView):
             return Successful("Successful operation",json_dumps(js))
 
 
-#/restconf/config/Context/_serviceEndPoint/(\w+)/_state/
-class Context_ServiceendpointUuid_State(MethodView):
+#/restconf/config/Context/_topology/(\w+)/_node/(\w+)/name/(\w+)/
+class Context_TopologyUuid_NodeNode_UuidNameValuename(MethodView):
+
+    def get(self, uuid, node_uuid, valueName):
+        print "Retrieve operation of resource: name"
+        try:
+            response = Context_TopologyUuid_NodeNode_UuidNameValuenameImpl.get(uuid, node_uuid, valueName)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_connectivityService/(\w+)/_connConstraints/costCharacteristic/(\w+)/
+class Context_ConnectivityserviceUuid_ConnconstraintsCostcharacteristicCostalgorithm(MethodView):
+
+    def get(self, uuid, costAlgorithm):
+        print "Retrieve operation of resource: costCharacteristic"
+        try:
+            response = Context_ConnectivityserviceUuid_ConnconstraintsCostcharacteristicCostalgorithmImpl.get(uuid, costAlgorithm)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_topology/(\w+)/_node/(\w+)/_ownedNodeEdgePoint/(\w+)/
+class Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid(MethodView):
+
+    def get(self, uuid, node_uuid, ownedNodeEdgePoint_uuid):
+        print "Retrieve operation of resource: _ownedNodeEdgePoint"
+        try:
+            response = Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_UuidImpl.get(uuid, node_uuid, ownedNodeEdgePoint_uuid)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_vnwService/(\w+)/_servicePort/
+class Context_VnwserviceUuid_Serviceport(MethodView):
+
+    def get(self, uuid):
+        print "Retrieve operation of resource: _servicePort"
+        try:
+            response = Context_VnwserviceUuid_ServiceportImpl.get(uuid)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_connectivityService/(\w+)/_state/
+class Context_ConnectivityserviceUuid_State(MethodView):
+
+    def put(self, uuid):
+        print "Update operation of resource: _state"
+        json_struct = request.get_json() #json parser.
+        try:
+            existing_object = Context_ConnectivityserviceUuid_StateImpl.get(uuid)
+        except KeyError as inst:
+            if inst.args[0] != 'uuid':
+                return NotFoundError(inst.args[0] + " not found")
+
+            new_object = create_instance(AdminStatePac, json_struct)
+            if isinstance(new_object, BadRequestError):
+                return new_object
+            elif isinstance(new_object, NotFoundError):
+                return new_object
+            else:
+                try:
+                    Context_ConnectivityserviceUuid_StateImpl.put(uuid, new_object)
+                    js=new_object.json_serializer()
+                except KeyError as inst:
+                    return NotFoundError(inst.args[0] + " not found")
+        else:
+            existing_object = modify_instance(existing_object, json_struct)
+            if isinstance(existing_object, BadRequestError):
+                return existing_object
+            elif isinstance(existing_object, NotFoundError):
+                return existing_object
+            else:
+                try:
+                    Context_ConnectivityserviceUuid_StateImpl.put(uuid, existing_object)
+                    js=existing_object.json_serializer()
+                except KeyError as inst:
+                    return NotFoundError(inst.args[0] + " not found")
+
+        return Successful("Successful operation",json_dumps(js))
+
+
+
+    def post(self, uuid):
+        print "Create operation of resource: _state"
+        try:
+            response = Context_ConnectivityserviceUuid_StateImpl.get(uuid)
+        except KeyError as inst:
+            if inst.args[0] != 'uuid':
+                return NotFoundError(inst.args[0] + " not found")
+
+            json_struct = request.get_json() #json parser.
+            new_object = create_instance(AdminStatePac, json_struct)
+            if isinstance(new_object, BadRequestError):
+                return new_object
+            elif isinstance(new_object, NotFoundError):
+                return new_object
+            else:
+                try:
+                    Context_ConnectivityserviceUuid_StateImpl.post(uuid, new_object)
+                    js=new_object.json_serializer()
+                except KeyError as inst:
+                    return NotFoundError(inst.args[0] + " not found")
+        else:
+            return BadRequestError("Object already exists. For updates use PUT.")
+        return Successful("Successful operation",json_dumps(js))
+
+
+    def delete(self, uuid):
+        print "Delete operation of resource: _state"
+        try:
+            response=Context_ConnectivityserviceUuid_StateImpl.delete(uuid)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            return Successful('Successful operation')
+
 
     def get(self, uuid):
         print "Retrieve operation of resource: _state"
         try:
-            response = Context_ServiceendpointUuid_StateImpl.get(uuid)
+            response = Context_ConnectivityserviceUuid_StateImpl.get(uuid)
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -815,13 +1028,85 @@ class Context_ServiceendpointUuid_State(MethodView):
             return Successful("Successful operation",json_dumps(js))
 
 
-#/restconf/config/Context/_topology/(\w+)/_node/(\w+)/_transferCapacity/availableCapacity/
-class Context_TopologyUuid_NodeNode_Uuid_TransfercapacityAvailablecapacity(MethodView):
+#/restconf/config/Context/_vnwService/(\w+)/_vnwConstraint/riskCharacteristic/(\w+)/
+class Context_VnwserviceUuid_VnwconstraintRiskcharacteristicRiskcharacteristicname(MethodView):
 
-    def get(self, uuid, node_uuid):
-        print "Retrieve operation of resource: availableCapacity"
+    def put(self, uuid, riskCharacteristicName):
+        print "Update operation of resource: riskCharacteristic"
+        json_struct = request.get_json() #json parser.
         try:
-            response = Context_TopologyUuid_NodeNode_Uuid_TransfercapacityAvailablecapacityImpl.get(uuid, node_uuid)
+            existing_object = Context_VnwserviceUuid_VnwconstraintRiskcharacteristicRiskcharacteristicnameImpl.get(uuid, riskCharacteristicName)
+        except KeyError as inst:
+            if inst.args[0] != 'riskCharacteristicName':
+                return NotFoundError(inst.args[0] + " not found")
+
+            new_object = create_instance(RiskCharacteristic, json_struct)
+            if isinstance(new_object, BadRequestError):
+                return new_object
+            elif isinstance(new_object, NotFoundError):
+                return new_object
+            else:
+                try:
+                    Context_VnwserviceUuid_VnwconstraintRiskcharacteristicRiskcharacteristicnameImpl.put(uuid, riskCharacteristicName, new_object)
+                    js=new_object.json_serializer()
+                except KeyError as inst:
+                    return NotFoundError(inst.args[0] + " not found")
+        else:
+            existing_object = modify_instance(existing_object, json_struct)
+            if isinstance(existing_object, BadRequestError):
+                return existing_object
+            elif isinstance(existing_object, NotFoundError):
+                return existing_object
+            else:
+                try:
+                    Context_VnwserviceUuid_VnwconstraintRiskcharacteristicRiskcharacteristicnameImpl.put(uuid, riskCharacteristicName, existing_object)
+                    js=existing_object.json_serializer()
+                except KeyError as inst:
+                    return NotFoundError(inst.args[0] + " not found")
+
+        return Successful("Successful operation",json_dumps(js))
+
+
+
+    def post(self, uuid, riskCharacteristicName):
+        print "Create operation of resource: riskCharacteristic"
+        try:
+            response = Context_VnwserviceUuid_VnwconstraintRiskcharacteristicRiskcharacteristicnameImpl.get(uuid, riskCharacteristicName)
+        except KeyError as inst:
+            if inst.args[0] != 'riskCharacteristicName':
+                return NotFoundError(inst.args[0] + " not found")
+
+            json_struct = request.get_json() #json parser.
+            new_object = create_instance(RiskCharacteristic, json_struct, (riskCharacteristicName,'riskCharacteristicName'))
+            if isinstance(new_object, BadRequestError):
+                return new_object
+            elif isinstance(new_object, NotFoundError):
+                return new_object
+            else:
+                try:
+                    Context_VnwserviceUuid_VnwconstraintRiskcharacteristicRiskcharacteristicnameImpl.post(uuid, riskCharacteristicName, new_object)
+                    js=new_object.json_serializer()
+                except KeyError as inst:
+                    return NotFoundError(inst.args[0] + " not found")
+        else:
+            return BadRequestError("Object already exists. For updates use PUT.")
+        return Successful("Successful operation",json_dumps(js))
+
+
+    def delete(self, uuid, riskCharacteristicName):
+        print "Delete operation of resource: riskCharacteristic"
+        try:
+            response=Context_VnwserviceUuid_VnwconstraintRiskcharacteristicRiskcharacteristicnameImpl.delete(uuid, riskCharacteristicName)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            return Successful('Successful operation')
+
+
+    def get(self, uuid, riskCharacteristicName):
+        print "Retrieve operation of resource: riskCharacteristic"
+        try:
+            response = Context_VnwserviceUuid_VnwconstraintRiskcharacteristicRiskcharacteristicnameImpl.get(uuid, riskCharacteristicName)
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -829,13 +1114,27 @@ class Context_TopologyUuid_NodeNode_Uuid_TransfercapacityAvailablecapacity(Metho
             return Successful("Successful operation",json_dumps(js))
 
 
-#/restconf/config/Context/_topology/(\w+)/label/(\w+)/
-class Context_TopologyUuidLabelValuename(MethodView):
+#/restconf/config/Context/_path/(\w+)/_routingConstraint/requestedCapacity/
+class Context_PathUuid_RoutingconstraintRequestedcapacity(MethodView):
+
+    def get(self, uuid):
+        print "Retrieve operation of resource: requestedCapacity"
+        try:
+            response = Context_PathUuid_RoutingconstraintRequestedcapacityImpl.get(uuid)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_connectivityService/(\w+)/name/(\w+)/
+class Context_ConnectivityserviceUuidNameValuename(MethodView):
 
     def get(self, uuid, valueName):
-        print "Retrieve operation of resource: label"
+        print "Retrieve operation of resource: name"
         try:
-            response = Context_TopologyUuidLabelValuenameImpl.get(uuid, valueName)
+            response = Context_ConnectivityserviceUuidNameValuenameImpl.get(uuid, valueName)
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -843,13 +1142,27 @@ class Context_TopologyUuidLabelValuename(MethodView):
             return Successful("Successful operation",json_dumps(js))
 
 
-#/restconf/config/Context/_topology/(\w+)/_node/(\w+)/_transferTiming/
-class Context_TopologyUuid_NodeNode_Uuid_Transfertiming(MethodView):
+#/restconf/config/Context/_topology/(\w+)/_link/(\w+)/_transferCapacity/capacityAssignedToUserView/(\w+)/
+class Context_TopologyUuid_LinkLink_Uuid_TransfercapacityCapacityassignedtouserviewNumberingrange(MethodView):
+
+    def get(self, uuid, link_uuid, numberingRange):
+        print "Retrieve operation of resource: capacityAssignedToUserView"
+        try:
+            response = Context_TopologyUuid_LinkLink_Uuid_TransfercapacityCapacityassignedtouserviewNumberingrangeImpl.get(uuid, link_uuid, numberingRange)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_topology/(\w+)/_node/(\w+)/_transferCapacity/
+class Context_TopologyUuid_NodeNode_Uuid_Transfercapacity(MethodView):
 
     def get(self, uuid, node_uuid):
-        print "Retrieve operation of resource: _transferTiming"
+        print "Retrieve operation of resource: _transferCapacity"
         try:
-            response = Context_TopologyUuid_NodeNode_Uuid_TransfertimingImpl.get(uuid, node_uuid)
+            response = Context_TopologyUuid_NodeNode_Uuid_TransfercapacityImpl.get(uuid, node_uuid)
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -871,27 +1184,13 @@ class Context_TopologyUuid_NodeNode_Uuid_Transferintegrity(MethodView):
             return Successful("Successful operation",json_dumps(js))
 
 
-#/restconf/config/Context/_serviceEndPoint/(\w+)/
-class Context_ServiceendpointUuid(MethodView):
+#/restconf/config/Context/_serviceEndPoint/(\w+)/_layerProtocol/(\w+)/
+class Context_ServiceendpointUuid_LayerprotocolLocalid(MethodView):
 
-    def get(self, uuid):
-        print "Retrieve operation of resource: _serviceEndPoint"
+    def get(self, uuid, localId):
+        print "Retrieve operation of resource: _layerProtocol"
         try:
-            response = Context_ServiceendpointUuidImpl.get(uuid)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
-#/restconf/config/Context/_topology/(\w+)/_link/(\w+)/_riskParameter/riskCharacteristic/(\w+)/
-class Context_TopologyUuid_LinkLink_Uuid_RiskparameterRiskcharacteristicRiskcharacteristicname(MethodView):
-
-    def get(self, uuid, link_uuid, riskCharacteristicName):
-        print "Retrieve operation of resource: riskCharacteristic"
-        try:
-            response = Context_TopologyUuid_LinkLink_Uuid_RiskparameterRiskcharacteristicRiskcharacteristicnameImpl.get(uuid, link_uuid, riskCharacteristicName)
+            response = Context_ServiceendpointUuid_LayerprotocolLocalidImpl.get(uuid, localId)
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -913,169 +1212,13 @@ class Context_TopologyUuid_LinkLink_Uuid_Transferintegrity(MethodView):
             return Successful("Successful operation",json_dumps(js))
 
 
-#/restconf/config/Context/_serviceEndPoint/(\w+)/_layerProtocol/(\w+)/
-class Context_ServiceendpointUuid_LayerprotocolLocalid(MethodView):
-
-    def get(self, uuid, localId):
-        print "Retrieve operation of resource: _layerProtocol"
-        try:
-            response = Context_ServiceendpointUuid_LayerprotocolLocalidImpl.get(uuid, localId)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
-#/restconf/config/Context/_topology/(\w+)/_link/(\w+)/label/(\w+)/
-class Context_TopologyUuid_LinkLink_UuidLabelValuename(MethodView):
-
-    def get(self, uuid, link_uuid, valueName):
-        print "Retrieve operation of resource: label"
-        try:
-            response = Context_TopologyUuid_LinkLink_UuidLabelValuenameImpl.get(uuid, link_uuid, valueName)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
-#/restconf/config/Context/label/(\w+)/
-class ContextLabelValuename(MethodView):
-
-    def get(self, valueName):
-        print "Retrieve operation of resource: label"
-        try:
-            response = ContextLabelValuenameImpl.get(valueName)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
-#/restconf/config/Context/_connectivityService/(\w+)/_connConstraints/latencyCharacteristic/(\w+)/
-class Context_ConnectivityserviceUuid_ConnconstraintsLatencycharacteristicLatencyvalue(MethodView):
-
-    def get(self, uuid, latencyValue):
-        print "Retrieve operation of resource: latencyCharacteristic"
-        try:
-            response = Context_ConnectivityserviceUuid_ConnconstraintsLatencycharacteristicLatencyvalueImpl.get(uuid, latencyValue)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
-#/restconf/config/Context/_connectivityService/(\w+)/_connConstraints/requestedCapacity/
-class Context_ConnectivityserviceUuid_ConnconstraintsRequestedcapacity(MethodView):
-
-    def get(self, uuid):
-        print "Retrieve operation of resource: requestedCapacity"
-        try:
-            response = Context_ConnectivityserviceUuid_ConnconstraintsRequestedcapacityImpl.get(uuid)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
-#/restconf/config/Context/_vnwService/(\w+)/_state/
-class Context_VnwserviceUuid_State(MethodView):
-
-    def put(self, uuid):
-        print "Update operation of resource: _state"
-        json_struct = request.get_json() #json parser.
-        try:
-            existing_object = Context_VnwserviceUuid_StateImpl.get(uuid)
-        except KeyError as inst:
-            if inst.args[0] != 'uuid':
-                return NotFoundError(inst.args[0] + " not found")
-
-            new_object = create_instance(AdminStatePac, json_struct)
-            if isinstance(new_object, BadRequestError):
-                return new_object
-            elif isinstance(new_object, NotFoundError):
-                return new_object
-            else:
-                try:
-                    Context_VnwserviceUuid_StateImpl.put(uuid, new_object)
-                    js=new_object.json_serializer()
-                except KeyError as inst:
-                    return NotFoundError(inst.args[0] + " not found")
-        else:
-            existing_object = modify_instance(existing_object, json_struct)
-            if isinstance(existing_object, BadRequestError):
-                return existing_object
-            elif isinstance(existing_object, NotFoundError):
-                return existing_object
-            else:
-                try:
-                    Context_VnwserviceUuid_StateImpl.put(uuid, existing_object)
-                    js=existing_object.json_serializer()
-                except KeyError as inst:
-                    return NotFoundError(inst.args[0] + " not found")
-
-        return Successful("Successful operation",json_dumps(js))
-
-
-
-    def post(self, uuid):
-        print "Create operation of resource: _state"
-        try:
-            response = Context_VnwserviceUuid_StateImpl.get(uuid)
-        except KeyError as inst:
-            if inst.args[0] != 'uuid':
-                return NotFoundError(inst.args[0] + " not found")
-
-            json_struct = request.get_json() #json parser.
-            new_object = create_instance(AdminStatePac, json_struct)
-            if isinstance(new_object, BadRequestError):
-                return new_object
-            elif isinstance(new_object, NotFoundError):
-                return new_object
-            else:
-                try:
-                    Context_VnwserviceUuid_StateImpl.post(uuid, new_object)
-                    js=new_object.json_serializer()
-                except KeyError as inst:
-                    return NotFoundError(inst.args[0] + " not found")
-        else:
-            return BadRequestError("Object already exists. For updates use PUT.")
-        return Successful("Successful operation",json_dumps(js))
-
-
-    def delete(self, uuid):
-        print "Delete operation of resource: _state"
-        try:
-            response=Context_VnwserviceUuid_StateImpl.delete(uuid)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            return Successful('Successful operation')
-
-
-    def get(self, uuid):
-        print "Retrieve operation of resource: _state"
-        try:
-            response = Context_VnwserviceUuid_StateImpl.get(uuid)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
-#/restconf/config/Context/_connectivityService/(\w+)/label/(\w+)/
-class Context_ConnectivityserviceUuidLabelValuename(MethodView):
+#/restconf/config/Context/_notifSubscription/(\w+)/label/(\w+)/
+class Context_NotifsubscriptionUuidLabelValuename(MethodView):
 
     def get(self, uuid, valueName):
         print "Retrieve operation of resource: label"
         try:
-            response = Context_ConnectivityserviceUuidLabelValuenameImpl.get(uuid, valueName)
+            response = Context_NotifsubscriptionUuidLabelValuenameImpl.get(uuid, valueName)
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -1083,13 +1226,13 @@ class Context_ConnectivityserviceUuidLabelValuename(MethodView):
             return Successful("Successful operation",json_dumps(js))
 
 
-#/restconf/config/Context/_topology/(\w+)/_node/(\w+)/extension/(\w+)/
-class Context_TopologyUuid_NodeNode_UuidExtensionValuename(MethodView):
+#/restconf/config/Context/_serviceEndPoint/(\w+)/
+class Context_ServiceendpointUuid(MethodView):
 
-    def get(self, uuid, node_uuid, valueName):
-        print "Retrieve operation of resource: extension"
+    def get(self, uuid):
+        print "Retrieve operation of resource: _serviceEndPoint"
         try:
-            response = Context_TopologyUuid_NodeNode_UuidExtensionValuenameImpl.get(uuid, node_uuid, valueName)
+            response = Context_ServiceendpointUuidImpl.get(uuid)
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -1097,99 +1240,13 @@ class Context_TopologyUuid_NodeNode_UuidExtensionValuename(MethodView):
             return Successful("Successful operation",json_dumps(js))
 
 
-#/restconf/config/Context/_topology/(\w+)/_link/(\w+)/_transferTiming/queuingLatency/(\w+)/
-class Context_TopologyUuid_LinkLink_Uuid_TransfertimingQueuinglatencyLatencyvalue(MethodView):
-
-    def get(self, uuid, link_uuid, latencyValue):
-        print "Retrieve operation of resource: queuingLatency"
-        try:
-            response = Context_TopologyUuid_LinkLink_Uuid_TransfertimingQueuinglatencyLatencyvalueImpl.get(uuid, link_uuid, latencyValue)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
-#/restconf/config/Context/
-class Context(MethodView):
-
-    def put(self, ):
-        print "Update operation of resource: Context"
-        json_struct = request.get_json() #json parser.
-        try:
-            existing_object = ContextImpl.get()
-        except KeyError as inst:
-            if inst.args[0] != '':
-                return NotFoundError(inst.args[0] + " not found")
-
-            new_object = create_instance(ContextSchema, json_struct)
-            if isinstance(new_object, BadRequestError):
-                return new_object
-            elif isinstance(new_object, NotFoundError):
-                return new_object
-            else:
-                try:
-                    ContextImpl.put(new_object)
-                    js=new_object.json_serializer()
-                except KeyError as inst:
-                    return NotFoundError(inst.args[0] + " not found")
-        else:
-            existing_object = modify_instance(existing_object, json_struct)
-            if isinstance(existing_object, BadRequestError):
-                return existing_object
-            elif isinstance(existing_object, NotFoundError):
-                return existing_object
-            else:
-                try:
-                    ContextImpl.put(existing_object)
-                    js=existing_object.json_serializer()
-                except KeyError as inst:
-                    return NotFoundError(inst.args[0] + " not found")
-
-        return Successful("Successful operation",json_dumps(js))
-
-
-
-    def post(self, ):
-        print "Create operation of resource: Context"
-        try:
-            response = ContextImpl.get()
-        except KeyError as inst:
-            if inst.args[0] != '':
-                return NotFoundError(inst.args[0] + " not found")
-
-            json_struct = request.get_json() #json parser.
-            new_object = create_instance(ContextSchema, json_struct)
-            if isinstance(new_object, BadRequestError):
-                return new_object
-            elif isinstance(new_object, NotFoundError):
-                return new_object
-            else:
-                try:
-                    ContextImpl.post(new_object)
-                    js=new_object.json_serializer()
-                except KeyError as inst:
-                    return NotFoundError(inst.args[0] + " not found")
-        else:
-            return BadRequestError("Object already exists. For updates use PUT.")
-        return Successful("Successful operation",json_dumps(js))
-
-
-    def delete(self, ):
-        print "Delete operation of resource: Context"
-        try:
-            response=ContextImpl.delete()
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            return Successful('Successful operation')
-
+#/restconf/config/Context/_notification/
+class Context_Notification(MethodView):
 
     def get(self, ):
-        print "Retrieve operation of resource: Context"
+        print "Retrieve operation of resource: _notification"
         try:
-            response = ContextImpl.get()
+            response = Context_NotificationImpl.get()
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -1197,13 +1254,41 @@ class Context(MethodView):
             return Successful("Successful operation",json_dumps(js))
 
 
-#/restconf/config/Context/_serviceEndPoint/(\w+)/extension/(\w+)/
-class Context_ServiceendpointUuidExtensionValuename(MethodView):
+#/restconf/config/Context/_topology/(\w+)/_node/(\w+)/_transferTiming/
+class Context_TopologyUuid_NodeNode_Uuid_Transfertiming(MethodView):
+
+    def get(self, uuid, node_uuid):
+        print "Retrieve operation of resource: _transferTiming"
+        try:
+            response = Context_TopologyUuid_NodeNode_Uuid_TransfertimingImpl.get(uuid, node_uuid)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_topology/(\w+)/label/(\w+)/
+class Context_TopologyUuidLabelValuename(MethodView):
 
     def get(self, uuid, valueName):
-        print "Retrieve operation of resource: extension"
+        print "Retrieve operation of resource: label"
         try:
-            response = Context_ServiceendpointUuidExtensionValuenameImpl.get(uuid, valueName)
+            response = Context_TopologyUuidLabelValuenameImpl.get(uuid, valueName)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_topology/(\w+)/_node/(\w+)/_transferCapacity/availableCapacity/
+class Context_TopologyUuid_NodeNode_Uuid_TransfercapacityAvailablecapacity(MethodView):
+
+    def get(self, uuid, node_uuid):
+        print "Retrieve operation of resource: availableCapacity"
+        try:
+            response = Context_TopologyUuid_NodeNode_Uuid_TransfercapacityAvailablecapacityImpl.get(uuid, node_uuid)
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -1279,7 +1364,7 @@ class Context_VnwserviceUuid_Schedule(MethodView):
             if inst.args[0] != 'uuid':
                 return NotFoundError(inst.args[0] + " not found")
 
-            new_object = create_instance(ScheduleInfo, json_struct)
+            new_object = create_instance(TimeRange, json_struct)
             if isinstance(new_object, BadRequestError):
                 return new_object
             elif isinstance(new_object, NotFoundError):
@@ -1316,7 +1401,7 @@ class Context_VnwserviceUuid_Schedule(MethodView):
                 return NotFoundError(inst.args[0] + " not found")
 
             json_struct = request.get_json() #json parser.
-            new_object = create_instance(ScheduleInfo, json_struct)
+            new_object = create_instance(TimeRange, json_struct)
             if isinstance(new_object, BadRequestError):
                 return new_object
             elif isinstance(new_object, NotFoundError):
@@ -1353,13 +1438,13 @@ class Context_VnwserviceUuid_Schedule(MethodView):
             return Successful("Successful operation",json_dumps(js))
 
 
-#/restconf/config/Context/_vnwService/(\w+)/name/(\w+)/
-class Context_VnwserviceUuidNameValuename(MethodView):
+#/restconf/config/Context/_serviceEndPoint/(\w+)/_state/
+class Context_ServiceendpointUuid_State(MethodView):
 
-    def get(self, uuid, valueName):
-        print "Retrieve operation of resource: name"
+    def get(self, uuid):
+        print "Retrieve operation of resource: _state"
         try:
-            response = Context_VnwserviceUuidNameValuenameImpl.get(uuid, valueName)
+            response = Context_ServiceendpointUuid_StateImpl.get(uuid)
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -1367,13 +1452,13 @@ class Context_VnwserviceUuidNameValuename(MethodView):
             return Successful("Successful operation",json_dumps(js))
 
 
-#/restconf/config/Context/_topology/(\w+)/_node/(\w+)/_transferCapacity/
-class Context_TopologyUuid_NodeNode_Uuid_Transfercapacity(MethodView):
+#/restconf/config/Context/_vnwService/(\w+)/_vnwConstraint/riskCharacteristic/
+class Context_VnwserviceUuid_VnwconstraintRiskcharacteristic(MethodView):
 
-    def get(self, uuid, node_uuid):
-        print "Retrieve operation of resource: _transferCapacity"
+    def get(self, uuid):
+        print "Retrieve operation of resource: riskCharacteristic"
         try:
-            response = Context_TopologyUuid_NodeNode_Uuid_TransfercapacityImpl.get(uuid, node_uuid)
+            response = Context_VnwserviceUuid_VnwconstraintRiskcharacteristicImpl.get(uuid)
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -1423,13 +1508,13 @@ class Context_PathUuid_Objectivefunction(MethodView):
             return Successful("Successful operation",json_dumps(js))
 
 
-#/restconf/config/Context/_connectivityService/(\w+)/_connection/(\w+)/extension/(\w+)/
-class Context_ConnectivityserviceUuid_ConnectionConnection_UuidExtensionValuename(MethodView):
+#/restconf/config/Context/_serviceEndPoint/(\w+)/_layerProtocol/(\w+)/_lpSpecData/
+class Context_ServiceendpointUuid_LayerprotocolLocalid_Lpspecdata(MethodView):
 
-    def get(self, uuid, connection_uuid, valueName):
-        print "Retrieve operation of resource: extension"
+    def get(self, uuid, localId):
+        print "Retrieve operation of resource: _lpSpecData"
         try:
-            response = Context_ConnectivityserviceUuid_ConnectionConnection_UuidExtensionValuenameImpl.get(uuid, connection_uuid, valueName)
+            response = Context_ServiceendpointUuid_LayerprotocolLocalid_LpspecdataImpl.get(uuid, localId)
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -1437,13 +1522,13 @@ class Context_ConnectivityserviceUuid_ConnectionConnection_UuidExtensionValuenam
             return Successful("Successful operation",json_dumps(js))
 
 
-#/restconf/config/Context/_topology/(\w+)/_link/(\w+)/_transferCost/costCharacteristic/(\w+)/
-class Context_TopologyUuid_LinkLink_Uuid_TransfercostCostcharacteristicCostalgorithm(MethodView):
+#/restconf/config/Context/_vnwService/
+class Context_Vnwservice(MethodView):
 
-    def get(self, uuid, link_uuid, costAlgorithm):
-        print "Retrieve operation of resource: costCharacteristic"
+    def get(self, ):
+        print "Retrieve operation of resource: _vnwService"
         try:
-            response = Context_TopologyUuid_LinkLink_Uuid_TransfercostCostcharacteristicCostalgorithmImpl.get(uuid, link_uuid, costAlgorithm)
+            response = Context_VnwserviceImpl.get()
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -1451,13 +1536,41 @@ class Context_TopologyUuid_LinkLink_Uuid_TransfercostCostcharacteristicCostalgor
             return Successful("Successful operation",json_dumps(js))
 
 
-#/restconf/config/Context/_topology/(\w+)/_node/(\w+)/_ownedNodeEdgePoint/(\w+)/_state/
-class Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_State(MethodView):
+#/restconf/config/Context/_topology/(\w+)/_link/(\w+)/_transferCapacity/availableCapacity/
+class Context_TopologyUuid_LinkLink_Uuid_TransfercapacityAvailablecapacity(MethodView):
+
+    def get(self, uuid, link_uuid):
+        print "Retrieve operation of resource: availableCapacity"
+        try:
+            response = Context_TopologyUuid_LinkLink_Uuid_TransfercapacityAvailablecapacityImpl.get(uuid, link_uuid)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_connectivityService/(\w+)/_connConstraints/riskCharacteristic/(\w+)/
+class Context_ConnectivityserviceUuid_ConnconstraintsRiskcharacteristicRiskcharacteristicname(MethodView):
+
+    def get(self, uuid, riskCharacteristicName):
+        print "Retrieve operation of resource: riskCharacteristic"
+        try:
+            response = Context_ConnectivityserviceUuid_ConnconstraintsRiskcharacteristicRiskcharacteristicnameImpl.get(uuid, riskCharacteristicName)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_topology/(\w+)/_node/(\w+)/_ownedNodeEdgePoint/(\w+)/_ltpSpecData/
+class Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_Ltpspecdata(MethodView):
 
     def get(self, uuid, node_uuid, ownedNodeEdgePoint_uuid):
-        print "Retrieve operation of resource: _state"
+        print "Retrieve operation of resource: _ltpSpecData"
         try:
-            response = Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_StateImpl.get(uuid, node_uuid, ownedNodeEdgePoint_uuid)
+            response = Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_LtpspecdataImpl.get(uuid, node_uuid, ownedNodeEdgePoint_uuid)
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -1465,13 +1578,69 @@ class Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uu
             return Successful("Successful operation",json_dumps(js))
 
 
-#/restconf/config/Context/_topology/(\w+)/_node/(\w+)/_transferCost/costCharacteristic/(\w+)/
-class Context_TopologyUuid_NodeNode_Uuid_TransfercostCostcharacteristicCostalgorithm(MethodView):
+#/restconf/config/Context/_topology/(\w+)/_node/(\w+)/_transferCost/
+class Context_TopologyUuid_NodeNode_Uuid_Transfercost(MethodView):
 
-    def get(self, uuid, node_uuid, costAlgorithm):
-        print "Retrieve operation of resource: costCharacteristic"
+    def get(self, uuid, node_uuid):
+        print "Retrieve operation of resource: _transferCost"
         try:
-            response = Context_TopologyUuid_NodeNode_Uuid_TransfercostCostcharacteristicCostalgorithmImpl.get(uuid, node_uuid, costAlgorithm)
+            response = Context_TopologyUuid_NodeNode_Uuid_TransfercostImpl.get(uuid, node_uuid)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_serviceEndPoint/(\w+)/_connectionEndPoint/(\w+)/
+class Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid(MethodView):
+
+    def get(self, uuid, connectionEndPoint_uuid):
+        print "Retrieve operation of resource: _connectionEndPoint"
+        try:
+            response = Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_UuidImpl.get(uuid, connectionEndPoint_uuid)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_notifSubscription/(\w+)/_notification/changedAttributes/
+class Context_NotifsubscriptionUuid_NotificationChangedattributes(MethodView):
+
+    def get(self, uuid):
+        print "Retrieve operation of resource: changedAttributes"
+        try:
+            response = Context_NotifsubscriptionUuid_NotificationChangedattributesImpl.get(uuid)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_connectivityService/(\w+)/_connection/(\w+)/_state/
+class Context_ConnectivityserviceUuid_ConnectionConnection_Uuid_State(MethodView):
+
+    def get(self, uuid, connection_uuid):
+        print "Retrieve operation of resource: _state"
+        try:
+            response = Context_ConnectivityserviceUuid_ConnectionConnection_Uuid_StateImpl.get(uuid, connection_uuid)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_topology/(\w+)/_link/(\w+)/_validation/validationMechanism/(\w+)/
+class Context_TopologyUuid_LinkLink_Uuid_ValidationValidationmechanismValidationrobustness(MethodView):
+
+    def get(self, uuid, link_uuid, validationRobustness):
+        print "Retrieve operation of resource: validationMechanism"
+        try:
+            response = Context_TopologyUuid_LinkLink_Uuid_ValidationValidationmechanismValidationrobustnessImpl.get(uuid, link_uuid, validationRobustness)
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -1607,6 +1776,446 @@ class Context_ConnectivityserviceUuid_ConnectionConnection_UuidLabelValuename(Me
             return Successful("Successful operation",json_dumps(js))
 
 
+#/restconf/config/Context/_path/(\w+)/_telink/(\w+)/
+class Context_PathUuid_TelinkLocalid(MethodView):
+
+    def get(self, uuid, localId):
+        print "Retrieve operation of resource: _telink"
+        try:
+            response = Context_PathUuid_TelinkLocalidImpl.get(uuid, localId)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_vnwService/(\w+)/_vnwConstraint/
+class Context_VnwserviceUuid_Vnwconstraint(MethodView):
+
+    def put(self, uuid):
+        print "Update operation of resource: _vnwConstraint"
+        json_struct = request.get_json() #json parser.
+        try:
+            existing_object = Context_VnwserviceUuid_VnwconstraintImpl.get(uuid)
+        except KeyError as inst:
+            if inst.args[0] != 'uuid':
+                return NotFoundError(inst.args[0] + " not found")
+
+            new_object = create_instance(VirtualNetworkConstraint, json_struct)
+            if isinstance(new_object, BadRequestError):
+                return new_object
+            elif isinstance(new_object, NotFoundError):
+                return new_object
+            else:
+                try:
+                    Context_VnwserviceUuid_VnwconstraintImpl.put(uuid, new_object)
+                    js=new_object.json_serializer()
+                except KeyError as inst:
+                    return NotFoundError(inst.args[0] + " not found")
+        else:
+            existing_object = modify_instance(existing_object, json_struct)
+            if isinstance(existing_object, BadRequestError):
+                return existing_object
+            elif isinstance(existing_object, NotFoundError):
+                return existing_object
+            else:
+                try:
+                    Context_VnwserviceUuid_VnwconstraintImpl.put(uuid, existing_object)
+                    js=existing_object.json_serializer()
+                except KeyError as inst:
+                    return NotFoundError(inst.args[0] + " not found")
+
+        return Successful("Successful operation",json_dumps(js))
+
+
+
+    def post(self, uuid):
+        print "Create operation of resource: _vnwConstraint"
+        try:
+            response = Context_VnwserviceUuid_VnwconstraintImpl.get(uuid)
+        except KeyError as inst:
+            if inst.args[0] != 'uuid':
+                return NotFoundError(inst.args[0] + " not found")
+
+            json_struct = request.get_json() #json parser.
+            new_object = create_instance(VirtualNetworkConstraint, json_struct)
+            if isinstance(new_object, BadRequestError):
+                return new_object
+            elif isinstance(new_object, NotFoundError):
+                return new_object
+            else:
+                try:
+                    Context_VnwserviceUuid_VnwconstraintImpl.post(uuid, new_object)
+                    js=new_object.json_serializer()
+                except KeyError as inst:
+                    return NotFoundError(inst.args[0] + " not found")
+        else:
+            return BadRequestError("Object already exists. For updates use PUT.")
+        return Successful("Successful operation",json_dumps(js))
+
+
+    def delete(self, uuid):
+        print "Delete operation of resource: _vnwConstraint"
+        try:
+            response=Context_VnwserviceUuid_VnwconstraintImpl.delete(uuid)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            return Successful('Successful operation')
+
+
+    def get(self, uuid):
+        print "Retrieve operation of resource: _vnwConstraint"
+        try:
+            response = Context_VnwserviceUuid_VnwconstraintImpl.get(uuid)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_notifSubscription/(\w+)/_notification/
+class Context_NotifsubscriptionUuid_Notification(MethodView):
+
+    def get(self, uuid):
+        print "Retrieve operation of resource: _notification"
+        try:
+            response = Context_NotifsubscriptionUuid_NotificationImpl.get(uuid)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_connectivityService/(\w+)/_servicePort/
+class Context_ConnectivityserviceUuid_Serviceport(MethodView):
+
+    def get(self, uuid):
+        print "Retrieve operation of resource: _servicePort"
+        try:
+            response = Context_ConnectivityserviceUuid_ServiceportImpl.get(uuid)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_topology/(\w+)/_node/(\w+)/_ownedNodeEdgePoint/(\w+)/_state/
+class Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_State(MethodView):
+
+    def get(self, uuid, node_uuid, ownedNodeEdgePoint_uuid):
+        print "Retrieve operation of resource: _state"
+        try:
+            response = Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_StateImpl.get(uuid, node_uuid, ownedNodeEdgePoint_uuid)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_topology/(\w+)/_node/(\w+)/_transferCost/costCharacteristic/(\w+)/
+class Context_TopologyUuid_NodeNode_Uuid_TransfercostCostcharacteristicCostalgorithm(MethodView):
+
+    def get(self, uuid, node_uuid, costAlgorithm):
+        print "Retrieve operation of resource: costCharacteristic"
+        try:
+            response = Context_TopologyUuid_NodeNode_Uuid_TransfercostCostcharacteristicCostalgorithmImpl.get(uuid, node_uuid, costAlgorithm)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_notification/targetObjectName/(\w+)/
+class Context_NotificationTargetobjectnameValuename(MethodView):
+
+    def get(self, valueName):
+        print "Retrieve operation of resource: targetObjectName"
+        try:
+            response = Context_NotificationTargetobjectnameValuenameImpl.get(valueName)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_topology/(\w+)/_node/(\w+)/_transferCapacity/capacityAssignedToUserView/(\w+)/
+class Context_TopologyUuid_NodeNode_Uuid_TransfercapacityCapacityassignedtouserviewNumberingrange(MethodView):
+
+    def get(self, uuid, node_uuid, numberingRange):
+        print "Retrieve operation of resource: capacityAssignedToUserView"
+        try:
+            response = Context_TopologyUuid_NodeNode_Uuid_TransfercapacityCapacityassignedtouserviewNumberingrangeImpl.get(uuid, node_uuid, numberingRange)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_connectivityService/(\w+)/label/(\w+)/
+class Context_ConnectivityserviceUuidLabelValuename(MethodView):
+
+    def get(self, uuid, valueName):
+        print "Retrieve operation of resource: label"
+        try:
+            response = Context_ConnectivityserviceUuidLabelValuenameImpl.get(uuid, valueName)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_vnwService/(\w+)/_state/
+class Context_VnwserviceUuid_State(MethodView):
+
+    def put(self, uuid):
+        print "Update operation of resource: _state"
+        json_struct = request.get_json() #json parser.
+        try:
+            existing_object = Context_VnwserviceUuid_StateImpl.get(uuid)
+        except KeyError as inst:
+            if inst.args[0] != 'uuid':
+                return NotFoundError(inst.args[0] + " not found")
+
+            new_object = create_instance(AdminStatePac, json_struct)
+            if isinstance(new_object, BadRequestError):
+                return new_object
+            elif isinstance(new_object, NotFoundError):
+                return new_object
+            else:
+                try:
+                    Context_VnwserviceUuid_StateImpl.put(uuid, new_object)
+                    js=new_object.json_serializer()
+                except KeyError as inst:
+                    return NotFoundError(inst.args[0] + " not found")
+        else:
+            existing_object = modify_instance(existing_object, json_struct)
+            if isinstance(existing_object, BadRequestError):
+                return existing_object
+            elif isinstance(existing_object, NotFoundError):
+                return existing_object
+            else:
+                try:
+                    Context_VnwserviceUuid_StateImpl.put(uuid, existing_object)
+                    js=existing_object.json_serializer()
+                except KeyError as inst:
+                    return NotFoundError(inst.args[0] + " not found")
+
+        return Successful("Successful operation",json_dumps(js))
+
+
+
+    def post(self, uuid):
+        print "Create operation of resource: _state"
+        try:
+            response = Context_VnwserviceUuid_StateImpl.get(uuid)
+        except KeyError as inst:
+            if inst.args[0] != 'uuid':
+                return NotFoundError(inst.args[0] + " not found")
+
+            json_struct = request.get_json() #json parser.
+            new_object = create_instance(AdminStatePac, json_struct)
+            if isinstance(new_object, BadRequestError):
+                return new_object
+            elif isinstance(new_object, NotFoundError):
+                return new_object
+            else:
+                try:
+                    Context_VnwserviceUuid_StateImpl.post(uuid, new_object)
+                    js=new_object.json_serializer()
+                except KeyError as inst:
+                    return NotFoundError(inst.args[0] + " not found")
+        else:
+            return BadRequestError("Object already exists. For updates use PUT.")
+        return Successful("Successful operation",json_dumps(js))
+
+
+    def delete(self, uuid):
+        print "Delete operation of resource: _state"
+        try:
+            response=Context_VnwserviceUuid_StateImpl.delete(uuid)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            return Successful('Successful operation')
+
+
+    def get(self, uuid):
+        print "Retrieve operation of resource: _state"
+        try:
+            response = Context_VnwserviceUuid_StateImpl.get(uuid)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_connectivityService/(\w+)/_connConstraints/requestedCapacity/
+class Context_ConnectivityserviceUuid_ConnconstraintsRequestedcapacity(MethodView):
+
+    def get(self, uuid):
+        print "Retrieve operation of resource: requestedCapacity"
+        try:
+            response = Context_ConnectivityserviceUuid_ConnconstraintsRequestedcapacityImpl.get(uuid)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_connectivityService/(\w+)/_connConstraints/latencyCharacteristic/(\w+)/
+class Context_ConnectivityserviceUuid_ConnconstraintsLatencycharacteristicLatencyvalue(MethodView):
+
+    def get(self, uuid, latencyValue):
+        print "Retrieve operation of resource: latencyCharacteristic"
+        try:
+            response = Context_ConnectivityserviceUuid_ConnconstraintsLatencycharacteristicLatencyvalueImpl.get(uuid, latencyValue)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_vnwService/(\w+)/name/(\w+)/
+class Context_VnwserviceUuidNameValuename(MethodView):
+
+    def get(self, uuid, valueName):
+        print "Retrieve operation of resource: name"
+        try:
+            response = Context_VnwserviceUuidNameValuenameImpl.get(uuid, valueName)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/
+class Context(MethodView):
+
+    def put(self, ):
+        print "Update operation of resource: Context"
+        json_struct = request.get_json() #json parser.
+        try:
+            existing_object = ContextImpl.get()
+        except KeyError as inst:
+            if inst.args[0] != '':
+                return NotFoundError(inst.args[0] + " not found")
+
+            new_object = create_instance(ContextSchema, json_struct)
+            if isinstance(new_object, BadRequestError):
+                return new_object
+            elif isinstance(new_object, NotFoundError):
+                return new_object
+            else:
+                try:
+                    ContextImpl.put(new_object)
+                    js=new_object.json_serializer()
+                except KeyError as inst:
+                    return NotFoundError(inst.args[0] + " not found")
+        else:
+            existing_object = modify_instance(existing_object, json_struct)
+            if isinstance(existing_object, BadRequestError):
+                return existing_object
+            elif isinstance(existing_object, NotFoundError):
+                return existing_object
+            else:
+                try:
+                    ContextImpl.put(existing_object)
+                    js=existing_object.json_serializer()
+                except KeyError as inst:
+                    return NotFoundError(inst.args[0] + " not found")
+
+        return Successful("Successful operation",json_dumps(js))
+
+
+
+    def post(self, ):
+        print "Create operation of resource: Context"
+        try:
+            response = ContextImpl.get()
+        except KeyError as inst:
+            if inst.args[0] != '':
+                return NotFoundError(inst.args[0] + " not found")
+
+            json_struct = request.get_json() #json parser.
+            new_object = create_instance(ContextSchema, json_struct)
+            if isinstance(new_object, BadRequestError):
+                return new_object
+            elif isinstance(new_object, NotFoundError):
+                return new_object
+            else:
+                try:
+                    ContextImpl.post(new_object)
+                    js=new_object.json_serializer()
+                except KeyError as inst:
+                    return NotFoundError(inst.args[0] + " not found")
+        else:
+            return BadRequestError("Object already exists. For updates use PUT.")
+        return Successful("Successful operation",json_dumps(js))
+
+
+    def delete(self, ):
+        print "Delete operation of resource: Context"
+        try:
+            response=ContextImpl.delete()
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            return Successful('Successful operation')
+
+
+    def get(self, ):
+        print "Retrieve operation of resource: Context"
+        try:
+            response = ContextImpl.get()
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_topology/(\w+)/_link/(\w+)/_transferTiming/queuingLatency/(\w+)/
+class Context_TopologyUuid_LinkLink_Uuid_TransfertimingQueuinglatencyLatencyvalue(MethodView):
+
+    def get(self, uuid, link_uuid, latencyValue):
+        print "Retrieve operation of resource: queuingLatency"
+        try:
+            response = Context_TopologyUuid_LinkLink_Uuid_TransfertimingQueuinglatencyLatencyvalueImpl.get(uuid, link_uuid, latencyValue)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_path/(\w+)/label/(\w+)/
+class Context_PathUuidLabelValuename(MethodView):
+
+    def get(self, uuid, valueName):
+        print "Retrieve operation of resource: label"
+        try:
+            response = Context_PathUuidLabelValuenameImpl.get(uuid, valueName)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
 #/restconf/config/Context/_vnwService/(\w+)/label/(\w+)/
 class Context_VnwserviceUuidLabelValuename(MethodView):
 
@@ -1614,6 +2223,20 @@ class Context_VnwserviceUuidLabelValuename(MethodView):
         print "Retrieve operation of resource: label"
         try:
             response = Context_VnwserviceUuidLabelValuenameImpl.get(uuid, valueName)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_topology/(\w+)/_link/(\w+)/_transferCost/costCharacteristic/(\w+)/
+class Context_TopologyUuid_LinkLink_Uuid_TransfercostCostcharacteristicCostalgorithm(MethodView):
+
+    def get(self, uuid, link_uuid, costAlgorithm):
+        print "Retrieve operation of resource: costCharacteristic"
+        try:
+            response = Context_TopologyUuid_LinkLink_Uuid_TransfercostCostcharacteristicCostalgorithmImpl.get(uuid, link_uuid, costAlgorithm)
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -1635,13 +2258,13 @@ class Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid_Laye
             return Successful("Successful operation",json_dumps(js))
 
 
-#/restconf/config/Context/_serviceEndPoint/(\w+)/_connectionEndPoint/(\w+)/
-class Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid(MethodView):
+#/restconf/config/Context/_notifSubscription/
+class Context_Notifsubscription(MethodView):
 
-    def get(self, uuid, connectionEndPoint_uuid):
-        print "Retrieve operation of resource: _connectionEndPoint"
+    def get(self, ):
+        print "Retrieve operation of resource: _notifSubscription"
         try:
-            response = Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_UuidImpl.get(uuid, connectionEndPoint_uuid)
+            response = Context_NotifsubscriptionImpl.get()
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -1649,125 +2272,13 @@ class Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid(Meth
             return Successful("Successful operation",json_dumps(js))
 
 
-#/restconf/config/Context/_serviceEndPoint/(\w+)/_layerProtocol/(\w+)/_lpSpecData/
-class Context_ServiceendpointUuid_LayerprotocolLocalid_Lpspecdata(MethodView):
-
-    def get(self, uuid, localId):
-        print "Retrieve operation of resource: _lpSpecData"
-        try:
-            response = Context_ServiceendpointUuid_LayerprotocolLocalid_LpspecdataImpl.get(uuid, localId)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
-#/restconf/config/Context/_topology/(\w+)/_node/(\w+)/_transferCost/
-class Context_TopologyUuid_NodeNode_Uuid_Transfercost(MethodView):
-
-    def get(self, uuid, node_uuid):
-        print "Retrieve operation of resource: _transferCost"
-        try:
-            response = Context_TopologyUuid_NodeNode_Uuid_TransfercostImpl.get(uuid, node_uuid)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
-#/restconf/config/Context/_topology/(\w+)/_node/(\w+)/_ownedNodeEdgePoint/(\w+)/_ltpSpecData/
-class Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_Ltpspecdata(MethodView):
-
-    def get(self, uuid, node_uuid, ownedNodeEdgePoint_uuid):
-        print "Retrieve operation of resource: _ltpSpecData"
-        try:
-            response = Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_LtpspecdataImpl.get(uuid, node_uuid, ownedNodeEdgePoint_uuid)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
-#/restconf/config/Context/_path/(\w+)/_routingConstraint/requestedCapacity/
-class Context_PathUuid_RoutingconstraintRequestedcapacity(MethodView):
-
-    def get(self, uuid):
-        print "Retrieve operation of resource: requestedCapacity"
-        try:
-            response = Context_PathUuid_RoutingconstraintRequestedcapacityImpl.get(uuid)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
-#/restconf/config/Context/_connectivityService/(\w+)/_connConstraints/riskCharacteristic/(\w+)/
-class Context_ConnectivityserviceUuid_ConnconstraintsRiskcharacteristicRiskcharacteristicname(MethodView):
-
-    def get(self, uuid, riskCharacteristicName):
-        print "Retrieve operation of resource: riskCharacteristic"
-        try:
-            response = Context_ConnectivityserviceUuid_ConnconstraintsRiskcharacteristicRiskcharacteristicnameImpl.get(uuid, riskCharacteristicName)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
-#/restconf/config/Context/_topology/(\w+)/_link/(\w+)/_transferCapacity/availableCapacity/
-class Context_TopologyUuid_LinkLink_Uuid_TransfercapacityAvailablecapacity(MethodView):
-
-    def get(self, uuid, link_uuid):
-        print "Retrieve operation of resource: availableCapacity"
-        try:
-            response = Context_TopologyUuid_LinkLink_Uuid_TransfercapacityAvailablecapacityImpl.get(uuid, link_uuid)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
-#/restconf/config/Context/_topology/(\w+)/_link/(\w+)/_validation/validationMechanism/(\w+)/
-class Context_TopologyUuid_LinkLink_Uuid_ValidationValidationmechanismValidationrobustness(MethodView):
-
-    def get(self, uuid, link_uuid, validationRobustness):
-        print "Retrieve operation of resource: validationMechanism"
-        try:
-            response = Context_TopologyUuid_LinkLink_Uuid_ValidationValidationmechanismValidationrobustnessImpl.get(uuid, link_uuid, validationRobustness)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
-#/restconf/config/Context/_connectivityService/(\w+)/_connection/(\w+)/_state/
-class Context_ConnectivityserviceUuid_ConnectionConnection_Uuid_State(MethodView):
-
-    def get(self, uuid, connection_uuid):
-        print "Retrieve operation of resource: _state"
-        try:
-            response = Context_ConnectivityserviceUuid_ConnectionConnection_Uuid_StateImpl.get(uuid, connection_uuid)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
-#/restconf/config/Context/_topology/(\w+)/extension/(\w+)/
-class Context_TopologyUuidExtensionValuename(MethodView):
+#/restconf/config/Context/_notifSubscription/(\w+)/_notification/additionalInfo/(\w+)/
+class Context_NotifsubscriptionUuid_NotificationAdditionalinfoValuename(MethodView):
 
     def get(self, uuid, valueName):
-        print "Retrieve operation of resource: extension"
+        print "Retrieve operation of resource: additionalInfo"
         try:
-            response = Context_TopologyUuidExtensionValuenameImpl.get(uuid, valueName)
+            response = Context_NotifsubscriptionUuid_NotificationAdditionalinfoValuenameImpl.get(uuid, valueName)
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -1775,141 +2286,41 @@ class Context_TopologyUuidExtensionValuename(MethodView):
             return Successful("Successful operation",json_dumps(js))
 
 
-#/restconf/config/Context/_topology/(\w+)/_link/(\w+)/_transferCapacity/capacityAssignedToUserView/(\w+)/
-class Context_TopologyUuid_LinkLink_Uuid_TransfercapacityCapacityassignedtouserviewNumberingrange(MethodView):
-
-    def get(self, uuid, link_uuid, numberingRange):
-        print "Retrieve operation of resource: capacityAssignedToUserView"
-        try:
-            response = Context_TopologyUuid_LinkLink_Uuid_TransfercapacityCapacityassignedtouserviewNumberingrangeImpl.get(uuid, link_uuid, numberingRange)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
-#/restconf/config/Context/_topology/(\w+)/_link/(\w+)/extension/(\w+)/
-class Context_TopologyUuid_LinkLink_UuidExtensionValuename(MethodView):
-
-    def get(self, uuid, link_uuid, valueName):
-        print "Retrieve operation of resource: extension"
-        try:
-            response = Context_TopologyUuid_LinkLink_UuidExtensionValuenameImpl.get(uuid, link_uuid, valueName)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
-#/restconf/config/Context/_topology/(\w+)/_node/(\w+)/_ownedNodeEdgePoint/(\w+)/
-class Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid(MethodView):
-
-    def get(self, uuid, node_uuid, ownedNodeEdgePoint_uuid):
-        print "Retrieve operation of resource: _ownedNodeEdgePoint"
-        try:
-            response = Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_UuidImpl.get(uuid, node_uuid, ownedNodeEdgePoint_uuid)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
-#/restconf/config/Context/_connectivityService/(\w+)/_connConstraints/costCharacteristic/(\w+)/
-class Context_ConnectivityserviceUuid_ConnconstraintsCostcharacteristicCostalgorithm(MethodView):
-
-    def get(self, uuid, costAlgorithm):
-        print "Retrieve operation of resource: costCharacteristic"
-        try:
-            response = Context_ConnectivityserviceUuid_ConnconstraintsCostcharacteristicCostalgorithmImpl.get(uuid, costAlgorithm)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
-#/restconf/config/Context/_vnwService/(\w+)/_vnwConstraint/riskCharacteristic/(\w+)/
-class Context_VnwserviceUuid_VnwconstraintRiskcharacteristicRiskcharacteristicname(MethodView):
-
-    def put(self, uuid, riskCharacteristicName):
-        print "Update operation of resource: riskCharacteristic"
-        json_struct = request.get_json() #json parser.
-        try:
-            existing_object = Context_VnwserviceUuid_VnwconstraintRiskcharacteristicRiskcharacteristicnameImpl.get(uuid, riskCharacteristicName)
-        except KeyError as inst:
-            if inst.args[0] != 'riskCharacteristicName':
-                return NotFoundError(inst.args[0] + " not found")
-
-            new_object = create_instance(RiskCharacteristic, json_struct)
-            if isinstance(new_object, BadRequestError):
-                return new_object
-            elif isinstance(new_object, NotFoundError):
-                return new_object
-            else:
-                try:
-                    Context_VnwserviceUuid_VnwconstraintRiskcharacteristicRiskcharacteristicnameImpl.put(uuid, riskCharacteristicName, new_object)
-                    js=new_object.json_serializer()
-                except KeyError as inst:
-                    return NotFoundError(inst.args[0] + " not found")
-        else:
-            existing_object = modify_instance(existing_object, json_struct)
-            if isinstance(existing_object, BadRequestError):
-                return existing_object
-            elif isinstance(existing_object, NotFoundError):
-                return existing_object
-            else:
-                try:
-                    Context_VnwserviceUuid_VnwconstraintRiskcharacteristicRiskcharacteristicnameImpl.put(uuid, riskCharacteristicName, existing_object)
-                    js=existing_object.json_serializer()
-                except KeyError as inst:
-                    return NotFoundError(inst.args[0] + " not found")
-
-        return Successful("Successful operation",json_dumps(js))
-
-
-
-    def post(self, uuid, riskCharacteristicName):
-        print "Create operation of resource: riskCharacteristic"
-        try:
-            response = Context_VnwserviceUuid_VnwconstraintRiskcharacteristicRiskcharacteristicnameImpl.get(uuid, riskCharacteristicName)
-        except KeyError as inst:
-            if inst.args[0] != 'riskCharacteristicName':
-                return NotFoundError(inst.args[0] + " not found")
-
-            json_struct = request.get_json() #json parser.
-            new_object = create_instance(RiskCharacteristic, json_struct, (riskCharacteristicName,'riskCharacteristicName'))
-            if isinstance(new_object, BadRequestError):
-                return new_object
-            elif isinstance(new_object, NotFoundError):
-                return new_object
-            else:
-                try:
-                    Context_VnwserviceUuid_VnwconstraintRiskcharacteristicRiskcharacteristicnameImpl.post(uuid, riskCharacteristicName, new_object)
-                    js=new_object.json_serializer()
-                except KeyError as inst:
-                    return NotFoundError(inst.args[0] + " not found")
-        else:
-            return BadRequestError("Object already exists. For updates use PUT.")
-        return Successful("Successful operation",json_dumps(js))
-
-
-    def delete(self, uuid, riskCharacteristicName):
-        print "Delete operation of resource: riskCharacteristic"
-        try:
-            response=Context_VnwserviceUuid_VnwconstraintRiskcharacteristicRiskcharacteristicnameImpl.delete(uuid, riskCharacteristicName)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            return Successful('Successful operation')
-
+#/restconf/config/Context/_path/(\w+)/_routingConstraint/riskCharacteristic/(\w+)/
+class Context_PathUuid_RoutingconstraintRiskcharacteristicRiskcharacteristicname(MethodView):
 
     def get(self, uuid, riskCharacteristicName):
         print "Retrieve operation of resource: riskCharacteristic"
         try:
-            response = Context_VnwserviceUuid_VnwconstraintRiskcharacteristicRiskcharacteristicnameImpl.get(uuid, riskCharacteristicName)
+            response = Context_PathUuid_RoutingconstraintRiskcharacteristicRiskcharacteristicnameImpl.get(uuid, riskCharacteristicName)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_vnwService/(\w+)/_vnwConstraint/costCharacteristic/
+class Context_VnwserviceUuid_VnwconstraintCostcharacteristic(MethodView):
+
+    def get(self, uuid):
+        print "Retrieve operation of resource: costCharacteristic"
+        try:
+            response = Context_VnwserviceUuid_VnwconstraintCostcharacteristicImpl.get(uuid)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_topology/(\w+)/_link/(\w+)/_riskParameter/riskCharacteristic/(\w+)/
+class Context_TopologyUuid_LinkLink_Uuid_RiskparameterRiskcharacteristicRiskcharacteristicname(MethodView):
+
+    def get(self, uuid, link_uuid, riskCharacteristicName):
+        print "Retrieve operation of resource: riskCharacteristic"
+        try:
+            response = Context_TopologyUuid_LinkLink_Uuid_RiskparameterRiskcharacteristicRiskcharacteristicnameImpl.get(uuid, link_uuid, riskCharacteristicName)
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -1931,127 +2342,13 @@ class Context_PathUuid_RoutingconstraintCostcharacteristicCostalgorithm(MethodVi
             return Successful("Successful operation",json_dumps(js))
 
 
-#/restconf/config/Context/_connectivityService/(\w+)/name/(\w+)/
-class Context_ConnectivityserviceUuidNameValuename(MethodView):
+#/restconf/config/Context/label/(\w+)/
+class ContextLabelValuename(MethodView):
 
-    def get(self, uuid, valueName):
-        print "Retrieve operation of resource: name"
+    def get(self, valueName):
+        print "Retrieve operation of resource: label"
         try:
-            response = Context_ConnectivityserviceUuidNameValuenameImpl.get(uuid, valueName)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
-#/restconf/config/Context/_connectivityService/(\w+)/extension/(\w+)/
-class Context_ConnectivityserviceUuidExtensionValuename(MethodView):
-
-    def get(self, uuid, valueName):
-        print "Retrieve operation of resource: extension"
-        try:
-            response = Context_ConnectivityserviceUuidExtensionValuenameImpl.get(uuid, valueName)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
-#/restconf/config/Context/_path/(\w+)/_routingConstraint/latencyCharacteristic/(\w+)/
-class Context_PathUuid_RoutingconstraintLatencycharacteristicLatencyvalue(MethodView):
-
-    def get(self, uuid, latencyValue):
-        print "Retrieve operation of resource: latencyCharacteristic"
-        try:
-            response = Context_PathUuid_RoutingconstraintLatencycharacteristicLatencyvalueImpl.get(uuid, latencyValue)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
-#/restconf/config/Context/_connectivityService/(\w+)/_state/
-class Context_ConnectivityserviceUuid_State(MethodView):
-
-    def put(self, uuid):
-        print "Update operation of resource: _state"
-        json_struct = request.get_json() #json parser.
-        try:
-            existing_object = Context_ConnectivityserviceUuid_StateImpl.get(uuid)
-        except KeyError as inst:
-            if inst.args[0] != 'uuid':
-                return NotFoundError(inst.args[0] + " not found")
-
-            new_object = create_instance(AdminStatePac, json_struct)
-            if isinstance(new_object, BadRequestError):
-                return new_object
-            elif isinstance(new_object, NotFoundError):
-                return new_object
-            else:
-                try:
-                    Context_ConnectivityserviceUuid_StateImpl.put(uuid, new_object)
-                    js=new_object.json_serializer()
-                except KeyError as inst:
-                    return NotFoundError(inst.args[0] + " not found")
-        else:
-            existing_object = modify_instance(existing_object, json_struct)
-            if isinstance(existing_object, BadRequestError):
-                return existing_object
-            elif isinstance(existing_object, NotFoundError):
-                return existing_object
-            else:
-                try:
-                    Context_ConnectivityserviceUuid_StateImpl.put(uuid, existing_object)
-                    js=existing_object.json_serializer()
-                except KeyError as inst:
-                    return NotFoundError(inst.args[0] + " not found")
-
-        return Successful("Successful operation",json_dumps(js))
-
-
-
-    def post(self, uuid):
-        print "Create operation of resource: _state"
-        try:
-            response = Context_ConnectivityserviceUuid_StateImpl.get(uuid)
-        except KeyError as inst:
-            if inst.args[0] != 'uuid':
-                return NotFoundError(inst.args[0] + " not found")
-
-            json_struct = request.get_json() #json parser.
-            new_object = create_instance(AdminStatePac, json_struct)
-            if isinstance(new_object, BadRequestError):
-                return new_object
-            elif isinstance(new_object, NotFoundError):
-                return new_object
-            else:
-                try:
-                    Context_ConnectivityserviceUuid_StateImpl.post(uuid, new_object)
-                    js=new_object.json_serializer()
-                except KeyError as inst:
-                    return NotFoundError(inst.args[0] + " not found")
-        else:
-            return BadRequestError("Object already exists. For updates use PUT.")
-        return Successful("Successful operation",json_dumps(js))
-
-
-    def delete(self, uuid):
-        print "Delete operation of resource: _state"
-        try:
-            response=Context_ConnectivityserviceUuid_StateImpl.delete(uuid)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            return Successful('Successful operation')
-
-
-    def get(self, uuid):
-        print "Retrieve operation of resource: _state"
-        try:
-            response = Context_ConnectivityserviceUuid_StateImpl.get(uuid)
+            response = ContextLabelValuenameImpl.get(valueName)
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -2215,20 +2512,6 @@ class Context_TopologyUuid_LinkLink_Uuid_TransfercapacityTotalpotentialcapacity(
             return Successful("Successful operation",json_dumps(js))
 
 
-#/restconf/config/Context/_vnwService/(\w+)/extension/(\w+)/
-class Context_VnwserviceUuidExtensionValuename(MethodView):
-
-    def get(self, uuid, valueName):
-        print "Retrieve operation of resource: extension"
-        try:
-            response = Context_VnwserviceUuidExtensionValuenameImpl.get(uuid, valueName)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
 #/restconf/config/Context/_path/(\w+)/name/(\w+)/
 class Context_PathUuidNameValuename(MethodView):
 
@@ -2243,13 +2526,13 @@ class Context_PathUuidNameValuename(MethodView):
             return Successful("Successful operation",json_dumps(js))
 
 
-#/restconf/config/Context/_topology/(\w+)/_node/(\w+)/_ownedNodeEdgePoint/(\w+)/extension/(\w+)/
-class Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_UuidExtensionValuename(MethodView):
+#/restconf/config/Context/_notification/additionalInfo/(\w+)/
+class Context_NotificationAdditionalinfoValuename(MethodView):
 
-    def get(self, uuid, node_uuid, ownedNodeEdgePoint_uuid, valueName):
-        print "Retrieve operation of resource: extension"
+    def get(self, valueName):
+        print "Retrieve operation of resource: additionalInfo"
         try:
-            response = Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_UuidExtensionValuenameImpl.get(uuid, node_uuid, ownedNodeEdgePoint_uuid, valueName)
+            response = Context_NotificationAdditionalinfoValuenameImpl.get(valueName)
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -2343,113 +2626,13 @@ class Context_VnwserviceUuid_VnwconstraintRequestedcapacity(MethodView):
             return Successful("Successful operation",json_dumps(js))
 
 
-#/restconf/config/Context/_vnwService/(\w+)/_vnwConstraint/
-class Context_VnwserviceUuid_Vnwconstraint(MethodView):
+#/restconf/config/Context/_topology/(\w+)/_link/(\w+)/label/(\w+)/
+class Context_TopologyUuid_LinkLink_UuidLabelValuename(MethodView):
 
-    def put(self, uuid):
-        print "Update operation of resource: _vnwConstraint"
-        json_struct = request.get_json() #json parser.
+    def get(self, uuid, link_uuid, valueName):
+        print "Retrieve operation of resource: label"
         try:
-            existing_object = Context_VnwserviceUuid_VnwconstraintImpl.get(uuid)
-        except KeyError as inst:
-            if inst.args[0] != 'uuid':
-                return NotFoundError(inst.args[0] + " not found")
-
-            new_object = create_instance(VirtualNetworkConstraint, json_struct)
-            if isinstance(new_object, BadRequestError):
-                return new_object
-            elif isinstance(new_object, NotFoundError):
-                return new_object
-            else:
-                try:
-                    Context_VnwserviceUuid_VnwconstraintImpl.put(uuid, new_object)
-                    js=new_object.json_serializer()
-                except KeyError as inst:
-                    return NotFoundError(inst.args[0] + " not found")
-        else:
-            existing_object = modify_instance(existing_object, json_struct)
-            if isinstance(existing_object, BadRequestError):
-                return existing_object
-            elif isinstance(existing_object, NotFoundError):
-                return existing_object
-            else:
-                try:
-                    Context_VnwserviceUuid_VnwconstraintImpl.put(uuid, existing_object)
-                    js=existing_object.json_serializer()
-                except KeyError as inst:
-                    return NotFoundError(inst.args[0] + " not found")
-
-        return Successful("Successful operation",json_dumps(js))
-
-
-
-    def post(self, uuid):
-        print "Create operation of resource: _vnwConstraint"
-        try:
-            response = Context_VnwserviceUuid_VnwconstraintImpl.get(uuid)
-        except KeyError as inst:
-            if inst.args[0] != 'uuid':
-                return NotFoundError(inst.args[0] + " not found")
-
-            json_struct = request.get_json() #json parser.
-            new_object = create_instance(VirtualNetworkConstraint, json_struct)
-            if isinstance(new_object, BadRequestError):
-                return new_object
-            elif isinstance(new_object, NotFoundError):
-                return new_object
-            else:
-                try:
-                    Context_VnwserviceUuid_VnwconstraintImpl.post(uuid, new_object)
-                    js=new_object.json_serializer()
-                except KeyError as inst:
-                    return NotFoundError(inst.args[0] + " not found")
-        else:
-            return BadRequestError("Object already exists. For updates use PUT.")
-        return Successful("Successful operation",json_dumps(js))
-
-
-    def delete(self, uuid):
-        print "Delete operation of resource: _vnwConstraint"
-        try:
-            response=Context_VnwserviceUuid_VnwconstraintImpl.delete(uuid)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            return Successful('Successful operation')
-
-
-    def get(self, uuid):
-        print "Retrieve operation of resource: _vnwConstraint"
-        try:
-            response = Context_VnwserviceUuid_VnwconstraintImpl.get(uuid)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
-#/restconf/config/Context/_path/(\w+)/_telink/(\w+)/
-class Context_PathUuid_TelinkLocalid(MethodView):
-
-    def get(self, uuid, localId):
-        print "Retrieve operation of resource: _telink"
-        try:
-            response = Context_PathUuid_TelinkLocalidImpl.get(uuid, localId)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
-#/restconf/config/Context/_topology/(\w+)/_node/(\w+)/_transferCapacity/capacityAssignedToUserView/(\w+)/
-class Context_TopologyUuid_NodeNode_Uuid_TransfercapacityCapacityassignedtouserviewNumberingrange(MethodView):
-
-    def get(self, uuid, node_uuid, numberingRange):
-        print "Retrieve operation of resource: capacityAssignedToUserView"
-        try:
-            response = Context_TopologyUuid_NodeNode_Uuid_TransfercapacityCapacityassignedtouserviewNumberingrangeImpl.get(uuid, node_uuid, numberingRange)
+            response = Context_TopologyUuid_LinkLink_UuidLabelValuenameImpl.get(uuid, link_uuid, valueName)
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -2499,13 +2682,27 @@ class Context_TopologyUuid_LinkLink_UuidNameValuename(MethodView):
             return Successful("Successful operation",json_dumps(js))
 
 
-#/restconf/config/Context/_path/(\w+)/_routingConstraint/riskCharacteristic/(\w+)/
-class Context_PathUuid_RoutingconstraintRiskcharacteristicRiskcharacteristicname(MethodView):
+#/restconf/config/Context/_notifSubscription/(\w+)/name/(\w+)/
+class Context_NotifsubscriptionUuidNameValuename(MethodView):
 
-    def get(self, uuid, riskCharacteristicName):
-        print "Retrieve operation of resource: riskCharacteristic"
+    def get(self, uuid, valueName):
+        print "Retrieve operation of resource: name"
         try:
-            response = Context_PathUuid_RoutingconstraintRiskcharacteristicRiskcharacteristicnameImpl.get(uuid, riskCharacteristicName)
+            response = Context_NotifsubscriptionUuidNameValuenameImpl.get(uuid, valueName)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_topology/(\w+)/_node/(\w+)/
+class Context_TopologyUuid_NodeNode_Uuid(MethodView):
+
+    def get(self, uuid, node_uuid):
+        print "Retrieve operation of resource: _node"
+        try:
+            response = Context_TopologyUuid_NodeNode_UuidImpl.get(uuid, node_uuid)
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -2627,13 +2824,13 @@ class Context_VnwserviceUuid_VnwconstraintLatencycharacteristicLatencyvalue(Meth
             return Successful("Successful operation",json_dumps(js))
 
 
-#/restconf/config/Context/_topology/(\w+)/_node/(\w+)/
-class Context_TopologyUuid_NodeNode_Uuid(MethodView):
+#/restconf/config/Context/_vnwService/(\w+)/_vnwConstraint/latencyCharacteristic/
+class Context_VnwserviceUuid_VnwconstraintLatencycharacteristic(MethodView):
 
-    def get(self, uuid, node_uuid):
-        print "Retrieve operation of resource: _node"
+    def get(self, uuid):
+        print "Retrieve operation of resource: latencyCharacteristic"
         try:
-            response = Context_TopologyUuid_NodeNode_UuidImpl.get(uuid, node_uuid)
+            response = Context_VnwserviceUuid_VnwconstraintLatencycharacteristicImpl.get(uuid)
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -2641,13 +2838,99 @@ class Context_TopologyUuid_NodeNode_Uuid(MethodView):
             return Successful("Successful operation",json_dumps(js))
 
 
-#/restconf/config/Context/_serviceEndPoint/(\w+)/_connectionEndPoint/(\w+)/_ltpSpecData/
-class Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid_Ltpspecdata(MethodView):
+#/restconf/config/Context/_notifSubscription/(\w+)/_subscriptionFilter/
+class Context_NotifsubscriptionUuid_Subscriptionfilter(MethodView):
 
-    def get(self, uuid, connectionEndPoint_uuid):
-        print "Retrieve operation of resource: _ltpSpecData"
+    def put(self, uuid):
+        print "Update operation of resource: _subscriptionFilter"
+        json_struct = request.get_json() #json parser.
         try:
-            response = Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid_LtpspecdataImpl.get(uuid, connectionEndPoint_uuid)
+            existing_object = Context_NotifsubscriptionUuid_SubscriptionfilterImpl.get(uuid)
+        except KeyError as inst:
+            if inst.args[0] != 'uuid':
+                return NotFoundError(inst.args[0] + " not found")
+
+            new_object = create_instance(SubscriptionFilter, json_struct)
+            if isinstance(new_object, BadRequestError):
+                return new_object
+            elif isinstance(new_object, NotFoundError):
+                return new_object
+            else:
+                try:
+                    Context_NotifsubscriptionUuid_SubscriptionfilterImpl.put(uuid, new_object)
+                    js=new_object.json_serializer()
+                except KeyError as inst:
+                    return NotFoundError(inst.args[0] + " not found")
+        else:
+            existing_object = modify_instance(existing_object, json_struct)
+            if isinstance(existing_object, BadRequestError):
+                return existing_object
+            elif isinstance(existing_object, NotFoundError):
+                return existing_object
+            else:
+                try:
+                    Context_NotifsubscriptionUuid_SubscriptionfilterImpl.put(uuid, existing_object)
+                    js=existing_object.json_serializer()
+                except KeyError as inst:
+                    return NotFoundError(inst.args[0] + " not found")
+
+        return Successful("Successful operation",json_dumps(js))
+
+
+
+    def post(self, uuid):
+        print "Create operation of resource: _subscriptionFilter"
+        try:
+            response = Context_NotifsubscriptionUuid_SubscriptionfilterImpl.get(uuid)
+        except KeyError as inst:
+            if inst.args[0] != 'uuid':
+                return NotFoundError(inst.args[0] + " not found")
+
+            json_struct = request.get_json() #json parser.
+            new_object = create_instance(SubscriptionFilter, json_struct)
+            if isinstance(new_object, BadRequestError):
+                return new_object
+            elif isinstance(new_object, NotFoundError):
+                return new_object
+            else:
+                try:
+                    Context_NotifsubscriptionUuid_SubscriptionfilterImpl.post(uuid, new_object)
+                    js=new_object.json_serializer()
+                except KeyError as inst:
+                    return NotFoundError(inst.args[0] + " not found")
+        else:
+            return BadRequestError("Object already exists. For updates use PUT.")
+        return Successful("Successful operation",json_dumps(js))
+
+
+    def delete(self, uuid):
+        print "Delete operation of resource: _subscriptionFilter"
+        try:
+            response=Context_NotifsubscriptionUuid_SubscriptionfilterImpl.delete(uuid)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            return Successful('Successful operation')
+
+
+    def get(self, uuid):
+        print "Retrieve operation of resource: _subscriptionFilter"
+        try:
+            response = Context_NotifsubscriptionUuid_SubscriptionfilterImpl.get(uuid)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_notifSubscription/(\w+)/_notification/targetObjectName/(\w+)/
+class Context_NotifsubscriptionUuid_NotificationTargetobjectnameValuename(MethodView):
+
+    def get(self, uuid, valueName):
+        print "Retrieve operation of resource: targetObjectName"
+        try:
+            response = Context_NotifsubscriptionUuid_NotificationTargetobjectnameValuenameImpl.get(uuid, valueName)
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -2912,16 +3195,16 @@ class Context_TopologyUuid_LinkLink_Uuid_LinkportLocalid(MethodView):
 
 
 
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/extension/<valueName>/", view_func = globals()["ContextExtensionValuename"].as_view('"ContextExtensionValuename"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_path/<uuid>/label/<valueName>/", view_func = globals()["Context_PathUuidLabelValuename"].as_view('"Context_PathUuidLabelValuename"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_node/<node_uuid>/_ownedNodeEdgePoint/<ownedNodeEdgePoint_uuid>/_layerProtocol/<localId>/", view_func = globals()["Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_LayerprotocolLocalid"].as_view('"Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_LayerprotocolLocalid"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/name/<valueName>/", view_func = globals()["ContextNameValuename"].as_view('"ContextNameValuename"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_vnwConstraint/costCharacteristic/<costAlgorithm>/", view_func = globals()["Context_VnwserviceUuid_VnwconstraintCostcharacteristicCostalgorithm"].as_view('"Context_VnwserviceUuid_VnwconstraintCostcharacteristicCostalgorithm"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_serviceEndPoint/<uuid>/_connectionEndPoint/<connectionEndPoint_uuid>/_state/", view_func = globals()["Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid_State"].as_view('"Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid_State"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_serviceEndPoint/<uuid>/_connectionEndPoint/<connectionEndPoint_uuid>/extension/<valueName>/", view_func = globals()["Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_UuidExtensionValuename"].as_view('"Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_UuidExtensionValuename"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connectivityService/<uuid>/_schedule/", view_func = globals()["Context_ConnectivityserviceUuid_Schedule"].as_view('"Context_ConnectivityserviceUuid_Schedule"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connectivityService/", view_func = globals()["Context_Connectivityservice"].as_view('"Context_Connectivityservice"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_path/<uuid>/_routingConstraint/", view_func = globals()["Context_PathUuid_Routingconstraint"].as_view('"Context_PathUuid_Routingconstraint"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_node/<node_uuid>/name/<valueName>/", view_func = globals()["Context_TopologyUuid_NodeNode_UuidNameValuename"].as_view('"Context_TopologyUuid_NodeNode_UuidNameValuename"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/name/<valueName>/", view_func = globals()["ContextNameValuename"].as_view('"ContextNameValuename"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_serviceEndPoint/<uuid>/_connectionEndPoint/<connectionEndPoint_uuid>/_ltpSpecData/", view_func = globals()["Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid_Ltpspecdata"].as_view('"Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid_Ltpspecdata"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_serviceEndPoint/<uuid>/_connectionEndPoint/<connectionEndPoint_uuid>/_state/", view_func = globals()["Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid_State"].as_view('"Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid_State"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_node/<node_uuid>/_ownedNodeEdgePoint/<ownedNodeEdgePoint_uuid>/_layerProtocol/<localId>/", view_func = globals()["Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_LayerprotocolLocalid"].as_view('"Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_LayerprotocolLocalid"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connectivityService/<uuid>/_schedule/", view_func = globals()["Context_ConnectivityserviceUuid_Schedule"].as_view('"Context_ConnectivityserviceUuid_Schedule"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_vnwConstraint/costCharacteristic/<costAlgorithm>/", view_func = globals()["Context_VnwserviceUuid_VnwconstraintCostcharacteristicCostalgorithm"].as_view('"Context_VnwserviceUuid_VnwconstraintCostcharacteristicCostalgorithm"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_notifSubscription/<uuid>/", view_func = globals()["Context_NotifsubscriptionUuid"].as_view('"Context_NotifsubscriptionUuid"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_notification/changedAttributes/", view_func = globals()["Context_NotificationChangedattributes"].as_view('"Context_NotificationChangedattributes"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connectivityService/<uuid>/_connection/<connection_uuid>/_route/<localId>/", view_func = globals()["Context_ConnectivityserviceUuid_ConnectionConnection_Uuid_RouteLocalid"].as_view('"Context_ConnectivityserviceUuid_ConnectionConnection_Uuid_RouteLocalid"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_serviceEndPoint/<uuid>/name/<valueName>/", view_func = globals()["Context_ServiceendpointUuidNameValuename"].as_view('"Context_ServiceendpointUuidNameValuename"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_node/<node_uuid>/_state/", view_func = globals()["Context_TopologyUuid_NodeNode_Uuid_State"].as_view('"Context_TopologyUuid_NodeNode_Uuid_State"'+'"_api"'), methods=['GET'])
@@ -2931,88 +3214,97 @@ getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connectivityService/<uuid>/_connection/<connection_uuid>/name/<valueName>/", view_func = globals()["Context_ConnectivityserviceUuid_ConnectionConnection_UuidNameValuename"].as_view('"Context_ConnectivityserviceUuid_ConnectionConnection_UuidNameValuename"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_path/<uuid>/", view_func = globals()["Context_PathUuid"].as_view('"Context_PathUuid"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_servicePort/<localId>/", view_func = globals()["Context_VnwserviceUuid_ServiceportLocalid"].as_view('"Context_VnwserviceUuid_ServiceportLocalid"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_path/<uuid>/extension/<valueName>/", view_func = globals()["Context_PathUuidExtensionValuename"].as_view('"Context_PathUuidExtensionValuename"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_serviceEndPoint/<uuid>/_state/", view_func = globals()["Context_ServiceendpointUuid_State"].as_view('"Context_ServiceendpointUuid_State"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_node/<node_uuid>/_transferCapacity/availableCapacity/", view_func = globals()["Context_TopologyUuid_NodeNode_Uuid_TransfercapacityAvailablecapacity"].as_view('"Context_TopologyUuid_NodeNode_Uuid_TransfercapacityAvailablecapacity"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/label/<valueName>/", view_func = globals()["Context_TopologyUuidLabelValuename"].as_view('"Context_TopologyUuidLabelValuename"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_node/<node_uuid>/_transferTiming/", view_func = globals()["Context_TopologyUuid_NodeNode_Uuid_Transfertiming"].as_view('"Context_TopologyUuid_NodeNode_Uuid_Transfertiming"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_path/<uuid>/_routingConstraint/latencyCharacteristic/<latencyValue>/", view_func = globals()["Context_PathUuid_RoutingconstraintLatencycharacteristicLatencyvalue"].as_view('"Context_PathUuid_RoutingconstraintLatencycharacteristicLatencyvalue"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_node/<node_uuid>/name/<valueName>/", view_func = globals()["Context_TopologyUuid_NodeNode_UuidNameValuename"].as_view('"Context_TopologyUuid_NodeNode_UuidNameValuename"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connectivityService/<uuid>/_connConstraints/costCharacteristic/<costAlgorithm>/", view_func = globals()["Context_ConnectivityserviceUuid_ConnconstraintsCostcharacteristicCostalgorithm"].as_view('"Context_ConnectivityserviceUuid_ConnconstraintsCostcharacteristicCostalgorithm"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_node/<node_uuid>/_ownedNodeEdgePoint/<ownedNodeEdgePoint_uuid>/", view_func = globals()["Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid"].as_view('"Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_servicePort/", view_func = globals()["Context_VnwserviceUuid_Serviceport"].as_view('"Context_VnwserviceUuid_Serviceport"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connectivityService/<uuid>/_state/", view_func = globals()["Context_ConnectivityserviceUuid_State"].as_view('"Context_ConnectivityserviceUuid_State"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_vnwConstraint/riskCharacteristic/<riskCharacteristicName>/", view_func = globals()["Context_VnwserviceUuid_VnwconstraintRiskcharacteristicRiskcharacteristicname"].as_view('"Context_VnwserviceUuid_VnwconstraintRiskcharacteristicRiskcharacteristicname"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_path/<uuid>/_routingConstraint/requestedCapacity/", view_func = globals()["Context_PathUuid_RoutingconstraintRequestedcapacity"].as_view('"Context_PathUuid_RoutingconstraintRequestedcapacity"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connectivityService/<uuid>/name/<valueName>/", view_func = globals()["Context_ConnectivityserviceUuidNameValuename"].as_view('"Context_ConnectivityserviceUuidNameValuename"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_link/<link_uuid>/_transferCapacity/capacityAssignedToUserView/<numberingRange>/", view_func = globals()["Context_TopologyUuid_LinkLink_Uuid_TransfercapacityCapacityassignedtouserviewNumberingrange"].as_view('"Context_TopologyUuid_LinkLink_Uuid_TransfercapacityCapacityassignedtouserviewNumberingrange"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_node/<node_uuid>/_transferCapacity/", view_func = globals()["Context_TopologyUuid_NodeNode_Uuid_Transfercapacity"].as_view('"Context_TopologyUuid_NodeNode_Uuid_Transfercapacity"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_node/<node_uuid>/_transferIntegrity/", view_func = globals()["Context_TopologyUuid_NodeNode_Uuid_Transferintegrity"].as_view('"Context_TopologyUuid_NodeNode_Uuid_Transferintegrity"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_serviceEndPoint/<uuid>/", view_func = globals()["Context_ServiceendpointUuid"].as_view('"Context_ServiceendpointUuid"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_link/<link_uuid>/_riskParameter/riskCharacteristic/<riskCharacteristicName>/", view_func = globals()["Context_TopologyUuid_LinkLink_Uuid_RiskparameterRiskcharacteristicRiskcharacteristicname"].as_view('"Context_TopologyUuid_LinkLink_Uuid_RiskparameterRiskcharacteristicRiskcharacteristicname"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_link/<link_uuid>/_transferIntegrity/", view_func = globals()["Context_TopologyUuid_LinkLink_Uuid_Transferintegrity"].as_view('"Context_TopologyUuid_LinkLink_Uuid_Transferintegrity"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_serviceEndPoint/<uuid>/_layerProtocol/<localId>/", view_func = globals()["Context_ServiceendpointUuid_LayerprotocolLocalid"].as_view('"Context_ServiceendpointUuid_LayerprotocolLocalid"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_link/<link_uuid>/label/<valueName>/", view_func = globals()["Context_TopologyUuid_LinkLink_UuidLabelValuename"].as_view('"Context_TopologyUuid_LinkLink_UuidLabelValuename"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/label/<valueName>/", view_func = globals()["ContextLabelValuename"].as_view('"ContextLabelValuename"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connectivityService/<uuid>/_connConstraints/latencyCharacteristic/<latencyValue>/", view_func = globals()["Context_ConnectivityserviceUuid_ConnconstraintsLatencycharacteristicLatencyvalue"].as_view('"Context_ConnectivityserviceUuid_ConnconstraintsLatencycharacteristicLatencyvalue"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connectivityService/<uuid>/_connConstraints/requestedCapacity/", view_func = globals()["Context_ConnectivityserviceUuid_ConnconstraintsRequestedcapacity"].as_view('"Context_ConnectivityserviceUuid_ConnconstraintsRequestedcapacity"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_state/", view_func = globals()["Context_VnwserviceUuid_State"].as_view('"Context_VnwserviceUuid_State"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connectivityService/<uuid>/label/<valueName>/", view_func = globals()["Context_ConnectivityserviceUuidLabelValuename"].as_view('"Context_ConnectivityserviceUuidLabelValuename"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_node/<node_uuid>/extension/<valueName>/", view_func = globals()["Context_TopologyUuid_NodeNode_UuidExtensionValuename"].as_view('"Context_TopologyUuid_NodeNode_UuidExtensionValuename"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_link/<link_uuid>/_transferTiming/queuingLatency/<latencyValue>/", view_func = globals()["Context_TopologyUuid_LinkLink_Uuid_TransfertimingQueuinglatencyLatencyvalue"].as_view('"Context_TopologyUuid_LinkLink_Uuid_TransfertimingQueuinglatencyLatencyvalue"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/", view_func = globals()["Context"].as_view('"Context"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_serviceEndPoint/<uuid>/extension/<valueName>/", view_func = globals()["Context_ServiceendpointUuidExtensionValuename"].as_view('"Context_ServiceendpointUuidExtensionValuename"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_link/<link_uuid>/_transferIntegrity/", view_func = globals()["Context_TopologyUuid_LinkLink_Uuid_Transferintegrity"].as_view('"Context_TopologyUuid_LinkLink_Uuid_Transferintegrity"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_notifSubscription/<uuid>/label/<valueName>/", view_func = globals()["Context_NotifsubscriptionUuidLabelValuename"].as_view('"Context_NotifsubscriptionUuidLabelValuename"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_serviceEndPoint/<uuid>/", view_func = globals()["Context_ServiceendpointUuid"].as_view('"Context_ServiceendpointUuid"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_notification/", view_func = globals()["Context_Notification"].as_view('"Context_Notification"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_node/<node_uuid>/_transferTiming/", view_func = globals()["Context_TopologyUuid_NodeNode_Uuid_Transfertiming"].as_view('"Context_TopologyUuid_NodeNode_Uuid_Transfertiming"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/label/<valueName>/", view_func = globals()["Context_TopologyUuidLabelValuename"].as_view('"Context_TopologyUuidLabelValuename"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_node/<node_uuid>/_transferCapacity/availableCapacity/", view_func = globals()["Context_TopologyUuid_NodeNode_Uuid_TransfercapacityAvailablecapacity"].as_view('"Context_TopologyUuid_NodeNode_Uuid_TransfercapacityAvailablecapacity"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_serviceEndPoint/<uuid>/label/<valueName>/", view_func = globals()["Context_ServiceendpointUuidLabelValuename"].as_view('"Context_ServiceendpointUuidLabelValuename"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_node/<node_uuid>/_transferCapacity/totalPotentialCapacity/", view_func = globals()["Context_TopologyUuid_NodeNode_Uuid_TransfercapacityTotalpotentialcapacity"].as_view('"Context_TopologyUuid_NodeNode_Uuid_TransfercapacityTotalpotentialcapacity"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_serviceEndPoint/<uuid>/_connectionEndPoint/<connectionEndPoint_uuid>/label/<valueName>/", view_func = globals()["Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_UuidLabelValuename"].as_view('"Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_UuidLabelValuename"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_serviceEndPoint/<uuid>/_ltpSpecData/", view_func = globals()["Context_ServiceendpointUuid_Ltpspecdata"].as_view('"Context_ServiceendpointUuid_Ltpspecdata"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_schedule/", view_func = globals()["Context_VnwserviceUuid_Schedule"].as_view('"Context_VnwserviceUuid_Schedule"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/name/<valueName>/", view_func = globals()["Context_VnwserviceUuidNameValuename"].as_view('"Context_VnwserviceUuidNameValuename"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_node/<node_uuid>/_transferCapacity/", view_func = globals()["Context_TopologyUuid_NodeNode_Uuid_Transfercapacity"].as_view('"Context_TopologyUuid_NodeNode_Uuid_Transfercapacity"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_serviceEndPoint/<uuid>/_state/", view_func = globals()["Context_ServiceendpointUuid_State"].as_view('"Context_ServiceendpointUuid_State"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_vnwConstraint/riskCharacteristic/", view_func = globals()["Context_VnwserviceUuid_VnwconstraintRiskcharacteristic"].as_view('"Context_VnwserviceUuid_VnwconstraintRiskcharacteristic"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_link/<link_uuid>/", view_func = globals()["Context_TopologyUuid_LinkLink_Uuid"].as_view('"Context_TopologyUuid_LinkLink_Uuid"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_link/<link_uuid>/_transferTiming/", view_func = globals()["Context_TopologyUuid_LinkLink_Uuid_Transfertiming"].as_view('"Context_TopologyUuid_LinkLink_Uuid_Transfertiming"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_path/<uuid>/_objectiveFunction/", view_func = globals()["Context_PathUuid_Objectivefunction"].as_view('"Context_PathUuid_Objectivefunction"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connectivityService/<uuid>/_connection/<connection_uuid>/extension/<valueName>/", view_func = globals()["Context_ConnectivityserviceUuid_ConnectionConnection_UuidExtensionValuename"].as_view('"Context_ConnectivityserviceUuid_ConnectionConnection_UuidExtensionValuename"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_link/<link_uuid>/_transferCost/costCharacteristic/<costAlgorithm>/", view_func = globals()["Context_TopologyUuid_LinkLink_Uuid_TransfercostCostcharacteristicCostalgorithm"].as_view('"Context_TopologyUuid_LinkLink_Uuid_TransfercostCostcharacteristicCostalgorithm"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_node/<node_uuid>/_ownedNodeEdgePoint/<ownedNodeEdgePoint_uuid>/_state/", view_func = globals()["Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_State"].as_view('"Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_State"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_node/<node_uuid>/_transferCost/costCharacteristic/<costAlgorithm>/", view_func = globals()["Context_TopologyUuid_NodeNode_Uuid_TransfercostCostcharacteristicCostalgorithm"].as_view('"Context_TopologyUuid_NodeNode_Uuid_TransfercostCostcharacteristicCostalgorithm"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_serviceEndPoint/<uuid>/_layerProtocol/<localId>/_lpSpecData/", view_func = globals()["Context_ServiceendpointUuid_LayerprotocolLocalid_Lpspecdata"].as_view('"Context_ServiceendpointUuid_LayerprotocolLocalid_Lpspecdata"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/", view_func = globals()["Context_Vnwservice"].as_view('"Context_Vnwservice"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_link/<link_uuid>/_transferCapacity/availableCapacity/", view_func = globals()["Context_TopologyUuid_LinkLink_Uuid_TransfercapacityAvailablecapacity"].as_view('"Context_TopologyUuid_LinkLink_Uuid_TransfercapacityAvailablecapacity"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connectivityService/<uuid>/_connConstraints/riskCharacteristic/<riskCharacteristicName>/", view_func = globals()["Context_ConnectivityserviceUuid_ConnconstraintsRiskcharacteristicRiskcharacteristicname"].as_view('"Context_ConnectivityserviceUuid_ConnconstraintsRiskcharacteristicRiskcharacteristicname"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_node/<node_uuid>/_ownedNodeEdgePoint/<ownedNodeEdgePoint_uuid>/_ltpSpecData/", view_func = globals()["Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_Ltpspecdata"].as_view('"Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_Ltpspecdata"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_node/<node_uuid>/_transferCost/", view_func = globals()["Context_TopologyUuid_NodeNode_Uuid_Transfercost"].as_view('"Context_TopologyUuid_NodeNode_Uuid_Transfercost"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_serviceEndPoint/<uuid>/_connectionEndPoint/<connectionEndPoint_uuid>/", view_func = globals()["Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid"].as_view('"Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_notifSubscription/<uuid>/_notification/changedAttributes/", view_func = globals()["Context_NotifsubscriptionUuid_NotificationChangedattributes"].as_view('"Context_NotifsubscriptionUuid_NotificationChangedattributes"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connectivityService/<uuid>/_connection/<connection_uuid>/_state/", view_func = globals()["Context_ConnectivityserviceUuid_ConnectionConnection_Uuid_State"].as_view('"Context_ConnectivityserviceUuid_ConnectionConnection_Uuid_State"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_link/<link_uuid>/_validation/validationMechanism/<validationRobustness>/", view_func = globals()["Context_TopologyUuid_LinkLink_Uuid_ValidationValidationmechanismValidationrobustness"].as_view('"Context_TopologyUuid_LinkLink_Uuid_ValidationValidationmechanismValidationrobustness"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connectivityService/<uuid>/_connection/<connection_uuid>/_connectionPort/<localId>/", view_func = globals()["Context_ConnectivityserviceUuid_ConnectionConnection_Uuid_ConnectionportLocalid"].as_view('"Context_ConnectivityserviceUuid_ConnectionConnection_Uuid_ConnectionportLocalid"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/", view_func = globals()["Context_VnwserviceUuid"].as_view('"Context_VnwserviceUuid"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_node/<node_uuid>/label/<valueName>/", view_func = globals()["Context_TopologyUuid_NodeNode_UuidLabelValuename"].as_view('"Context_TopologyUuid_NodeNode_UuidLabelValuename"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connectivityService/<uuid>/_connection/<connection_uuid>/label/<valueName>/", view_func = globals()["Context_ConnectivityserviceUuid_ConnectionConnection_UuidLabelValuename"].as_view('"Context_ConnectivityserviceUuid_ConnectionConnection_UuidLabelValuename"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_path/<uuid>/_telink/<localId>/", view_func = globals()["Context_PathUuid_TelinkLocalid"].as_view('"Context_PathUuid_TelinkLocalid"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_vnwConstraint/", view_func = globals()["Context_VnwserviceUuid_Vnwconstraint"].as_view('"Context_VnwserviceUuid_Vnwconstraint"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_notifSubscription/<uuid>/_notification/", view_func = globals()["Context_NotifsubscriptionUuid_Notification"].as_view('"Context_NotifsubscriptionUuid_Notification"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connectivityService/<uuid>/_servicePort/", view_func = globals()["Context_ConnectivityserviceUuid_Serviceport"].as_view('"Context_ConnectivityserviceUuid_Serviceport"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_node/<node_uuid>/_ownedNodeEdgePoint/<ownedNodeEdgePoint_uuid>/_state/", view_func = globals()["Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_State"].as_view('"Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_State"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_node/<node_uuid>/_transferCost/costCharacteristic/<costAlgorithm>/", view_func = globals()["Context_TopologyUuid_NodeNode_Uuid_TransfercostCostcharacteristicCostalgorithm"].as_view('"Context_TopologyUuid_NodeNode_Uuid_TransfercostCostcharacteristicCostalgorithm"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_notification/targetObjectName/<valueName>/", view_func = globals()["Context_NotificationTargetobjectnameValuename"].as_view('"Context_NotificationTargetobjectnameValuename"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_node/<node_uuid>/_transferCapacity/capacityAssignedToUserView/<numberingRange>/", view_func = globals()["Context_TopologyUuid_NodeNode_Uuid_TransfercapacityCapacityassignedtouserviewNumberingrange"].as_view('"Context_TopologyUuid_NodeNode_Uuid_TransfercapacityCapacityassignedtouserviewNumberingrange"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connectivityService/<uuid>/label/<valueName>/", view_func = globals()["Context_ConnectivityserviceUuidLabelValuename"].as_view('"Context_ConnectivityserviceUuidLabelValuename"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_state/", view_func = globals()["Context_VnwserviceUuid_State"].as_view('"Context_VnwserviceUuid_State"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connectivityService/<uuid>/_connConstraints/requestedCapacity/", view_func = globals()["Context_ConnectivityserviceUuid_ConnconstraintsRequestedcapacity"].as_view('"Context_ConnectivityserviceUuid_ConnconstraintsRequestedcapacity"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connectivityService/<uuid>/_connConstraints/latencyCharacteristic/<latencyValue>/", view_func = globals()["Context_ConnectivityserviceUuid_ConnconstraintsLatencycharacteristicLatencyvalue"].as_view('"Context_ConnectivityserviceUuid_ConnconstraintsLatencycharacteristicLatencyvalue"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/name/<valueName>/", view_func = globals()["Context_VnwserviceUuidNameValuename"].as_view('"Context_VnwserviceUuidNameValuename"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/", view_func = globals()["Context"].as_view('"Context"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_link/<link_uuid>/_transferTiming/queuingLatency/<latencyValue>/", view_func = globals()["Context_TopologyUuid_LinkLink_Uuid_TransfertimingQueuinglatencyLatencyvalue"].as_view('"Context_TopologyUuid_LinkLink_Uuid_TransfertimingQueuinglatencyLatencyvalue"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_path/<uuid>/label/<valueName>/", view_func = globals()["Context_PathUuidLabelValuename"].as_view('"Context_PathUuidLabelValuename"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/label/<valueName>/", view_func = globals()["Context_VnwserviceUuidLabelValuename"].as_view('"Context_VnwserviceUuidLabelValuename"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_link/<link_uuid>/_transferCost/costCharacteristic/<costAlgorithm>/", view_func = globals()["Context_TopologyUuid_LinkLink_Uuid_TransfercostCostcharacteristicCostalgorithm"].as_view('"Context_TopologyUuid_LinkLink_Uuid_TransfercostCostcharacteristicCostalgorithm"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_serviceEndPoint/<uuid>/_connectionEndPoint/<connectionEndPoint_uuid>/_layerProtocol/<localId>/", view_func = globals()["Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid_LayerprotocolLocalid"].as_view('"Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid_LayerprotocolLocalid"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_serviceEndPoint/<uuid>/_connectionEndPoint/<connectionEndPoint_uuid>/", view_func = globals()["Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid"].as_view('"Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_serviceEndPoint/<uuid>/_layerProtocol/<localId>/_lpSpecData/", view_func = globals()["Context_ServiceendpointUuid_LayerprotocolLocalid_Lpspecdata"].as_view('"Context_ServiceendpointUuid_LayerprotocolLocalid_Lpspecdata"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_node/<node_uuid>/_transferCost/", view_func = globals()["Context_TopologyUuid_NodeNode_Uuid_Transfercost"].as_view('"Context_TopologyUuid_NodeNode_Uuid_Transfercost"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_node/<node_uuid>/_ownedNodeEdgePoint/<ownedNodeEdgePoint_uuid>/_ltpSpecData/", view_func = globals()["Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_Ltpspecdata"].as_view('"Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_Ltpspecdata"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_path/<uuid>/_routingConstraint/requestedCapacity/", view_func = globals()["Context_PathUuid_RoutingconstraintRequestedcapacity"].as_view('"Context_PathUuid_RoutingconstraintRequestedcapacity"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connectivityService/<uuid>/_connConstraints/riskCharacteristic/<riskCharacteristicName>/", view_func = globals()["Context_ConnectivityserviceUuid_ConnconstraintsRiskcharacteristicRiskcharacteristicname"].as_view('"Context_ConnectivityserviceUuid_ConnconstraintsRiskcharacteristicRiskcharacteristicname"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_link/<link_uuid>/_transferCapacity/availableCapacity/", view_func = globals()["Context_TopologyUuid_LinkLink_Uuid_TransfercapacityAvailablecapacity"].as_view('"Context_TopologyUuid_LinkLink_Uuid_TransfercapacityAvailablecapacity"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_link/<link_uuid>/_validation/validationMechanism/<validationRobustness>/", view_func = globals()["Context_TopologyUuid_LinkLink_Uuid_ValidationValidationmechanismValidationrobustness"].as_view('"Context_TopologyUuid_LinkLink_Uuid_ValidationValidationmechanismValidationrobustness"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connectivityService/<uuid>/_connection/<connection_uuid>/_state/", view_func = globals()["Context_ConnectivityserviceUuid_ConnectionConnection_Uuid_State"].as_view('"Context_ConnectivityserviceUuid_ConnectionConnection_Uuid_State"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/extension/<valueName>/", view_func = globals()["Context_TopologyUuidExtensionValuename"].as_view('"Context_TopologyUuidExtensionValuename"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_link/<link_uuid>/_transferCapacity/capacityAssignedToUserView/<numberingRange>/", view_func = globals()["Context_TopologyUuid_LinkLink_Uuid_TransfercapacityCapacityassignedtouserviewNumberingrange"].as_view('"Context_TopologyUuid_LinkLink_Uuid_TransfercapacityCapacityassignedtouserviewNumberingrange"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_link/<link_uuid>/extension/<valueName>/", view_func = globals()["Context_TopologyUuid_LinkLink_UuidExtensionValuename"].as_view('"Context_TopologyUuid_LinkLink_UuidExtensionValuename"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_node/<node_uuid>/_ownedNodeEdgePoint/<ownedNodeEdgePoint_uuid>/", view_func = globals()["Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid"].as_view('"Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connectivityService/<uuid>/_connConstraints/costCharacteristic/<costAlgorithm>/", view_func = globals()["Context_ConnectivityserviceUuid_ConnconstraintsCostcharacteristicCostalgorithm"].as_view('"Context_ConnectivityserviceUuid_ConnconstraintsCostcharacteristicCostalgorithm"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_vnwConstraint/riskCharacteristic/<riskCharacteristicName>/", view_func = globals()["Context_VnwserviceUuid_VnwconstraintRiskcharacteristicRiskcharacteristicname"].as_view('"Context_VnwserviceUuid_VnwconstraintRiskcharacteristicRiskcharacteristicname"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_notifSubscription/", view_func = globals()["Context_Notifsubscription"].as_view('"Context_Notifsubscription"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_notifSubscription/<uuid>/_notification/additionalInfo/<valueName>/", view_func = globals()["Context_NotifsubscriptionUuid_NotificationAdditionalinfoValuename"].as_view('"Context_NotifsubscriptionUuid_NotificationAdditionalinfoValuename"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_path/<uuid>/_routingConstraint/riskCharacteristic/<riskCharacteristicName>/", view_func = globals()["Context_PathUuid_RoutingconstraintRiskcharacteristicRiskcharacteristicname"].as_view('"Context_PathUuid_RoutingconstraintRiskcharacteristicRiskcharacteristicname"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_vnwConstraint/costCharacteristic/", view_func = globals()["Context_VnwserviceUuid_VnwconstraintCostcharacteristic"].as_view('"Context_VnwserviceUuid_VnwconstraintCostcharacteristic"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_link/<link_uuid>/_riskParameter/riskCharacteristic/<riskCharacteristicName>/", view_func = globals()["Context_TopologyUuid_LinkLink_Uuid_RiskparameterRiskcharacteristicRiskcharacteristicname"].as_view('"Context_TopologyUuid_LinkLink_Uuid_RiskparameterRiskcharacteristicRiskcharacteristicname"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_path/<uuid>/_routingConstraint/costCharacteristic/<costAlgorithm>/", view_func = globals()["Context_PathUuid_RoutingconstraintCostcharacteristicCostalgorithm"].as_view('"Context_PathUuid_RoutingconstraintCostcharacteristicCostalgorithm"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connectivityService/<uuid>/name/<valueName>/", view_func = globals()["Context_ConnectivityserviceUuidNameValuename"].as_view('"Context_ConnectivityserviceUuidNameValuename"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connectivityService/<uuid>/extension/<valueName>/", view_func = globals()["Context_ConnectivityserviceUuidExtensionValuename"].as_view('"Context_ConnectivityserviceUuidExtensionValuename"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_path/<uuid>/_routingConstraint/latencyCharacteristic/<latencyValue>/", view_func = globals()["Context_PathUuid_RoutingconstraintLatencycharacteristicLatencyvalue"].as_view('"Context_PathUuid_RoutingconstraintLatencycharacteristicLatencyvalue"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connectivityService/<uuid>/_state/", view_func = globals()["Context_ConnectivityserviceUuid_State"].as_view('"Context_ConnectivityserviceUuid_State"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/label/<valueName>/", view_func = globals()["ContextLabelValuename"].as_view('"ContextLabelValuename"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_link/<link_uuid>/_validation/", view_func = globals()["Context_TopologyUuid_LinkLink_Uuid_Validation"].as_view('"Context_TopologyUuid_LinkLink_Uuid_Validation"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/", view_func = globals()["Context_TopologyUuid"].as_view('"Context_TopologyUuid"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connectivityService/<uuid>/_connection/<connection_uuid>/", view_func = globals()["Context_ConnectivityserviceUuid_ConnectionConnection_Uuid"].as_view('"Context_ConnectivityserviceUuid_ConnectionConnection_Uuid"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_node/<node_uuid>/_ownedNodeEdgePoint/<ownedNodeEdgePoint_uuid>/label/<valueName>/", view_func = globals()["Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_UuidLabelValuename"].as_view('"Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_UuidLabelValuename"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connectivityService/<uuid>/_servicePort/<localId>/", view_func = globals()["Context_ConnectivityserviceUuid_ServiceportLocalid"].as_view('"Context_ConnectivityserviceUuid_ServiceportLocalid"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_link/<link_uuid>/_transferCapacity/totalPotentialCapacity/", view_func = globals()["Context_TopologyUuid_LinkLink_Uuid_TransfercapacityTotalpotentialcapacity"].as_view('"Context_TopologyUuid_LinkLink_Uuid_TransfercapacityTotalpotentialcapacity"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/extension/<valueName>/", view_func = globals()["Context_VnwserviceUuidExtensionValuename"].as_view('"Context_VnwserviceUuidExtensionValuename"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_path/<uuid>/name/<valueName>/", view_func = globals()["Context_PathUuidNameValuename"].as_view('"Context_PathUuidNameValuename"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_node/<node_uuid>/_ownedNodeEdgePoint/<ownedNodeEdgePoint_uuid>/extension/<valueName>/", view_func = globals()["Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_UuidExtensionValuename"].as_view('"Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_UuidExtensionValuename"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_notification/additionalInfo/<valueName>/", view_func = globals()["Context_NotificationAdditionalinfoValuename"].as_view('"Context_NotificationAdditionalinfoValuename"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_vnwConstraint/requestedCapacity/", view_func = globals()["Context_VnwserviceUuid_VnwconstraintRequestedcapacity"].as_view('"Context_VnwserviceUuid_VnwconstraintRequestedcapacity"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_vnwConstraint/", view_func = globals()["Context_VnwserviceUuid_Vnwconstraint"].as_view('"Context_VnwserviceUuid_Vnwconstraint"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_path/<uuid>/_telink/<localId>/", view_func = globals()["Context_PathUuid_TelinkLocalid"].as_view('"Context_PathUuid_TelinkLocalid"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_node/<node_uuid>/_transferCapacity/capacityAssignedToUserView/<numberingRange>/", view_func = globals()["Context_TopologyUuid_NodeNode_Uuid_TransfercapacityCapacityassignedtouserviewNumberingrange"].as_view('"Context_TopologyUuid_NodeNode_Uuid_TransfercapacityCapacityassignedtouserviewNumberingrange"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_link/<link_uuid>/label/<valueName>/", view_func = globals()["Context_TopologyUuid_LinkLink_UuidLabelValuename"].as_view('"Context_TopologyUuid_LinkLink_UuidLabelValuename"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_link/<link_uuid>/_transferCost/", view_func = globals()["Context_TopologyUuid_LinkLink_Uuid_Transfercost"].as_view('"Context_TopologyUuid_LinkLink_Uuid_Transfercost"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_link/<link_uuid>/_transferCapacity/", view_func = globals()["Context_TopologyUuid_LinkLink_Uuid_Transfercapacity"].as_view('"Context_TopologyUuid_LinkLink_Uuid_Transfercapacity"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_link/<link_uuid>/name/<valueName>/", view_func = globals()["Context_TopologyUuid_LinkLink_UuidNameValuename"].as_view('"Context_TopologyUuid_LinkLink_UuidNameValuename"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_path/<uuid>/_routingConstraint/riskCharacteristic/<riskCharacteristicName>/", view_func = globals()["Context_PathUuid_RoutingconstraintRiskcharacteristicRiskcharacteristicname"].as_view('"Context_PathUuid_RoutingconstraintRiskcharacteristicRiskcharacteristicname"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_notifSubscription/<uuid>/name/<valueName>/", view_func = globals()["Context_NotifsubscriptionUuidNameValuename"].as_view('"Context_NotifsubscriptionUuidNameValuename"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_node/<node_uuid>/", view_func = globals()["Context_TopologyUuid_NodeNode_Uuid"].as_view('"Context_TopologyUuid_NodeNode_Uuid"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/name/<valueName>/", view_func = globals()["Context_TopologyUuidNameValuename"].as_view('"Context_TopologyUuidNameValuename"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_node/<node_uuid>/_ownedNodeEdgePoint/<ownedNodeEdgePoint_uuid>/_layerProtocol/<localId>/_lpSpecData/", view_func = globals()["Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_LayerprotocolLocalid_Lpspecdata"].as_view('"Context_TopologyUuid_NodeNode_Uuid_OwnednodeedgepointOwnednodeedgepoint_Uuid_LayerprotocolLocalid_Lpspecdata"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_vnwConstraint/latencyCharacteristic/<latencyValue>/", view_func = globals()["Context_VnwserviceUuid_VnwconstraintLatencycharacteristicLatencyvalue"].as_view('"Context_VnwserviceUuid_VnwconstraintLatencycharacteristicLatencyvalue"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_node/<node_uuid>/", view_func = globals()["Context_TopologyUuid_NodeNode_Uuid"].as_view('"Context_TopologyUuid_NodeNode_Uuid"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_serviceEndPoint/<uuid>/_connectionEndPoint/<connectionEndPoint_uuid>/_ltpSpecData/", view_func = globals()["Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid_Ltpspecdata"].as_view('"Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid_Ltpspecdata"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_vnwConstraint/latencyCharacteristic/", view_func = globals()["Context_VnwserviceUuid_VnwconstraintLatencycharacteristic"].as_view('"Context_VnwserviceUuid_VnwconstraintLatencycharacteristic"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_notifSubscription/<uuid>/_subscriptionFilter/", view_func = globals()["Context_NotifsubscriptionUuid_Subscriptionfilter"].as_view('"Context_NotifsubscriptionUuid_Subscriptionfilter"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_notifSubscription/<uuid>/_notification/targetObjectName/<valueName>/", view_func = globals()["Context_NotifsubscriptionUuid_NotificationTargetobjectnameValuename"].as_view('"Context_NotifsubscriptionUuid_NotificationTargetobjectnameValuename"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_link/<link_uuid>/_riskParameter/", view_func = globals()["Context_TopologyUuid_LinkLink_Uuid_Riskparameter"].as_view('"Context_TopologyUuid_LinkLink_Uuid_Riskparameter"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_serviceEndPoint/<uuid>/_connectionEndPoint/<connectionEndPoint_uuid>/_layerProtocol/<localId>/_lpSpecData/", view_func = globals()["Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid_LayerprotocolLocalid_Lpspecdata"].as_view('"Context_ServiceendpointUuid_ConnectionendpointConnectionendpoint_Uuid_LayerprotocolLocalid_Lpspecdata"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_topology/<uuid>/_link/<link_uuid>/_state/", view_func = globals()["Context_TopologyUuid_LinkLink_Uuid_State"].as_view('"Context_TopologyUuid_LinkLink_Uuid_State"'+'"_api"'), methods=['GET'])

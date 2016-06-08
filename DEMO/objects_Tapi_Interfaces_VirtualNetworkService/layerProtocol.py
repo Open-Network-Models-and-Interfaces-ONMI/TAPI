@@ -6,7 +6,7 @@ class LayerProtocol(LocalClass):
     def __init__(self, json_struct=None):
         self.terminationState=""
         self.layerProtocolName=""
-        self._lpSpecData=LpSpec() #import
         self.terminationDirection=""
+        self._lpSpecData=LpSpec() #import
         super(LayerProtocol, self).__init__(json_struct)
 

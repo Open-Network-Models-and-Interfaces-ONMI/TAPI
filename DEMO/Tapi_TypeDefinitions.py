@@ -11,6 +11,7 @@ import re
 # CALLABLE OBJECTS
 from objects_Tapi_TypeDefinitions.queuingLatency import QueuingLatency
 from objects_Tapi_TypeDefinitions.capacity import Capacity
+from objects_Tapi_TypeDefinitions.nameAndValueChange import NameAndValueChange
 from objects_Tapi_TypeDefinitions.costCharacteristic import CostCharacteristic
 from objects_Tapi_TypeDefinitions.nameAndValue import NameAndValue
 from objects_Tapi_TypeDefinitions.riskCharacteristic import RiskCharacteristic

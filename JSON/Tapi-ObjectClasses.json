@@ -59,6 +59,55 @@
             }
         }
     },
+    "NotificationSubscriptionService": {
+        "allOf": [
+            {
+                "$ref": "Tapi-ObjectClasses#GlobalClass"
+            },
+            {
+                "properties": {
+                    "_subscriptionFilter": {
+                        "$ref": "Tapi-ObjectClasses#SubscriptionFilter"
+                    },
+                    "supportedObjectTypes": {
+                        "items": {
+                            "minItems": 1,
+                            "$ref": "/Tapi-TypeDefinitions#ObjectType"
+                        },
+                        "type": "array"
+                    },
+                    "subscriptionState": {
+                        "$ref": "/Tapi-TypeDefinitions#SubscriptionState"
+                    },
+                    "supportedNotificationTypes": {
+                        "items": {
+                            "minItems": 1,
+                            "$ref": "/Tapi-TypeDefinitions#NotificationType"
+                        },
+                        "type": "array"
+                    },
+                    "_notification": {
+                        "items": {
+                            "$ref": "Tapi-ObjectClasses#Notification"
+                        }
+                    }
+                }
+            }
+        ]
+    },
+    "TimeRange": {
+        "additionalProperties": false,
+        "type": "object",
+        "id": "#TimeRange",
+        "properties": {
+            "endTime": {
+                "$ref": "/Tapi-TypeDefinitions#DateAndTime"
+            },
+            "startTime": {
+                "$ref": "/Tapi-TypeDefinitions#DateAndTime"
+            }
+        }
+    },
     "LayerProtocolTransitionPac": {
         "additionalProperties": false,
         "type": "object",
@@ -277,7 +326,7 @@
                         "$ref": "/Tapi-TypeDefinitions#LayerProtocolName"
                     },
                     "_schedule": {
-                        "$ref": "Tapi-ObjectClasses#ScheduleInfo"
+                        "$ref": "Tapi-ObjectClasses#TimeRange"
                     },
                     "_state": {
                         "$ref": "Tapi-ObjectClasses#AdminStatePac"
@@ -412,6 +461,53 @@
         "properties": {
             "localId": {
                 "type": "string"
+            }
+        }
+    },
+    "Notification": {
+        "additionalProperties": false,
+        "type": "object",
+        "id": "#Notification",
+        "properties": {
+            "targetObjectIdentifier": {
+                "$ref": "/Tapi-TypeDefinitions#UniversalId"
+            },
+            "layerProtocolName": {
+                "$ref": "/Tapi-TypeDefinitions#LayerProtocolName"
+            },
+            "changedAttributes": {
+                "items": {
+                    "$ref": "/Tapi-TypeDefinitions#NameAndValueChange"
+                }
+            },
+            "additionalInfo": {
+                "items": {
+                    "$ref": "/Tapi-TypeDefinitions#NameAndValue"
+                }
+            },
+            "additionalText": {
+                "type": "string"
+            },
+            "notificationType": {
+                "$ref": "/Tapi-TypeDefinitions#NotificationType"
+            },
+            "targetObjectType": {
+                "$ref": "/Tapi-TypeDefinitions#ObjectType"
+            },
+            "sourceIndicator": {
+                "$ref": "/Tapi-TypeDefinitions#SourceIndicator"
+            },
+            "eventTimeStamp": {
+                "$ref": "/Tapi-TypeDefinitions#DateAndTime"
+            },
+            "targetObjectName": {
+                "minItems": 1,
+                "items": {
+                    "$ref": "/Tapi-TypeDefinitions#NameAndValue"
+                }
+            },
+            "notificationId": {
+                "$ref": "/Tapi-TypeDefinitions#UniversalId"
             }
         }
     },
@@ -551,7 +647,7 @@
                         "type": "array"
                     },
                     "_schedule": {
-                        "$ref": "Tapi-ObjectClasses#ScheduleInfo"
+                        "$ref": "Tapi-ObjectClasses#TimeRange"
                     },
                     "_vnwConstraint": {
                         "$ref": "Tapi-ObjectClasses#VirtualNetworkConstraint"
@@ -617,19 +713,6 @@
                 }
             }
         ]
-    },
-    "ScheduleInfo": {
-        "additionalProperties": false,
-        "type": "object",
-        "id": "#ScheduleInfo",
-        "properties": {
-            "endTime": {
-                "$ref": "/Tapi-TypeDefinitions#DateAndTime"
-            },
-            "startTime": {
-                "$ref": "/Tapi-TypeDefinitions#DateAndTime"
-            }
-        }
     },
     "PathOptimizationConstraint": {
         "additionalProperties": false,
@@ -762,11 +845,6 @@
             "uuid": {
                 "$ref": "/Tapi-TypeDefinitions#UniversalId"
             },
-            "extension": {
-                "items": {
-                    "$ref": "/Tapi-TypeDefinitions#NameAndValue"
-                }
-            },
             "name": {
                 "minItems": 1,
                 "items": {
@@ -874,6 +952,37 @@
             }
         }
     },
+    "SubscriptionFilter": {
+        "additionalProperties": false,
+        "type": "object",
+        "id": "#SubscriptionFilter",
+        "properties": {
+            "requestedObjectTypes": {
+                "items": {
+                    "$ref": "/Tapi-TypeDefinitions#ObjectType"
+                },
+                "type": "array"
+            },
+            "requestedLayerProtocols": {
+                "items": {
+                    "$ref": "/Tapi-TypeDefinitions#LayerProtocolName"
+                },
+                "type": "array"
+            },
+            "requestedObjectIdentifier": {
+                "items": {
+                    "$ref": "/Tapi-TypeDefinitions#UniversalId"
+                },
+                "type": "array"
+            },
+            "requestedNotificationTypes": {
+                "items": {
+                    "$ref": "/Tapi-TypeDefinitions#NotificationType"
+                },
+                "type": "array"
+            }
+        }
+    },
     "properties": {
         "Context": {
             "allOf": [
@@ -882,14 +991,9 @@
                 },
                 {
                     "properties": {
-                        "_path": {
+                        "_notification": {
                             "items": {
-                                "$ref": "Tapi-ObjectClasses#Path"
-                            }
-                        },
-                        "_connectivityService": {
-                            "items": {
-                                "$ref": "Tapi-ObjectClasses#ConnectivityService"
+                                "$ref": "Tapi-ObjectClasses#Notification"
                             }
                         },
                         "_vnwService": {
@@ -902,10 +1006,25 @@
                                 "$ref": "Tapi-ObjectClasses#Topology"
                             }
                         },
+                        "_notifSubscription": {
+                            "items": {
+                                "$ref": "Tapi-ObjectClasses#NotificationSubscriptionService"
+                            }
+                        },
                         "_serviceEndPoint": {
                             "minItems": 2,
                             "items": {
                                 "$ref": "Tapi-ObjectClasses#ServiceEndPoint"
+                            }
+                        },
+                        "_connectivityService": {
+                            "items": {
+                                "$ref": "Tapi-ObjectClasses#ConnectivityService"
+                            }
+                        },
+                        "_path": {
+                            "items": {
+                                "$ref": "Tapi-ObjectClasses#Path"
                             }
                         }
                     }

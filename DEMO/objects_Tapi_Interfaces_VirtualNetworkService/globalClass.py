@@ -1,13 +1,12 @@
 from objects_common.jsonObject import JsonObject
 from nameAndValue import NameAndValue
-from objects_common.keyedArrayType import KeyedArrayType
+from objects_common.arrayType import ArrayType
 
 class GlobalClass(JsonObject):
 
     def __init__(self, json_struct=None):
-        self.name=KeyedArrayType(NameAndValue, 'valueName')
         self.uuid=""
-        self.extension=KeyedArrayType(NameAndValue, 'valueName')
-        self.label=KeyedArrayType(NameAndValue, 'valueName')
+        self.name=ArrayType.factory(NameAndValue)
+        self.label=ArrayType.factory(NameAndValue)
         super(GlobalClass, self).__init__(json_struct)
 
