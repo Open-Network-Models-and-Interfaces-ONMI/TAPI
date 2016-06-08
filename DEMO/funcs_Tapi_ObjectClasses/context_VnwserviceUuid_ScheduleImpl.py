@@ -6,16 +6,16 @@ from backend.backend import Context
 class Context_VnwserviceUuid_ScheduleImpl:
 
     @classmethod
-    def put(cls, uuid, scheduleinfo):
-        print str(scheduleinfo)
+    def put(cls, uuid, timerange):
+        print str(timerange)
         print 'handling put'
-        Context._vnwService[uuid] = scheduleinfo
+        Context._vnwService[uuid] = timerange
 
     @classmethod
-    def post(cls, uuid, scheduleinfo):
-        print str(scheduleinfo)
+    def post(cls, uuid, timerange):
+        print str(timerange)
         print 'handling post'
-        Context._vnwService[uuid] = scheduleinfo
+        Context._vnwService[uuid] = timerange
 
     @classmethod
     def delete(cls, uuid):

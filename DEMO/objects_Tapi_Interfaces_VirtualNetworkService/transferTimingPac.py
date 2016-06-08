@@ -1,11 +1,11 @@
 from objects_common.jsonObject import JsonObject
 from queuingLatency import QueuingLatency
-from objects_common.keyedArrayType import KeyedArrayType
+from objects_common.arrayType import ArrayType
 
 class TransferTimingPac(JsonObject):
 
     def __init__(self, json_struct=None):
-        self.queuingLatency=KeyedArrayType(QueuingLatency, 'latencyValue')
+        self.queuingLatency=ArrayType.factory(QueuingLatency)
         self.wanderCharacteristic=""
         self.fixedLatencyCharacteristic=""
         self.jitterCharacteristic=""

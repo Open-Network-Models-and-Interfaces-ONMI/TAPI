@@ -1,30 +1,29 @@
-from transferCapacityPac import TransferCapacityPac
-from adminStatePac import AdminStatePac
-from linkPort import LinkPort
-from transferIntegrityPac import TransferIntegrityPac
+from validationPac import ValidationPac
 from layerProtocolTransitionPac import LayerProtocolTransitionPac
+from adminStatePac import AdminStatePac
+from transferTimingPac import TransferTimingPac
+from transferCapacityPac import TransferCapacityPac
 from transferCostPac import TransferCostPac
 from riskParameterPac import RiskParameterPac
-from transferTimingPac import TransferTimingPac
-from validationPac import ValidationPac
+from linkPort import LinkPort
+from transferIntegrityPac import TransferIntegrityPac
 from globalClass import GlobalClass
 from objects_common.arrayType import ArrayType
-from objects_common.keyedArrayType import KeyedArrayType
 
 class Link(GlobalClass):
 
     def __init__(self, json_struct=None):
         self.direction=""
         self.layerProtocolName=ArrayType.factory(str)
-        self._transferCapacity=TransferCapacityPac() #import
-        self._state=AdminStatePac() #import
-        self._linkPort=KeyedArrayType(LinkPort, 'localId')
-        self._node=ArrayType.factory(str)
-        self._transferIntegrity=TransferIntegrityPac() #import
+        self._validation=ValidationPac() #import
         self._lpTransition=LayerProtocolTransitionPac() #import
+        self._state=AdminStatePac() #import
+        self._transferTiming=TransferTimingPac() #import
+        self._node=ArrayType.factory(str)
+        self._transferCapacity=TransferCapacityPac() #import
         self._transferCost=TransferCostPac() #import
         self._riskParameter=RiskParameterPac() #import
-        self._transferTiming=TransferTimingPac() #import
-        self._validation=ValidationPac() #import
+        self._linkPort=ArrayType.factory(LinkPort)
+        self._transferIntegrity=TransferIntegrityPac() #import
         super(Link, self).__init__(json_struct)
 
