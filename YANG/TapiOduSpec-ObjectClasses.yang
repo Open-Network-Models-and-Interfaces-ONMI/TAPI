@@ -1,5 +1,5 @@
 module TapiOduSpec-ObjectClasses {
-    namespace "uri:onf:TapiOduSpec-ObjectClasses";
+    namespace "urn:ONF:TapiOduSpec-ObjectClasses";
     prefix TapiOduSpec-ObjectClasses;
     import TapiOduSpec-TypeDefinitions {
         prefix TapiOduSpec-TypeDefinitions;
@@ -7,7 +7,18 @@ module TapiOduSpec-ObjectClasses {
     import TapiSpec-ObjectClasses {
         prefix TapiSpec-ObjectClasses;
     }
-    revision 2016-05-22{}
+    organization "ONF (Open Networking Foundation) IMP Working Group";
+    contact "WG Web: <https://www.opennetworking.org/technical-communities/areas/services/>
+        WG List: <mailto: <wg list name>@opennetworking.org>
+        WG Chair: your-WG-chair
+                <mailto:your-WG-chair@example.com>
+        Editor: your-name
+                <mailto:your-email@example.com>";
+    description "none";
+    revision 2016-06-07 {
+        description "Latest revision";
+        reference "RFC 6020 and RFC 6087";
+    }
     grouping OduAdapterAndConnectionPointSpec {
         leaf adaptationActive {
             type boolean;
@@ -16,6 +27,7 @@ module TapiOduSpec-ObjectClasses {
         }
         leaf apsEnable {
             type boolean;
+            default "true";
             description "This attribute is for enabling/disabling the automatic protection switching (APS) capability at the transport adaptation function that is represented by the ODUk_ConnectionTerminationPoint object class. It triggers the MI_APS_EN signal to the transport adaptation function.";
         }
         leaf apsLevel {
@@ -35,6 +47,8 @@ module TapiOduSpec-ObjectClasses {
             description "This attribute is applicable when the ODUk CTP object instance represents a lower order ODUk CTP Source or Sink at the client layer of the ODUkP/ODUj-21 adaptation function. The value of this attribute specifies the type and rate of the adaptation and thus can be used to determine, according to Table 7-10/G.709, the mapping method and, in the case of GMP mapping, the base value and ranges for the parameters Cn and Cm. The value of this attribute is a triplet {j, k, size}, where j = 0, 1, 2, 2e, 3, flex; for the rate of the client ODUj  k = 1, 2, 3, 4; for the rate of the server ODUk size = 1.25G, 2.5G";
         }
         leaf-list positionSeq {
+            type TapiOduSpec-TypeDefinitions:ODUk_TcmOrGccChoice;
+            config false;
             description "This attribute indicates the positions of the TCM and GCC processing functions within the ODUk TP.
                 The order of the position in the positionSeq attribute together with the signal flow determine the processing sequence of the TCM and GCC functions within the ODUk TP. Once the positions are determined, the signal processing sequence will follow the signal flow for each direction of the signal.
                 Within the ODUk_CTP, the position order is going from adaptation to connection function. Within the ODUk_TTP, the order is going from connection to adaptation function.
@@ -42,22 +56,17 @@ module TapiOduSpec-ObjectClasses {
                 The order of TCM and GCC access function in the positionSeq attribute is significant only when there are more than one TCM functions within the ODUk TP and also at least one of them have the TimActDisabled attribute set to FALSE (i.e. AIS is inserted upon TIM).
                 If a GCC12_TP is contained in an ODUk_TTP and the GCC12_TP is not listed in the PositionSeq attribute of the ODUk_TTP, then the GCC access is at the AP side of the ODUk TT function.
                 ";
-            ordered-by system;
-            type TapiOduSpec-TypeDefinitions:ODUk_TcmOrGccChoice;
-            config false;
         }
         leaf-list tcmFieldsInUse {
-            description "This attribute indicates the used TCM fields of the ODUk OH.";
-            ordered-by system;
             type uint64;
             config false;
+            description "This attribute indicates the used TCM fields of the ODUk OH.";
         }
         leaf-list tributarySlotList {
-            description "This attribute contains a set of distinct (i.e. unique) integers (e.g. 2, 3, 5, 9, 15 representing the tributary slots TS2, TS3, TS5, TS9 and TS15) which represents the resources occupied by the Low Order ODUk Link Connection (e.g. carrying an ODUflex with a bit rate of 6.25G). This attribute applies when the LO ODUk_ ConnectionTerminationPoint connects with an HO ODUk_TrailTerminationPoint object. It will not apply if this ODUk_ ConnectionTerminationPoint object directly connects to an OTUk_TrailTerminationPoint object (i.e. OTUk has no trib slots). The upper bound of the integer allowed in this set is a function of the HO-ODUk server layer to which the ODUk connection has been mapped (adapted). Thus, for example, M=8/32/80 for ODU2/ODU3/ODU4 server layers (respectively). Note that the value of this attribute can be changed only in the case of ODUflex and has to be through specific operations (i.e. not be changing the attribute tributarySlotList directly).";
-            ordered-by system;
             type uint64;
             config false;
             min-elements 1;
+            description "This attribute contains a set of distinct (i.e. unique) integers (e.g. 2, 3, 5, 9, 15 representing the tributary slots TS2, TS3, TS5, TS9 and TS15) which represents the resources occupied by the Low Order ODUk Link Connection (e.g. carrying an ODUflex with a bit rate of 6.25G). This attribute applies when the LO ODUk_ ConnectionTerminationPoint connects with an HO ODUk_TrailTerminationPoint object. It will not apply if this ODUk_ ConnectionTerminationPoint object directly connects to an OTUk_TrailTerminationPoint object (i.e. OTUk has no trib slots). The upper bound of the integer allowed in this set is a function of the HO-ODUk server layer to which the ODUk connection has been mapped (adapted). Thus, for example, M=8/32/80 for ODU2/ODU3/ODU4 server layers (respectively). Note that the value of this attribute can be changed only in the case of ODUflex and has to be through specific operations (i.e. not be changing the attribute tributarySlotList directly).";
         }
         leaf applicableProblems {
             type TapiOduSpec-TypeDefinitions:ODUk_CtpProblemList;
@@ -93,12 +102,14 @@ module TapiOduSpec-ObjectClasses {
         }
         list tandem {
             key 'tcmField';
-            config true;
-            ordered-by system;
-            uses OduTCMSpec;
             max-elements 12;
+            uses OduTCMSpec;
+            description "none";
         }
         leaf-list currentNumberOfTributarySlots {
+            type uint64;
+            config false;
+            min-elements 1;
             description "This attribute applies only to ODUflex(GFP) connections. It represents the current number of tributary slots allocated to this ODUflex(GFP) connection in the HO-ODU server layer. The value of this parameter determines the bit rate of the ODUflex connection. 
                 The upper bound of this attribute is dependent on the HO-ODUk server layer. 
                 When the ODUflex(GFP) connection is initially created, this represents the actual number of tributary slots in use for the connection. When an ODUflex(GFP) connection is undergoing a resize operation, this attribute reflects the desired (resized) number of tributary slots only after the following stages (see G.7044[5] for details):
@@ -106,10 +117,6 @@ module TapiOduSpec-ObjectClasses {
                 - After the Link Connection Resize (LCR) phase of the ODUflex resize operation (in the case of bandwidth decrease)
                 This attribute applies only to ODUflex(CBR) connections only. The value of this attribute is (239/238)* (Bit rate of the CBR client).
                 ";
-            ordered-by system;
-            type uint64;
-            config false;
-            min-elements 1;
         }
         leaf resizingProtocolStatus {
             type TapiOduSpec-TypeDefinitions:ODUk_h_ResizingProtocolStatus;
@@ -117,10 +124,10 @@ module TapiOduSpec-ObjectClasses {
             description "This attribute indicates the status of the resizing protocol.";
         }
         container nominalBitRateAndTolerance {
-            description "This attribute specifies the nominal clock frequency and its tolerance range. Valid values for the frequency (in kHz) and tolerance (in ppm) range are given in Table 14-2/G.798 and clause 12.2.5/G.709.";
-            config true;
             uses TapiOduSpec-TypeDefinitions:ODUk_h_nominalBitRateAndTolerance;
+            description "This attribute specifies the nominal clock frequency and its tolerance range. Valid values for the frequency (in kHz) and tolerance (in ppm) range are given in Table 14-2/G.798 and clause 12.2.5/G.709.";
         }
+        description "none";
     }
     grouping OduTerminationSpec {
         leaf k {
@@ -129,6 +136,8 @@ module TapiOduSpec-ObjectClasses {
             description "This attribute specifies the index k that is used to represent a supported bit rate and the different versions of OPUk, ODUk and OTUk.";
         }
         leaf-list positionSeq {
+            type TapiOduSpec-TypeDefinitions:ODUk_TcmOrGccChoice;
+            config false;
             description "This attribute indicates the positions of the TCM and GCC processing functions within the ODUk TP.
                 The order of the position in the positionSeq attribute together with the signal flow determine the processing sequence of the TCM and GCC functions within the ODUk TP. Once the positions are determined, the signal processing sequence will follow the signal flow for each direction of the signal.
                 Within the ODUk_CTP, the position order is going from adaptation to connection function. Within the ODUk_TTP, the order is going from connection to adaptation function.
@@ -136,9 +145,6 @@ module TapiOduSpec-ObjectClasses {
                 The order of TCM and GCC access function in the positionSeq attribute is significant only when there are more than one TCM functions within the ODUk TP and also at least one of them have the TimActDisabled attribute set to FALSE (i.e. AIS is inserted upon TIM).
                 If a GCC12_TP is contained in an ODUk_TTP and the GCC12_TP is not listed in the PositionSeq attribute of the ODUk_TTP, then the GCC access is at the AP side of the ODUk TT function.
                 ";
-            ordered-by system;
-            type TapiOduSpec-TypeDefinitions:ODUk_TcmOrGccChoice;
-            config false;
         }
         leaf rate {
             type string;
@@ -155,10 +161,9 @@ module TapiOduSpec-ObjectClasses {
             description "This attribute is for setting the DMp and DMti bits of the delay measurement process. The value of true sets the DMp and DMti bits to 0 and the value of false to 1.";
         }
         leaf-list tcmFieldsInUse {
-            description "This attribute indicates the used TCM fields of the ODUk OH.";
-            ordered-by system;
             type uint64;
             config false;
+            description "This attribute indicates the used TCM fields of the ODUk OH.";
         }
         leaf acti {
             type TapiOduSpec-TypeDefinitions:BitString;
@@ -170,9 +175,8 @@ module TapiOduSpec-ObjectClasses {
             description "This attribute indicates the threshold level for declaring a Degraded Signal defect (dDEG). A dDEG shall be declared if DegM consecutive bad PM Seconds are detected.";
         }
         container degThr {
-            description "This attribute indicates the threshold level for declaring a performance monitoring (PM) Second to be bad. The value of the threshold can be provisioned in terms of number of errored blocks or in terms of percentage of errored blocks. For percentage-based specification, in order to support provision of less than 1%, the specification consists of two fields. The first field indicates the granularity of percentage. For examples, in 1%, in 0.1%, or in 0.01%, etc. The second field indicates the multiple of the granularity. For number of errored block based, the value is a positive integer.";
-            config true;
             uses TapiOduSpec-TypeDefinitions:DegThr;
+            description "This attribute indicates the threshold level for declaring a performance monitoring (PM) Second to be bad. The value of the threshold can be provisioned in terms of number of errored blocks or in terms of percentage of errored blocks. For percentage-based specification, in order to support provision of less than 1%, the specification consists of two fields. The first field indicates the granularity of percentage. For examples, in 1%, in 0.1%, or in 0.01%, etc. The second field indicates the multiple of the granularity. For number of errored block based, the value is a positive integer.";
         }
         leaf exDapi {
             type TapiOduSpec-TypeDefinitions:BitString;
@@ -195,6 +199,9 @@ module TapiOduSpec-ObjectClasses {
             description "The Trail Trace Identifier (TTI) information, provisioned by the managing system at the termination source, to be placed in the TTI overhead position of the source of a trail for transmission.";
         }
         leaf-list currentNumberOfTributarySlots {
+            type uint64;
+            config false;
+            min-elements 1;
             description "This attribute applies only to ODUflex(GFP) connections. It represents the current number of tributary slots allocated to this ODUflex(GFP) connection in the HO-ODU server layer. The value of this parameter determines the bit rate of the ODUflex connection. 
                 The upper bound of this attribute is dependent on the HO-ODUk server layer. 
                 When the ODUflex(GFP) connection is initially created, this represents the actual number of tributary slots in use for the connection. When an ODUflex(GFP) connection is undergoing a resize operation, this attribute reflects the desired (resized) number of tributary slots only after the following stages (see G.7044[5] for details):
@@ -202,29 +209,26 @@ module TapiOduSpec-ObjectClasses {
                 - After the Link Connection Resize (LCR) phase of the ODUflex resize operation (in the case of bandwidth decrease)
                 This attribute applies only to ODUflex(CBR) connections only. The value of this attribute is (239/238)* (Bit rate of the CBR client).
                 ";
-            ordered-by system;
-            type uint64;
-            config false;
-            min-elements 1;
         }
         leaf resizingProtocolStatus {
             type TapiOduSpec-TypeDefinitions:ODUk_h_ResizingProtocolStatus;
             config false;
             description "This attribute indicates the status of the resizing protocol.";
         }
+        description "none";
     }
     list OduLpSpec {
         key 'lpSpecReference';
-        config true;
-        uses TapiSpec-ObjectClasses:LpSpec;
         container _adapterSpec {
-            config true;
             uses OduAdapterAndConnectionPointSpec;
+            description "none";
         }
         container _terminationSpec {
-            config true;
             uses OduTerminationSpec;
+            description "none";
         }
+        uses TapiSpec-ObjectClasses:LpSpec;
+        description "none";
     }
     grouping OduTCMSpec {
         leaf tcmField {
@@ -242,6 +246,7 @@ module TapiOduSpec-ObjectClasses {
         }
         leaf tcmExtension {
             type TapiOduSpec-TypeDefinitions:ODUkT_tcmExtension;
+            description "none";
         }
         leaf dmSource {
             type boolean;
@@ -270,9 +275,8 @@ module TapiOduSpec-ObjectClasses {
             description "This attribute indicates the threshold level for declaring a Degraded Signal defect (dDEG). A dDEG shall be declared if DegM consecutive bad PM Seconds are detected.";
         }
         container degThr {
-            description "This attribute indicates the threshold level for declaring a performance monitoring (PM) Second to be bad. The value of the threshold can be provisioned in terms of number of errored blocks or in terms of percentage of errored blocks. For percentage-based specification, in order to support provision of less than 1%, the specification consists of two fields. The first field indicates the granularity of percentage. For examples, in 1%, in 0.1%, or in 0.01%, etc. The second field indicates the multiple of the granularity. For number of errored block based, the value is a positive integer.";
-            config true;
             uses TapiOduSpec-TypeDefinitions:DegThr;
+            description "This attribute indicates the threshold level for declaring a performance monitoring (PM) Second to be bad. The value of the threshold can be provisioned in terms of number of errored blocks or in terms of percentage of errored blocks. For percentage-based specification, in order to support provision of less than 1%, the specification consists of two fields. The first field indicates the granularity of percentage. For examples, in 1%, in 0.1%, or in 0.01%, etc. The second field indicates the multiple of the granularity. For number of errored block based, the value is a positive integer.";
         }
         leaf exDapi {
             type TapiOduSpec-TypeDefinitions:BitString;
@@ -303,5 +307,6 @@ module TapiOduSpec-ObjectClasses {
             type TapiOduSpec-TypeDefinitions:BitString;
             description "The Trail Trace Identifier (TTI) information, provisioned by the managing system at the termination source, to be placed in the TTI overhead position of the source of a trail for transmission.";
         }
+        description "none";
     }
 }
