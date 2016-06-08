@@ -1,6 +1,6 @@
 from connection import Connection
 from connectivityServicePort import ConnectivityServicePort
-from scheduleInfo import ScheduleInfo
+from timeRange import TimeRange
 from adminStatePac import AdminStatePac
 from connectivityConstraint import ConnectivityConstraint
 from globalClass import GlobalClass
@@ -13,7 +13,7 @@ class ConnectivityService(GlobalClass):
         self._servicePort=KeyedArrayType(ConnectivityServicePort, 'localId')
         self.direction=""
         self.layerProtocolName=""
-        self._schedule=ScheduleInfo() #import
+        self._schedule=TimeRange() #import
         self._state=AdminStatePac() #import
         self._connConstraints=ConnectivityConstraint() #import
         super(ConnectivityService, self).__init__(json_struct)
