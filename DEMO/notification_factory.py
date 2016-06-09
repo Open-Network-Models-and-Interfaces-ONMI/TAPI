@@ -1,7 +1,5 @@
 from twisted.internet import reactor
 from autobahn.twisted.websocket import WebSocketServerFactory, WebSocketServerProtocol, listenWS
-#from autobahn.websocket.http import HttpException
-
 
 import time
 import thread
@@ -55,7 +53,6 @@ class ServiceServerProtocol(WebSocketServerProtocol):
         else:
             err = "No service under %s" % request.path
             print(err)
-            #raise HttpException(404, err)
 
     def onOpen(self):
         if self.service:
@@ -73,8 +70,8 @@ class ServiceServerProtocol(WebSocketServerProtocol):
 class NotificationServerFactory():
 
     def __init__(self):
-        print '\nRunning notification server in port 8181'
-        factory = WebSocketServerFactory('ws://localhost:8788')
+        print '\nRunning notification server in port 8182'
+        factory = WebSocketServerFactory('ws://localhost:8182')
         factory.protocol = ServiceServerProtocol
         listenWS(factory)
         try:

@@ -9,6 +9,7 @@ import re
 # BACKEND FUNCTIONS
 from funcs_Tapi_Interfaces_PathComputationService.computep2PpathImpl import Computep2PpathImpl
 from funcs_Tapi_Interfaces_PathComputationService.optimizep2PpathImpl import Optimizep2PpathImpl
+from funcs_Tapi_Interfaces_PathComputationService.deletep2PpathImpl import Deletep2PpathImpl
 
 # CALLABLE OBJECTS
 from objects_Tapi_Interfaces_PathComputationService.linkPort import LinkPort
@@ -27,19 +28,22 @@ from objects_Tapi_Interfaces_PathComputationService.validationMechanism import V
 from objects_Tapi_Interfaces_PathComputationService.node import Node
 from objects_Tapi_Interfaces_PathComputationService.teLink import TeLink
 from objects_Tapi_Interfaces_PathComputationService.costCharacteristic import CostCharacteristic
+from objects_Tapi_Interfaces_PathComputationService.connectionEndPoint import ConnectionEndPoint
 from objects_Tapi_Interfaces_PathComputationService.transferCapacityPac import TransferCapacityPac
 from objects_Tapi_Interfaces_PathComputationService.optimizeP2PPathRPCInputSchema import OptimizeP2PPathRPCInputSchema
 from objects_Tapi_Interfaces_PathComputationService.connectivityService import ConnectivityService
 from objects_Tapi_Interfaces_PathComputationService.connectionPort import ConnectionPort
 from objects_Tapi_Interfaces_PathComputationService.ltpSpec import LtpSpec
-from objects_Tapi_Interfaces_PathComputationService.connectionEndPoint import ConnectionEndPoint
+from objects_Tapi_Interfaces_PathComputationService.pathComputationService import PathComputationService
 from objects_Tapi_Interfaces_PathComputationService.link import Link
 from objects_Tapi_Interfaces_PathComputationService.localClass import LocalClass
 from objects_Tapi_Interfaces_PathComputationService.path import Path
 from objects_Tapi_Interfaces_PathComputationService.topology import Topology
 from objects_Tapi_Interfaces_PathComputationService.queuingLatency import QueuingLatency
 from objects_Tapi_Interfaces_PathComputationService.connectivityConstraint import ConnectivityConstraint
+from objects_Tapi_Interfaces_PathComputationService.pathCompServicePort import PathCompServicePort
 from objects_Tapi_Interfaces_PathComputationService.virtualNetworkService import VirtualNetworkService
+from objects_Tapi_Interfaces_PathComputationService.deleteP2PPathRPCInputSchema import DeleteP2PPathRPCInputSchema
 from objects_Tapi_Interfaces_PathComputationService.route import Route
 from objects_Tapi_Interfaces_PathComputationService.computeP2PPathRPCOutputSchema import ComputeP2PPathRPCOutputSchema
 from objects_Tapi_Interfaces_PathComputationService.connection import Connection
@@ -55,6 +59,7 @@ from objects_Tapi_Interfaces_PathComputationService.nameAndValueChange import Na
 from objects_Tapi_Interfaces_PathComputationService.operationalStatePac import OperationalStatePac
 from objects_Tapi_Interfaces_PathComputationService.globalClass import GlobalClass
 from objects_Tapi_Interfaces_PathComputationService.layerProtocol import LayerProtocol
+from objects_Tapi_Interfaces_PathComputationService.deleteP2PPathRPCOutputSchema import DeleteP2PPathRPCOutputSchema
 from objects_Tapi_Interfaces_PathComputationService.notificationSubscriptionService import NotificationSubscriptionService
 from objects_Tapi_Interfaces_PathComputationService.nodeEdgePoint import NodeEdgePoint
 from objects_Tapi_Interfaces_PathComputationService.lpSpec import LpSpec
@@ -263,6 +268,36 @@ class Optimizep2Ppath(MethodView):
 
 
 
+#/restconf/operations/deleteP2PPath/
+class Deletep2Ppath(MethodView):
+
+    def post(self, ):
+        print "Create operation of resource: deleteP2PPath"
+        try:
+            response = Deletep2PpathImpl.get()
+        except KeyError as inst:
+            if inst.args[0] != '':
+                return NotFoundError(inst.args[0] + " not found")
+
+            json_struct = request.get_json() #json parser.
+            new_object = create_instance(DeleteP2PPathRPCInputSchema, json_struct)
+            if isinstance(new_object, BadRequestError):
+                return new_object
+            elif isinstance(new_object, NotFoundError):
+                return new_object
+            else:
+                try:
+                    Deletep2PpathImpl.post(new_object)
+                    js=new_object.json_serializer()
+                except KeyError as inst:
+                    return NotFoundError(inst.args[0] + " not found")
+        else:
+            return BadRequestError("Object already exists. For updates use PUT.")
+        return Successful("Successful operation",json_dumps(js))
+
+
+
 
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/operations/computeP2PPath/", view_func = globals()["Computep2Ppath"].as_view('"Computep2Ppath"'+'"_api"'), methods=['POST'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/operations/optimizeP2PPath/", view_func = globals()["Optimizep2Ppath"].as_view('"Optimizep2Ppath"'+'"_api"'), methods=['POST'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/operations/deleteP2PPath/", view_func = globals()["Deletep2Ppath"].as_view('"Deletep2Ppath"'+'"_api"'), methods=['POST'])

@@ -12,9 +12,9 @@ class VirtualNetworkConstraint(JsonObject):
         self.serviceType=""
         self.requestedCapacity=Capacity() #import
         self.costCharacteristic=KeyedArrayType(CostCharacteristic, 'costAlgorithm')
-        self.latencyCharacteristic=KeyedArrayType(QueuingLatency, 'latencyValue')
-        self.serviceLevel=""
         self.serviceLayer=ArrayType.factory(str)
+        self.serviceLevel=""
+        self.latencyCharacteristic=KeyedArrayType(QueuingLatency, 'latencyValue')
         self.riskCharacteristic=KeyedArrayType(RiskCharacteristic, 'riskCharacteristicName')
         super(VirtualNetworkConstraint, self).__init__(json_struct)
 

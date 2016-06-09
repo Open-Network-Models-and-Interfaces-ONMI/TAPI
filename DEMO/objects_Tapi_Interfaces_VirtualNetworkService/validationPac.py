@@ -1,10 +1,10 @@
 from objects_common.jsonObject import JsonObject
 from validationMechanism import ValidationMechanism
-from objects_common.arrayType import ArrayType
+from objects_common.keyedArrayType import KeyedArrayType
 
 class ValidationPac(JsonObject):
 
     def __init__(self, json_struct=None):
-        self.validationMechanism=ArrayType.factory(ValidationMechanism)
+        self.validationMechanism=KeyedArrayType(ValidationMechanism, 'validationRobustness')
         super(ValidationPac, self).__init__(json_struct)
 

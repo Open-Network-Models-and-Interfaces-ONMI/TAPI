@@ -20,13 +20,6 @@ module Tapi-ObjectClasses {
         reference "RFC 6020 and RFC 6087";
     }
     container Context {
-        list _serviceEndPoint {
-            key 'uuid';
-            min-elements 2;
-            config false;
-            uses ServiceEndPoint;
-            description "none";
-        }
         list _connectivityService {
             key 'uuid';
             uses ConnectivityService;
@@ -37,9 +30,21 @@ module Tapi-ObjectClasses {
             uses VirtualNetworkService;
             description "none";
         }
+        list _pathCompService {
+            key 'uuid';
+            uses PathComputationService;
+            description "none";
+        }
         list _notifSubscription {
             key 'uuid';
             uses NotificationSubscriptionService;
+            description "none";
+        }
+        list _serviceEndPoint {
+            key 'uuid';
+            min-elements 2;
+            config false;
+            uses ServiceEndPoint;
             description "none";
         }
         list _topology {
@@ -48,13 +53,8 @@ module Tapi-ObjectClasses {
             uses Topology;
             description "none";
         }
-        list _path {
-            key 'uuid';
-            config false;
-            uses Path;
-            description "none";
-        }
         list _notification {
+            key 'notificationId';
             config false;
             uses Notification;
             description "none";
@@ -77,6 +77,7 @@ module Tapi-ObjectClasses {
         }
         leaf-list layerProtocolName {
             type Tapi-TypeDefinitions:LayerProtocolName;
+            config false;
             min-elements 1;
             description "none";
         }
@@ -726,16 +727,6 @@ module Tapi-ObjectClasses {
             uses ConnectivityConstraint;
             description "none";
         }
-        container _optimizationConstraint {
-            config false;
-            uses PathOptimizationConstraint;
-            description "none";
-        }
-        container _objectiveFunction {
-            config false;
-            uses PathObjectiveFunction;
-            description "none";
-        }
         uses GlobalClass;
         description "Path is described by an ordered list of TE Links. A TE Link is defined by a pair of Node/NodeEdgePoint IDs. A Connection is realized by concatenating link resources (associated with a Link) and the lower-level connections (cross-connections) in the different nodes";
     }
@@ -748,13 +739,11 @@ module Tapi-ObjectClasses {
         list name {
             key 'valueName';
             min-elements 1;
-            config false;
             uses Tapi-TypeDefinitions:NameAndValue;
             description "List of names. A property of an entity with a value that is unique in some namespace but may change during the life of the entity. A name carries no semantics with respect to the purpose of the entity.";
         }
         list label {
             key 'valueName';
-            config false;
             uses Tapi-TypeDefinitions:NameAndValue;
             description "List of labels.A property of an entity with a value that is not expected to be unique and is allowed to change. A label carries no semantics with respect to the purpose of the entity and has no effect on the entity behavior or state.";
         }
@@ -855,14 +844,14 @@ module Tapi-ObjectClasses {
         }
         leaf-list includePath {
             type leafref {
-                path '/Context/_path/uuid';
+                path '/Context/_pathCompService/_path/uuid';
             }
             config false;
             description "none";
         }
         leaf-list excludePath {
             type leafref {
-                path '/Context/_path/uuid';
+                path '/Context/_pathCompService/_path/uuid';
             }
             config false;
             description "none";
@@ -1019,6 +1008,7 @@ module Tapi-ObjectClasses {
     }
     grouping NotificationSubscriptionService {
         list _notification {
+            key 'notificationId';
             config false;
             uses Notification;
             description "none";
@@ -1072,7 +1062,6 @@ module Tapi-ObjectClasses {
     grouping Notification {
         leaf notificationId {
             type Tapi-TypeDefinitions:UniversalId;
-            config false;
             description "none";
         }
         leaf notificationType {
@@ -1081,55 +1070,108 @@ module Tapi-ObjectClasses {
         }
         leaf targetObjectType {
             type Tapi-TypeDefinitions:ObjectType;
-            config false;
             description "none";
         }
         leaf targetObjectIdentifier {
             type Tapi-TypeDefinitions:UniversalId;
-            config false;
             description "none";
         }
         list targetObjectName {
             key 'valueName';
             min-elements 1;
-            config false;
             uses Tapi-TypeDefinitions:NameAndValue;
             description "none";
         }
         leaf eventTimeStamp {
             type Tapi-TypeDefinitions:DateAndTime;
-            config false;
             description "none";
         }
         leaf sourceIndicator {
             type Tapi-TypeDefinitions:SourceIndicator;
-            config false;
             description "none";
         }
         leaf layerProtocolName {
             type Tapi-TypeDefinitions:LayerProtocolName;
-            config false;
             description "none";
         }
         list changedAttributes {
-            config false;
             uses Tapi-TypeDefinitions:NameAndValueChange;
             description "none";
         }
         list additionalInfo {
             key 'valueName';
-            config false;
             uses Tapi-TypeDefinitions:NameAndValue;
             description "none";
         }
         leaf additionalText {
             type string;
-            config false;
             description "none";
         }
         description "none";
     }
     notification Notification {
         uses Notification;
+    }
+    grouping PathComputationService {
+        list _path {
+            key 'uuid';
+            min-elements 1;
+            config false;
+            uses Path;
+            description "none";
+        }
+        list _servicePort {
+            key 'localId';
+            min-elements 2;
+            max-elements 2;
+            uses PathCompServicePort;
+            description "none";
+        }
+        container _routingConstraint {
+            uses ConnectivityConstraint;
+            description "none";
+        }
+        container _objectiveFunction {
+            uses PathObjectiveFunction;
+            description "none";
+        }
+        container _optimizationConstraint {
+            uses PathOptimizationConstraint;
+            description "none";
+        }
+        uses GlobalClass;
+        description "none";
+    }
+    grouping PathCompServicePort {
+        leaf _serviceEndPoint {
+            type leafref {
+                path '/Context/_serviceEndPoint/uuid';
+            }
+            config false;
+            description "none";
+        }
+        leaf role {
+            type Tapi-TypeDefinitions:PortRole;
+            config false;
+            description "Each EP of the FC has a role (e.g., working, protection, protected, symmetric, hub, spoke, leaf, root)  in the context of the FC with respect to the FC function. ";
+        }
+        leaf direction {
+            type Tapi-TypeDefinitions:PortDirection;
+            config false;
+            description "The orientation of defined flow at the EndPoint.";
+        }
+        leaf serviceLayer {
+            type Tapi-TypeDefinitions:LayerProtocolName;
+            config false;
+            description "none";
+        }
+        uses LocalClass;
+        description "The association of the FC to LTPs is made via EndPoints.
+            The EndPoint (EP) object class models the access to the FC function. 
+            The traffic forwarding between the associated EPs of the FC depends upon the type of FC and may be associated with FcSwitch object instances.  
+            In cases where there is resilience the EndPoint may convey the resilience role of the access to the FC. 
+            It can represent a protected (resilient/reliable) point or a protecting (unreliable working or protection) point.
+            The EP replaces the Protection Unit of a traditional protection model. 
+            The ForwadingConstruct can be considered as a component and the EndPoint as a Port on that component";
     }
 }
