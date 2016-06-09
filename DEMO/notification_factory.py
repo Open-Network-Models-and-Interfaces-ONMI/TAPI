@@ -39,7 +39,7 @@ class NotificationService(BaseService):
 
 class ServiceServerProtocol(WebSocketServerProtocol):
 
-    SERVICEMAP = { '/restconf/streams/NotificationService' : NotificationService }
+    SERVICEMAP = { '/restconf/streams/Notification' : NotificationService }
 
     def __init__(self):
         super(ServiceServerProtocol, self).__init__()
