@@ -6,6 +6,35 @@ from backend.backend import Context
 class Context_ConnectivityserviceUuidLabelValuenameImpl:
 
     @classmethod
+    def put(cls, uuid, valueName, nameandvalue):
+        print str(nameandvalue)
+        print 'handling put'
+        if uuid in Context._connectivityService:
+            Context._connectivityService[uuid].label[valueName] = nameandvalue
+        else:
+            raise KeyError('valueName')
+
+    @classmethod
+    def post(cls, uuid, valueName, nameandvalue):
+        print str(nameandvalue)
+        print 'handling post'
+        if uuid in Context._connectivityService:
+            Context._connectivityService[uuid].label[valueName] = nameandvalue
+        else:
+            raise KeyError('valueName')
+
+    @classmethod
+    def delete(cls, uuid, valueName):
+        print 'handling delete'
+        if uuid in Context._connectivityService:
+            if valueName in Context._connectivityService[uuid].label:
+                del Context._connectivityService[uuid].label[valueName]
+            else:
+                raise KeyError('valueName')
+        else:
+            raise KeyError('uuid')
+
+    @classmethod
     def get(cls, uuid, valueName):
         print 'handling get'
         if uuid in Context._connectivityService:

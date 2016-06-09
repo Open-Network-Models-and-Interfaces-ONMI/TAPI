@@ -4,13 +4,12 @@ from timeRange import TimeRange
 from adminStatePac import AdminStatePac
 from connectivityConstraint import ConnectivityConstraint
 from globalClass import GlobalClass
-from objects_common.arrayType import ArrayType
 from objects_common.keyedArrayType import KeyedArrayType
 
 class ConnectivityService(GlobalClass):
 
     def __init__(self, json_struct=None):
-        self._connection=ArrayType.factory(Connection)
+        self._connection=KeyedArrayType(Connection, 'uuid')
         self._servicePort=KeyedArrayType(ConnectivityServicePort, 'localId')
         self.direction=""
         self.layerProtocolName=""

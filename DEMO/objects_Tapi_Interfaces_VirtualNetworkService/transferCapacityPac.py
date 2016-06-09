@@ -1,11 +1,11 @@
 from objects_common.jsonObject import JsonObject
 from capacity import Capacity
-from objects_common.arrayType import ArrayType
+from objects_common.keyedArrayType import KeyedArrayType
 
 class TransferCapacityPac(JsonObject):
 
     def __init__(self, json_struct=None):
-        self.capacityAssignedToUserView=ArrayType.factory(Capacity)
+        self.capacityAssignedToUserView=KeyedArrayType(Capacity, 'numberingRange')
         self.availableCapacity=Capacity() #import
         self.totalPotentialCapacity=Capacity() #import
         self.capacityInteractionAlgorithm=""

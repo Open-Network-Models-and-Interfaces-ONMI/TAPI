@@ -1,10 +1,9 @@
 from objects_common.jsonObject import JsonObject
-from path import Path
-from objects_common.arrayType import ArrayType
+from pathComputationService import PathComputationService
 
 class ComputeP2PPathRPCOutputSchema(JsonObject):
 
     def __init__(self, json_struct=None):
-        self.path=ArrayType.factory(Path)
+        self.pathCompService=PathComputationService() #import
         super(ComputeP2PPathRPCOutputSchema, self).__init__(json_struct)
 

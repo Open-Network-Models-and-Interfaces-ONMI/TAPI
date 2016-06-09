@@ -141,7 +141,7 @@ if __name__ == '__main__':
     server_status.daemon = True
     server_status.start()
 
-    backend_service.addClient('http://localhost:8282/restconf/streams/Notification', notification_q)
+    backend_service.addClient('http://localhost:8182/restconf/streams/Notification', notification_q)
     try:
         reactor.run()
     except KeyboardInterrupt:

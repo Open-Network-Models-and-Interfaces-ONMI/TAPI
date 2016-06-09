@@ -1,52 +1,5 @@
 module: Tapi-ObjectClasses
    +--rw Context
-      +--ro _serviceEndPoint* [uuid]
-      |  +--ro _ltpSpecData
-      |  |  +--ro ltpSpecReference?   string
-      |  |  +--ro lpSpecReference*    string
-      |  +--ro _layerProtocol* [localId]
-      |  |  +--ro _lpSpecData
-      |  |  |  +--ro lpSpecReference?   string
-      |  |  +--ro layerProtocolName?      Tapi-TypeDefinitions:LayerProtocolName
-      |  |  +--ro terminationDirection?   Tapi-TypeDefinitions:TerminationDirection
-      |  |  +--ro terminationState?       Tapi-TypeDefinitions:TerminationState
-      |  |  +--ro localId                 string
-      |  +--ro _mappedNodeEdgePoint*   -> /Context/_topology/_node/_ownedNodeEdgePoint/uuid
-      |  +--ro _connectionEndPoint* [uuid]
-      |  |  +--ro _ltpSpecData
-      |  |  |  +--ro ltpSpecReference?   string
-      |  |  |  +--ro lpSpecReference*    string
-      |  |  +--ro _layerProtocol* [localId]
-      |  |  |  +--ro _lpSpecData
-      |  |  |  |  +--ro lpSpecReference?   string
-      |  |  |  +--ro layerProtocolName?      Tapi-TypeDefinitions:LayerProtocolName
-      |  |  |  +--ro terminationDirection?   Tapi-TypeDefinitions:TerminationDirection
-      |  |  |  +--ro terminationState?       Tapi-TypeDefinitions:TerminationState
-      |  |  |  +--ro localId                 string
-      |  |  +--ro _clientNodeEdgePoint*      -> /Context/_topology/_node/_ownedNodeEdgePoint/uuid
-      |  |  +--ro _serverNodeEdgePoint?      -> /Context/_topology/_node/_ownedNodeEdgePoint/uuid
-      |  |  +--ro _peerConnectionEndPoint?   -> /Context/_serviceEndPoint/_connectionEndPoint/uuid
-      |  |  +--ro _state
-      |  |  |  +--ro operationalState?   Tapi-TypeDefinitions:OperationalState
-      |  |  |  +--ro lifecycleState?     Tapi-TypeDefinitions:LifecycleState
-      |  |  +--ro direction?                 Tapi-TypeDefinitions:TerminationDirection
-      |  |  +--ro uuid                       Tapi-TypeDefinitions:UniversalId
-      |  |  +--ro name* [valueName]
-      |  |  |  +--ro valueName    string
-      |  |  |  +--ro value?       string
-      |  |  +--ro label* [valueName]
-      |  |     +--ro valueName    string
-      |  |     +--ro value?       string
-      |  +--ro _state
-      |  |  +--ro lifecycleState?   Tapi-TypeDefinitions:LifecycleState
-      |  +--ro direction?              Tapi-TypeDefinitions:TerminationDirection
-      |  +--ro uuid                    Tapi-TypeDefinitions:UniversalId
-      |  +--ro name* [valueName]
-      |  |  +--ro valueName    string
-      |  |  +--ro value?       string
-      |  +--ro label* [valueName]
-      |     +--ro valueName    string
-      |     +--ro value?       string
       +--rw _connectivityService* [uuid]
       |  +--ro _connection* [uuid]
       |  |  +--ro _connectionPort* [localId]
@@ -97,8 +50,8 @@ module: Tapi-ObjectClasses
       |  |  |  +--ro latencyValue           string
       |  |  +--ro includeTopology*         -> /Context/_topology/uuid
       |  |  +--ro avoidTopology*           -> /Context/_topology/uuid
-      |  |  +--ro includePath*             -> /Context/_path/uuid
-      |  |  +--ro excludePath*             -> /Context/_path/uuid
+      |  |  +--ro includePath*             -> /Context/_pathCompService/_path/uuid
+      |  |  +--ro excludePath*             -> /Context/_pathCompService/_path/uuid
       |  +--rw _schedule
       |  |  +--rw endTime?     Tapi-TypeDefinitions:DateAndTime
       |  |  +--rw startTime?   Tapi-TypeDefinitions:DateAndTime
@@ -109,12 +62,12 @@ module: Tapi-ObjectClasses
       |  +--rw layerProtocolName?   Tapi-TypeDefinitions:LayerProtocolName
       |  +--rw direction?           Tapi-TypeDefinitions:ForwardingDirection
       |  +--rw uuid                 Tapi-TypeDefinitions:UniversalId
-      |  +--ro name* [valueName]
-      |  |  +--ro valueName    string
-      |  |  +--ro value?       string
-      |  +--ro label* [valueName]
-      |     +--ro valueName    string
-      |     +--ro value?       string
+      |  +--rw name* [valueName]
+      |  |  +--rw valueName    string
+      |  |  +--rw value?       string
+      |  +--rw label* [valueName]
+      |     +--rw valueName    string
+      |     +--rw value?       string
       +--rw _vnwService* [uuid]
       |  +--ro _topology?           -> /Context/_topology/uuid
       |  +--rw _servicePort* [localId]
@@ -151,15 +104,95 @@ module: Tapi-ObjectClasses
       |  |  +--rw lifecycleState?        Tapi-TypeDefinitions:LifecycleState
       |  +--rw layerProtocolName*   Tapi-TypeDefinitions:LayerProtocolName
       |  +--rw uuid                 Tapi-TypeDefinitions:UniversalId
-      |  +--ro name* [valueName]
-      |  |  +--ro valueName    string
-      |  |  +--ro value?       string
-      |  +--ro label* [valueName]
-      |     +--ro valueName    string
-      |     +--ro value?       string
+      |  +--rw name* [valueName]
+      |  |  +--rw valueName    string
+      |  |  +--rw value?       string
+      |  +--rw label* [valueName]
+      |     +--rw valueName    string
+      |     +--rw value?       string
+      +--rw _pathCompService* [uuid]
+      |  +--ro _path* [uuid]
+      |  |  +--ro _telink* [localId]
+      |  |  |  +--ro _node*            -> /Context/_topology/_node/uuid
+      |  |  |  +--ro _nodeEdgePoint*   -> /Context/_topology/_node/_ownedNodeEdgePoint/uuid
+      |  |  |  +--ro localId           string
+      |  |  +--ro _routingConstraint
+      |  |  |  +--ro serviceType?             Tapi-TypeDefinitions:ServiceType
+      |  |  |  +--ro serviceLevel?            string
+      |  |  |  +--ro serviceLayer*            Tapi-TypeDefinitions:LayerProtocolName
+      |  |  |  +--ro requestedCapacity
+      |  |  |  |  +--ro totalSize?               string
+      |  |  |  |  +--ro maximumUsageInstances?   string
+      |  |  |  |  +--ro maximumUsageSize?        string
+      |  |  |  |  +--ro numberingRange?          string
+      |  |  |  +--ro costCharacteristic* [costAlgorithm]
+      |  |  |  |  +--ro costName?        string
+      |  |  |  |  +--ro costValue?       string
+      |  |  |  |  +--ro costAlgorithm    string
+      |  |  |  +--ro riskCharacteristic* [riskCharacteristicName]
+      |  |  |  |  +--ro riskCharacteristicName    string
+      |  |  |  |  +--ro riskIdentifierList*       string
+      |  |  |  +--ro latencyCharacteristic* [latencyValue]
+      |  |  |  |  +--ro trafficPropertyName?   string
+      |  |  |  |  +--ro latencyValue           string
+      |  |  |  +--ro includeTopology*         -> /Context/_topology/uuid
+      |  |  |  +--ro avoidTopology*           -> /Context/_topology/uuid
+      |  |  |  +--ro includePath*             -> /Context/_pathCompService/_path/uuid
+      |  |  |  +--ro excludePath*             -> /Context/_pathCompService/_path/uuid
+      |  |  +--ro uuid                  Tapi-TypeDefinitions:UniversalId
+      |  |  +--ro name* [valueName]
+      |  |  |  +--ro valueName    string
+      |  |  |  +--ro value?       string
+      |  |  +--ro label* [valueName]
+      |  |     +--ro valueName    string
+      |  |     +--ro value?       string
+      |  +--rw _servicePort* [localId]
+      |  |  +--ro _serviceEndPoint?   -> /Context/_serviceEndPoint/uuid
+      |  |  +--ro role?               Tapi-TypeDefinitions:PortRole
+      |  |  +--ro direction?          Tapi-TypeDefinitions:PortDirection
+      |  |  +--ro serviceLayer?       Tapi-TypeDefinitions:LayerProtocolName
+      |  |  +--rw localId             string
+      |  +--rw _routingConstraint
+      |  |  +--ro serviceType?             Tapi-TypeDefinitions:ServiceType
+      |  |  +--ro serviceLevel?            string
+      |  |  +--ro serviceLayer*            Tapi-TypeDefinitions:LayerProtocolName
+      |  |  +--ro requestedCapacity
+      |  |  |  +--ro totalSize?               string
+      |  |  |  +--ro maximumUsageInstances?   string
+      |  |  |  +--ro maximumUsageSize?        string
+      |  |  |  +--ro numberingRange?          string
+      |  |  +--ro costCharacteristic* [costAlgorithm]
+      |  |  |  +--ro costName?        string
+      |  |  |  +--ro costValue?       string
+      |  |  |  +--ro costAlgorithm    string
+      |  |  +--ro riskCharacteristic* [riskCharacteristicName]
+      |  |  |  +--ro riskCharacteristicName    string
+      |  |  |  +--ro riskIdentifierList*       string
+      |  |  +--ro latencyCharacteristic* [latencyValue]
+      |  |  |  +--ro trafficPropertyName?   string
+      |  |  |  +--ro latencyValue           string
+      |  |  +--ro includeTopology*         -> /Context/_topology/uuid
+      |  |  +--ro avoidTopology*           -> /Context/_topology/uuid
+      |  |  +--ro includePath*             -> /Context/_pathCompService/_path/uuid
+      |  |  +--ro excludePath*             -> /Context/_pathCompService/_path/uuid
+      |  +--rw _objectiveFunction
+      |  |  +--ro bandwidthOptimization?   Tapi-TypeDefinitions:DirectiveValue
+      |  |  +--ro concurrentPaths?         Tapi-TypeDefinitions:DirectiveValue
+      |  |  +--ro costOptimization?        Tapi-TypeDefinitions:DirectiveValue
+      |  |  +--ro linkUtilization?         Tapi-TypeDefinitions:DirectiveValue
+      |  |  +--ro resourceSharing?         Tapi-TypeDefinitions:DirectiveValue
+      |  +--rw _optimizationConstraint
+      |  |  +--ro trafficInterruption?   Tapi-TypeDefinitions:DirectiveValue
+      |  +--rw uuid                       Tapi-TypeDefinitions:UniversalId
+      |  +--rw name* [valueName]
+      |  |  +--rw valueName    string
+      |  |  +--rw value?       string
+      |  +--rw label* [valueName]
+      |     +--rw valueName    string
+      |     +--rw value?       string
       +--rw _notifSubscription* [uuid]
-      |  +--ro _notification*
-      |  |  +--ro notificationId?           Tapi-TypeDefinitions:UniversalId
+      |  +--ro _notification* [notificationId]
+      |  |  +--ro notificationId            Tapi-TypeDefinitions:UniversalId
       |  |  +--ro notificationType?         Tapi-TypeDefinitions:NotificationType
       |  |  +--ro targetObjectType?         Tapi-TypeDefinitions:ObjectType
       |  |  +--ro targetObjectIdentifier?   Tapi-TypeDefinitions:UniversalId
@@ -186,6 +219,53 @@ module: Tapi-ObjectClasses
       |  +--ro supportedNotificationTypes*   Tapi-TypeDefinitions:NotificationType
       |  +--ro supportedObjectTypes*         Tapi-TypeDefinitions:ObjectType
       |  +--rw uuid                          Tapi-TypeDefinitions:UniversalId
+      |  +--rw name* [valueName]
+      |  |  +--rw valueName    string
+      |  |  +--rw value?       string
+      |  +--rw label* [valueName]
+      |     +--rw valueName    string
+      |     +--rw value?       string
+      +--ro _serviceEndPoint* [uuid]
+      |  +--ro _ltpSpecData
+      |  |  +--ro ltpSpecReference?   string
+      |  |  +--ro lpSpecReference*    string
+      |  +--ro _layerProtocol* [localId]
+      |  |  +--ro _lpSpecData
+      |  |  |  +--ro lpSpecReference?   string
+      |  |  +--ro layerProtocolName?      Tapi-TypeDefinitions:LayerProtocolName
+      |  |  +--ro terminationDirection?   Tapi-TypeDefinitions:TerminationDirection
+      |  |  +--ro terminationState?       Tapi-TypeDefinitions:TerminationState
+      |  |  +--ro localId                 string
+      |  +--ro _mappedNodeEdgePoint*   -> /Context/_topology/_node/_ownedNodeEdgePoint/uuid
+      |  +--ro _connectionEndPoint* [uuid]
+      |  |  +--ro _ltpSpecData
+      |  |  |  +--ro ltpSpecReference?   string
+      |  |  |  +--ro lpSpecReference*    string
+      |  |  +--ro _layerProtocol* [localId]
+      |  |  |  +--ro _lpSpecData
+      |  |  |  |  +--ro lpSpecReference?   string
+      |  |  |  +--ro layerProtocolName?      Tapi-TypeDefinitions:LayerProtocolName
+      |  |  |  +--ro terminationDirection?   Tapi-TypeDefinitions:TerminationDirection
+      |  |  |  +--ro terminationState?       Tapi-TypeDefinitions:TerminationState
+      |  |  |  +--ro localId                 string
+      |  |  +--ro _clientNodeEdgePoint*      -> /Context/_topology/_node/_ownedNodeEdgePoint/uuid
+      |  |  +--ro _serverNodeEdgePoint?      -> /Context/_topology/_node/_ownedNodeEdgePoint/uuid
+      |  |  +--ro _peerConnectionEndPoint?   -> /Context/_serviceEndPoint/_connectionEndPoint/uuid
+      |  |  +--ro _state
+      |  |  |  +--ro operationalState?   Tapi-TypeDefinitions:OperationalState
+      |  |  |  +--ro lifecycleState?     Tapi-TypeDefinitions:LifecycleState
+      |  |  +--ro direction?                 Tapi-TypeDefinitions:TerminationDirection
+      |  |  +--ro uuid                       Tapi-TypeDefinitions:UniversalId
+      |  |  +--ro name* [valueName]
+      |  |  |  +--ro valueName    string
+      |  |  |  +--ro value?       string
+      |  |  +--ro label* [valueName]
+      |  |     +--ro valueName    string
+      |  |     +--ro value?       string
+      |  +--ro _state
+      |  |  +--ro lifecycleState?   Tapi-TypeDefinitions:LifecycleState
+      |  +--ro direction?              Tapi-TypeDefinitions:TerminationDirection
+      |  +--ro uuid                    Tapi-TypeDefinitions:UniversalId
       |  +--ro name* [valueName]
       |  |  +--ro valueName    string
       |  |  +--ro value?       string
@@ -344,51 +424,8 @@ module: Tapi-ObjectClasses
       |  +--ro label* [valueName]
       |     +--ro valueName    string
       |     +--ro value?       string
-      +--ro _path* [uuid]
-      |  +--ro _telink* [localId]
-      |  |  +--ro _node*            -> /Context/_topology/_node/uuid
-      |  |  +--ro _nodeEdgePoint*   -> /Context/_topology/_node/_ownedNodeEdgePoint/uuid
-      |  |  +--ro localId           string
-      |  +--ro _routingConstraint
-      |  |  +--ro serviceType?             Tapi-TypeDefinitions:ServiceType
-      |  |  +--ro serviceLevel?            string
-      |  |  +--ro serviceLayer*            Tapi-TypeDefinitions:LayerProtocolName
-      |  |  +--ro requestedCapacity
-      |  |  |  +--ro totalSize?               string
-      |  |  |  +--ro maximumUsageInstances?   string
-      |  |  |  +--ro maximumUsageSize?        string
-      |  |  |  +--ro numberingRange?          string
-      |  |  +--ro costCharacteristic* [costAlgorithm]
-      |  |  |  +--ro costName?        string
-      |  |  |  +--ro costValue?       string
-      |  |  |  +--ro costAlgorithm    string
-      |  |  +--ro riskCharacteristic* [riskCharacteristicName]
-      |  |  |  +--ro riskCharacteristicName    string
-      |  |  |  +--ro riskIdentifierList*       string
-      |  |  +--ro latencyCharacteristic* [latencyValue]
-      |  |  |  +--ro trafficPropertyName?   string
-      |  |  |  +--ro latencyValue           string
-      |  |  +--ro includeTopology*         -> /Context/_topology/uuid
-      |  |  +--ro avoidTopology*           -> /Context/_topology/uuid
-      |  |  +--ro includePath*             -> /Context/_path/uuid
-      |  |  +--ro excludePath*             -> /Context/_path/uuid
-      |  +--ro _optimizationConstraint
-      |  |  +--ro trafficInterruption?   Tapi-TypeDefinitions:DirectiveValue
-      |  +--ro _objectiveFunction
-      |  |  +--ro bandwidthOptimization?   Tapi-TypeDefinitions:DirectiveValue
-      |  |  +--ro concurrentPaths?         Tapi-TypeDefinitions:DirectiveValue
-      |  |  +--ro costOptimization?        Tapi-TypeDefinitions:DirectiveValue
-      |  |  +--ro linkUtilization?         Tapi-TypeDefinitions:DirectiveValue
-      |  |  +--ro resourceSharing?         Tapi-TypeDefinitions:DirectiveValue
-      |  +--ro uuid                       Tapi-TypeDefinitions:UniversalId
-      |  +--ro name* [valueName]
-      |  |  +--ro valueName    string
-      |  |  +--ro value?       string
-      |  +--ro label* [valueName]
-      |     +--ro valueName    string
-      |     +--ro value?       string
-      +--ro _notification*
-      |  +--ro notificationId?           Tapi-TypeDefinitions:UniversalId
+      +--ro _notification* [notificationId]
+      |  +--ro notificationId            Tapi-TypeDefinitions:UniversalId
       |  +--ro notificationType?         Tapi-TypeDefinitions:NotificationType
       |  +--ro targetObjectType?         Tapi-TypeDefinitions:ObjectType
       |  +--ro targetObjectIdentifier?   Tapi-TypeDefinitions:UniversalId
@@ -407,12 +444,12 @@ module: Tapi-ObjectClasses
       |  |  +--ro value?       string
       |  +--ro additionalText?           string
       +--rw uuid?                   Tapi-TypeDefinitions:UniversalId
-      +--ro name* [valueName]
-      |  +--ro valueName    string
-      |  +--ro value?       string
-      +--ro label* [valueName]
-         +--ro valueName    string
-         +--ro value?       string
+      +--rw name* [valueName]
+      |  +--rw valueName    string
+      |  +--rw value?       string
+      +--rw label* [valueName]
+         +--rw valueName    string
+         +--rw value?       string
 notifications:
    +---n Notification
       +--ro notificationId?           Tapi-TypeDefinitions:UniversalId
