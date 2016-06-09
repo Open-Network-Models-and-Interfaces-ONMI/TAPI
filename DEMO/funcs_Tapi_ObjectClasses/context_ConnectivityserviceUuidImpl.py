@@ -1,7 +1,8 @@
 import os.path, sys
 sys.path.append(os.path.join('/'.join(os.path.dirname(os.path.realpath(__file__)).split('/')[:-1])))
 from backend.backend import Context
-
+from objects_Tapi_ObjectClasses.connectivityService import ConnectivityService
+from objects_Tapi_ObjectClasses.connection import Connection
 
 class Context_ConnectivityserviceUuidImpl:
 
@@ -14,8 +15,13 @@ class Context_ConnectivityserviceUuidImpl:
     @classmethod
     def post(cls, uuid, connectivityservice):
         print str(connectivityservice)
-        print 'handling post'
+        print 'handling post - requesting connection'
+        connectivityservice._connection["con1"]=Connection({"uuid":"con1"})
+        
+        print "ADDED con1"
         Context._connectivityService[uuid] = connectivityservice
+        print "returning"
+        return connectivityservice
 
     @classmethod
     def delete(cls, uuid):
