@@ -28,5 +28,5 @@ python notification_client.py
 
 ##Run some T-API examples
 ```
-.\client.sh
+.\TAPIclient.sh
 ```
