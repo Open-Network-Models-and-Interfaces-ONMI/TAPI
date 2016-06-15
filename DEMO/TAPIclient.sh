@@ -44,7 +44,7 @@ curl -X GET --no-keepalive -H "Content-Type: application/json" http://127.0.0.1:
 
 curl -X GET --no-keepalive -H "Content-Type: application/json" http://127.0.0.1:8080/restconf/config/Context/_connectivityService/cs1/
 
-
+curl -X DELETE --no-keepalive -H "Content-Type: application/json" http://127.0.0.1:8080/restconf/config/Context/_connectivityService/cs1/
 
 #curl -X GET --no-keepalive -H "Content-Type: application/json" http://127.0.0.1:8080/restconf/modules/
 
