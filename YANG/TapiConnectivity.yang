@@ -1,0 +1,493 @@
+module TapiConnectivity {
+    namespace "urn:onf:params:xml:ns:yang:TapiConnectivity";
+    prefix TapiConnectivity;
+    import TapiCommon {
+        prefix TapiCommon;
+    }
+    import TapiTopology {
+        prefix TapiTopology;
+    }
+    organization "ONF (Open Networking Foundation) IMP Working Group";
+    contact "WG Web: <https://www.opennetworking.org/technical-communities/areas/services/>
+        WG List: <mailto: <wg list name>@opennetworking.org>
+        WG Chair: your-WG-chair
+                <mailto:your-WG-chair@example.com>
+        Editor: your-name
+                <mailto:your-email@example.com>";
+    description "none";
+    revision 2016-06-26 {
+        description "Latest revision";
+        reference "RFC 6020 and RFC 6087";
+    }
+    /***********************
+    * package ObjectClasses
+    **********************/ 
+        grouping Connection {
+            list _connectionPort {
+                key 'localId';
+                config false;
+                min-elements 2;
+                uses ConnectionPort;
+                description "none";
+            }
+            list _route {
+                key 'localId';
+                config false;
+                uses Route;
+                description "none";
+            }
+            leaf _node {
+                type leafref {
+                    path '/Context/_topology/_node/uuid';
+                }
+                config false;
+                description "none";
+            }
+            container _state {
+                config false;
+                uses TapiCommon:OperationalStatePac;
+                description "none";
+            }
+            leaf layerProtocolName {
+                type TapiCommon:LayerProtocolName;
+                config false;
+                description "none";
+            }
+            leaf direction {
+                type TapiCommon:ForwardingDirection;
+                config false;
+                description "none";
+            }
+            uses TapiCommon:GlobalClass;
+            description "The ForwardingConstruct (FC) object class models enabled potential for forwarding between two or more LTPs and like the LTP supports any transport protocol including all circuit and packet forms.
+                At the lowest level of recursion, a FC represents a cross-connection within an NE.";
+        }
+        grouping ConnectionEndPoint {
+            list _layerProtocol {
+                key 'localId';
+                config false;
+                min-elements 1;
+                uses TapiCommon:LayerProtocol;
+                description "none";
+            }
+            leaf-list _clientNodeEdgePoint {
+                type leafref {
+                    path '/Context/_topology/_node/_ownedNodeEdgePoint/uuid';
+                }
+                config false;
+                description "none";
+            }
+            leaf _serverNodeEdgePoint {
+                type leafref {
+                    path '/Context/_topology/_node/_ownedNodeEdgePoint/uuid';
+                }
+                config false;
+                description "none";
+            }
+            leaf _peerConnectionEndPoint {
+                type leafref {
+                    path '/Context/_serviceEndPoint/_connectionEndPoint/uuid';
+                }
+                config false;
+                description "none";
+            }
+            container _state {
+                config false;
+                uses TapiCommon:OperationalStatePac;
+                description "none";
+            }
+            leaf direction {
+                type TapiCommon:TerminationDirection;
+                config false;
+                description "none";
+            }
+            uses TapiCommon:GlobalClass;
+            description "The LogicalTerminationPoint (LTP) object class encapsulates the termination and adaptation functions of one or more transport layers. 
+                The structure of LTP supports all transport protocols including circuit and packet forms.";
+        }
+        grouping ConnectionPort {
+            leaf _connectionEndPoint {
+                type leafref {
+                    path '/Context/_serviceEndPoint/_connectionEndPoint/uuid';
+                }
+                config false;
+                description "none";
+            }
+            leaf role {
+                type TapiCommon:PortRole;
+                config false;
+                description "Each EP of the FC has a role (e.g., working, protection, protected, symmetric, hub, spoke, leaf, root)  in the context of the FC with respect to the FC function. ";
+            }
+            leaf direction {
+                type TapiCommon:PortDirection;
+                config false;
+                description "The orientation of defined flow at the EndPoint.";
+            }
+            uses TapiCommon:LocalClass;
+            description "The association of the FC to LTPs is made via EndPoints.
+                The EndPoint (EP) object class models the access to the FC function. 
+                The traffic forwarding between the associated EPs of the FC depends upon the type of FC and may be associated with FcSwitch object instances.  
+                In cases where there is resilience the EndPoint may convey the resilience role of the access to the FC. 
+                It can represent a protected (resilient/reliable) point or a protecting (unreliable working or protection) point.
+                The EP replaces the Protection Unit of a traditional protection model. 
+                The ForwadingConstruct can be considered as a component and the EndPoint as a Port on that component";
+        }
+        grouping ConnectivityConstraint {
+            leaf serviceType {
+                type ServiceType;
+                config false;
+                description "none";
+            }
+            leaf serviceLevel {
+                type string;
+                config false;
+                description "An abstract value the meaning of which is mutually agreed – typically represents metrics such as - Class of service, priority, resiliency, availability";
+            }
+            leaf-list serviceLayer {
+                type TapiCommon:LayerProtocolName;
+                config false;
+                description "none";
+            }
+            container requestedCapacity {
+                config false;
+                uses TapiTopology:Capacity;
+                description "none";
+            }
+            list costCharacteristic {
+                key 'costAlgorithm';
+                config false;
+                uses TapiTopology:CostCharacteristic;
+                description "The list of costs where each cost relates to some aspect of the TopologicalEntity.";
+            }
+            list riskCharacteristic {
+                key 'riskCharacteristicName';
+                config false;
+                uses TapiTopology:RiskCharacteristic;
+                description "A list of risk characteristics for consideration in an analysis of shared risk. Each element of the list represents a specific risk consideration.";
+            }
+            list latencyCharacteristic {
+                key 'latencyValue';
+                config false;
+                uses TapiTopology:QueuingLatency;
+                description "The effect on the latency of a queuing process. This only has significant effect for packet based systems and has a complex characteristic.";
+            }
+            leaf-list _includeTopology {
+                type leafref {
+                    path '/Context/_topology/uuid';
+                }
+                description "none";
+            }
+            leaf-list _avoidTopology {
+                type leafref {
+                    path '/Context/_topology/uuid';
+                }
+                description "none";
+            }
+            leaf-list _includePath {
+                type leafref {
+                    path '/Context/_pathCompService/_path/_telink/localId';
+                }
+                description "none";
+            }
+            leaf-list _excludePath {
+                type leafref {
+                    path '/Context/_pathCompService/_path/_telink/localId';
+                }
+                description "none";
+            }
+            description "none";
+        }
+        grouping ConnectivityService {
+            list _connection {
+                key 'uuid';
+                config false;
+                uses Connection;
+                description "none";
+            }
+            list _servicePort {
+                key 'localId';
+                min-elements 2;
+                uses ConnectivityServicePort;
+                description "none";
+            }
+            container _connConstraints {
+                uses ConnectivityConstraint;
+                description "none";
+            }
+            container _schedule {
+                uses TapiCommon:TimeRange;
+                description "none";
+            }
+            container _state {
+                uses TapiCommon:AdminStatePac;
+                description "none";
+            }
+            leaf layerProtocolName {
+                type TapiCommon:LayerProtocolName;
+                description "none";
+            }
+            leaf direction {
+                type TapiCommon:ForwardingDirection;
+                description "none";
+            }
+            uses TapiCommon:GlobalClass;
+            description "The ForwardingConstruct (FC) object class models enabled potential for forwarding between two or more LTPs and like the LTP supports any transport protocol including all circuit and packet forms.
+                At the lowest level of recursion, a FC represents a cross-connection within an NE.";
+        }
+        grouping ConnectivityServicePort {
+            leaf _serviceEndPoint {
+                type leafref {
+                    path '/Context/_serviceEndPoint/uuid';
+                }
+                config false;
+                description "none";
+            }
+            leaf role {
+                type TapiCommon:PortRole;
+                config false;
+                description "Each EP of the FC has a role (e.g., working, protection, protected, symmetric, hub, spoke, leaf, root)  in the context of the FC with respect to the FC function. ";
+            }
+            leaf direction {
+                type TapiCommon:PortDirection;
+                config false;
+                description "The orientation of defined flow at the EndPoint.";
+            }
+            leaf serviceLayer {
+                type TapiCommon:LayerProtocolName;
+                config false;
+                description "none";
+            }
+            uses TapiCommon:LocalClass;
+            description "The association of the FC to LTPs is made via EndPoints.
+                The EndPoint (EP) object class models the access to the FC function. 
+                The traffic forwarding between the associated EPs of the FC depends upon the type of FC and may be associated with FcSwitch object instances.  
+                In cases where there is resilience the EndPoint may convey the resilience role of the access to the FC. 
+                It can represent a protected (resilient/reliable) point or a protecting (unreliable working or protection) point.
+                The EP replaces the Protection Unit of a traditional protection model. 
+                The ForwadingConstruct can be considered as a component and the EndPoint as a Port on that component";
+        }
+        grouping Route {
+            leaf-list _lowerConnection {
+                type leafref {
+                    path '/Context/_connectivityService/_connection/uuid';
+                }
+                config false;
+                min-elements 1;
+                description "none";
+            }
+            uses TapiCommon:LocalClass;
+            description "The FC Route (FcRoute) object class models the individual routes of an FC. 
+                The route of an FC object is represented by a list of FCs at a lower level. 
+                Note that depending on the service supported by an FC, an the FC can have multiple routes.";
+        }
+        grouping ServiceEndPoint {
+            list _layerProtocol {
+                key 'localId';
+                config false;
+                min-elements 1;
+                uses TapiCommon:LayerProtocol;
+                description "none";
+            }
+            leaf-list _mappedNodeEdgePoint {
+                type leafref {
+                    path '/Context/_topology/_node/_ownedNodeEdgePoint/uuid';
+                }
+                config false;
+                description "none";
+            }
+            list _connectionEndPoint {
+                key 'uuid';
+                config false;
+                uses ConnectionEndPoint;
+                description "none";
+            }
+            container _state {
+                config false;
+                uses TapiCommon:LifecycleStatePac;
+                description "none";
+            }
+            leaf direction {
+                type TapiCommon:TerminationDirection;
+                config false;
+                description "none";
+            }
+            uses TapiCommon:GlobalClass;
+            description "The LogicalTerminationPoint (LTP) object class encapsulates the termination and adaptation functions of one or more transport layers. 
+                The structure of LTP supports all transport protocols including circuit and packet forms.";
+        }
+    
+    /***********************
+    * package TypeDefinitions
+    **********************/ 
+        typedef ServiceType {
+            type enumeration {
+                enum POINT_TO_POINT_CONNECTIVITY {
+                    description "none";
+                }
+                enum POINT_TO_MULTIPOINT_CONNECTIVTY {
+                    description "none";
+                }
+                enum MULTIPOINT_CONNECTIVITY {
+                    description "none";
+                }
+            }
+            description "none";
+        }
+    
+    /***********************
+    * package Interfaces
+    **********************/ 
+        action getConnectionDetails {
+            description "none";
+            input {
+                leaf serviceIdOrName {
+                    type string;
+                    description "none";
+                }
+                leaf connectionIdOrName {
+                    type string;
+                    description "none";
+                }
+            }
+            output {
+                container connection {
+                    uses Connection;
+                    description "none";
+                }
+            }
+        }
+        action getConnectivityServiceList {
+            description "none";
+            output {
+                list connService {
+                    uses ConnectivityService;
+                    description "none";
+                }
+            }
+        }
+        action getConnectionEndPointDetails {
+            description "none";
+            input {
+                leaf serviceIdOrName {
+                    type string;
+                    description "none";
+                }
+                leaf connectionIdOrName {
+                    type string;
+                    description "none";
+                }
+                leaf connEPIdOrName {
+                    type string;
+                    description "none";
+                }
+            }
+            output {
+                container connEP {
+                    uses ConnectionEndPoint;
+                    description "none";
+                }
+            }
+        }
+        action getServiceEndPointDetails {
+            description "none";
+            input {
+                leaf serviceEPIdOrName {
+                    type string;
+                    description "none";
+                }
+            }
+            output {
+                container serviceEndPoint {
+                    uses ServiceEndPoint;
+                    description "none";
+                }
+            }
+        }
+        action getConnectivityServiceDetails {
+            description "none";
+            input {
+                leaf serviceIdOrName {
+                    type string;
+                    description "none";
+                }
+            }
+            output {
+                container connService {
+                    uses ConnectivityService;
+                    description "none";
+                }
+            }
+        }
+        action getServiceEndPointList {
+            description "none";
+            output {
+                list serviceEndPoint {
+                    uses ServiceEndPoint;
+                    description "none";
+                }
+            }
+        }
+        action createConnectivityService {
+            description "none";
+            input {
+                list servicePort {
+                    min-elements 2;
+                    uses ConnectivityServicePort;
+                    description "none";
+                }
+                container connConstraint {
+                    uses ConnectivityConstraint;
+                    description "none";
+                }
+                leaf connSchedule {
+                    type string;
+                    description "none";
+                }
+            }
+            output {
+                container connService {
+                    uses ConnectivityService;
+                    description "none";
+                }
+            }
+        }
+        action updateConnectivityService {
+            description "none";
+            input {
+                leaf serviceIdOrName {
+                    type string;
+                    description "none";
+                }
+                container connConstraint {
+                    uses ConnectivityConstraint;
+                    description "none";
+                }
+                leaf connSchedule {
+                    type string;
+                    description "none";
+                }
+            }
+            output {
+                container connService {
+                    uses ConnectivityService;
+                    description "none";
+                }
+            }
+        }
+        action deleteConnectivityService {
+            description "none";
+            input {
+                leaf serviceIdOrName {
+                    type string;
+                    description "none";
+                }
+            }
+            output {
+                container connService {
+                    uses ConnectivityService;
+                    description "none";
+                }
+            }
+        }
+    
+}

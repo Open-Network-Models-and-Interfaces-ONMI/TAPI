@@ -1,0 +1,105 @@
+module TapiOchSpec {
+    namespace "urn:onf:params:xml:ns:yang:TapiOchSpec";
+    prefix TapiOchSpec;
+    import TapiCommon {
+        prefix TapiCommon;
+    }
+    organization "ONF (Open Networking Foundation) IMP Working Group";
+    contact "WG Web: <https://www.opennetworking.org/technical-communities/areas/services/>
+        WG List: <mailto: <wg list name>@opennetworking.org>
+        WG Chair: your-WG-chair
+                <mailto:your-WG-chair@example.com>
+        Editor: your-name
+                <mailto:your-email@example.com>";
+    description "none";
+    revision 2016-06-26 {
+        description "Latest revision";
+        reference "RFC 6020 and RFC 6087";
+    }
+    /***********************
+    * package ObjectClasses
+    **********************/ 
+        grouping OchAdapterAndConnectionPointSpec {
+            leaf monitoredDirection {
+                type MonitoredDirection;
+                config false;
+                description "This attribute indicates the monitored direction.  If the OCh_NonIntrusiveMonitoring instance is contained by OCh_ConnectionTerminationPointSource then the value is fixed to SOURCE.  If the OCh_NonIntrusiveMonitoring instance is contained by OCh_ConnectionTerminationPointSink then the value is fixed to SINK.  If the OCh_NonIntrusiveMonitoring instance is contained by OCh_ConnectionTerminationPointBidirectional then there is one instance that is fixed to SOURCE and one instance that is fixed to SINK.";
+            }
+            description "none";
+        }
+        list OchConnEPLpSpec {
+            container _adapterSpec {
+                uses OchAdapterAndConnectionPointSpec;
+                description "none";
+            }
+            container _terminationSpec {
+                uses OchTerminationSpec;
+                description "none";
+            }
+            leaf extensionsSpecReference {
+                type string;
+                default "/TapiSpec:Context/TapiSpec:TapiOchSpec/TapiSpec:OchConnEPLpSpec";
+                config false;
+                description "none";
+            }
+            leaf extensionsSpecTarget {
+                type string;
+                default "/Tapi-ObjectClasses:Context/Tapi-ObjectClasses:_serviceEndPoint/Tapi-ObjectClasses:_connectionEndPoint/Tapi-ObjectClasses:_layerProtocol/Tapi-ObjectClasses:_lpSpecData";
+                config false;
+                description "none";
+            }
+            uses TapiCommon:ExtensionsSpec;
+            description "none";
+        }
+        grouping OchTerminationSpec {
+            container selectedApplicationIdentifier {
+                uses ApplicationIdentifier;
+                description "This attribute indicates the selected Application Identifier that is used by the OCh trail termination function. The syntax of ApplicationIdentifier is a pair {ApplicationIdentifierType, PrintableString}. The value of ApplicationIdentifierType is either STANDARD or PROPRIETARY. The value of PrintableString represents the standard application code as defined in the ITU-T Recommendations or a vendor-specific proprietary code. If the ApplicationIdentifierType is STANDARD the value of PrintableString represents a standard application code as defined in the ITU-T Recommendations. If the ApplicationIdentifierType is PROPRIETARY, the first six characters of the PrintableString must contain the Hexadecimal representation of an OUI assigned to the vendor whose implementation generated the Application Identifier; the remaining octets of the PrintableString are unspecified. The value of this attribute of an object instance has to be one of the values identified in the attribute SupportableApplicationIdentifierList of the same object instance. The values and value ranges of the optical interface parameters of a standard application code must be consistent with those values specified in the ITU-T Recommendation for that application code.";
+            }
+            container nominalCentralFrequencyOrWavelength {
+                uses NominalCentralFrequencyOrWavelength;
+                description "This attribute indicates the nominal central frequency or wavelength of the optical channel associated with the OCh Trail Termination function. The value of this attribute is a pair {LinkType, Integer}, in which LinkType is DWDM, or CWDM, or NO_WDM. When LinkType is DWDM, the integer represents the nominal central frequency in unit of MHz. When LinkType is CWDM, the integer represents the nominal central wavelength in unit of pm (picometer). When LinkType is NO_WDM, the Integer field is null. For frequency and wavelength, the value shall be within the range of the maximum and minimum central frequencies or wavelengths specified for the corresponding application code used at the OCh Trail Termination.
+                    This attribute is required for the OCh Trial Termination Point Source at the transmitter.  For the OCh Trail Termination Point Sink at the receiver, this attribute may not be needed since the receiver is required to operate at any frequency/wavelength between the maximum and minimum range for the standard application code.
+                    ";
+            }
+            description "none";
+        }
+    
+    /***********************
+    * package TypeDefinitions
+    **********************/ 
+        grouping ApplicationIdentifier {
+            leaf applicationIdentifierType {
+                type string;
+                description "none";
+            }
+            leaf applicationIdentifierValue {
+                type string;
+                description "none";
+            }
+            description "none";
+        }
+        typedef MonitoredDirection {
+            type enumeration {
+                enum SINK {
+                    description "none";
+                }
+                enum SOURCE {
+                    description "none";
+                }
+            }
+            description "The enumeration with the options for directionality for nonintrusive monitoring.";
+        }
+        grouping NominalCentralFrequencyOrWavelength {
+            leaf linkType {
+                type string;
+                description "none";
+            }
+            leaf nominalCentralFrequencyOrWavelength {
+                type string;
+                description "none";
+            }
+            description "none";
+        }
+    
+}

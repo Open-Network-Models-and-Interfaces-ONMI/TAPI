@@ -1,0 +1,190 @@
+module TapiVirtualNetwork {
+    namespace "urn:onf:params:xml:ns:yang:TapiVirtualNetwork";
+    prefix TapiVirtualNetwork;
+    import TapiTopology {
+        prefix TapiTopology;
+    }
+    import TapiCommon {
+        prefix TapiCommon;
+    }
+    organization "ONF (Open Networking Foundation) IMP Working Group";
+    contact "WG Web: <https://www.opennetworking.org/technical-communities/areas/services/>
+        WG List: <mailto: <wg list name>@opennetworking.org>
+        WG Chair: your-WG-chair
+                <mailto:your-WG-chair@example.com>
+        Editor: your-name
+                <mailto:your-email@example.com>";
+    description "none";
+    revision 2016-06-26 {
+        description "Latest revision";
+        reference "RFC 6020 and RFC 6087";
+    }
+    /***********************
+    * package ObjectClasses
+    **********************/ 
+        grouping VirtualNetworkConstraint {
+            leaf serviceLevel {
+                type string;
+                description "An abstract value the meaning of which is mutually agreed – typically represents metrics such as - Class of service, priority, resiliency, availability";
+            }
+            leaf-list serviceLayer {
+                type TapiCommon:LayerProtocolName;
+                description "none";
+            }
+            container requestedCapacity {
+                uses TapiTopology:Capacity;
+                description "none";
+            }
+            list costCharacteristic {
+                key 'costAlgorithm';
+                uses TapiTopology:CostCharacteristic;
+                description "The list of costs where each cost relates to some aspect of the TopologicalEntity.";
+            }
+            list riskCharacteristic {
+                key 'riskCharacteristicName';
+                uses TapiTopology:RiskCharacteristic;
+                description "A list of risk characteristics for consideration in an analysis of shared risk. Each element of the list represents a specific risk consideration.";
+            }
+            list latencyCharacteristic {
+                key 'latencyValue';
+                uses TapiTopology:QueuingLatency;
+                description "The effect on the latency of a queuing process. This only has significant effect for packet based systems and has a complex characteristic.";
+            }
+            description "none";
+        }
+        grouping VirtualNetworkService {
+            leaf _topology {
+                type leafref {
+                    path '/Context/_topology/uuid';
+                }
+                config false;
+                description "none";
+            }
+            list _servicePort {
+                key 'localId';
+                min-elements 2;
+                uses VirtualNetworkServicePort;
+                description "none";
+            }
+            container _vnwConstraint {
+                uses VirtualNetworkConstraint;
+                description "none";
+            }
+            container _schedule {
+                uses TapiCommon:TimeRange;
+                description "none";
+            }
+            container _state {
+                uses TapiCommon:AdminStatePac;
+                description "none";
+            }
+            leaf-list layerProtocolName {
+                type TapiCommon:LayerProtocolName;
+                min-elements 1;
+                description "none";
+            }
+            uses TapiCommon:GlobalClass;
+            description "The ForwardingConstruct (FC) object class models enabled potential for forwarding between two or more LTPs and like the LTP supports any transport protocol including all circuit and packet forms.
+                At the lowest level of recursion, a FC represents a cross-connection within an NE.";
+        }
+        grouping VirtualNetworkServicePort {
+            leaf _serviceEndPoint {
+                type leafref {
+                    path '/Context/_serviceEndPoint/uuid';
+                }
+                config false;
+                description "none";
+            }
+            leaf role {
+                type TapiCommon:PortRole;
+                config false;
+                description "Each EP of the FC has a role (e.g., working, protection, protected, symmetric, hub, spoke, leaf, root)  in the context of the FC with respect to the FC function. ";
+            }
+            leaf direction {
+                type TapiCommon:PortDirection;
+                config false;
+                description "The orientation of defined flow at the EndPoint.";
+            }
+            leaf serviceLayer {
+                type TapiCommon:LayerProtocolName;
+                config false;
+                description "none";
+            }
+            uses TapiCommon:LocalClass;
+            description "The association of the FC to LTPs is made via EndPoints.
+                The EndPoint (EP) object class models the access to the FC function. 
+                The traffic forwarding between the associated EPs of the FC depends upon the type of FC and may be associated with FcSwitch object instances.  
+                In cases where there is resilience the EndPoint may convey the resilience role of the access to the FC. 
+                It can represent a protected (resilient/reliable) point or a protecting (unreliable working or protection) point.
+                The EP replaces the Protection Unit of a traditional protection model. 
+                The ForwadingConstruct can be considered as a component and the EndPoint as a Port on that component";
+        }
+    
+    /***********************
+    * package Interfaces
+    **********************/ 
+        action createVirtualNetworkService {
+            description "none";
+            input {
+                list servicePort {
+                    min-elements 2;
+                    uses VirtualNetworkServicePort;
+                    description "none";
+                }
+                container vnwConstraint {
+                    uses VirtualNetworkConstraint;
+                    description "none";
+                }
+                leaf connSchedule {
+                    type string;
+                    description "none";
+                }
+            }
+            output {
+                container vnwService {
+                    uses VirtualNetworkService;
+                    description "none";
+                }
+            }
+        }
+        action deleteVirtualNetworkService {
+            description "none";
+            input {
+                leaf serviceIdOrName {
+                    type string;
+                    description "none";
+                }
+            }
+            output {
+                container vnwService {
+                    uses VirtualNetworkService;
+                    description "none";
+                }
+            }
+        }
+        action getVirtualNetworkServiceDetails {
+            description "none";
+            input {
+                leaf serviceIdOrName {
+                    type string;
+                    description "none";
+                }
+            }
+            output {
+                container vnwService {
+                    uses VirtualNetworkService;
+                    description "none";
+                }
+            }
+        }
+        action getVirtualNetworkServiceList {
+            description "none";
+            output {
+                list vnwService {
+                    uses VirtualNetworkService;
+                    description "none";
+                }
+            }
+        }
+    
+}
