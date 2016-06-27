@@ -1,0 +1,349 @@
+module TapiNotification {
+    namespace "urn:onf:params:xml:ns:yang:TapiNotification";
+    prefix TapiNotification;
+    import TapiCommon {
+        prefix TapiCommon;
+    }
+    organization "ONF (Open Networking Foundation) IMP Working Group";
+    contact "WG Web: <https://www.opennetworking.org/technical-communities/areas/services/>
+        WG List: <mailto: <wg list name>@opennetworking.org>
+        WG Chair: your-WG-chair
+                <mailto:your-WG-chair@example.com>
+        Editor: your-name
+                <mailto:your-email@example.com>";
+    description "none";
+    revision 2016-06-26 {
+        description "Latest revision";
+        reference "RFC 6020 and RFC 6087";
+    }
+    /***********************
+    * package ObjectClasses
+    **********************/ 
+        grouping NotificationSubscriptionService {
+            list _notification {
+                key 'notificationId';
+                config false;
+                uses Notification;
+                description "none";
+            }
+            container _subscriptionFilter {
+                uses SubscriptionFilter;
+                description "none";
+            }
+            leaf subscriptionState {
+                type SubscriptionState;
+                description "none";
+            }
+            leaf-list supportedNotificationTypes {
+                type NotificationType;
+                config false;
+                min-elements 1;
+                description "none";
+            }
+            leaf-list supportedObjectTypes {
+                type ObjectType;
+                config false;
+                min-elements 1;
+                description "none";
+            }
+            uses TapiCommon:GlobalClass;
+            description "none";
+        }
+        grouping SubscriptionFilter {
+            leaf-list requestedNotificationTypes {
+                type NotificationType;
+                config false;
+                description "none";
+            }
+            leaf-list requestedObjectTypes {
+                type ObjectType;
+                config false;
+                description "none";
+            }
+            leaf-list requestedLayerProtocols {
+                type TapiCommon:LayerProtocolName;
+                config false;
+                description "none";
+            }
+            leaf-list requestedObjectIdentifier {
+                type TapiCommon:UniversalId;
+                config false;
+                description "none";
+            }
+            description "none";
+        }
+        list Notification {
+            key 'notificationId';
+            uses Notification;
+            description "none";
+        }
+        grouping Notification {
+            leaf notificationId {
+                type TapiCommon:UniversalId;
+                description "none";
+            }
+            leaf notificationType {
+                type NotificationType;
+                description "none";
+            }
+            leaf targetObjectType {
+                type ObjectType;
+                description "none";
+            }
+            leaf targetObjectIdentifier {
+                type TapiCommon:UniversalId;
+                description "none";
+            }
+            list targetObjectName {
+                key 'valueName';
+                min-elements 1;
+                uses TapiCommon:NameAndValue;
+                description "none";
+            }
+            leaf eventTimeStamp {
+                type TapiCommon:DateAndTime;
+                description "none";
+            }
+            leaf sourceIndicator {
+                type SourceIndicator;
+                description "none";
+            }
+            leaf layerProtocolName {
+                type TapiCommon:LayerProtocolName;
+                description "none";
+            }
+            list changedAttributes {
+                uses NameAndValueChange;
+                description "none";
+            }
+            list additionalInfo {
+                key 'valueName';
+                uses TapiCommon:NameAndValue;
+                description "none";
+            }
+            leaf additionalText {
+                type string;
+                description "none";
+            }
+            description "none";
+        }
+    
+    /***********************
+    * package TypeDefinitions
+    **********************/ 
+        grouping NameAndValueChange {
+            leaf valueName {
+                type string;
+                description "The name of the value. The value need not have a name.";
+            }
+            leaf oldValue {
+                type string;
+                description "The value";
+            }
+            leaf newValue {
+                type string;
+                description "The value";
+            }
+            description "A scoped name-value triple, including old value and new value";
+        }
+        typedef NotificationType {
+            type enumeration {
+                enum OBJECT_CREATION {
+                    description "Not a normal state. The system is unable to determine the correct value.";
+                }
+                enum OBJECT_DELETION {
+                    description "Not a normal state. The system is unable to determine the correct value.";
+                }
+                enum ATTRIBUTE_VALUE_CHANGE {
+                    description "Not a normal state. The system is unable to determine the correct value.";
+                }
+                enum STATE_CHANGE {
+                    description "Not a normal state. The system is unable to determine the correct value.";
+                }
+            }
+            description "The orientation of flow at the Port of a Forwarding entity";
+        }
+        typedef ObjectType {
+            type enumeration {
+                enum TOPOLOGY {
+                    description "none";
+                }
+                enum NODE {
+                    description "none";
+                }
+                enum LINK {
+                    description "none";
+                }
+                enum CONNECTION {
+                    description "none";
+                }
+                enum PATH {
+                    description "none";
+                }
+                enum CONNECTIVITY_SERVICE {
+                    description "none";
+                }
+                enum VIRTUAL_NETWORK_SERVICE {
+                    description "none";
+                }
+                enum PATH_COMPUTATION_SERVICE {
+                    description "none";
+                }
+                enum NODE_EDGE_POINT {
+                    description "none";
+                }
+                enum SERVICE_END_POINT {
+                    description "none";
+                }
+                enum CONNECTION_END_POINT {
+                    description "none";
+                }
+            }
+            description "The orientation of flow at the Port of a Forwarding entity";
+        }
+        typedef SourceIndicator {
+            type enumeration {
+                enum RESOURCE_OPERATION {
+                    description "none";
+                }
+                enum MANAGEMENT_OPERATION {
+                    description "none";
+                }
+                enum UNKNOWN {
+                    description "none";
+                }
+            }
+            description "none";
+        }
+        typedef SubscriptionState {
+            type enumeration {
+                enum SUSPENDED {
+                    description "none";
+                }
+                enum ACTIVE {
+                    description "none";
+                }
+            }
+            description "none";
+        }
+    
+    /***********************
+    * package Interfaces
+    **********************/ 
+        action getSupportedNotificationTypes {
+            description "none";
+            output {
+                leaf-list supportedNotificationTypes {
+                    type TypeDefinitions:NotificationType;
+                    min-elements 1;
+                    description "none";
+                }
+                leaf-list supportedObjectTypes {
+                    type TypeDefinitions:ObjectType;
+                    min-elements 1;
+                    description "none";
+                }
+            }
+        }
+        action createNotificationSubscriptionService {
+            description "none";
+            input {
+                container subscriptionFilter {
+                    uses SubscriptionFilter;
+                    description "none";
+                }
+                leaf subscriptionState {
+                    type TypeDefinitions:SubscriptionState;
+                    description "none";
+                }
+            }
+            output {
+                container subscriptionService {
+                    uses NotificationSubscriptionService;
+                    description "none";
+                }
+            }
+        }
+        action updateNotificationSubscriptionService {
+            description "none";
+            input {
+                leaf subscriptionIdOrName {
+                    type string;
+                    description "none";
+                }
+                container subscriptionFilter {
+                    uses SubscriptionFilter;
+                    description "none";
+                }
+                leaf subscriptionState {
+                    type TypeDefinitions:SubscriptionState;
+                    description "none";
+                }
+            }
+            output {
+                container subscriptionService {
+                    uses NotificationSubscriptionService;
+                    description "none";
+                }
+            }
+        }
+        action deleteNotificationSubscriptionService {
+            description "none";
+            input {
+                leaf subscriptionIdOrName {
+                    type string;
+                    description "none";
+                }
+            }
+            output {
+                container subscriptionService {
+                    uses NotificationSubscriptionService;
+                    description "none";
+                }
+            }
+        }
+        action getNotificationSubscriptionServiceDetails {
+            description "none";
+            input {
+                leaf subscriptionIdOrName {
+                    type string;
+                    description "none";
+                }
+            }
+            output {
+                container subscriptionService {
+                    uses NotificationSubscriptionService;
+                    description "none";
+                }
+            }
+        }
+        action getNotificationSubscriptionServiceList {
+            description "none";
+            output {
+                list subscriptionService {
+                    uses NotificationSubscriptionService;
+                    description "none";
+                }
+            }
+        }
+        action getNotificationList {
+            description "none";
+            input {
+                leaf subscriptionIdOrName {
+                    type string;
+                    description "none";
+                }
+                leaf timePeriod {
+                    type string;
+                    description "none";
+                }
+            }
+            output {
+                list notification {
+                    uses Notification;
+                    description "none";
+                }
+            }
+        }
+    
+}
