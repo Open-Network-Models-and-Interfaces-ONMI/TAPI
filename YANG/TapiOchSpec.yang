@@ -1,8 +1,11 @@
 module TapiOchSpec {
     namespace "urn:onf:params:xml:ns:yang:TapiOchSpec";
     prefix TapiOchSpec;
-    import TapiCommon {
-        prefix TapiCommon;
+    import TapiConnectivity {
+        prefix TapiConnectivity;
+    }
+    import Tapi {
+        prefix Tapi;
     }
     organization "ONF (Open Networking Foundation) IMP Working Group";
     contact "WG Web: <https://www.opennetworking.org/technical-communities/areas/services/>
@@ -16,6 +19,11 @@ module TapiOchSpec {
         description "Latest revision";
         reference "RFC 6020 and RFC 6087";
     }
+    
+    augment "/Tapi:Context/Tapi:_serviceEndPoint/TapiConnectivity:_connectionEndPoint/TapiConnectivity:_layerProtocol/TapiConnectivity:_extensions" {
+        uses OchConnEPLpSpec;
+    }
+    
     /***********************
     * package ObjectClasses
     **********************/ 
@@ -27,7 +35,7 @@ module TapiOchSpec {
             }
             description "none";
         }
-        list OchConnEPLpSpec {
+        grouping OchConnEPLpSpec {
             container _adapterSpec {
                 uses OchAdapterAndConnectionPointSpec;
                 description "none";
@@ -44,11 +52,11 @@ module TapiOchSpec {
             }
             leaf extensionsSpecTarget {
                 type string;
-                default "/Tapi-ObjectClasses:Context/Tapi-ObjectClasses:_serviceEndPoint/Tapi-ObjectClasses:_connectionEndPoint/Tapi-ObjectClasses:_layerProtocol/Tapi-ObjectClasses:_lpSpecData";
+                default "/Tapi:Context/Tapi:_serviceEndPoint/TapiConnectivity:_connectionEndPoint/TapiConnectivity:_layerProtocol/TapiConnectivity:_extensions";
                 config false;
                 description "none";
             }
-            uses TapiCommon:ExtensionsSpec;
+
             description "none";
         }
         grouping OchTerminationSpec {
