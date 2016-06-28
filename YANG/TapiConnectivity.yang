@@ -7,6 +7,12 @@ module TapiConnectivity {
     import TapiTopology {
         prefix TapiTopology;
     }
+    import TapiPathComputation {
+        prefix TapiPathComputation;
+    }
+    import Tapi {
+        prefix Tapi;
+    }
     organization "ONF (Open Networking Foundation) IMP Working Group";
     contact "WG Web: <https://www.opennetworking.org/technical-communities/areas/services/>
         WG List: <mailto: <wg list name>@opennetworking.org>
@@ -19,6 +25,15 @@ module TapiConnectivity {
         description "Latest revision";
         reference "RFC 6020 and RFC 6087";
     }
+    
+    augment "/Tapi:Context/Tapi:_connectivityService" {
+        uses ConnectivityService;
+    }
+    
+    augment "/Tapi:Context/Tapi:_serviceEndPoint" {
+        uses ServiceEndPoint;
+    }
+    
     /***********************
     * package ObjectClasses
     **********************/ 
@@ -38,7 +53,7 @@ module TapiConnectivity {
             }
             leaf _node {
                 type leafref {
-                    path '/Context/_topology/_node/uuid';
+                    path '/Tapi:Context/Tapi:_topology/TapiTopology:_node/TapiTopology:uuid';
                 }
                 config false;
                 description "none";
@@ -72,21 +87,21 @@ module TapiConnectivity {
             }
             leaf-list _clientNodeEdgePoint {
                 type leafref {
-                    path '/Context/_topology/_node/_ownedNodeEdgePoint/uuid';
+                    path '/Tapi:Context/Tapi:_topology/TapiTopology:_node/TapiTopology:_ownedNodeEdgePoint/TapiTopology:uuid';
                 }
                 config false;
                 description "none";
             }
             leaf _serverNodeEdgePoint {
                 type leafref {
-                    path '/Context/_topology/_node/_ownedNodeEdgePoint/uuid';
+                    path '/Tapi:Context/Tapi:_topology/TapiTopology:_node/TapiTopology:_ownedNodeEdgePoint/TapiTopology:uuid';
                 }
                 config false;
                 description "none";
             }
             leaf _peerConnectionEndPoint {
                 type leafref {
-                    path '/Context/_serviceEndPoint/_connectionEndPoint/uuid';
+                    path '/Tapi:Context/Tapi:_serviceEndPoint/_connectionEndPoint/uuid';
                 }
                 config false;
                 description "none";
@@ -108,7 +123,7 @@ module TapiConnectivity {
         grouping ConnectionPort {
             leaf _connectionEndPoint {
                 type leafref {
-                    path '/Context/_serviceEndPoint/_connectionEndPoint/uuid';
+                    path '/Tapi:Context/Tapi:_serviceEndPoint/_connectionEndPoint/uuid';
                 }
                 config false;
                 description "none";
@@ -172,26 +187,30 @@ module TapiConnectivity {
                 description "The effect on the latency of a queuing process. This only has significant effect for packet based systems and has a complex characteristic.";
             }
             leaf-list _includeTopology {
+                config false;
                 type leafref {
-                    path '/Context/_topology/uuid';
+                    path '/Tapi:Context/Tapi:_topology/Tapi:uuid';
                 }
                 description "none";
             }
             leaf-list _avoidTopology {
+                config false;
                 type leafref {
-                    path '/Context/_topology/uuid';
+                    path '/Tapi:Context/Tapi:_topology/Tapi:uuid';
                 }
                 description "none";
             }
             leaf-list _includePath {
+                config false;
                 type leafref {
-                    path '/Context/_pathCompService/_path/_telink/localId';
+                    path '/Tapi:Context/Tapi:_pathCompService/TapiPathComputation:_path/TapiPathComputation:_telink/TapiPathComputation:localId';
                 }
                 description "none";
             }
             leaf-list _excludePath {
+                config false;
                 type leafref {
-                    path '/Context/_pathCompService/_path/_telink/localId';
+                    path '/Tapi:Context/Tapi:_pathCompService/TapiPathComputation:_path/TapiPathComputation:_telink/TapiPathComputation:localId';
                 }
                 description "none";
             }
@@ -206,7 +225,6 @@ module TapiConnectivity {
             }
             list _servicePort {
                 key 'localId';
-                min-elements 2;
                 uses ConnectivityServicePort;
                 description "none";
             }
@@ -237,7 +255,7 @@ module TapiConnectivity {
         grouping ConnectivityServicePort {
             leaf _serviceEndPoint {
                 type leafref {
-                    path '/Context/_serviceEndPoint/uuid';
+                    path '/Tapi:Context/Tapi:_serviceEndPoint/uuid';
                 }
                 config false;
                 description "none";
@@ -269,7 +287,7 @@ module TapiConnectivity {
         grouping Route {
             leaf-list _lowerConnection {
                 type leafref {
-                    path '/Context/_connectivityService/_connection/uuid';
+                    path '/Tapi:Context/Tapi:_connectivityService/_connection/uuid';
                 }
                 config false;
                 min-elements 1;
@@ -284,13 +302,12 @@ module TapiConnectivity {
             list _layerProtocol {
                 key 'localId';
                 config false;
-                min-elements 1;
                 uses TapiCommon:LayerProtocol;
                 description "none";
             }
             leaf-list _mappedNodeEdgePoint {
                 type leafref {
-                    path '/Context/_topology/_node/_ownedNodeEdgePoint/uuid';
+                    path '/Tapi:Context/Tapi:_topology/TapiTopology:_node/TapiTopology:_ownedNodeEdgePoint/TapiTopology:uuid';
                 }
                 config false;
                 description "none";

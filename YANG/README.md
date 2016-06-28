@@ -4,12 +4,16 @@
 
 The [T-API YANG models](https://github.com/OpenNetworkingFoundation/ONFOpenTransport/tree/develop/TransportAPI/YANG) are available for discussion. Up to now three YANG models have been discussed:
 
-- [Tapi-TypeDefinitions.yang](Tapi-TypeDefinitions.yang)
-- [Tapi-ObjectClasses.yang](Tapi-ObjectClasses.yang)
-- [Tapi-Interfaces-TopologyService.yang](Tapi-Interfaces-TopologyService.yang)
-- [Tapi-Interfaces-ConnectivityService.yang](Tapi-Interfaces-ConnectivityService.yang)
-- [Tapi-Interfaces-PathComputationService.yang](Tapi-Interfaces-PathComputationService.yang)
-- [Tapi-Interfaces-VirtualNetworkService.yang](Tapi-Interfaces-VirtualNetworkService.yang)
+- [Tapi.yang](Tapi.yang)
+- [TapiCommon.yang](TapiCommon.yang)
+- [TapiTopology.yang](TapiTopology.yang)
+- [TapiConnectivity.yang](TapiConnectivity.yang)
+- [TapiPathComputation.yang](TapiPathComputation.yang)
+- [TapiVirtualNetwork.yang](TapiVirtualNetwork.yang)
+
+## T-API extensions
+- [TapiOduSpec.yang](TapiOduSpec.yang)
+- [TapiOchSpec.yang](TapiOchSpec.yang)
 
 ## TREE files (tree)
 The YANG tree files are obtained from [pyang](https://github.com/mbj4668/pyang).
