@@ -4,9 +4,6 @@ module TapiPathComputation {
     import TapiTopology {
         prefix TapiTopology;
     }
-    import TapiCommon {
-        prefix TapiCommon;
-    }
     import Tapi {
         prefix Tapi;
     }
@@ -18,12 +15,15 @@ module TapiPathComputation {
         Editor: your-name
                 <mailto:your-email@example.com>";
     description "none";
-    revision 2016-06-27 {
+    revision 2016-06-29 {
         description "Latest revision";
         reference "RFC 6020 and RFC 6087";
     }
     augment "/Tapi:Context/Tapi:_pathCompService" {
         uses PathComputationService;
+    }
+    augment "/Tapi:Context/Tapi:_path" {
+        uses Path;
     }
     /***********************
     * package ObjectClasses
@@ -32,7 +32,6 @@ module TapiPathComputation {
             list _telink {
                 key 'localId';
                 config false;
-                min-elements 1;
                 uses TapiTopology:TeLink;
                 description "none";
             }
@@ -41,7 +40,7 @@ module TapiPathComputation {
                 uses RoutingConstraint;
                 description "none";
             }
-            uses TapiCommon:GlobalClass;
+            uses Tapi:Resource;
             description "Path is described by an ordered list of TE Links. A TE Link is defined by a pair of Node/NodeEdgePoint IDs. A Connection is realized by concatenating link resources (associated with a Link) and the lower-level connections (cross-connections) in the different nodes";
         }
         grouping PathCompServicePort {
@@ -53,21 +52,21 @@ module TapiPathComputation {
                 description "none";
             }
             leaf role {
-                type TapiCommon:PortRole;
+                type Tapi:PortRole;
                 config false;
                 description "Each EP of the FC has a role (e.g., working, protection, protected, symmetric, hub, spoke, leaf, root)  in the context of the FC with respect to the FC function. ";
             }
             leaf direction {
-                type TapiCommon:PortDirection;
+                type Tapi:PortDirection;
                 config false;
                 description "The orientation of defined flow at the EndPoint.";
             }
             leaf serviceLayer {
-                type TapiCommon:LayerProtocolName;
+                type Tapi:LayerProtocolName;
                 config false;
                 description "none";
             }
-            uses TapiCommon:LocalClass;
+            uses Tapi:LocalClass;
             description "The association of the FC to LTPs is made via EndPoints.
                 The EndPoint (EP) object class models the access to the FC function. 
                 The traffic forwarding between the associated EPs of the FC depends upon the type of FC and may be associated with FcSwitch object instances.  
@@ -77,10 +76,11 @@ module TapiPathComputation {
                 The ForwadingConstruct can be considered as a component and the EndPoint as a Port on that component";
         }
         grouping PathComputationService {
-            list _path {
-                key 'uuid';
+            leaf-list _path {
+                type leafref {
+                    path '/Tapi:Context/Tapi:_path/Tapi:uuid';
+                }
                 config false;
-                uses Path;
                 description "none";
             }
             list _servicePort {
@@ -100,42 +100,45 @@ module TapiPathComputation {
                 uses PathOptimizationConstraint;
                 description "none";
             }
+            uses Tapi:Service;
             description "none";
         }
         grouping PathObjectiveFunction {
             leaf bandwidthOptimization {
-                type TapiCommon:DirectiveValue;
+                type Tapi:DirectiveValue;
                 config false;
                 description "none";
             }
             leaf concurrentPaths {
-                type TapiCommon:DirectiveValue;
+                type Tapi:DirectiveValue;
                 config false;
                 description "none";
             }
             leaf costOptimization {
-                type TapiCommon:DirectiveValue;
+                type Tapi:DirectiveValue;
                 config false;
                 description "none";
             }
             leaf linkUtilization {
-                type TapiCommon:DirectiveValue;
+                type Tapi:DirectiveValue;
                 config false;
                 description "none";
             }
             leaf resourceSharing {
-                type TapiCommon:DirectiveValue;
+                type Tapi:DirectiveValue;
                 config false;
                 description "none";
             }
+            uses Tapi:LocalClass;
             description "none";
         }
         grouping PathOptimizationConstraint {
             leaf trafficInterruption {
-                type TapiCommon:DirectiveValue;
+                type Tapi:DirectiveValue;
                 config false;
                 description "none";
             }
+            uses Tapi:LocalClass;
             description "none";
         }
         grouping RoutingConstraint {
@@ -150,7 +153,7 @@ module TapiPathComputation {
                 description "An abstract value the meaning of which is mutually agreed – typically represents metrics such as - Class of service, priority, resiliency, availability";
             }
             leaf-list pathLayer {
-                type TapiCommon:LayerProtocolName;
+                type Tapi:LayerProtocolName;
                 config false;
                 description "none";
             }
@@ -173,33 +176,32 @@ module TapiPathComputation {
                 description "The effect on the latency of a queuing process. This only has significant effect for packet based systems and has a complex characteristic.";
             }
             leaf-list _includeTopology {
-                config false;
                 type leafref {
                     path '/Tapi:Context/Tapi:_topology/Tapi:uuid';
                 }
+                config false;
                 description "none";
             }
             leaf-list _avoidTopology {
-                config false;
                 type leafref {
                     path '/Tapi:Context/Tapi:_topology/Tapi:uuid';
                 }
-                description "none";
-            }
-            leaf-list _includePath {
                 config false;
-                type leafref {
-                    path '/Tapi:Context/Tapi:_pathCompService/_path/_telink/localId';
-                }
                 description "none";
             }
-            leaf-list _excludePath {
+            list _includePath {
+                key 'localId';
                 config false;
-                type leafref {
-                    path '/Tapi:Context/Tapi:_pathCompService/_path/_telink/localId';
-                }
+                uses TapiTopology:TeLink;
                 description "none";
             }
+            list _excludePath {
+                key 'localId';
+                config false;
+                uses TapiTopology:TeLink;
+                description "none";
+            }
+            uses Tapi:LocalClass;
             description "none";
         }
     
