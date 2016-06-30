@@ -12,87 +12,119 @@
     ],
     "paths": {},
     "definitions": {
-        "ExtensionsSpec": {
-            "description": "none",
-            "properties": {
-                "extensionsSpecReference": {
-                    "type": "string",
-                    "description": "none"
-                },
-                "extensionsSpecTarget": {
-                    "items": {
-                        "type": "string",
-                        "description": "none"
-                    },
-                    "type": "array"
-                }
-            }
-        },
         "OperationalStatePac": {
             "description": "Provides state attributes that are applicable to an entity that reflects operational aspects. Such an entity is expected to also have lifecycle aspects.",
             "properties": {
-                "operationalState": {
-                    "enum": [
-                        "DISABLED",
-                        "ENABLED"
-                    ],
-                    "type": "string",
-                    "description": "none"
-                },
                 "lifecycleState": {
+                    "description": "none",
                     "enum": [
                         "PLANNED",
                         "POTENTIAL",
                         "INSTALLED",
                         "PENDING_REMOVAL"
                     ],
-                    "type": "string",
-                    "description": "none"
+                    "type": "string"
+                },
+                "operationalState": {
+                    "description": "none",
+                    "enum": [
+                        "DISABLED",
+                        "ENABLED"
+                    ],
+                    "type": "string"
                 }
             }
         },
         "GlobalClass": {
             "description": "The TAPI GlobalComponent serves as the super class for all TAPI entities that can be directly retrieved by their ID. As such, these are first class entities and their ID is expected to be globally unique. ",
             "properties": {
+                "name": {
+                    "description": "List of names. A property of an entity with a value that is unique in some namespace but may change during the life of the entity. A name carries no semantics with respect to the purpose of the entity.",
+                    "items": {
+                        "$ref": "#/definitions/NameAndValue"
+                    },
+                    "type": "array",
+                    "x-key": "valueName"
+                },
                 "_extensions": {
+                    "description": "none",
                     "items": {
                         "$ref": "#/definitions/ExtensionsSpec"
                     },
                     "type": "array",
-                    "description": "none",
                     "x-key": "ExtensionsSpecReference"
                 },
-                "label": {
-                    "items": {
-                        "$ref": "#/definitions/NameAndValue"
-                    },
-                    "type": "array",
-                    "description": "List of labels.A property of an entity with a value that is not expected to be unique and is allowed to change. A label carries no semantics with respect to the purpose of the entity and has no effect on the entity behavior or state.",
-                    "x-key": "valueName"
-                },
                 "uuid": {
-                    "type": "string",
-                    "description": "UUID: An identifier that is universally unique\n(consider in the context of Identifier: A property of an entity/role with a value that is unique within an identifier space, where the identifier space is itself globally unique, and immutable. An identifier carries no semantics with respect to the purpose or state of the entity)"
+                    "description": "UUID: An identifier that is universally unique\n(consider in the context of Identifier: A property of an entity/role with a value that is unique within an identifier space, where the identifier space is itself globally unique, and immutable. An identifier carries no semantics with respect to the purpose or state of the entity)",
+                    "type": "string"
                 },
-                "name": {
+                "label": {
+                    "description": "List of labels.A property of an entity with a value that is not expected to be unique and is allowed to change. A label carries no semantics with respect to the purpose of the entity and has no effect on the entity behavior or state.",
                     "items": {
                         "$ref": "#/definitions/NameAndValue"
                     },
                     "type": "array",
-                    "description": "List of names. A property of an entity with a value that is unique in some namespace but may change during the life of the entity. A name carries no semantics with respect to the purpose of the entity.",
                     "x-key": "valueName"
                 }
             }
         },
+        "LifecycleStatePac": {
+            "description": "Provides state attributes for an entity that has lifeccycle aspects only.",
+            "properties": {
+                "lifecycleState": {
+                    "description": "none",
+                    "enum": [
+                        "PLANNED",
+                        "POTENTIAL",
+                        "INSTALLED",
+                        "PENDING_REMOVAL"
+                    ],
+                    "type": "string"
+                }
+            }
+        },
+        "TimeRange": {
+            "description": "none",
+            "properties": {
+                "endTime": {
+                    "description": "none",
+                    "type": "string"
+                },
+                "startTime": {
+                    "description": "none",
+                    "type": "string"
+                }
+            }
+        },
         "LayerProtocol": {
-            "description": "Each transport layer is represented by a LayerProtocol (LP) instance. The LayerProtocol instances it can be used for controlling termination and monitoring functionality. \nIt can also be used for controlling the adaptation (i.e. encapsulation and/or multiplexing of client signal), tandem connection monitoring, traffic conditioning and/or shaping functionality at an intermediate point along a connection. \nWhere the client \u2013 server relationship is fixed 1:1 and immutable, the layers can be encapsulated in a single LTP instance. Where the is a n:1 relationship between client and server, the layers must be split over two separate instances of LTP. ",
             "allOf": [
                 {
                     "$ref": "#/definitions/LocalClass"
                 },
                 {
                     "properties": {
+                        "layerProtocolName": {
+                            "description": "Indicate the specific layer-protocol described by the LayerProtocol entity.",
+                            "enum": [
+                                "OCH",
+                                "ODU",
+                                "ETH",
+                                "MPLS_TP"
+                            ],
+                            "type": "string"
+                        },
+                        "terminationDirection": {
+                            "description": "The overall directionality of the LP. \n- A BIDIRECTIONAL LP will have some SINK and/or SOURCE flowss.\n- A SINK LP can only contain elements with SINK flows or CONTRA_DIRECTION_SOURCE flows\n- A SOURCE LP can only contain SOURCE flows or CONTRA_DIRECTION_SINK flows",
+                            "enum": [
+                                "BIDIRECTIONAL",
+                                "SINK",
+                                "SOURCE",
+                                "UNDEFINED_OR_UNKNOWN"
+                            ],
+                            "type": "string"
+                        },
                         "terminationState": {
+                            "description": "Indicates whether the layer is terminated and if so how.",
                             "enum": [
                                 "LP_CAN_NEVER_TERMINATE",
                                 "LT_NOT_TERMINATED",
@@ -102,71 +134,42 @@
                                 "LT_PERMENANTLY_TERMINATED",
                                 "TERMINATION_STATE_UNKNOWN"
                             ],
-                            "type": "string",
-                            "description": "Indicates whether the layer is terminated and if so how."
-                        },
-                        "layerProtocolName": {
-                            "enum": [
-                                "OCH",
-                                "ODU",
-                                "ETH",
-                                "MPLS_TP"
-                            ],
-                            "type": "string",
-                            "description": "Indicate the specific layer-protocol described by the LayerProtocol entity."
-                        },
-                        "terminationDirection": {
-                            "enum": [
-                                "BIDIRECTIONAL",
-                                "SINK",
-                                "SOURCE",
-                                "UNDEFINED_OR_UNKNOWN"
-                            ],
-                            "type": "string",
-                            "description": "The overall directionality of the LP. \n- A BIDIRECTIONAL LP will have some SINK and/or SOURCE flowss.\n- A SINK LP can only contain elements with SINK flows or CONTRA_DIRECTION_SOURCE flows\n- A SOURCE LP can only contain SOURCE flows or CONTRA_DIRECTION_SINK flows"
+                            "type": "string"
                         }
                     }
                 }
-            ]
+            ],
+            "description": "Each transport layer is represented by a LayerProtocol (LP) instance. The LayerProtocol instances it can be used for controlling termination and monitoring functionality. \nIt can also be used for controlling the adaptation (i.e. encapsulation and/or multiplexing of client signal), tandem connection monitoring, traffic conditioning and/or shaping functionality at an intermediate point along a connection. \nWhere the client \u2013 server relationship is fixed 1:1 and immutable, the layers can be encapsulated in a single LTP instance. Where the is a n:1 relationship between client and server, the layers must be split over two separate instances of LTP. "
         },
-        "TimeRange": {
+        "ExtensionsSpec": {
             "description": "none",
             "properties": {
-                "endTime": {
-                    "type": "string",
-                    "description": "none"
+                "extensionsSpecReference": {
+                    "description": "none",
+                    "type": "string"
                 },
-                "startTime": {
-                    "type": "string",
-                    "description": "none"
+                "extensionsSpecTarget": {
+                    "items": {
+                        "description": "none",
+                        "type": "string"
+                    },
+                    "type": "array"
                 }
             }
         },
-        "NameAndValue": {
-            "description": "A scoped name-value pair",
+        "LocalClass": {
+            "description": "The TAPI GlobalComponent serves as the super class for all TAPI entities that can be directly retrieved by their ID. As such, these are first class entities and their ID is expected to be globally unique. ",
             "properties": {
-                "value": {
-                    "type": "string",
-                    "description": "The value"
+                "localId": {
+                    "description": "none",
+                    "type": "string"
                 },
-                "valueName": {
-                    "type": "string",
-                    "description": "The name of the value. The value need not have a name."
-                }
-            }
-        },
-        "LifecycleStatePac": {
-            "description": "Provides state attributes for an entity that has lifeccycle aspects only.",
-            "properties": {
-                "lifecycleState": {
-                    "enum": [
-                        "PLANNED",
-                        "POTENTIAL",
-                        "INSTALLED",
-                        "PENDING_REMOVAL"
-                    ],
-                    "type": "string",
-                    "description": "none"
+                "_extensions": {
+                    "description": "none",
+                    "items": {
+                        "$ref": "#/definitions/ExtensionsSpec"
+                    },
+                    "type": "array"
                 }
             }
         },
@@ -174,46 +177,43 @@
             "description": "Provides state attributes that are applicable to an entity that can be administered. Such an entity also has operational and lifecycle aspects.",
             "properties": {
                 "administrativeState": {
+                    "description": "none",
                     "enum": [
                         "LOCKED",
                         "UNLOCKED"
                     ],
-                    "type": "string",
-                    "description": "none"
-                },
-                "operationalState": {
-                    "enum": [
-                        "DISABLED",
-                        "ENABLED"
-                    ],
-                    "type": "string",
-                    "description": "none"
+                    "type": "string"
                 },
                 "lifecycleState": {
+                    "description": "none",
                     "enum": [
                         "PLANNED",
                         "POTENTIAL",
                         "INSTALLED",
                         "PENDING_REMOVAL"
                     ],
-                    "type": "string",
-                    "description": "none"
+                    "type": "string"
+                },
+                "operationalState": {
+                    "description": "none",
+                    "enum": [
+                        "DISABLED",
+                        "ENABLED"
+                    ],
+                    "type": "string"
                 }
             }
         },
-        "LocalClass": {
-            "description": "The TAPI GlobalComponent serves as the super class for all TAPI entities that can be directly retrieved by their ID. As such, these are first class entities and their ID is expected to be globally unique. ",
+        "NameAndValue": {
+            "description": "A scoped name-value pair",
             "properties": {
-                "_extensions": {
-                    "items": {
-                        "$ref": "#/definitions/ExtensionsSpec"
-                    },
-                    "type": "array",
-                    "description": "none"
+                "valueName": {
+                    "description": "The name of the value. The value need not have a name.",
+                    "type": "string"
                 },
-                "localId": {
-                    "type": "string",
-                    "description": "none"
+                "value": {
+                    "description": "The value",
+                    "type": "string"
                 }
             }
         }
