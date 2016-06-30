@@ -1,49 +1,19 @@
 module: TapiConnectivity
 augment /Tapi:Context/Tapi:_connectivityService:
-   +--ro _connection* [uuid]
-   |  +--ro _connectionPort* [localId]
-   |  |  +--ro _connectionEndPoint?   -> /Tapi:Context/_serviceEndPoint/_connectionEndPoint/uuid
-   |  |  +--ro role?                  TapiCommon:PortRole
-   |  |  +--ro direction?             TapiCommon:PortDirection
-   |  |  +--ro localId                string
-   |  |  +--ro _extensions*
-   |  |     +--ro extensionsSpecReference?   string
-   |  |     +--ro extensionsSpecTarget*      string
-   |  +--ro _route* [localId]
-   |  |  +--ro _lowerConnection*   -> /Tapi:Context/_connectivityService/_connection/uuid
-   |  |  +--ro localId             string
-   |  |  +--ro _extensions*
-   |  |     +--ro extensionsSpecReference?   string
-   |  |     +--ro extensionsSpecTarget*      string
-   |  +--ro _node?               -> /Tapi:Context/_topology/TapiTopology:_node/uuid
-   |  +--ro _state
-   |  |  +--ro operationalState?   OperationalState
-   |  |  +--ro lifecycleState?     LifecycleState
-   |  +--ro layerProtocolName?   TapiCommon:LayerProtocolName
-   |  +--ro direction?           TapiCommon:ForwardingDirection
-   |  +--ro uuid                 UniversalId
-   |  +--ro name* [valueName]
-   |  |  +--ro valueName    string
-   |  |  +--ro value?       string
-   |  +--ro label* [valueName]
-   |  |  +--ro valueName    string
-   |  |  +--ro value?       string
-   |  +--ro _extensions* [ExtensionsSpecReference]
-   |     +--ro extensionsSpecReference?   string
-   |     +--ro extensionsSpecTarget*      string
+   +--ro _connection*            -> /Tapi:Context/_connection/uuid
    +--rw _servicePort* [localId]
    |  +--ro _serviceEndPoint?   -> /Tapi:Context/_serviceEndPoint/uuid
-   |  +--ro role?               TapiCommon:PortRole
-   |  +--ro direction?          TapiCommon:PortDirection
-   |  +--ro serviceLayer?       TapiCommon:LayerProtocolName
+   |  +--ro role?               Tapi:PortRole
+   |  +--ro direction?          Tapi:PortDirection
+   |  +--ro serviceLayer?       Tapi:LayerProtocolName
    |  +--rw localId             string
-   |  +--ro _extensions*
-   |     +--ro extensionsSpecReference?   string
-   |     +--ro extensionsSpecTarget*      string
-   +--rw _connConstraints
+   |  +--ro _extensions* [extensionsSpecification]
+   |     +--ro extensionsSpecification    string
+   |     +--ro extensionsTarget*          string
+   +--rw _connConstraint
    |  +--ro serviceType?             ServiceType
    |  +--ro serviceLevel?            string
-   |  +--ro serviceLayer*            TapiCommon:LayerProtocolName
+   |  +--ro serviceLayer*            Tapi:LayerProtocolName
    |  +--ro requestedCapacity
    |  |  +--ro totalSize?               string
    |  |  +--ro maximumUsageInstances?   string
@@ -61,8 +31,24 @@ augment /Tapi:Context/Tapi:_connectivityService:
    |  |  +--ro latencyValue           string
    |  +--ro _includeTopology*        -> /Tapi:Context/_topology/uuid
    |  +--ro _avoidTopology*          -> /Tapi:Context/_topology/uuid
-   |  +--ro _includePath*            -> /Tapi:Context/_pathCompService/TapiPathComputation:_path/_telink/localId
-   |  +--ro _excludePath*            -> /Tapi:Context/_pathCompService/TapiPathComputation:_path/_telink/localId
+   |  +--ro _includePath* [localId]
+   |  |  +--ro _node*            -> /Tapi:Context/_topology/_node/uuid
+   |  |  +--ro _nodeEdgePoint*   -> /Tapi:Context/_topology/_node/_ownedNodeEdgePoint/uuid
+   |  |  +--ro localId           string
+   |  |  +--ro _extensions* [extensionsSpecification]
+   |  |     +--ro extensionsSpecification    string
+   |  |     +--ro extensionsTarget*          string
+   |  +--ro _excludePath* [localId]
+   |  |  +--ro _node*            -> /Tapi:Context/_topology/_node/uuid
+   |  |  +--ro _nodeEdgePoint*   -> /Tapi:Context/_topology/_node/_ownedNodeEdgePoint/uuid
+   |  |  +--ro localId           string
+   |  |  +--ro _extensions* [extensionsSpecification]
+   |  |     +--ro extensionsSpecification    string
+   |  |     +--ro extensionsTarget*          string
+   |  +--rw localId?                 string
+   |  +--ro _extensions* [extensionsSpecification]
+   |     +--ro extensionsSpecification    string
+   |     +--ro extensionsTarget*          string
    +--rw _schedule
    |  +--rw endTime?     DateAndTime
    |  +--rw startTime?   DateAndTime
@@ -70,34 +56,46 @@ augment /Tapi:Context/Tapi:_connectivityService:
    |  +--rw administrativeState?   AdministrativeState
    |  +--rw operationalState?      OperationalState
    |  +--rw lifecycleState?        LifecycleState
-   +--rw layerProtocolName?   TapiCommon:LayerProtocolName
-   +--rw direction?           TapiCommon:ForwardingDirection
+   +--rw layerProtocolName?      Tapi:LayerProtocolName
+   +--rw direction?              Tapi:ForwardingDirection
+   +--ro serviceSpecification?   string
+   +--rw uuid?                   UniversalId
+   +--rw name* [valueName]
+   |  +--rw valueName    string
+   |  +--rw value?       string
+   +--rw label* [valueName]
+   |  +--rw valueName    string
+   |  +--rw value?       string
+   +--ro _extensions* [extensionsSpecification]
+      +--ro extensionsSpecification    string
+      +--ro extensionsTarget*          string
 augment /Tapi:Context/Tapi:_serviceEndPoint:
    +--ro _layerProtocol* [localId]
    |  +--ro layerProtocolName?      LayerProtocolName
    |  +--ro terminationDirection?   TerminationDirection
    |  +--ro terminationState?       TerminationState
    |  +--ro localId                 string
-   |  +--ro _extensions*
-   |     +--ro extensionsSpecReference?   string
-   |     +--ro extensionsSpecTarget*      string
-   +--ro _mappedNodeEdgePoint*   -> /Tapi:Context/_topology/TapiTopology:_node/_ownedNodeEdgePoint/uuid
+   |  +--ro _extensions* [extensionsSpecification]
+   |     +--ro extensionsSpecification    string
+   |     +--ro extensionsTarget*          string
+   +--ro _mappedNodeEdgePoint*    -> /Tapi:Context/_topology/TapiTopology:_node/_ownedNodeEdgePoint/uuid
    +--ro _connectionEndPoint* [uuid]
    |  +--ro _layerProtocol* [localId]
    |  |  +--ro layerProtocolName?      LayerProtocolName
    |  |  +--ro terminationDirection?   TerminationDirection
    |  |  +--ro terminationState?       TerminationState
    |  |  +--ro localId                 string
-   |  |  +--ro _extensions*
-   |  |     +--ro extensionsSpecReference?   string
-   |  |     +--ro extensionsSpecTarget*      string
+   |  |  +--ro _extensions* [extensionsSpecification]
+   |  |     +--ro extensionsSpecification    string
+   |  |     +--ro extensionsTarget*          string
    |  +--ro _clientNodeEdgePoint*      -> /Tapi:Context/_topology/TapiTopology:_node/_ownedNodeEdgePoint/uuid
    |  +--ro _serverNodeEdgePoint?      -> /Tapi:Context/_topology/TapiTopology:_node/_ownedNodeEdgePoint/uuid
    |  +--ro _peerConnectionEndPoint?   -> /Tapi:Context/_serviceEndPoint/_connectionEndPoint/uuid
    |  +--ro _state
    |  |  +--ro operationalState?   OperationalState
    |  |  +--ro lifecycleState?     LifecycleState
-   |  +--ro direction?                 TapiCommon:TerminationDirection
+   |  +--ro direction?                 Tapi:TerminationDirection
+   |  +--ro resourceSpecification?     string
    |  +--ro uuid                       UniversalId
    |  +--ro name* [valueName]
    |  |  +--ro valueName    string
@@ -105,12 +103,55 @@ augment /Tapi:Context/Tapi:_serviceEndPoint:
    |  +--ro label* [valueName]
    |  |  +--ro valueName    string
    |  |  +--ro value?       string
-   |  +--ro _extensions* [ExtensionsSpecReference]
-   |     +--ro extensionsSpecReference?   string
-   |     +--ro extensionsSpecTarget*      string
+   |  +--ro _extensions* [extensionsSpecification]
+   |     +--ro extensionsSpecification    string
+   |     +--ro extensionsTarget*          string
    +--ro _state
    |  +--ro lifecycleState?   LifecycleState
-   +--ro direction?              TapiCommon:TerminationDirection
+   +--ro direction?               Tapi:TerminationDirection
+   +--ro resourceSpecification?   string
+   +--ro uuid?                    UniversalId
+   +--ro name* [valueName]
+   |  +--ro valueName    string
+   |  +--ro value?       string
+   +--ro label* [valueName]
+   |  +--ro valueName    string
+   |  +--ro value?       string
+   +--ro _extensions* [extensionsSpecification]
+      +--ro extensionsSpecification    string
+      +--ro extensionsTarget*          string
+augment /Tapi:Context/Tapi:_connection:
+   +--ro _connectionPort* [localId]
+   |  +--ro _connectionEndPoint?   -> /Tapi:Context/_serviceEndPoint/_connectionEndPoint/uuid
+   |  +--ro role?                  Tapi:PortRole
+   |  +--ro direction?             Tapi:PortDirection
+   |  +--ro localId                string
+   |  +--ro _extensions* [extensionsSpecification]
+   |     +--ro extensionsSpecification    string
+   |     +--ro extensionsTarget*          string
+   +--ro _route* [localId]
+   |  +--ro _lowerConnection*   -> /Tapi:Context/_connection/uuid
+   |  +--ro localId             string
+   |  +--ro _extensions* [extensionsSpecification]
+   |     +--ro extensionsSpecification    string
+   |     +--ro extensionsTarget*          string
+   +--ro _node?                   -> /Tapi:Context/_topology/TapiTopology:_node/uuid
+   +--ro _state
+   |  +--ro operationalState?   OperationalState
+   |  +--ro lifecycleState?     LifecycleState
+   +--ro layerProtocolName?       Tapi:LayerProtocolName
+   +--ro direction?               Tapi:ForwardingDirection
+   +--ro resourceSpecification?   string
+   +--ro uuid?                    UniversalId
+   +--ro name* [valueName]
+   |  +--ro valueName    string
+   |  +--ro value?       string
+   +--ro label* [valueName]
+   |  +--ro valueName    string
+   |  +--ro value?       string
+   +--ro _extensions* [extensionsSpecification]
+      +--ro extensionsSpecification    string
+      +--ro extensionsTarget*          string
 rpcs:
    +---x getConnectionDetails
    |  +---w input
@@ -120,81 +161,52 @@ rpcs:
    |     +--ro connection
    |        +--ro _connectionPort* [localId]
    |        |  +--ro _connectionEndPoint?   -> /Tapi:Context/_serviceEndPoint/_connectionEndPoint/uuid
-   |        |  +--ro role?                  TapiCommon:PortRole
-   |        |  +--ro direction?             TapiCommon:PortDirection
+   |        |  +--ro role?                  Tapi:PortRole
+   |        |  +--ro direction?             Tapi:PortDirection
    |        |  +--ro localId                string
-   |        |  +--ro _extensions*
-   |        |     +--ro extensionsSpecReference?   string
-   |        |     +--ro extensionsSpecTarget*      string
+   |        |  +--ro _extensions* [extensionsSpecification]
+   |        |     +--ro extensionsSpecification    string
+   |        |     +--ro extensionsTarget*          string
    |        +--ro _route* [localId]
-   |        |  +--ro _lowerConnection*   -> /Tapi:Context/_connectivityService/_connection/uuid
+   |        |  +--ro _lowerConnection*   -> /Tapi:Context/_connection/uuid
    |        |  +--ro localId             string
-   |        |  +--ro _extensions*
-   |        |     +--ro extensionsSpecReference?   string
-   |        |     +--ro extensionsSpecTarget*      string
-   |        +--ro _node?               -> /Tapi:Context/_topology/TapiTopology:_node/uuid
+   |        |  +--ro _extensions* [extensionsSpecification]
+   |        |     +--ro extensionsSpecification    string
+   |        |     +--ro extensionsTarget*          string
+   |        +--ro _node?                   -> /Tapi:Context/_topology/TapiTopology:_node/uuid
    |        +--ro _state
    |        |  +--ro operationalState?   OperationalState
    |        |  +--ro lifecycleState?     LifecycleState
-   |        +--ro layerProtocolName?   TapiCommon:LayerProtocolName
-   |        +--ro direction?           TapiCommon:ForwardingDirection
-   |        +--ro uuid?                UniversalId
+   |        +--ro layerProtocolName?       Tapi:LayerProtocolName
+   |        +--ro direction?               Tapi:ForwardingDirection
+   |        +--ro resourceSpecification?   string
+   |        +--ro uuid?                    UniversalId
    |        +--ro name* [valueName]
    |        |  +--ro valueName    string
    |        |  +--ro value?       string
    |        +--ro label* [valueName]
    |        |  +--ro valueName    string
    |        |  +--ro value?       string
-   |        +--ro _extensions* [ExtensionsSpecReference]
-   |           +--ro extensionsSpecReference?   string
-   |           +--ro extensionsSpecTarget*      string
+   |        +--ro _extensions* [extensionsSpecification]
+   |           +--ro extensionsSpecification    string
+   |           +--ro extensionsTarget*          string
    +---x getConnectivityServiceList
    |  +--ro output
    |     +--ro connService*
-   |        +--ro _connection* [uuid]
-   |        |  +--ro _connectionPort* [localId]
-   |        |  |  +--ro _connectionEndPoint?   -> /Tapi:Context/_serviceEndPoint/_connectionEndPoint/uuid
-   |        |  |  +--ro role?                  TapiCommon:PortRole
-   |        |  |  +--ro direction?             TapiCommon:PortDirection
-   |        |  |  +--ro localId                string
-   |        |  |  +--ro _extensions*
-   |        |  |     +--ro extensionsSpecReference?   string
-   |        |  |     +--ro extensionsSpecTarget*      string
-   |        |  +--ro _route* [localId]
-   |        |  |  +--ro _lowerConnection*   -> /Tapi:Context/_connectivityService/_connection/uuid
-   |        |  |  +--ro localId             string
-   |        |  |  +--ro _extensions*
-   |        |  |     +--ro extensionsSpecReference?   string
-   |        |  |     +--ro extensionsSpecTarget*      string
-   |        |  +--ro _node?               -> /Tapi:Context/_topology/TapiTopology:_node/uuid
-   |        |  +--ro _state
-   |        |  |  +--ro operationalState?   OperationalState
-   |        |  |  +--ro lifecycleState?     LifecycleState
-   |        |  +--ro layerProtocolName?   TapiCommon:LayerProtocolName
-   |        |  +--ro direction?           TapiCommon:ForwardingDirection
-   |        |  +--ro uuid                 UniversalId
-   |        |  +--ro name* [valueName]
-   |        |  |  +--ro valueName    string
-   |        |  |  +--ro value?       string
-   |        |  +--ro label* [valueName]
-   |        |  |  +--ro valueName    string
-   |        |  |  +--ro value?       string
-   |        |  +--ro _extensions* [ExtensionsSpecReference]
-   |        |     +--ro extensionsSpecReference?   string
-   |        |     +--ro extensionsSpecTarget*      string
+   |        +--ro _connection*            -> /Tapi:Context/_connection/uuid
    |        +--ro _servicePort* [localId]
    |        |  +--ro _serviceEndPoint?   -> /Tapi:Context/_serviceEndPoint/uuid
-   |        |  +--ro role?               TapiCommon:PortRole
-   |        |  +--ro direction?          TapiCommon:PortDirection
-   |        |  +--ro serviceLayer?       TapiCommon:LayerProtocolName
+   |        |  +--ro role?               Tapi:PortRole
+   |        |  +--ro direction?          Tapi:PortDirection
+   |        |  +--ro serviceLayer?       Tapi:LayerProtocolName
    |        |  +--ro localId             string
-   |        |  +--ro _extensions*
-   |        |     +--ro extensionsSpecReference?   string
-   |        |     +--ro extensionsSpecTarget*      string
-   |        +--ro _connConstraints
+   |        |  +--ro _extensions* [extensionsSpecification]
+   |        |     +--ro extensionsSpecification    string
+   |        |     +--ro extensionsTarget*          string
+   |        +--ro _connConstraint
    |        |  +--ro serviceType?             ServiceType
    |        |  +--ro serviceLevel?            string
-   |        |  +--ro serviceLayer*            TapiCommon:LayerProtocolName
+   |        |  +--ro serviceLayer*            Tapi:LayerProtocolName
    |        |  +--ro requestedCapacity
    |        |  |  +--ro totalSize?               string
    |        |  |  +--ro maximumUsageInstances?   string
@@ -212,8 +224,24 @@ rpcs:
    |        |  |  +--ro latencyValue           string
    |        |  +--ro _includeTopology*        -> /Tapi:Context/_topology/uuid
    |        |  +--ro _avoidTopology*          -> /Tapi:Context/_topology/uuid
-   |        |  +--ro _includePath*            -> /Tapi:Context/_pathCompService/TapiPathComputation:_path/_telink/localId
-   |        |  +--ro _excludePath*            -> /Tapi:Context/_pathCompService/TapiPathComputation:_path/_telink/localId
+   |        |  +--ro _includePath* [localId]
+   |        |  |  +--ro _node*            -> /Tapi:Context/_topology/_node/uuid
+   |        |  |  +--ro _nodeEdgePoint*   -> /Tapi:Context/_topology/_node/_ownedNodeEdgePoint/uuid
+   |        |  |  +--ro localId           string
+   |        |  |  +--ro _extensions* [extensionsSpecification]
+   |        |  |     +--ro extensionsSpecification    string
+   |        |  |     +--ro extensionsTarget*          string
+   |        |  +--ro _excludePath* [localId]
+   |        |  |  +--ro _node*            -> /Tapi:Context/_topology/_node/uuid
+   |        |  |  +--ro _nodeEdgePoint*   -> /Tapi:Context/_topology/_node/_ownedNodeEdgePoint/uuid
+   |        |  |  +--ro localId           string
+   |        |  |  +--ro _extensions* [extensionsSpecification]
+   |        |  |     +--ro extensionsSpecification    string
+   |        |  |     +--ro extensionsTarget*          string
+   |        |  +--ro localId?                 string
+   |        |  +--ro _extensions* [extensionsSpecification]
+   |        |     +--ro extensionsSpecification    string
+   |        |     +--ro extensionsTarget*          string
    |        +--ro _schedule
    |        |  +--ro endTime?     DateAndTime
    |        |  +--ro startTime?   DateAndTime
@@ -221,8 +249,19 @@ rpcs:
    |        |  +--ro administrativeState?   AdministrativeState
    |        |  +--ro operationalState?      OperationalState
    |        |  +--ro lifecycleState?        LifecycleState
-   |        +--ro layerProtocolName?   TapiCommon:LayerProtocolName
-   |        +--ro direction?           TapiCommon:ForwardingDirection
+   |        +--ro layerProtocolName?      Tapi:LayerProtocolName
+   |        +--ro direction?              Tapi:ForwardingDirection
+   |        +--ro serviceSpecification?   string
+   |        +--ro uuid?                   UniversalId
+   |        +--ro name* [valueName]
+   |        |  +--ro valueName    string
+   |        |  +--ro value?       string
+   |        +--ro label* [valueName]
+   |        |  +--ro valueName    string
+   |        |  +--ro value?       string
+   |        +--ro _extensions* [extensionsSpecification]
+   |           +--ro extensionsSpecification    string
+   |           +--ro extensionsTarget*          string
    +---x getConnectionEndPointDetails
    |  +---w input
    |  |  +---w serviceIdOrName?      string
@@ -235,16 +274,17 @@ rpcs:
    |        |  +--ro terminationDirection?   TerminationDirection
    |        |  +--ro terminationState?       TerminationState
    |        |  +--ro localId                 string
-   |        |  +--ro _extensions*
-   |        |     +--ro extensionsSpecReference?   string
-   |        |     +--ro extensionsSpecTarget*      string
+   |        |  +--ro _extensions* [extensionsSpecification]
+   |        |     +--ro extensionsSpecification    string
+   |        |     +--ro extensionsTarget*          string
    |        +--ro _clientNodeEdgePoint*      -> /Tapi:Context/_topology/TapiTopology:_node/_ownedNodeEdgePoint/uuid
    |        +--ro _serverNodeEdgePoint?      -> /Tapi:Context/_topology/TapiTopology:_node/_ownedNodeEdgePoint/uuid
    |        +--ro _peerConnectionEndPoint?   -> /Tapi:Context/_serviceEndPoint/_connectionEndPoint/uuid
    |        +--ro _state
    |        |  +--ro operationalState?   OperationalState
    |        |  +--ro lifecycleState?     LifecycleState
-   |        +--ro direction?                 TapiCommon:TerminationDirection
+   |        +--ro direction?                 Tapi:TerminationDirection
+   |        +--ro resourceSpecification?     string
    |        +--ro uuid?                      UniversalId
    |        +--ro name* [valueName]
    |        |  +--ro valueName    string
@@ -252,9 +292,9 @@ rpcs:
    |        +--ro label* [valueName]
    |        |  +--ro valueName    string
    |        |  +--ro value?       string
-   |        +--ro _extensions* [ExtensionsSpecReference]
-   |           +--ro extensionsSpecReference?   string
-   |           +--ro extensionsSpecTarget*      string
+   |        +--ro _extensions* [extensionsSpecification]
+   |           +--ro extensionsSpecification    string
+   |           +--ro extensionsTarget*          string
    +---x getServiceEndPointDetails
    |  +---w input
    |  |  +---w serviceEPIdOrName?   string
@@ -265,26 +305,27 @@ rpcs:
    |        |  +--ro terminationDirection?   TerminationDirection
    |        |  +--ro terminationState?       TerminationState
    |        |  +--ro localId                 string
-   |        |  +--ro _extensions*
-   |        |     +--ro extensionsSpecReference?   string
-   |        |     +--ro extensionsSpecTarget*      string
-   |        +--ro _mappedNodeEdgePoint*   -> /Tapi:Context/_topology/TapiTopology:_node/_ownedNodeEdgePoint/uuid
+   |        |  +--ro _extensions* [extensionsSpecification]
+   |        |     +--ro extensionsSpecification    string
+   |        |     +--ro extensionsTarget*          string
+   |        +--ro _mappedNodeEdgePoint*    -> /Tapi:Context/_topology/TapiTopology:_node/_ownedNodeEdgePoint/uuid
    |        +--ro _connectionEndPoint* [uuid]
    |        |  +--ro _layerProtocol* [localId]
    |        |  |  +--ro layerProtocolName?      LayerProtocolName
    |        |  |  +--ro terminationDirection?   TerminationDirection
    |        |  |  +--ro terminationState?       TerminationState
    |        |  |  +--ro localId                 string
-   |        |  |  +--ro _extensions*
-   |        |  |     +--ro extensionsSpecReference?   string
-   |        |  |     +--ro extensionsSpecTarget*      string
+   |        |  |  +--ro _extensions* [extensionsSpecification]
+   |        |  |     +--ro extensionsSpecification    string
+   |        |  |     +--ro extensionsTarget*          string
    |        |  +--ro _clientNodeEdgePoint*      -> /Tapi:Context/_topology/TapiTopology:_node/_ownedNodeEdgePoint/uuid
    |        |  +--ro _serverNodeEdgePoint?      -> /Tapi:Context/_topology/TapiTopology:_node/_ownedNodeEdgePoint/uuid
    |        |  +--ro _peerConnectionEndPoint?   -> /Tapi:Context/_serviceEndPoint/_connectionEndPoint/uuid
    |        |  +--ro _state
    |        |  |  +--ro operationalState?   OperationalState
    |        |  |  +--ro lifecycleState?     LifecycleState
-   |        |  +--ro direction?                 TapiCommon:TerminationDirection
+   |        |  +--ro direction?                 Tapi:TerminationDirection
+   |        |  +--ro resourceSpecification?     string
    |        |  +--ro uuid                       UniversalId
    |        |  +--ro name* [valueName]
    |        |  |  +--ro valueName    string
@@ -292,61 +333,42 @@ rpcs:
    |        |  +--ro label* [valueName]
    |        |  |  +--ro valueName    string
    |        |  |  +--ro value?       string
-   |        |  +--ro _extensions* [ExtensionsSpecReference]
-   |        |     +--ro extensionsSpecReference?   string
-   |        |     +--ro extensionsSpecTarget*      string
+   |        |  +--ro _extensions* [extensionsSpecification]
+   |        |     +--ro extensionsSpecification    string
+   |        |     +--ro extensionsTarget*          string
    |        +--ro _state
    |        |  +--ro lifecycleState?   LifecycleState
-   |        +--ro direction?              TapiCommon:TerminationDirection
+   |        +--ro direction?               Tapi:TerminationDirection
+   |        +--ro resourceSpecification?   string
+   |        +--ro uuid?                    UniversalId
+   |        +--ro name* [valueName]
+   |        |  +--ro valueName    string
+   |        |  +--ro value?       string
+   |        +--ro label* [valueName]
+   |        |  +--ro valueName    string
+   |        |  +--ro value?       string
+   |        +--ro _extensions* [extensionsSpecification]
+   |           +--ro extensionsSpecification    string
+   |           +--ro extensionsTarget*          string
    +---x getConnectivityServiceDetails
    |  +---w input
    |  |  +---w serviceIdOrName?   string
    |  +--ro output
    |     +--ro connService
-   |        +--ro _connection* [uuid]
-   |        |  +--ro _connectionPort* [localId]
-   |        |  |  +--ro _connectionEndPoint?   -> /Tapi:Context/_serviceEndPoint/_connectionEndPoint/uuid
-   |        |  |  +--ro role?                  TapiCommon:PortRole
-   |        |  |  +--ro direction?             TapiCommon:PortDirection
-   |        |  |  +--ro localId                string
-   |        |  |  +--ro _extensions*
-   |        |  |     +--ro extensionsSpecReference?   string
-   |        |  |     +--ro extensionsSpecTarget*      string
-   |        |  +--ro _route* [localId]
-   |        |  |  +--ro _lowerConnection*   -> /Tapi:Context/_connectivityService/_connection/uuid
-   |        |  |  +--ro localId             string
-   |        |  |  +--ro _extensions*
-   |        |  |     +--ro extensionsSpecReference?   string
-   |        |  |     +--ro extensionsSpecTarget*      string
-   |        |  +--ro _node?               -> /Tapi:Context/_topology/TapiTopology:_node/uuid
-   |        |  +--ro _state
-   |        |  |  +--ro operationalState?   OperationalState
-   |        |  |  +--ro lifecycleState?     LifecycleState
-   |        |  +--ro layerProtocolName?   TapiCommon:LayerProtocolName
-   |        |  +--ro direction?           TapiCommon:ForwardingDirection
-   |        |  +--ro uuid                 UniversalId
-   |        |  +--ro name* [valueName]
-   |        |  |  +--ro valueName    string
-   |        |  |  +--ro value?       string
-   |        |  +--ro label* [valueName]
-   |        |  |  +--ro valueName    string
-   |        |  |  +--ro value?       string
-   |        |  +--ro _extensions* [ExtensionsSpecReference]
-   |        |     +--ro extensionsSpecReference?   string
-   |        |     +--ro extensionsSpecTarget*      string
+   |        +--ro _connection*            -> /Tapi:Context/_connection/uuid
    |        +--ro _servicePort* [localId]
    |        |  +--ro _serviceEndPoint?   -> /Tapi:Context/_serviceEndPoint/uuid
-   |        |  +--ro role?               TapiCommon:PortRole
-   |        |  +--ro direction?          TapiCommon:PortDirection
-   |        |  +--ro serviceLayer?       TapiCommon:LayerProtocolName
+   |        |  +--ro role?               Tapi:PortRole
+   |        |  +--ro direction?          Tapi:PortDirection
+   |        |  +--ro serviceLayer?       Tapi:LayerProtocolName
    |        |  +--ro localId             string
-   |        |  +--ro _extensions*
-   |        |     +--ro extensionsSpecReference?   string
-   |        |     +--ro extensionsSpecTarget*      string
-   |        +--ro _connConstraints
+   |        |  +--ro _extensions* [extensionsSpecification]
+   |        |     +--ro extensionsSpecification    string
+   |        |     +--ro extensionsTarget*          string
+   |        +--ro _connConstraint
    |        |  +--ro serviceType?             ServiceType
    |        |  +--ro serviceLevel?            string
-   |        |  +--ro serviceLayer*            TapiCommon:LayerProtocolName
+   |        |  +--ro serviceLayer*            Tapi:LayerProtocolName
    |        |  +--ro requestedCapacity
    |        |  |  +--ro totalSize?               string
    |        |  |  +--ro maximumUsageInstances?   string
@@ -364,8 +386,24 @@ rpcs:
    |        |  |  +--ro latencyValue           string
    |        |  +--ro _includeTopology*        -> /Tapi:Context/_topology/uuid
    |        |  +--ro _avoidTopology*          -> /Tapi:Context/_topology/uuid
-   |        |  +--ro _includePath*            -> /Tapi:Context/_pathCompService/TapiPathComputation:_path/_telink/localId
-   |        |  +--ro _excludePath*            -> /Tapi:Context/_pathCompService/TapiPathComputation:_path/_telink/localId
+   |        |  +--ro _includePath* [localId]
+   |        |  |  +--ro _node*            -> /Tapi:Context/_topology/_node/uuid
+   |        |  |  +--ro _nodeEdgePoint*   -> /Tapi:Context/_topology/_node/_ownedNodeEdgePoint/uuid
+   |        |  |  +--ro localId           string
+   |        |  |  +--ro _extensions* [extensionsSpecification]
+   |        |  |     +--ro extensionsSpecification    string
+   |        |  |     +--ro extensionsTarget*          string
+   |        |  +--ro _excludePath* [localId]
+   |        |  |  +--ro _node*            -> /Tapi:Context/_topology/_node/uuid
+   |        |  |  +--ro _nodeEdgePoint*   -> /Tapi:Context/_topology/_node/_ownedNodeEdgePoint/uuid
+   |        |  |  +--ro localId           string
+   |        |  |  +--ro _extensions* [extensionsSpecification]
+   |        |  |     +--ro extensionsSpecification    string
+   |        |  |     +--ro extensionsTarget*          string
+   |        |  +--ro localId?                 string
+   |        |  +--ro _extensions* [extensionsSpecification]
+   |        |     +--ro extensionsSpecification    string
+   |        |     +--ro extensionsTarget*          string
    |        +--ro _schedule
    |        |  +--ro endTime?     DateAndTime
    |        |  +--ro startTime?   DateAndTime
@@ -373,8 +411,19 @@ rpcs:
    |        |  +--ro administrativeState?   AdministrativeState
    |        |  +--ro operationalState?      OperationalState
    |        |  +--ro lifecycleState?        LifecycleState
-   |        +--ro layerProtocolName?   TapiCommon:LayerProtocolName
-   |        +--ro direction?           TapiCommon:ForwardingDirection
+   |        +--ro layerProtocolName?      Tapi:LayerProtocolName
+   |        +--ro direction?              Tapi:ForwardingDirection
+   |        +--ro serviceSpecification?   string
+   |        +--ro uuid?                   UniversalId
+   |        +--ro name* [valueName]
+   |        |  +--ro valueName    string
+   |        |  +--ro value?       string
+   |        +--ro label* [valueName]
+   |        |  +--ro valueName    string
+   |        |  +--ro value?       string
+   |        +--ro _extensions* [extensionsSpecification]
+   |           +--ro extensionsSpecification    string
+   |           +--ro extensionsTarget*          string
    +---x getServiceEndPointList
    |  +--ro output
    |     +--ro serviceEndPoint*
@@ -383,26 +432,27 @@ rpcs:
    |        |  +--ro terminationDirection?   TerminationDirection
    |        |  +--ro terminationState?       TerminationState
    |        |  +--ro localId                 string
-   |        |  +--ro _extensions*
-   |        |     +--ro extensionsSpecReference?   string
-   |        |     +--ro extensionsSpecTarget*      string
-   |        +--ro _mappedNodeEdgePoint*   -> /Tapi:Context/_topology/TapiTopology:_node/_ownedNodeEdgePoint/uuid
+   |        |  +--ro _extensions* [extensionsSpecification]
+   |        |     +--ro extensionsSpecification    string
+   |        |     +--ro extensionsTarget*          string
+   |        +--ro _mappedNodeEdgePoint*    -> /Tapi:Context/_topology/TapiTopology:_node/_ownedNodeEdgePoint/uuid
    |        +--ro _connectionEndPoint* [uuid]
    |        |  +--ro _layerProtocol* [localId]
    |        |  |  +--ro layerProtocolName?      LayerProtocolName
    |        |  |  +--ro terminationDirection?   TerminationDirection
    |        |  |  +--ro terminationState?       TerminationState
    |        |  |  +--ro localId                 string
-   |        |  |  +--ro _extensions*
-   |        |  |     +--ro extensionsSpecReference?   string
-   |        |  |     +--ro extensionsSpecTarget*      string
+   |        |  |  +--ro _extensions* [extensionsSpecification]
+   |        |  |     +--ro extensionsSpecification    string
+   |        |  |     +--ro extensionsTarget*          string
    |        |  +--ro _clientNodeEdgePoint*      -> /Tapi:Context/_topology/TapiTopology:_node/_ownedNodeEdgePoint/uuid
    |        |  +--ro _serverNodeEdgePoint?      -> /Tapi:Context/_topology/TapiTopology:_node/_ownedNodeEdgePoint/uuid
    |        |  +--ro _peerConnectionEndPoint?   -> /Tapi:Context/_serviceEndPoint/_connectionEndPoint/uuid
    |        |  +--ro _state
    |        |  |  +--ro operationalState?   OperationalState
    |        |  |  +--ro lifecycleState?     LifecycleState
-   |        |  +--ro direction?                 TapiCommon:TerminationDirection
+   |        |  +--ro direction?                 Tapi:TerminationDirection
+   |        |  +--ro resourceSpecification?     string
    |        |  +--ro uuid                       UniversalId
    |        |  +--ro name* [valueName]
    |        |  |  +--ro valueName    string
@@ -410,27 +460,38 @@ rpcs:
    |        |  +--ro label* [valueName]
    |        |  |  +--ro valueName    string
    |        |  |  +--ro value?       string
-   |        |  +--ro _extensions* [ExtensionsSpecReference]
-   |        |     +--ro extensionsSpecReference?   string
-   |        |     +--ro extensionsSpecTarget*      string
+   |        |  +--ro _extensions* [extensionsSpecification]
+   |        |     +--ro extensionsSpecification    string
+   |        |     +--ro extensionsTarget*          string
    |        +--ro _state
    |        |  +--ro lifecycleState?   LifecycleState
-   |        +--ro direction?              TapiCommon:TerminationDirection
+   |        +--ro direction?               Tapi:TerminationDirection
+   |        +--ro resourceSpecification?   string
+   |        +--ro uuid?                    UniversalId
+   |        +--ro name* [valueName]
+   |        |  +--ro valueName    string
+   |        |  +--ro value?       string
+   |        +--ro label* [valueName]
+   |        |  +--ro valueName    string
+   |        |  +--ro value?       string
+   |        +--ro _extensions* [extensionsSpecification]
+   |           +--ro extensionsSpecification    string
+   |           +--ro extensionsTarget*          string
    +---x createConnectivityService
    |  +---w input
    |  |  +---w servicePort*
    |  |  |  +---w _serviceEndPoint?   -> /Tapi:Context/_serviceEndPoint/uuid
-   |  |  |  +---w role?               TapiCommon:PortRole
-   |  |  |  +---w direction?          TapiCommon:PortDirection
-   |  |  |  +---w serviceLayer?       TapiCommon:LayerProtocolName
+   |  |  |  +---w role?               Tapi:PortRole
+   |  |  |  +---w direction?          Tapi:PortDirection
+   |  |  |  +---w serviceLayer?       Tapi:LayerProtocolName
    |  |  |  +---w localId?            string
-   |  |  |  +---w _extensions*
-   |  |  |     +---w extensionsSpecReference?   string
-   |  |  |     +---w extensionsSpecTarget*      string
+   |  |  |  +---w _extensions* [extensionsSpecification]
+   |  |  |     +---w extensionsSpecification    string
+   |  |  |     +---w extensionsTarget*          string
    |  |  +---w connConstraint
    |  |  |  +---w serviceType?             ServiceType
    |  |  |  +---w serviceLevel?            string
-   |  |  |  +---w serviceLayer*            TapiCommon:LayerProtocolName
+   |  |  |  +---w serviceLayer*            Tapi:LayerProtocolName
    |  |  |  +---w requestedCapacity
    |  |  |  |  +---w totalSize?               string
    |  |  |  |  +---w maximumUsageInstances?   string
@@ -448,55 +509,41 @@ rpcs:
    |  |  |  |  +---w latencyValue           string
    |  |  |  +---w _includeTopology*        -> /Tapi:Context/_topology/uuid
    |  |  |  +---w _avoidTopology*          -> /Tapi:Context/_topology/uuid
-   |  |  |  +---w _includePath*            -> /Tapi:Context/_pathCompService/TapiPathComputation:_path/_telink/localId
-   |  |  |  +---w _excludePath*            -> /Tapi:Context/_pathCompService/TapiPathComputation:_path/_telink/localId
+   |  |  |  +---w _includePath* [localId]
+   |  |  |  |  +---w _node*            -> /Tapi:Context/_topology/_node/uuid
+   |  |  |  |  +---w _nodeEdgePoint*   -> /Tapi:Context/_topology/_node/_ownedNodeEdgePoint/uuid
+   |  |  |  |  +---w localId           string
+   |  |  |  |  +---w _extensions* [extensionsSpecification]
+   |  |  |  |     +---w extensionsSpecification    string
+   |  |  |  |     +---w extensionsTarget*          string
+   |  |  |  +---w _excludePath* [localId]
+   |  |  |  |  +---w _node*            -> /Tapi:Context/_topology/_node/uuid
+   |  |  |  |  +---w _nodeEdgePoint*   -> /Tapi:Context/_topology/_node/_ownedNodeEdgePoint/uuid
+   |  |  |  |  +---w localId           string
+   |  |  |  |  +---w _extensions* [extensionsSpecification]
+   |  |  |  |     +---w extensionsSpecification    string
+   |  |  |  |     +---w extensionsTarget*          string
+   |  |  |  +---w localId?                 string
+   |  |  |  +---w _extensions* [extensionsSpecification]
+   |  |  |     +---w extensionsSpecification    string
+   |  |  |     +---w extensionsTarget*          string
    |  |  +---w connSchedule?     string
    |  +--ro output
    |     +--ro connService
-   |        +--ro _connection* [uuid]
-   |        |  +--ro _connectionPort* [localId]
-   |        |  |  +--ro _connectionEndPoint?   -> /Tapi:Context/_serviceEndPoint/_connectionEndPoint/uuid
-   |        |  |  +--ro role?                  TapiCommon:PortRole
-   |        |  |  +--ro direction?             TapiCommon:PortDirection
-   |        |  |  +--ro localId                string
-   |        |  |  +--ro _extensions*
-   |        |  |     +--ro extensionsSpecReference?   string
-   |        |  |     +--ro extensionsSpecTarget*      string
-   |        |  +--ro _route* [localId]
-   |        |  |  +--ro _lowerConnection*   -> /Tapi:Context/_connectivityService/_connection/uuid
-   |        |  |  +--ro localId             string
-   |        |  |  +--ro _extensions*
-   |        |  |     +--ro extensionsSpecReference?   string
-   |        |  |     +--ro extensionsSpecTarget*      string
-   |        |  +--ro _node?               -> /Tapi:Context/_topology/TapiTopology:_node/uuid
-   |        |  +--ro _state
-   |        |  |  +--ro operationalState?   OperationalState
-   |        |  |  +--ro lifecycleState?     LifecycleState
-   |        |  +--ro layerProtocolName?   TapiCommon:LayerProtocolName
-   |        |  +--ro direction?           TapiCommon:ForwardingDirection
-   |        |  +--ro uuid                 UniversalId
-   |        |  +--ro name* [valueName]
-   |        |  |  +--ro valueName    string
-   |        |  |  +--ro value?       string
-   |        |  +--ro label* [valueName]
-   |        |  |  +--ro valueName    string
-   |        |  |  +--ro value?       string
-   |        |  +--ro _extensions* [ExtensionsSpecReference]
-   |        |     +--ro extensionsSpecReference?   string
-   |        |     +--ro extensionsSpecTarget*      string
+   |        +--ro _connection*            -> /Tapi:Context/_connection/uuid
    |        +--ro _servicePort* [localId]
    |        |  +--ro _serviceEndPoint?   -> /Tapi:Context/_serviceEndPoint/uuid
-   |        |  +--ro role?               TapiCommon:PortRole
-   |        |  +--ro direction?          TapiCommon:PortDirection
-   |        |  +--ro serviceLayer?       TapiCommon:LayerProtocolName
+   |        |  +--ro role?               Tapi:PortRole
+   |        |  +--ro direction?          Tapi:PortDirection
+   |        |  +--ro serviceLayer?       Tapi:LayerProtocolName
    |        |  +--ro localId             string
-   |        |  +--ro _extensions*
-   |        |     +--ro extensionsSpecReference?   string
-   |        |     +--ro extensionsSpecTarget*      string
-   |        +--ro _connConstraints
+   |        |  +--ro _extensions* [extensionsSpecification]
+   |        |     +--ro extensionsSpecification    string
+   |        |     +--ro extensionsTarget*          string
+   |        +--ro _connConstraint
    |        |  +--ro serviceType?             ServiceType
    |        |  +--ro serviceLevel?            string
-   |        |  +--ro serviceLayer*            TapiCommon:LayerProtocolName
+   |        |  +--ro serviceLayer*            Tapi:LayerProtocolName
    |        |  +--ro requestedCapacity
    |        |  |  +--ro totalSize?               string
    |        |  |  +--ro maximumUsageInstances?   string
@@ -514,8 +561,24 @@ rpcs:
    |        |  |  +--ro latencyValue           string
    |        |  +--ro _includeTopology*        -> /Tapi:Context/_topology/uuid
    |        |  +--ro _avoidTopology*          -> /Tapi:Context/_topology/uuid
-   |        |  +--ro _includePath*            -> /Tapi:Context/_pathCompService/TapiPathComputation:_path/_telink/localId
-   |        |  +--ro _excludePath*            -> /Tapi:Context/_pathCompService/TapiPathComputation:_path/_telink/localId
+   |        |  +--ro _includePath* [localId]
+   |        |  |  +--ro _node*            -> /Tapi:Context/_topology/_node/uuid
+   |        |  |  +--ro _nodeEdgePoint*   -> /Tapi:Context/_topology/_node/_ownedNodeEdgePoint/uuid
+   |        |  |  +--ro localId           string
+   |        |  |  +--ro _extensions* [extensionsSpecification]
+   |        |  |     +--ro extensionsSpecification    string
+   |        |  |     +--ro extensionsTarget*          string
+   |        |  +--ro _excludePath* [localId]
+   |        |  |  +--ro _node*            -> /Tapi:Context/_topology/_node/uuid
+   |        |  |  +--ro _nodeEdgePoint*   -> /Tapi:Context/_topology/_node/_ownedNodeEdgePoint/uuid
+   |        |  |  +--ro localId           string
+   |        |  |  +--ro _extensions* [extensionsSpecification]
+   |        |  |     +--ro extensionsSpecification    string
+   |        |  |     +--ro extensionsTarget*          string
+   |        |  +--ro localId?                 string
+   |        |  +--ro _extensions* [extensionsSpecification]
+   |        |     +--ro extensionsSpecification    string
+   |        |     +--ro extensionsTarget*          string
    |        +--ro _schedule
    |        |  +--ro endTime?     DateAndTime
    |        |  +--ro startTime?   DateAndTime
@@ -523,15 +586,26 @@ rpcs:
    |        |  +--ro administrativeState?   AdministrativeState
    |        |  +--ro operationalState?      OperationalState
    |        |  +--ro lifecycleState?        LifecycleState
-   |        +--ro layerProtocolName?   TapiCommon:LayerProtocolName
-   |        +--ro direction?           TapiCommon:ForwardingDirection
+   |        +--ro layerProtocolName?      Tapi:LayerProtocolName
+   |        +--ro direction?              Tapi:ForwardingDirection
+   |        +--ro serviceSpecification?   string
+   |        +--ro uuid?                   UniversalId
+   |        +--ro name* [valueName]
+   |        |  +--ro valueName    string
+   |        |  +--ro value?       string
+   |        +--ro label* [valueName]
+   |        |  +--ro valueName    string
+   |        |  +--ro value?       string
+   |        +--ro _extensions* [extensionsSpecification]
+   |           +--ro extensionsSpecification    string
+   |           +--ro extensionsTarget*          string
    +---x updateConnectivityService
    |  +---w input
    |  |  +---w serviceIdOrName?   string
    |  |  +---w connConstraint
    |  |  |  +---w serviceType?             ServiceType
    |  |  |  +---w serviceLevel?            string
-   |  |  |  +---w serviceLayer*            TapiCommon:LayerProtocolName
+   |  |  |  +---w serviceLayer*            Tapi:LayerProtocolName
    |  |  |  +---w requestedCapacity
    |  |  |  |  +---w totalSize?               string
    |  |  |  |  +---w maximumUsageInstances?   string
@@ -549,55 +623,41 @@ rpcs:
    |  |  |  |  +---w latencyValue           string
    |  |  |  +---w _includeTopology*        -> /Tapi:Context/_topology/uuid
    |  |  |  +---w _avoidTopology*          -> /Tapi:Context/_topology/uuid
-   |  |  |  +---w _includePath*            -> /Tapi:Context/_pathCompService/TapiPathComputation:_path/_telink/localId
-   |  |  |  +---w _excludePath*            -> /Tapi:Context/_pathCompService/TapiPathComputation:_path/_telink/localId
+   |  |  |  +---w _includePath* [localId]
+   |  |  |  |  +---w _node*            -> /Tapi:Context/_topology/_node/uuid
+   |  |  |  |  +---w _nodeEdgePoint*   -> /Tapi:Context/_topology/_node/_ownedNodeEdgePoint/uuid
+   |  |  |  |  +---w localId           string
+   |  |  |  |  +---w _extensions* [extensionsSpecification]
+   |  |  |  |     +---w extensionsSpecification    string
+   |  |  |  |     +---w extensionsTarget*          string
+   |  |  |  +---w _excludePath* [localId]
+   |  |  |  |  +---w _node*            -> /Tapi:Context/_topology/_node/uuid
+   |  |  |  |  +---w _nodeEdgePoint*   -> /Tapi:Context/_topology/_node/_ownedNodeEdgePoint/uuid
+   |  |  |  |  +---w localId           string
+   |  |  |  |  +---w _extensions* [extensionsSpecification]
+   |  |  |  |     +---w extensionsSpecification    string
+   |  |  |  |     +---w extensionsTarget*          string
+   |  |  |  +---w localId?                 string
+   |  |  |  +---w _extensions* [extensionsSpecification]
+   |  |  |     +---w extensionsSpecification    string
+   |  |  |     +---w extensionsTarget*          string
    |  |  +---w connSchedule?      string
    |  +--ro output
    |     +--ro connService
-   |        +--ro _connection* [uuid]
-   |        |  +--ro _connectionPort* [localId]
-   |        |  |  +--ro _connectionEndPoint?   -> /Tapi:Context/_serviceEndPoint/_connectionEndPoint/uuid
-   |        |  |  +--ro role?                  TapiCommon:PortRole
-   |        |  |  +--ro direction?             TapiCommon:PortDirection
-   |        |  |  +--ro localId                string
-   |        |  |  +--ro _extensions*
-   |        |  |     +--ro extensionsSpecReference?   string
-   |        |  |     +--ro extensionsSpecTarget*      string
-   |        |  +--ro _route* [localId]
-   |        |  |  +--ro _lowerConnection*   -> /Tapi:Context/_connectivityService/_connection/uuid
-   |        |  |  +--ro localId             string
-   |        |  |  +--ro _extensions*
-   |        |  |     +--ro extensionsSpecReference?   string
-   |        |  |     +--ro extensionsSpecTarget*      string
-   |        |  +--ro _node?               -> /Tapi:Context/_topology/TapiTopology:_node/uuid
-   |        |  +--ro _state
-   |        |  |  +--ro operationalState?   OperationalState
-   |        |  |  +--ro lifecycleState?     LifecycleState
-   |        |  +--ro layerProtocolName?   TapiCommon:LayerProtocolName
-   |        |  +--ro direction?           TapiCommon:ForwardingDirection
-   |        |  +--ro uuid                 UniversalId
-   |        |  +--ro name* [valueName]
-   |        |  |  +--ro valueName    string
-   |        |  |  +--ro value?       string
-   |        |  +--ro label* [valueName]
-   |        |  |  +--ro valueName    string
-   |        |  |  +--ro value?       string
-   |        |  +--ro _extensions* [ExtensionsSpecReference]
-   |        |     +--ro extensionsSpecReference?   string
-   |        |     +--ro extensionsSpecTarget*      string
+   |        +--ro _connection*            -> /Tapi:Context/_connection/uuid
    |        +--ro _servicePort* [localId]
    |        |  +--ro _serviceEndPoint?   -> /Tapi:Context/_serviceEndPoint/uuid
-   |        |  +--ro role?               TapiCommon:PortRole
-   |        |  +--ro direction?          TapiCommon:PortDirection
-   |        |  +--ro serviceLayer?       TapiCommon:LayerProtocolName
+   |        |  +--ro role?               Tapi:PortRole
+   |        |  +--ro direction?          Tapi:PortDirection
+   |        |  +--ro serviceLayer?       Tapi:LayerProtocolName
    |        |  +--ro localId             string
-   |        |  +--ro _extensions*
-   |        |     +--ro extensionsSpecReference?   string
-   |        |     +--ro extensionsSpecTarget*      string
-   |        +--ro _connConstraints
+   |        |  +--ro _extensions* [extensionsSpecification]
+   |        |     +--ro extensionsSpecification    string
+   |        |     +--ro extensionsTarget*          string
+   |        +--ro _connConstraint
    |        |  +--ro serviceType?             ServiceType
    |        |  +--ro serviceLevel?            string
-   |        |  +--ro serviceLayer*            TapiCommon:LayerProtocolName
+   |        |  +--ro serviceLayer*            Tapi:LayerProtocolName
    |        |  +--ro requestedCapacity
    |        |  |  +--ro totalSize?               string
    |        |  |  +--ro maximumUsageInstances?   string
@@ -615,8 +675,24 @@ rpcs:
    |        |  |  +--ro latencyValue           string
    |        |  +--ro _includeTopology*        -> /Tapi:Context/_topology/uuid
    |        |  +--ro _avoidTopology*          -> /Tapi:Context/_topology/uuid
-   |        |  +--ro _includePath*            -> /Tapi:Context/_pathCompService/TapiPathComputation:_path/_telink/localId
-   |        |  +--ro _excludePath*            -> /Tapi:Context/_pathCompService/TapiPathComputation:_path/_telink/localId
+   |        |  +--ro _includePath* [localId]
+   |        |  |  +--ro _node*            -> /Tapi:Context/_topology/_node/uuid
+   |        |  |  +--ro _nodeEdgePoint*   -> /Tapi:Context/_topology/_node/_ownedNodeEdgePoint/uuid
+   |        |  |  +--ro localId           string
+   |        |  |  +--ro _extensions* [extensionsSpecification]
+   |        |  |     +--ro extensionsSpecification    string
+   |        |  |     +--ro extensionsTarget*          string
+   |        |  +--ro _excludePath* [localId]
+   |        |  |  +--ro _node*            -> /Tapi:Context/_topology/_node/uuid
+   |        |  |  +--ro _nodeEdgePoint*   -> /Tapi:Context/_topology/_node/_ownedNodeEdgePoint/uuid
+   |        |  |  +--ro localId           string
+   |        |  |  +--ro _extensions* [extensionsSpecification]
+   |        |  |     +--ro extensionsSpecification    string
+   |        |  |     +--ro extensionsTarget*          string
+   |        |  +--ro localId?                 string
+   |        |  +--ro _extensions* [extensionsSpecification]
+   |        |     +--ro extensionsSpecification    string
+   |        |     +--ro extensionsTarget*          string
    |        +--ro _schedule
    |        |  +--ro endTime?     DateAndTime
    |        |  +--ro startTime?   DateAndTime
@@ -624,57 +700,38 @@ rpcs:
    |        |  +--ro administrativeState?   AdministrativeState
    |        |  +--ro operationalState?      OperationalState
    |        |  +--ro lifecycleState?        LifecycleState
-   |        +--ro layerProtocolName?   TapiCommon:LayerProtocolName
-   |        +--ro direction?           TapiCommon:ForwardingDirection
+   |        +--ro layerProtocolName?      Tapi:LayerProtocolName
+   |        +--ro direction?              Tapi:ForwardingDirection
+   |        +--ro serviceSpecification?   string
+   |        +--ro uuid?                   UniversalId
+   |        +--ro name* [valueName]
+   |        |  +--ro valueName    string
+   |        |  +--ro value?       string
+   |        +--ro label* [valueName]
+   |        |  +--ro valueName    string
+   |        |  +--ro value?       string
+   |        +--ro _extensions* [extensionsSpecification]
+   |           +--ro extensionsSpecification    string
+   |           +--ro extensionsTarget*          string
    +---x deleteConnectivityService
       +---w input
       |  +---w serviceIdOrName?   string
       +--ro output
          +--ro connService
-            +--ro _connection* [uuid]
-            |  +--ro _connectionPort* [localId]
-            |  |  +--ro _connectionEndPoint?   -> /Tapi:Context/_serviceEndPoint/_connectionEndPoint/uuid
-            |  |  +--ro role?                  TapiCommon:PortRole
-            |  |  +--ro direction?             TapiCommon:PortDirection
-            |  |  +--ro localId                string
-            |  |  +--ro _extensions*
-            |  |     +--ro extensionsSpecReference?   string
-            |  |     +--ro extensionsSpecTarget*      string
-            |  +--ro _route* [localId]
-            |  |  +--ro _lowerConnection*   -> /Tapi:Context/_connectivityService/_connection/uuid
-            |  |  +--ro localId             string
-            |  |  +--ro _extensions*
-            |  |     +--ro extensionsSpecReference?   string
-            |  |     +--ro extensionsSpecTarget*      string
-            |  +--ro _node?               -> /Tapi:Context/_topology/TapiTopology:_node/uuid
-            |  +--ro _state
-            |  |  +--ro operationalState?   OperationalState
-            |  |  +--ro lifecycleState?     LifecycleState
-            |  +--ro layerProtocolName?   TapiCommon:LayerProtocolName
-            |  +--ro direction?           TapiCommon:ForwardingDirection
-            |  +--ro uuid                 UniversalId
-            |  +--ro name* [valueName]
-            |  |  +--ro valueName    string
-            |  |  +--ro value?       string
-            |  +--ro label* [valueName]
-            |  |  +--ro valueName    string
-            |  |  +--ro value?       string
-            |  +--ro _extensions* [ExtensionsSpecReference]
-            |     +--ro extensionsSpecReference?   string
-            |     +--ro extensionsSpecTarget*      string
+            +--ro _connection*            -> /Tapi:Context/_connection/uuid
             +--ro _servicePort* [localId]
             |  +--ro _serviceEndPoint?   -> /Tapi:Context/_serviceEndPoint/uuid
-            |  +--ro role?               TapiCommon:PortRole
-            |  +--ro direction?          TapiCommon:PortDirection
-            |  +--ro serviceLayer?       TapiCommon:LayerProtocolName
+            |  +--ro role?               Tapi:PortRole
+            |  +--ro direction?          Tapi:PortDirection
+            |  +--ro serviceLayer?       Tapi:LayerProtocolName
             |  +--ro localId             string
-            |  +--ro _extensions*
-            |     +--ro extensionsSpecReference?   string
-            |     +--ro extensionsSpecTarget*      string
-            +--ro _connConstraints
+            |  +--ro _extensions* [extensionsSpecification]
+            |     +--ro extensionsSpecification    string
+            |     +--ro extensionsTarget*          string
+            +--ro _connConstraint
             |  +--ro serviceType?             ServiceType
             |  +--ro serviceLevel?            string
-            |  +--ro serviceLayer*            TapiCommon:LayerProtocolName
+            |  +--ro serviceLayer*            Tapi:LayerProtocolName
             |  +--ro requestedCapacity
             |  |  +--ro totalSize?               string
             |  |  +--ro maximumUsageInstances?   string
@@ -692,8 +749,24 @@ rpcs:
             |  |  +--ro latencyValue           string
             |  +--ro _includeTopology*        -> /Tapi:Context/_topology/uuid
             |  +--ro _avoidTopology*          -> /Tapi:Context/_topology/uuid
-            |  +--ro _includePath*            -> /Tapi:Context/_pathCompService/TapiPathComputation:_path/_telink/localId
-            |  +--ro _excludePath*            -> /Tapi:Context/_pathCompService/TapiPathComputation:_path/_telink/localId
+            |  +--ro _includePath* [localId]
+            |  |  +--ro _node*            -> /Tapi:Context/_topology/_node/uuid
+            |  |  +--ro _nodeEdgePoint*   -> /Tapi:Context/_topology/_node/_ownedNodeEdgePoint/uuid
+            |  |  +--ro localId           string
+            |  |  +--ro _extensions* [extensionsSpecification]
+            |  |     +--ro extensionsSpecification    string
+            |  |     +--ro extensionsTarget*          string
+            |  +--ro _excludePath* [localId]
+            |  |  +--ro _node*            -> /Tapi:Context/_topology/_node/uuid
+            |  |  +--ro _nodeEdgePoint*   -> /Tapi:Context/_topology/_node/_ownedNodeEdgePoint/uuid
+            |  |  +--ro localId           string
+            |  |  +--ro _extensions* [extensionsSpecification]
+            |  |     +--ro extensionsSpecification    string
+            |  |     +--ro extensionsTarget*          string
+            |  +--ro localId?                 string
+            |  +--ro _extensions* [extensionsSpecification]
+            |     +--ro extensionsSpecification    string
+            |     +--ro extensionsTarget*          string
             +--ro _schedule
             |  +--ro endTime?     DateAndTime
             |  +--ro startTime?   DateAndTime
@@ -701,5 +774,16 @@ rpcs:
             |  +--ro administrativeState?   AdministrativeState
             |  +--ro operationalState?      OperationalState
             |  +--ro lifecycleState?        LifecycleState
-            +--ro layerProtocolName?   TapiCommon:LayerProtocolName
-            +--ro direction?           TapiCommon:ForwardingDirection
+            +--ro layerProtocolName?      Tapi:LayerProtocolName
+            +--ro direction?              Tapi:ForwardingDirection
+            +--ro serviceSpecification?   string
+            +--ro uuid?                   UniversalId
+            +--ro name* [valueName]
+            |  +--ro valueName    string
+            |  +--ro value?       string
+            +--ro label* [valueName]
+            |  +--ro valueName    string
+            |  +--ro value?       string
+            +--ro _extensions* [extensionsSpecification]
+               +--ro extensionsSpecification    string
+               +--ro extensionsTarget*          string
