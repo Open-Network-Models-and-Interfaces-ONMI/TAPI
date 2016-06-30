@@ -1,23 +1,25 @@
 module: TapiVirtualNetwork
 augment /Tapi:Context/Tapi:_vnwService:
-   +--ro _topology?           -> /Tapi:Context/_topology/uuid
+   +--ro _topology?              -> /Tapi:Context/_topology/uuid
    +--rw _servicePort* [localId]
    |  +--ro _serviceEndPoint?   -> /Tapi:Context/_serviceEndPoint/uuid
-   |  +--ro role?               TapiCommon:PortRole
-   |  +--ro direction?          TapiCommon:PortDirection
-   |  +--ro serviceLayer?       TapiCommon:LayerProtocolName
+   |  +--ro role?               Tapi:PortRole
+   |  +--ro direction?          Tapi:PortDirection
+   |  +--ro serviceLayer?       Tapi:LayerProtocolName
    |  +--rw localId             string
-   |  +--ro _extensions*
-   |     +--ro extensionsSpecReference?   string
-   |     +--ro extensionsSpecTarget*      string
-   +--rw _vnwConstraint
-   |  +--rw serviceLevel?            string
-   |  +--rw serviceLayer*            TapiCommon:LayerProtocolName
+   |  +--ro _extensions* [extensionsSpecification]
+   |     +--ro extensionsSpecification    string
+   |     +--ro extensionsTarget*          string
+   +--rw _vnwConstraint* [localId]
+   |  +--ro _srcServiceEndPoint?     -> /Tapi:Context/_serviceEndPoint/uuid
+   |  +--ro _sinkServiceEndPoint?    -> /Tapi:Context/_serviceEndPoint/uuid
    |  +--rw requestedCapacity
    |  |  +--rw totalSize?               string
    |  |  +--rw maximumUsageInstances?   string
    |  |  +--rw maximumUsageSize?        string
    |  |  +--rw numberingRange?          string
+   |  +--rw serviceLevel?            string
+   |  +--rw serviceLayer*            Tapi:LayerProtocolName
    |  +--rw costCharacteristic* [costAlgorithm]
    |  |  +--rw costName?        string
    |  |  +--rw costValue?       string
@@ -26,8 +28,12 @@ augment /Tapi:Context/Tapi:_vnwService:
    |  |  +--rw riskCharacteristicName    string
    |  |  +--rw riskIdentifierList*       string
    |  +--rw latencyCharacteristic* [latencyValue]
-   |     +--rw trafficPropertyName?   string
-   |     +--rw latencyValue           string
+   |  |  +--rw trafficPropertyName?   string
+   |  |  +--rw latencyValue           string
+   |  +--rw localId                  string
+   |  +--ro _extensions* [extensionsSpecification]
+   |     +--ro extensionsSpecification    string
+   |     +--ro extensionsTarget*          string
    +--rw _schedule
    |  +--rw endTime?     DateAndTime
    |  +--rw startTime?   DateAndTime
@@ -35,27 +41,40 @@ augment /Tapi:Context/Tapi:_vnwService:
    |  +--rw administrativeState?   AdministrativeState
    |  +--rw operationalState?      OperationalState
    |  +--rw lifecycleState?        LifecycleState
-   +--rw layerProtocolName*   TapiCommon:LayerProtocolName
+   +--rw layerProtocolName*      Tapi:LayerProtocolName
+   +--ro serviceSpecification?   string
+   +--rw uuid?                   UniversalId
+   +--rw name* [valueName]
+   |  +--rw valueName    string
+   |  +--rw value?       string
+   +--rw label* [valueName]
+   |  +--rw valueName    string
+   |  +--rw value?       string
+   +--ro _extensions* [extensionsSpecification]
+      +--ro extensionsSpecification    string
+      +--ro extensionsTarget*          string
 rpcs:
    +---x createVirtualNetworkService
    |  +---w input
    |  |  +---w servicePort*
    |  |  |  +---w _serviceEndPoint?   -> /Tapi:Context/_serviceEndPoint/uuid
-   |  |  |  +---w role?               TapiCommon:PortRole
-   |  |  |  +---w direction?          TapiCommon:PortDirection
-   |  |  |  +---w serviceLayer?       TapiCommon:LayerProtocolName
+   |  |  |  +---w role?               Tapi:PortRole
+   |  |  |  +---w direction?          Tapi:PortDirection
+   |  |  |  +---w serviceLayer?       Tapi:LayerProtocolName
    |  |  |  +---w localId?            string
-   |  |  |  +---w _extensions*
-   |  |  |     +---w extensionsSpecReference?   string
-   |  |  |     +---w extensionsSpecTarget*      string
+   |  |  |  +---w _extensions* [extensionsSpecification]
+   |  |  |     +---w extensionsSpecification    string
+   |  |  |     +---w extensionsTarget*          string
    |  |  +---w vnwConstraint
-   |  |  |  +---w serviceLevel?            string
-   |  |  |  +---w serviceLayer*            TapiCommon:LayerProtocolName
+   |  |  |  +---w _srcServiceEndPoint?     -> /Tapi:Context/_serviceEndPoint/uuid
+   |  |  |  +---w _sinkServiceEndPoint?    -> /Tapi:Context/_serviceEndPoint/uuid
    |  |  |  +---w requestedCapacity
    |  |  |  |  +---w totalSize?               string
    |  |  |  |  +---w maximumUsageInstances?   string
    |  |  |  |  +---w maximumUsageSize?        string
    |  |  |  |  +---w numberingRange?          string
+   |  |  |  +---w serviceLevel?            string
+   |  |  |  +---w serviceLayer*            Tapi:LayerProtocolName
    |  |  |  +---w costCharacteristic* [costAlgorithm]
    |  |  |  |  +---w costName?        string
    |  |  |  |  +---w costValue?       string
@@ -64,29 +83,35 @@ rpcs:
    |  |  |  |  +---w riskCharacteristicName    string
    |  |  |  |  +---w riskIdentifierList*       string
    |  |  |  +---w latencyCharacteristic* [latencyValue]
-   |  |  |     +---w trafficPropertyName?   string
-   |  |  |     +---w latencyValue           string
+   |  |  |  |  +---w trafficPropertyName?   string
+   |  |  |  |  +---w latencyValue           string
+   |  |  |  +---w localId?                 string
+   |  |  |  +---w _extensions* [extensionsSpecification]
+   |  |  |     +---w extensionsSpecification    string
+   |  |  |     +---w extensionsTarget*          string
    |  |  +---w connSchedule?    string
    |  +--ro output
    |     +--ro vnwService
-   |        +--ro _topology?           -> /Tapi:Context/_topology/uuid
+   |        +--ro _topology?              -> /Tapi:Context/_topology/uuid
    |        +--ro _servicePort* [localId]
    |        |  +--ro _serviceEndPoint?   -> /Tapi:Context/_serviceEndPoint/uuid
-   |        |  +--ro role?               TapiCommon:PortRole
-   |        |  +--ro direction?          TapiCommon:PortDirection
-   |        |  +--ro serviceLayer?       TapiCommon:LayerProtocolName
+   |        |  +--ro role?               Tapi:PortRole
+   |        |  +--ro direction?          Tapi:PortDirection
+   |        |  +--ro serviceLayer?       Tapi:LayerProtocolName
    |        |  +--ro localId             string
-   |        |  +--ro _extensions*
-   |        |     +--ro extensionsSpecReference?   string
-   |        |     +--ro extensionsSpecTarget*      string
-   |        +--ro _vnwConstraint
-   |        |  +--ro serviceLevel?            string
-   |        |  +--ro serviceLayer*            TapiCommon:LayerProtocolName
+   |        |  +--ro _extensions* [extensionsSpecification]
+   |        |     +--ro extensionsSpecification    string
+   |        |     +--ro extensionsTarget*          string
+   |        +--ro _vnwConstraint* [localId]
+   |        |  +--ro _srcServiceEndPoint?     -> /Tapi:Context/_serviceEndPoint/uuid
+   |        |  +--ro _sinkServiceEndPoint?    -> /Tapi:Context/_serviceEndPoint/uuid
    |        |  +--ro requestedCapacity
    |        |  |  +--ro totalSize?               string
    |        |  |  +--ro maximumUsageInstances?   string
    |        |  |  +--ro maximumUsageSize?        string
    |        |  |  +--ro numberingRange?          string
+   |        |  +--ro serviceLevel?            string
+   |        |  +--ro serviceLayer*            Tapi:LayerProtocolName
    |        |  +--ro costCharacteristic* [costAlgorithm]
    |        |  |  +--ro costName?        string
    |        |  |  +--ro costValue?       string
@@ -95,8 +120,12 @@ rpcs:
    |        |  |  +--ro riskCharacteristicName    string
    |        |  |  +--ro riskIdentifierList*       string
    |        |  +--ro latencyCharacteristic* [latencyValue]
-   |        |     +--ro trafficPropertyName?   string
-   |        |     +--ro latencyValue           string
+   |        |  |  +--ro trafficPropertyName?   string
+   |        |  |  +--ro latencyValue           string
+   |        |  +--ro localId                  string
+   |        |  +--ro _extensions* [extensionsSpecification]
+   |        |     +--ro extensionsSpecification    string
+   |        |     +--ro extensionsTarget*          string
    |        +--ro _schedule
    |        |  +--ro endTime?     DateAndTime
    |        |  +--ro startTime?   DateAndTime
@@ -104,30 +133,43 @@ rpcs:
    |        |  +--ro administrativeState?   AdministrativeState
    |        |  +--ro operationalState?      OperationalState
    |        |  +--ro lifecycleState?        LifecycleState
-   |        +--ro layerProtocolName*   TapiCommon:LayerProtocolName
+   |        +--ro layerProtocolName*      Tapi:LayerProtocolName
+   |        +--ro serviceSpecification?   string
+   |        +--ro uuid?                   UniversalId
+   |        +--ro name* [valueName]
+   |        |  +--ro valueName    string
+   |        |  +--ro value?       string
+   |        +--ro label* [valueName]
+   |        |  +--ro valueName    string
+   |        |  +--ro value?       string
+   |        +--ro _extensions* [extensionsSpecification]
+   |           +--ro extensionsSpecification    string
+   |           +--ro extensionsTarget*          string
    +---x deleteVirtualNetworkService
    |  +---w input
    |  |  +---w serviceIdOrName?   string
    |  +--ro output
    |     +--ro vnwService
-   |        +--ro _topology?           -> /Tapi:Context/_topology/uuid
+   |        +--ro _topology?              -> /Tapi:Context/_topology/uuid
    |        +--ro _servicePort* [localId]
    |        |  +--ro _serviceEndPoint?   -> /Tapi:Context/_serviceEndPoint/uuid
-   |        |  +--ro role?               TapiCommon:PortRole
-   |        |  +--ro direction?          TapiCommon:PortDirection
-   |        |  +--ro serviceLayer?       TapiCommon:LayerProtocolName
+   |        |  +--ro role?               Tapi:PortRole
+   |        |  +--ro direction?          Tapi:PortDirection
+   |        |  +--ro serviceLayer?       Tapi:LayerProtocolName
    |        |  +--ro localId             string
-   |        |  +--ro _extensions*
-   |        |     +--ro extensionsSpecReference?   string
-   |        |     +--ro extensionsSpecTarget*      string
-   |        +--ro _vnwConstraint
-   |        |  +--ro serviceLevel?            string
-   |        |  +--ro serviceLayer*            TapiCommon:LayerProtocolName
+   |        |  +--ro _extensions* [extensionsSpecification]
+   |        |     +--ro extensionsSpecification    string
+   |        |     +--ro extensionsTarget*          string
+   |        +--ro _vnwConstraint* [localId]
+   |        |  +--ro _srcServiceEndPoint?     -> /Tapi:Context/_serviceEndPoint/uuid
+   |        |  +--ro _sinkServiceEndPoint?    -> /Tapi:Context/_serviceEndPoint/uuid
    |        |  +--ro requestedCapacity
    |        |  |  +--ro totalSize?               string
    |        |  |  +--ro maximumUsageInstances?   string
    |        |  |  +--ro maximumUsageSize?        string
    |        |  |  +--ro numberingRange?          string
+   |        |  +--ro serviceLevel?            string
+   |        |  +--ro serviceLayer*            Tapi:LayerProtocolName
    |        |  +--ro costCharacteristic* [costAlgorithm]
    |        |  |  +--ro costName?        string
    |        |  |  +--ro costValue?       string
@@ -136,8 +178,12 @@ rpcs:
    |        |  |  +--ro riskCharacteristicName    string
    |        |  |  +--ro riskIdentifierList*       string
    |        |  +--ro latencyCharacteristic* [latencyValue]
-   |        |     +--ro trafficPropertyName?   string
-   |        |     +--ro latencyValue           string
+   |        |  |  +--ro trafficPropertyName?   string
+   |        |  |  +--ro latencyValue           string
+   |        |  +--ro localId                  string
+   |        |  +--ro _extensions* [extensionsSpecification]
+   |        |     +--ro extensionsSpecification    string
+   |        |     +--ro extensionsTarget*          string
    |        +--ro _schedule
    |        |  +--ro endTime?     DateAndTime
    |        |  +--ro startTime?   DateAndTime
@@ -145,30 +191,43 @@ rpcs:
    |        |  +--ro administrativeState?   AdministrativeState
    |        |  +--ro operationalState?      OperationalState
    |        |  +--ro lifecycleState?        LifecycleState
-   |        +--ro layerProtocolName*   TapiCommon:LayerProtocolName
+   |        +--ro layerProtocolName*      Tapi:LayerProtocolName
+   |        +--ro serviceSpecification?   string
+   |        +--ro uuid?                   UniversalId
+   |        +--ro name* [valueName]
+   |        |  +--ro valueName    string
+   |        |  +--ro value?       string
+   |        +--ro label* [valueName]
+   |        |  +--ro valueName    string
+   |        |  +--ro value?       string
+   |        +--ro _extensions* [extensionsSpecification]
+   |           +--ro extensionsSpecification    string
+   |           +--ro extensionsTarget*          string
    +---x getVirtualNetworkServiceDetails
    |  +---w input
    |  |  +---w serviceIdOrName?   string
    |  +--ro output
    |     +--ro vnwService
-   |        +--ro _topology?           -> /Tapi:Context/_topology/uuid
+   |        +--ro _topology?              -> /Tapi:Context/_topology/uuid
    |        +--ro _servicePort* [localId]
    |        |  +--ro _serviceEndPoint?   -> /Tapi:Context/_serviceEndPoint/uuid
-   |        |  +--ro role?               TapiCommon:PortRole
-   |        |  +--ro direction?          TapiCommon:PortDirection
-   |        |  +--ro serviceLayer?       TapiCommon:LayerProtocolName
+   |        |  +--ro role?               Tapi:PortRole
+   |        |  +--ro direction?          Tapi:PortDirection
+   |        |  +--ro serviceLayer?       Tapi:LayerProtocolName
    |        |  +--ro localId             string
-   |        |  +--ro _extensions*
-   |        |     +--ro extensionsSpecReference?   string
-   |        |     +--ro extensionsSpecTarget*      string
-   |        +--ro _vnwConstraint
-   |        |  +--ro serviceLevel?            string
-   |        |  +--ro serviceLayer*            TapiCommon:LayerProtocolName
+   |        |  +--ro _extensions* [extensionsSpecification]
+   |        |     +--ro extensionsSpecification    string
+   |        |     +--ro extensionsTarget*          string
+   |        +--ro _vnwConstraint* [localId]
+   |        |  +--ro _srcServiceEndPoint?     -> /Tapi:Context/_serviceEndPoint/uuid
+   |        |  +--ro _sinkServiceEndPoint?    -> /Tapi:Context/_serviceEndPoint/uuid
    |        |  +--ro requestedCapacity
    |        |  |  +--ro totalSize?               string
    |        |  |  +--ro maximumUsageInstances?   string
    |        |  |  +--ro maximumUsageSize?        string
    |        |  |  +--ro numberingRange?          string
+   |        |  +--ro serviceLevel?            string
+   |        |  +--ro serviceLayer*            Tapi:LayerProtocolName
    |        |  +--ro costCharacteristic* [costAlgorithm]
    |        |  |  +--ro costName?        string
    |        |  |  +--ro costValue?       string
@@ -177,8 +236,12 @@ rpcs:
    |        |  |  +--ro riskCharacteristicName    string
    |        |  |  +--ro riskIdentifierList*       string
    |        |  +--ro latencyCharacteristic* [latencyValue]
-   |        |     +--ro trafficPropertyName?   string
-   |        |     +--ro latencyValue           string
+   |        |  |  +--ro trafficPropertyName?   string
+   |        |  |  +--ro latencyValue           string
+   |        |  +--ro localId                  string
+   |        |  +--ro _extensions* [extensionsSpecification]
+   |        |     +--ro extensionsSpecification    string
+   |        |     +--ro extensionsTarget*          string
    |        +--ro _schedule
    |        |  +--ro endTime?     DateAndTime
    |        |  +--ro startTime?   DateAndTime
@@ -186,28 +249,41 @@ rpcs:
    |        |  +--ro administrativeState?   AdministrativeState
    |        |  +--ro operationalState?      OperationalState
    |        |  +--ro lifecycleState?        LifecycleState
-   |        +--ro layerProtocolName*   TapiCommon:LayerProtocolName
+   |        +--ro layerProtocolName*      Tapi:LayerProtocolName
+   |        +--ro serviceSpecification?   string
+   |        +--ro uuid?                   UniversalId
+   |        +--ro name* [valueName]
+   |        |  +--ro valueName    string
+   |        |  +--ro value?       string
+   |        +--ro label* [valueName]
+   |        |  +--ro valueName    string
+   |        |  +--ro value?       string
+   |        +--ro _extensions* [extensionsSpecification]
+   |           +--ro extensionsSpecification    string
+   |           +--ro extensionsTarget*          string
    +---x getVirtualNetworkServiceList
       +--ro output
          +--ro vnwService*
-            +--ro _topology?           -> /Tapi:Context/_topology/uuid
+            +--ro _topology?              -> /Tapi:Context/_topology/uuid
             +--ro _servicePort* [localId]
             |  +--ro _serviceEndPoint?   -> /Tapi:Context/_serviceEndPoint/uuid
-            |  +--ro role?               TapiCommon:PortRole
-            |  +--ro direction?          TapiCommon:PortDirection
-            |  +--ro serviceLayer?       TapiCommon:LayerProtocolName
+            |  +--ro role?               Tapi:PortRole
+            |  +--ro direction?          Tapi:PortDirection
+            |  +--ro serviceLayer?       Tapi:LayerProtocolName
             |  +--ro localId             string
-            |  +--ro _extensions*
-            |     +--ro extensionsSpecReference?   string
-            |     +--ro extensionsSpecTarget*      string
-            +--ro _vnwConstraint
-            |  +--ro serviceLevel?            string
-            |  +--ro serviceLayer*            TapiCommon:LayerProtocolName
+            |  +--ro _extensions* [extensionsSpecification]
+            |     +--ro extensionsSpecification    string
+            |     +--ro extensionsTarget*          string
+            +--ro _vnwConstraint* [localId]
+            |  +--ro _srcServiceEndPoint?     -> /Tapi:Context/_serviceEndPoint/uuid
+            |  +--ro _sinkServiceEndPoint?    -> /Tapi:Context/_serviceEndPoint/uuid
             |  +--ro requestedCapacity
             |  |  +--ro totalSize?               string
             |  |  +--ro maximumUsageInstances?   string
             |  |  +--ro maximumUsageSize?        string
             |  |  +--ro numberingRange?          string
+            |  +--ro serviceLevel?            string
+            |  +--ro serviceLayer*            Tapi:LayerProtocolName
             |  +--ro costCharacteristic* [costAlgorithm]
             |  |  +--ro costName?        string
             |  |  +--ro costValue?       string
@@ -216,8 +292,12 @@ rpcs:
             |  |  +--ro riskCharacteristicName    string
             |  |  +--ro riskIdentifierList*       string
             |  +--ro latencyCharacteristic* [latencyValue]
-            |     +--ro trafficPropertyName?   string
-            |     +--ro latencyValue           string
+            |  |  +--ro trafficPropertyName?   string
+            |  |  +--ro latencyValue           string
+            |  +--ro localId                  string
+            |  +--ro _extensions* [extensionsSpecification]
+            |     +--ro extensionsSpecification    string
+            |     +--ro extensionsTarget*          string
             +--ro _schedule
             |  +--ro endTime?     DateAndTime
             |  +--ro startTime?   DateAndTime
@@ -225,4 +305,15 @@ rpcs:
             |  +--ro administrativeState?   AdministrativeState
             |  +--ro operationalState?      OperationalState
             |  +--ro lifecycleState?        LifecycleState
-            +--ro layerProtocolName*   TapiCommon:LayerProtocolName
+            +--ro layerProtocolName*      Tapi:LayerProtocolName
+            +--ro serviceSpecification?   string
+            +--ro uuid?                   UniversalId
+            +--ro name* [valueName]
+            |  +--ro valueName    string
+            |  +--ro value?       string
+            +--ro label* [valueName]
+            |  +--ro valueName    string
+            |  +--ro value?       string
+            +--ro _extensions* [extensionsSpecification]
+               +--ro extensionsSpecification    string
+               +--ro extensionsTarget*          string
