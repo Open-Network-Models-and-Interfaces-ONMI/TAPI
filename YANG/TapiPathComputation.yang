@@ -15,23 +15,35 @@ module TapiPathComputation {
         Editor: your-name
                 <mailto:your-email@example.com>";
     description "none";
-    revision 2016-06-29 {
+    revision 2016-07-11 {
         description "Latest revision";
         reference "RFC 6020 and RFC 6087";
-    }
-    augment "/Tapi:Context/Tapi:_pathCompService" {
-        uses PathComputationService;
-    }
-    augment "/Tapi:Context/Tapi:_path" {
-        uses Path;
     }
     /***********************
     * package ObjectClasses
     **********************/ 
+        list Path {
+            key 'uuid';
+            uses Path;
+            description "none";
+        }
         grouping Path {
+            leaf resourceSpecification {
+                type string;
+                default "/TapiPathComputation:Path";
+                config false;
+                description "none";
+            }
+            leaf resourceSpecTarget {
+                type string;
+                default "/Tapi:Context/Tapi:_path";
+                config false;
+                description "none";
+            }
             list _telink {
                 key 'localId';
                 config false;
+                min-elements 1;
                 uses TapiTopology:TeLink;
                 description "none";
             }
@@ -40,13 +52,13 @@ module TapiPathComputation {
                 uses RoutingConstraint;
                 description "none";
             }
-            uses Tapi:Resource;
+            uses Tapi:ResourceSpec;
             description "Path is described by an ordered list of TE Links. A TE Link is defined by a pair of Node/NodeEdgePoint IDs. A Connection is realized by concatenating link resources (associated with a Link) and the lower-level connections (cross-connections) in the different nodes";
         }
         grouping PathCompServicePort {
             leaf _serviceEndPoint {
                 type leafref {
-                    path '/Tapi:Context/Tapi:_serviceEndPoint/Tapi:uuid';
+                    path '/TapiConnectivity:ServiceEndPoint/TapiConnectivity:uuid';
                 }
                 config false;
                 description "none";
@@ -75,16 +87,36 @@ module TapiPathComputation {
                 The EP replaces the Protection Unit of a traditional protection model. 
                 The ForwadingConstruct can be considered as a component and the EndPoint as a Port on that component";
         }
+        list PathComputationService {
+            key 'uuid';
+            uses PathComputationService;
+            description "none";
+        }
         grouping PathComputationService {
+            leaf serviceSpecification {
+                type string;
+                default "/TapiPathComputation:PathComputationService";
+                config false;
+                description "none";
+            }
+            leaf serviceSpecTarget {
+                type string;
+                default "/Tapi:Context/Tapi:_pathCompService";
+                config false;
+                description "none";
+            }
             leaf-list _path {
                 type leafref {
-                    path '/Tapi:Context/Tapi:_path/Tapi:uuid';
+                    path '/Path/uuid';
                 }
                 config false;
+                min-elements 1;
                 description "none";
             }
             list _servicePort {
                 key 'localId';
+                min-elements 2;
+                max-elements 2;
                 uses PathCompServicePort;
                 description "none";
             }
@@ -100,7 +132,7 @@ module TapiPathComputation {
                 uses PathOptimizationConstraint;
                 description "none";
             }
-            uses Tapi:Service;
+            uses Tapi:ServiceSpec;
             description "none";
         }
         grouping PathObjectiveFunction {
@@ -158,33 +190,27 @@ module TapiPathComputation {
                 description "none";
             }
             list costCharacteristic {
-                key 'costAlgorithm';
+                key 'costName costValue costAlgorithm';
                 config false;
                 uses TapiTopology:CostCharacteristic;
                 description "The list of costs where each cost relates to some aspect of the TopologicalEntity.";
             }
-            list riskCharacteristic {
-                key 'riskCharacteristicName';
-                config false;
-                uses TapiTopology:RiskCharacteristic;
-                description "A list of risk characteristics for consideration in an analysis of shared risk. Each element of the list represents a specific risk consideration.";
-            }
             list latencyCharacteristic {
-                key 'latencyValue';
+                key 'trafficPropertyName trafficPropertyQueingLatency';
                 config false;
-                uses TapiTopology:QueuingLatency;
+                uses TapiTopology:LatencyCharacteristic;
                 description "The effect on the latency of a queuing process. This only has significant effect for packet based systems and has a complex characteristic.";
             }
             leaf-list _includeTopology {
                 type leafref {
-                    path '/Tapi:Context/Tapi:_topology/Tapi:uuid';
+                    path '/TapiTopology:NetworkTopologyService/TapiTopology:_topology/TapiTopology:uuid';
                 }
                 config false;
                 description "none";
             }
             leaf-list _avoidTopology {
                 type leafref {
-                    path '/Tapi:Context/Tapi:_topology/Tapi:uuid';
+                    path '/TapiTopology:NetworkTopologyService/TapiTopology:_topology/TapiTopology:uuid';
                 }
                 config false;
                 description "none";
@@ -217,8 +243,8 @@ module TapiPathComputation {
                     uses PathCompServicePort;
                     description "none";
                 }
-                leaf routingConstraint {
-                    type string;
+                container routingConstraint {
+                    uses RoutingConstraint;
                     description "none";
                 }
                 container objectiveFunction {
@@ -240,8 +266,8 @@ module TapiPathComputation {
                     type string;
                     description "none";
                 }
-                leaf routingConstraint {
-                    type string;
+                container routingConstraint {
+                    uses RoutingConstraint;
                     description "none";
                 }
                 container optimizationConstraint {
