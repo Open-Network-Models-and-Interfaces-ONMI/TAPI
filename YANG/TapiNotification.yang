@@ -12,23 +12,31 @@ module TapiNotification {
         Editor: your-name
                 <mailto:your-email@example.com>";
     description "none";
-    revision 2016-06-29 {
+    revision 2016-07-11 {
         description "Latest revision";
         reference "RFC 6020 and RFC 6087";
     }
-    
-    augment "/Tapi:Context/Tapi:_notifSubscription" {
-        uses NotificationSubscriptionService;
-    }
-    
-    augment "/Tapi:Context/Tapi:_notification" {
-        uses Notification;
-    }
-    
     /***********************
     * package ObjectClasses
     **********************/ 
+        list NotificationSubscriptionService {
+            key 'uuid';
+            uses NotificationSubscriptionService;
+            description "none";
+        }
         grouping NotificationSubscriptionService {
+            leaf serviceSpecification {
+                type string;
+                default "/TapiNotification:NotificationSubscriptionService";
+                config false;
+                description "none";
+            }
+            leaf serviceSpecTarget {
+                type string;
+                default "/Tapi:Context/Tapi:_notifSubscription";
+                config false;
+                description "none";
+            }
             list _notification {
                 key 'uuid';
                 config false;
@@ -46,14 +54,16 @@ module TapiNotification {
             leaf-list supportedNotificationTypes {
                 type NotificationType;
                 config false;
+                min-elements 1;
                 description "none";
             }
             leaf-list supportedObjectTypes {
                 type ObjectType;
                 config false;
+                min-elements 1;
                 description "none";
             }
-            uses Tapi:Service;
+            uses Tapi:ServiceSpec;
             description "none";
         }
         grouping SubscriptionFilter {
@@ -84,6 +94,18 @@ module TapiNotification {
             description "none";
         }
         grouping Notification {
+            leaf resourceSpecification {
+                type string;
+                default "/TapiNotification:Notification";
+                config false;
+                description "none";
+            }
+            leaf resourceSpecTarget {
+                type string;
+                default "/Tapi:Context/Tapi:_notification";
+                config false;
+                description "none";
+            }
             leaf notificationType {
                 type NotificationType;
                 description "none";
@@ -98,6 +120,7 @@ module TapiNotification {
             }
             list targetObjectName {
                 key 'valueName';
+                min-elements 1;
                 uses Tapi:NameAndValue;
                 description "none";
             }
@@ -126,7 +149,7 @@ module TapiNotification {
                 type string;
                 description "none";
             }
-            uses Tapi:Resource;
+            uses Tapi:ResourceSpec;
             description "none";
         }
     
@@ -154,13 +177,13 @@ module TapiNotification {
                     description "Not a normal state. The system is unable to determine the correct value.";
                 }
                 enum OBJECT_DELETION {
-                    description "Not a normal state. The system is unable to determine the correct value.";
+                    description "none";
                 }
                 enum ATTRIBUTE_VALUE_CHANGE {
-                    description "Not a normal state. The system is unable to determine the correct value.";
+                    description "none";
                 }
                 enum STATE_CHANGE {
-                    description "Not a normal state. The system is unable to determine the correct value.";
+                    description "none";
                 }
             }
             description "The orientation of flow at the Port of a Forwarding entity";

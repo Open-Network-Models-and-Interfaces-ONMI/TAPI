@@ -15,31 +15,32 @@ module TapiVirtualNetwork {
         Editor: your-name
                 <mailto:your-email@example.com>";
     description "none";
-    revision 2016-06-29 {
+    revision 2016-07-11 {
         description "Latest revision";
         reference "RFC 6020 and RFC 6087";
     }
-    
-    augment "/Tapi:Context/Tapi:_vnwService" {
-        uses VirtualNetworkService;
-    }
-    
     /***********************
     * package ObjectClasses
     **********************/ 
         grouping VirtualNetworkConstraint {
             leaf _srcServiceEndPoint {
                 type leafref {
-                    path '/Tapi:Context/Tapi:_serviceEndPoint/Tapi:uuid';
+                    path '/TapiConnectivity:ServiceEndPoint/TapiConnectivity:uuid';
                 }
                 config false;
                 description "none";
             }
             leaf _sinkServiceEndPoint {
                 type leafref {
-                    path '/Tapi:Context/Tapi:_serviceEndPoint/Tapi:uuid';
+                    path '/TapiConnectivity:ServiceEndPoint/TapiConnectivity:uuid';
                 }
                 config false;
+                description "none";
+            }
+            leaf-list _diversityExclusion {
+                type leafref {
+                    path '/VirtualNetworkService/_vnwConstraint/localId';
+                }
                 description "none";
             }
             container requestedCapacity {
@@ -55,38 +56,52 @@ module TapiVirtualNetwork {
                 description "none";
             }
             list costCharacteristic {
-                key 'costAlgorithm';
+                key 'costName costValue costAlgorithm';
                 uses TapiTopology:CostCharacteristic;
                 description "The list of costs where each cost relates to some aspect of the TopologicalEntity.";
             }
-            list riskCharacteristic {
-                key 'riskCharacteristicName';
-                uses TapiTopology:RiskCharacteristic;
-                description "A list of risk characteristics for consideration in an analysis of shared risk. Each element of the list represents a specific risk consideration.";
-            }
             list latencyCharacteristic {
-                key 'latencyValue';
-                uses TapiTopology:QueuingLatency;
+                key 'trafficPropertyName trafficPropertyQueingLatency';
+                uses TapiTopology:LatencyCharacteristic;
                 description "The effect on the latency of a queuing process. This only has significant effect for packet based systems and has a complex characteristic.";
             }
             uses Tapi:LocalClass;
             description "none";
         }
+        list VirtualNetworkService {
+            key 'uuid';
+            uses VirtualNetworkService;
+            description "none";
+        }
         grouping VirtualNetworkService {
+            leaf serviceSpecification {
+                type string;
+                default "/TapiVirtualNetwork:VirtualNetworkService";
+                config false;
+                description "none";
+            }
+            leaf serviceSpecTarget {
+                type string;
+                default "/Tapi:Context/Tapi:_vnwService";
+                config false;
+                description "none";
+            }
             leaf _topology {
                 type leafref {
-                    path '/Tapi:Context/Tapi:_topology/Tapi:uuid';
+                    path '/TapiTopology:NetworkTopologyService/TapiTopology:_topology/TapiTopology:uuid';
                 }
                 config false;
                 description "none";
             }
             list _servicePort {
                 key 'localId';
+                min-elements 2;
                 uses VirtualNetworkServicePort;
                 description "none";
             }
             list _vnwConstraint {
                 key 'localId';
+                min-elements 1;
                 uses VirtualNetworkConstraint;
                 description "none";
             }
@@ -100,16 +115,17 @@ module TapiVirtualNetwork {
             }
             leaf-list layerProtocolName {
                 type Tapi:LayerProtocolName;
+                min-elements 1;
                 description "none";
             }
-            uses Tapi:Service;
+            uses Tapi:ServiceSpec;
             description "The ForwardingConstruct (FC) object class models enabled potential for forwarding between two or more LTPs and like the LTP supports any transport protocol including all circuit and packet forms.
                 At the lowest level of recursion, a FC represents a cross-connection within an NE.";
         }
         grouping VirtualNetworkServicePort {
             leaf _serviceEndPoint {
                 type leafref {
-                    path '/Tapi:Context/Tapi:_serviceEndPoint/Tapi:uuid';
+                    path '/TapiConnectivity:ServiceEndPoint/TapiConnectivity:uuid';
                 }
                 config false;
                 description "none";
