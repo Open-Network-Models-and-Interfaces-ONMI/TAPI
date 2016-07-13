@@ -4,6 +4,9 @@ module TapiPathComputation {
     import TapiTopology {
         prefix TapiTopology;
     }
+    import TapiConnectivity {
+        prefix TapiConnectivity;
+    }
     import Tapi {
         prefix Tapi;
     }
@@ -19,31 +22,23 @@ module TapiPathComputation {
         description "Latest revision";
         reference "RFC 6020 and RFC 6087";
     }
+    
+    augment "/Tapi:Context/Tapi:_pathCompService" {
+        uses PathComputationService;
+    }
+
+    augment "/Tapi:Context/Tapi:_path" {
+        uses Path;
+    }
+    
     /***********************
     * package ObjectClasses
     **********************/ 
-        list Path {
-            key 'uuid';
-            uses Path;
-            description "none";
-        }
+
         grouping Path {
-            leaf resourceSpecification {
-                type string;
-                default "/TapiPathComputation:Path";
-                config false;
-                description "none";
-            }
-            leaf resourceSpecTarget {
-                type string;
-                default "/Tapi:Context/Tapi:_path";
-                config false;
-                description "none";
-            }
             list _telink {
                 key 'localId';
                 config false;
-                min-elements 1;
                 uses TapiTopology:TeLink;
                 description "none";
             }
@@ -58,7 +53,7 @@ module TapiPathComputation {
         grouping PathCompServicePort {
             leaf _serviceEndPoint {
                 type leafref {
-                    path '/TapiConnectivity:ServiceEndPoint/TapiConnectivity:uuid';
+                    path '/Tapi:Context/Tapi:_serviceEndPoint/TapiConnectivity:uuid';
                 }
                 config false;
                 description "none";
@@ -87,36 +82,16 @@ module TapiPathComputation {
                 The EP replaces the Protection Unit of a traditional protection model. 
                 The ForwadingConstruct can be considered as a component and the EndPoint as a Port on that component";
         }
-        list PathComputationService {
-            key 'uuid';
-            uses PathComputationService;
-            description "none";
-        }
         grouping PathComputationService {
-            leaf serviceSpecification {
-                type string;
-                default "/TapiPathComputation:PathComputationService";
-                config false;
-                description "none";
-            }
-            leaf serviceSpecTarget {
-                type string;
-                default "/Tapi:Context/Tapi:_pathCompService";
-                config false;
-                description "none";
-            }
             leaf-list _path {
                 type leafref {
-                    path '/Path/uuid';
+                    path '/Tapi:Context/Tapi:_path/uuid';
                 }
                 config false;
-                min-elements 1;
                 description "none";
             }
             list _servicePort {
                 key 'localId';
-                min-elements 2;
-                max-elements 2;
                 uses PathCompServicePort;
                 description "none";
             }
@@ -203,14 +178,14 @@ module TapiPathComputation {
             }
             leaf-list _includeTopology {
                 type leafref {
-                    path '/TapiTopology:NetworkTopologyService/TapiTopology:_topology/TapiTopology:uuid';
+                    path '/Tapi:Context/Tapi:_nwTopologyService/TapiTopology:_topology/TapiTopology:uuid';
                 }
                 config false;
                 description "none";
             }
             leaf-list _avoidTopology {
                 type leafref {
-                    path '/TapiTopology:NetworkTopologyService/TapiTopology:_topology/TapiTopology:uuid';
+                    path '/Tapi:Context/Tapi:_nwTopologyService/TapiTopology:_topology/TapiTopology:uuid';
                 }
                 config false;
                 description "none";
