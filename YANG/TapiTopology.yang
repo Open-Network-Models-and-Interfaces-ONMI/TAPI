@@ -16,21 +16,15 @@ module TapiTopology {
         description "Latest revision";
         reference "RFC 6020 and RFC 6087";
     }
+    
+    augment "/Tapi:Context/Tapi:_nwTopologyService" {
+        uses NetworkTopologyService;
+    }
+    
     /***********************
     * package ObjectClasses
     **********************/ 
         grouping Link {
-            leaf resourceSpecification {
-                type string;
-                default "/TapiTopology:Link";
-                config false;
-                description "none";
-            }
-            leaf resourceSpecTarget {
-                type string;
-                config false;
-                description "none";
-            }
             list _linkPort {
                 key 'localId';
                 config false;
@@ -40,7 +34,7 @@ module TapiTopology {
             }
             leaf-list _node {
                 type leafref {
-                    path '/NetworkTopologyService/_topology/_node/uuid';
+                    path '/Tapi:Context/Tapi:_nwTopologyService/_topology/_node/uuid';
                 }
                 config false;
                 min-elements 2;
@@ -103,17 +97,6 @@ module TapiTopology {
             description "The Link object class models effective adjacency between two or more ForwardingDomains (FD). ";
         }
         grouping Node {
-            leaf resourceSpecification {
-                type string;
-                default "/TapiTopology:Node";
-                config false;
-                description "none";
-            }
-            leaf resourceSpecTarget {
-                type string;
-                config false;
-                description "none";
-            }
             list _ownedNodeEdgePoint {
                 key 'uuid';
                 config false;
@@ -122,14 +105,14 @@ module TapiTopology {
             }
             leaf-list _aggregatedNodeEdgePoint {
                 type leafref {
-                    path '/NetworkTopologyService/_topology/_node/_ownedNodeEdgePoint/uuid';
+                    path '/Tapi:Context/Tapi:_nwTopologyService/_topology/_node/_ownedNodeEdgePoint/uuid';
                 }
                 config false;
                 description "none";
             }
             leaf _encapTopology {
                 type leafref {
-                    path '/NetworkTopologyService/_topology/uuid';
+                    path '/Tapi:Context/Tapi:_nwTopologyService/_topology/uuid';
                 }
                 config false;
                 description "none";
@@ -170,18 +153,6 @@ module TapiTopology {
                 At the lowest level of recursion, an FD (within a network element (NE)) represents a switch matrix (i.e., a fabric). Note that an NE can encompass multiple switch matrices (FDs). ";
         }
         grouping Topology {
-            leaf resourceSpecification {
-                type string;
-                default "/TapiTopology:Topology";
-                config false;
-                description "none";
-            }
-            leaf resourceSpecTarget {
-                type string;
-                default "/Tapi:Context/Tapi:_topology";
-                config false;
-                description "none";
-            }
             list _node {
                 key 'uuid';
                 config false;
@@ -212,7 +183,7 @@ module TapiTopology {
             }
             leaf-list _nodeEdgePoint {
                 type leafref {
-                    path '/NetworkTopologyService/_topology/_node/_ownedNodeEdgePoint/uuid';
+                    path '/Tapi:Context/Tapi:_nwTopologyService/_topology/_node/_ownedNodeEdgePoint/uuid';
                 }
                 min-elements 1;
                 description "Lists the LTPs that define the layer protocol transition of the transitional link.";
@@ -226,7 +197,7 @@ module TapiTopology {
         grouping LinkPort {
             leaf _nodeEdgePoint {
                 type leafref {
-                    path '/NetworkTopologyService/_topology/_node/_ownedNodeEdgePoint/uuid';
+                    path '/Tapi:Context/Tapi:_nwTopologyService/_topology/_node/_ownedNodeEdgePoint/uuid';
                 }
                 config false;
                 description "none";
@@ -249,17 +220,6 @@ module TapiTopology {
                 The Link can be considered as a component and the LinkEnd as a Port on that component";
         }
         grouping NodeEdgePoint {
-            leaf resourceSpecification {
-                type string;
-                default "/TapiTopology:NodeEdgePoint";
-                config false;
-                description "none";
-            }
-            leaf resourceSpecTarget {
-                type string;
-                config false;
-                description "none";
-            }
             list _layerProtocol {
                 key 'localId';
                 config false;
@@ -269,7 +229,7 @@ module TapiTopology {
             }
             leaf-list _clientNodeEdgePoint {
                 type leafref {
-                    path '/NetworkTopologyService/_topology/_node/_ownedNodeEdgePoint/uuid';
+                    path '/Tapi:Context/Tapi:_nwTopologyService/_topology/_node/_ownedNodeEdgePoint/uuid';
                 }
                 config false;
                 description "none";
@@ -413,7 +373,7 @@ module TapiTopology {
         grouping TeLink {
             leaf-list _node {
                 type leafref {
-                    path '/NetworkTopologyService/_topology/_node/uuid';
+                    path '/Tapi:Context/Tapi:_nwTopologyService/_topology/_node/uuid';
                 }
                 config false;
                 min-elements 2;
@@ -422,7 +382,7 @@ module TapiTopology {
             }
             leaf-list _nodeEdgePoint {
                 type leafref {
-                    path '/NetworkTopologyService/_topology/_node/_ownedNodeEdgePoint/uuid';
+                    path '/Tapi:Context/Tapi:_nwTopologyService/_topology/_node/_ownedNodeEdgePoint/uuid';
                 }
                 config false;
                 max-elements 2;
@@ -431,10 +391,10 @@ module TapiTopology {
             uses Tapi:LocalClass;
             description "The Link object class models effective adjacency between two or more ForwardingDomains (FD). ";
         }
-        container NetworkTopologyService {
+        grouping NetworkTopologyService {
             leaf serviceSpecification {
                 type string;
-                default "/TapiTopology:NetworkTopologyService";
+                default "/Tapi:Context/Tapi:_nwTopologyService";
                 config false;
                 description "none";
             }
@@ -449,7 +409,6 @@ module TapiTopology {
                 uses Topology;
                 description "none";
             }
-            uses Tapi:ServiceSpec;
             description "none";
         }
     

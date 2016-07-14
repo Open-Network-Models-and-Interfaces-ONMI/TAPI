@@ -4,6 +4,9 @@ module TapiVirtualNetwork {
     import TapiTopology {
         prefix TapiTopology;
     }
+    import TapiConnectivity {
+        prefix TapiConnectivity;
+    }
     import Tapi {
         prefix Tapi;
     }
@@ -19,27 +22,32 @@ module TapiVirtualNetwork {
         description "Latest revision";
         reference "RFC 6020 and RFC 6087";
     }
+    
+   augment "/Tapi:Context/Tapi:_vnwService" {
+        uses VirtualNetworkService;
+    }
+        
     /***********************
     * package ObjectClasses
     **********************/ 
         grouping VirtualNetworkConstraint {
             leaf _srcServiceEndPoint {
                 type leafref {
-                    path '/TapiConnectivity:ServiceEndPoint/TapiConnectivity:uuid';
+                    path '/Tapi:Context/Tapi:_serviceEndPoint/TapiConnectivity:uuid';
                 }
                 config false;
                 description "none";
             }
             leaf _sinkServiceEndPoint {
                 type leafref {
-                    path '/TapiConnectivity:ServiceEndPoint/TapiConnectivity:uuid';
+                    path '/Tapi:Context/Tapi:_serviceEndPoint/TapiConnectivity:uuid';
                 }
                 config false;
                 description "none";
             }
             leaf-list _diversityExclusion {
                 type leafref {
-                    path '/VirtualNetworkService/_vnwConstraint/localId';
+                    path '/Tapi:Context/Tapi:_vnwService/_vnwConstraint/localId';
                 }
                 description "none";
             }
@@ -68,40 +76,22 @@ module TapiVirtualNetwork {
             uses Tapi:LocalClass;
             description "none";
         }
-        list VirtualNetworkService {
-            key 'uuid';
-            uses VirtualNetworkService;
-            description "none";
-        }
+
         grouping VirtualNetworkService {
-            leaf serviceSpecification {
-                type string;
-                default "/TapiVirtualNetwork:VirtualNetworkService";
-                config false;
-                description "none";
-            }
-            leaf serviceSpecTarget {
-                type string;
-                default "/Tapi:Context/Tapi:_vnwService";
-                config false;
-                description "none";
-            }
             leaf _topology {
                 type leafref {
-                    path '/TapiTopology:NetworkTopologyService/TapiTopology:_topology/TapiTopology:uuid';
+                    path '/Tapi:Context/Tapi:_nwTopologyService/TapiTopology:_topology/TapiTopology:uuid';
                 }
                 config false;
                 description "none";
             }
             list _servicePort {
                 key 'localId';
-                min-elements 2;
                 uses VirtualNetworkServicePort;
                 description "none";
             }
             list _vnwConstraint {
                 key 'localId';
-                min-elements 1;
                 uses VirtualNetworkConstraint;
                 description "none";
             }
@@ -115,7 +105,6 @@ module TapiVirtualNetwork {
             }
             leaf-list layerProtocolName {
                 type Tapi:LayerProtocolName;
-                min-elements 1;
                 description "none";
             }
             uses Tapi:ServiceSpec;
@@ -125,7 +114,7 @@ module TapiVirtualNetwork {
         grouping VirtualNetworkServicePort {
             leaf _serviceEndPoint {
                 type leafref {
-                    path '/TapiConnectivity:ServiceEndPoint/TapiConnectivity:uuid';
+                    path '/Tapi:Context/Tapi:_serviceEndPoint/TapiConnectivity:uuid';
                 }
                 config false;
                 description "none";

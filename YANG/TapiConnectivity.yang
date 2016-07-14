@@ -19,31 +19,27 @@ module TapiConnectivity {
         description "Latest revision";
         reference "RFC 6020 and RFC 6087";
     }
+    
+    augment "/Tapi:Context/Tapi:_connection" {
+        uses Connection;
+    }
+    
+    augment "/Tapi:Context/Tapi:_connectivityService" {
+        uses ConnectivityService;
+    }
+    
+    augment "/Tapi:Context/Tapi:_serviceEndPoint" {
+        uses ServiceEndPoint;
+    }
+    
     /***********************
     * package ObjectClasses
     **********************/ 
-        list Connection {
-            key 'uuid';
-            uses Connection;
-            description "none";
-        }
+
         grouping Connection {
-            leaf resourceSpecification {
-                type string;
-                default "/TapiConnectivity:Connection";
-                config false;
-                description "none";
-            }
-            leaf resourceSpecTarget {
-                type string;
-                default "/Tapi:Context/Tapi:_connection";
-                config false;
-                description "none";
-            }
             list _connectionPort {
                 key 'localId';
                 config false;
-                min-elements 2;
                 uses ConnectionPort;
                 description "none";
             }
@@ -55,7 +51,7 @@ module TapiConnectivity {
             }
             leaf _node {
                 type leafref {
-                    path '/TapiTopology:NetworkTopologyService/TapiTopology:_topology/TapiTopology:_node/TapiTopology:uuid';
+                    path '/Tapi:Context/Tapi:_nwTopologyService/TapiTopology:_topology/TapiTopology:_node/TapiTopology:uuid';
                 }
                 config false;
                 description "none";
@@ -80,17 +76,6 @@ module TapiConnectivity {
                 At the lowest level of recursion, a FC represents a cross-connection within an NE.";
         }
         grouping ConnectionEndPoint {
-            leaf resourceSpecification {
-                type string;
-                default "/TapiConnectivity:ConnectionEndPoint";
-                config false;
-                description "none";
-            }
-            leaf resourceSpecTarget {
-                type string;
-                config false;
-                description "none";
-            }
             list _layerProtocol {
                 key 'localId';
                 config false;
@@ -100,21 +85,21 @@ module TapiConnectivity {
             }
             leaf-list _clientNodeEdgePoint {
                 type leafref {
-                    path '/TapiTopology:NetworkTopologyService/TapiTopology:_topology/TapiTopology:_node/TapiTopology:_ownedNodeEdgePoint/TapiTopology:uuid';
+                    path '/Tapi:Context/Tapi:_nwTopologyService/TapiTopology:_topology/TapiTopology:_node/TapiTopology:_ownedNodeEdgePoint/TapiTopology:uuid';
                 }
                 config false;
                 description "none";
             }
             leaf _serverNodeEdgePoint {
                 type leafref {
-                    path '/TapiTopology:NetworkTopologyService/TapiTopology:_topology/TapiTopology:_node/TapiTopology:_ownedNodeEdgePoint/TapiTopology:uuid';
+                    path '/Tapi:Context/Tapi:_nwTopologyService/TapiTopology:_topology/TapiTopology:_node/TapiTopology:_ownedNodeEdgePoint/TapiTopology:uuid';
                 }
                 config false;
                 description "none";
             }
             leaf _peerConnectionEndPoint {
                 type leafref {
-                    path '/ServiceEndPoint/_connectionEndPoint/uuid';
+                    path '/Tapi:Context/Tapi:_serviceEndPoint/_connectionEndPoint/uuid';
                 }
                 config false;
                 description "none";
@@ -136,7 +121,7 @@ module TapiConnectivity {
         grouping ConnectionPort {
             leaf _connectionEndPoint {
                 type leafref {
-                    path '/ServiceEndPoint/_connectionEndPoint/uuid';
+                    path '/Tapi:Context/Tapi:_serviceEndPoint/_connectionEndPoint/uuid';
                 }
                 config false;
                 description "none";
@@ -195,20 +180,20 @@ module TapiConnectivity {
             }
             leaf-list _diversityExclusion {
                 type leafref {
-                    path '/ConnectivityService/uuid';
+                    path '/Tapi:Context/Tapi:_connectivityService/uuid';
                 }
                 description "none";
             }
             leaf-list _includeTopology {
                 type leafref {
-                    path '/TapiTopology:NetworkTopologyService/TapiTopology:_topology/TapiTopology:uuid';
+                    path '/Tapi:Context/Tapi:_nwTopologyService/TapiTopology:_topology/TapiTopology:uuid';
                 }
                 config false;
                 description "none";
             }
             leaf-list _avoidTopology {
                 type leafref {
-                    path '/TapiTopology:NetworkTopologyService/TapiTopology:_topology/TapiTopology:uuid';
+                    path '/Tapi:Context/Tapi:_nwTopologyService/TapiTopology:_topology/TapiTopology:uuid';
                 }
                 config false;
                 description "none";
@@ -228,34 +213,17 @@ module TapiConnectivity {
             uses Tapi:LocalClass;
             description "none";
         }
-        list ConnectivityService {
-            key 'uuid';
-            uses ConnectivityService;
-            description "none";
-        }
+
         grouping ConnectivityService {
-            leaf serviceSpecification {
-                type string;
-                default "/TapiConnectivity:ConnectivityService";
-                config false;
-                description "none";
-            }
-            leaf serviceSpecTarget {
-                type string;
-                default "/Tapi:Context/Tapi:_connectivityService";
-                config false;
-                description "none";
-            }
             leaf-list _connection {
                 type leafref {
-                    path '/Connection/uuid';
+                    path '/Tapi:Context/Tapi:_connection/uuid';
                 }
                 config false;
                 description "none";
             }
             list _servicePort {
                 key 'localId';
-                min-elements 2;
                 uses ConnectivityServicePort;
                 description "none";
             }
@@ -286,7 +254,7 @@ module TapiConnectivity {
         grouping ConnectivityServicePort {
             leaf _serviceEndPoint {
                 type leafref {
-                    path '/ServiceEndPoint/uuid';
+                    path '/Tapi:Context/Tapi:_serviceEndPoint/uuid';
                 }
                 config false;
                 description "none";
@@ -318,7 +286,7 @@ module TapiConnectivity {
         grouping Route {
             leaf-list _lowerConnection {
                 type leafref {
-                    path '/Connection/uuid';
+                    path '/Tapi:Context/Tapi:_connection/uuid';
                 }
                 config false;
                 min-elements 1;
@@ -329,34 +297,17 @@ module TapiConnectivity {
                 The route of an FC object is represented by a list of FCs at a lower level. 
                 Note that depending on the service supported by an FC, an the FC can have multiple routes.";
         }
-        list ServiceEndPoint {
-            key 'uuid';
-            uses ServiceEndPoint;
-            description "none";
-        }
+
         grouping ServiceEndPoint {
-            leaf resourceSpecification {
-                type string;
-                default "/TapiConnectivity:ServiceEndPoint";
-                config false;
-                description "none";
-            }
-            leaf resourceSpecTarget {
-                type string;
-                default "/Tapi:Context/Tapi:_serviceEndPoint";
-                config false;
-                description "none";
-            }
             list _layerProtocol {
                 key 'localId';
                 config false;
-                min-elements 1;
                 uses Tapi:LayerProtocol;
                 description "none";
             }
             leaf-list _mappedNodeEdgePoint {
                 type leafref {
-                    path '/TapiTopology:NetworkTopologyService/TapiTopology:_topology/TapiTopology:_node/TapiTopology:_ownedNodeEdgePoint/TapiTopology:uuid';
+                    path '/Tapi:Context/Tapi:_nwTopologyService/TapiTopology:_topology/TapiTopology:_node/TapiTopology:_ownedNodeEdgePoint/TapiTopology:uuid';
                 }
                 config false;
                 description "none";
