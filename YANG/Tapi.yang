@@ -9,9 +9,13 @@ module Tapi {
         Editor: your-name
                 <mailto:your-email@example.com>";
     description "none";
-    revision 2016-07-11 {
+    revision 2016-07-19 {
         description "Latest revision";
         reference "RFC 6020 and RFC 6087";
+    }
+    augment "/Tapi:Context/Tapi:_serviceEndPoint" {
+        uses ServiceEndPoint;
+        description "none";
     }
     /***********************
     * package ObjectClasses
@@ -162,7 +166,6 @@ module Tapi {
             list _serviceEndPoint {
                 key 'uuid';
                 config false;
-                min-elements 2;
                 uses ResourceSpec;
                 description "none";
             }
@@ -194,32 +197,34 @@ module Tapi {
             description "The Network Control Domain (NCD) object class represents the scope of control that a particular SDN controller has with respect to a particular network, (i.e., encompassing a designated set of interconnected (virtual) network elements).";
         }
         grouping ResourceSpec {
-            leaf resourceSpecification {
-                type string;
-                config false;
-                description "none";
-            }
-            leaf resourceSpecTarget {
-                type string;
-                config false;
-                description "none";
-            }
             uses GlobalClass;
             description "none";
         }
         grouping ServiceSpec {
-            leaf serviceSpecification {
-                type string;
-                config false;
-                description "none";
-            }
-            leaf serviceSpecTarget {
-                type string;
-                config false;
-                description "none";
-            }
             uses GlobalClass;
             description "none";
+        }
+        grouping ServiceEndPoint {
+            list _layerProtocol {
+                key 'localId';
+                config false;
+                min-elements 1;
+                uses LayerProtocol;
+                description "none";
+            }
+            container _state {
+                config false;
+                uses LifecycleStatePac;
+                description "none";
+            }
+            leaf direction {
+                type TerminationDirection;
+                config false;
+                description "none";
+            }
+            uses ResourceSpec;
+            description "The LogicalTerminationPoint (LTP) object class encapsulates the termination and adaptation functions of one or more transport layers. 
+                The structure of LTP supports all transport protocols including circuit and packet forms.";
         }
     
     /***********************
