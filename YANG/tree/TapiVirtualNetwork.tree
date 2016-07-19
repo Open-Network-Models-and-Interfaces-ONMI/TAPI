@@ -1,8 +1,8 @@
 module: TapiVirtualNetwork
 augment /Tapi:Context/Tapi:_vnwService:
-   +--ro _topology?              -> /Tapi:Context/_nwTopologyService/TapiTopology:_topology/uuid
+   +--ro _topology?           -> /Tapi:Context/_topology/uuid
    +--rw _servicePort* [localId]
-   |  +--ro _serviceEndPoint?   -> /Tapi:Context/_serviceEndPoint/TapiConnectivity:uuid
+   |  +--ro _serviceEndPoint?   -> /Tapi:Context/_serviceEndPoint/uuid
    |  +--ro role?               Tapi:PortRole
    |  +--ro direction?          Tapi:PortDirection
    |  +--ro serviceLayer?       Tapi:LayerProtocolName
@@ -11,9 +11,9 @@ augment /Tapi:Context/Tapi:_vnwService:
    |     +--ro extensionsSpecification    string
    |     +--ro extensionsSpecTarget*      string
    +--rw _vnwConstraint* [localId]
-   |  +--ro _srcServiceEndPoint?     -> /Tapi:Context/_serviceEndPoint/TapiConnectivity:uuid
-   |  +--ro _sinkServiceEndPoint?    -> /Tapi:Context/_serviceEndPoint/TapiConnectivity:uuid
-   |  +--rw _diversityExclusion*     -> /Tapi:Context/_vnwService/_vnwConstraint/localId
+   |  +--ro _srcServiceEndPoint?     -> /Tapi:Context/_serviceEndPoint/uuid
+   |  +--ro _sinkServiceEndPoint?    -> /Tapi:Context/_serviceEndPoint/uuid
+   |  +--rw _diversityExclusion*     -> /Tapi:Context/_vnwService/TapiVirtualNetwork:_vnwConstraint/localId
    |  +--rw requestedCapacity
    |  |  +--rw totalSize?                  FixedCapacityValue
    |  |  +--rw packetBwProfileType?        BandwidthProfileType
@@ -46,10 +46,8 @@ augment /Tapi:Context/Tapi:_vnwService:
    |  +--rw administrativeState?   AdministrativeState
    |  +--rw operationalState?      OperationalState
    |  +--rw lifecycleState?        LifecycleState
-   +--rw layerProtocolName*      Tapi:LayerProtocolName
-   +--ro serviceSpecification?   string
-   +--ro serviceSpecTarget?      string
-   +--rw uuid?                   UniversalId
+   +--rw layerProtocolName*   Tapi:LayerProtocolName
+   +--rw uuid?                UniversalId
    +--rw name* [valueName]
    |  +--rw valueName    string
    |  +--rw value?       string
@@ -63,7 +61,7 @@ rpcs:
    +---x createVirtualNetworkService
    |  +---w input
    |  |  +---w servicePort*
-   |  |  |  +---w _serviceEndPoint?   -> /Tapi:Context/_serviceEndPoint/TapiConnectivity:uuid
+   |  |  |  +---w _serviceEndPoint?   -> /Tapi:Context/_serviceEndPoint/uuid
    |  |  |  +---w role?               Tapi:PortRole
    |  |  |  +---w direction?          Tapi:PortDirection
    |  |  |  +---w serviceLayer?       Tapi:LayerProtocolName
@@ -72,9 +70,9 @@ rpcs:
    |  |  |     +---w extensionsSpecification    string
    |  |  |     +---w extensionsSpecTarget*      string
    |  |  +---w vnwConstraint
-   |  |  |  +---w _srcServiceEndPoint?     -> /Tapi:Context/_serviceEndPoint/TapiConnectivity:uuid
-   |  |  |  +---w _sinkServiceEndPoint?    -> /Tapi:Context/_serviceEndPoint/TapiConnectivity:uuid
-   |  |  |  +---w _diversityExclusion*     -> /Tapi:Context/_vnwService/_vnwConstraint/localId
+   |  |  |  +---w _srcServiceEndPoint?     -> /Tapi:Context/_serviceEndPoint/uuid
+   |  |  |  +---w _sinkServiceEndPoint?    -> /Tapi:Context/_serviceEndPoint/uuid
+   |  |  |  +---w _diversityExclusion*     -> /Tapi:Context/_vnwService/TapiVirtualNetwork:_vnwConstraint/localId
    |  |  |  +---w requestedCapacity
    |  |  |  |  +---w totalSize?                  FixedCapacityValue
    |  |  |  |  +---w packetBwProfileType?        BandwidthProfileType
@@ -103,9 +101,9 @@ rpcs:
    |  |  +---w connSchedule?    string
    |  +--ro output
    |     +--ro vnwService
-   |        +--ro _topology?              -> /Tapi:Context/_nwTopologyService/TapiTopology:_topology/uuid
+   |        +--ro _topology?           -> /Tapi:Context/_topology/uuid
    |        +--ro _servicePort* [localId]
-   |        |  +--ro _serviceEndPoint?   -> /Tapi:Context/_serviceEndPoint/TapiConnectivity:uuid
+   |        |  +--ro _serviceEndPoint?   -> /Tapi:Context/_serviceEndPoint/uuid
    |        |  +--ro role?               Tapi:PortRole
    |        |  +--ro direction?          Tapi:PortDirection
    |        |  +--ro serviceLayer?       Tapi:LayerProtocolName
@@ -114,9 +112,9 @@ rpcs:
    |        |     +--ro extensionsSpecification    string
    |        |     +--ro extensionsSpecTarget*      string
    |        +--ro _vnwConstraint* [localId]
-   |        |  +--ro _srcServiceEndPoint?     -> /Tapi:Context/_serviceEndPoint/TapiConnectivity:uuid
-   |        |  +--ro _sinkServiceEndPoint?    -> /Tapi:Context/_serviceEndPoint/TapiConnectivity:uuid
-   |        |  +--ro _diversityExclusion*     -> /Tapi:Context/_vnwService/_vnwConstraint/localId
+   |        |  +--ro _srcServiceEndPoint?     -> /Tapi:Context/_serviceEndPoint/uuid
+   |        |  +--ro _sinkServiceEndPoint?    -> /Tapi:Context/_serviceEndPoint/uuid
+   |        |  +--ro _diversityExclusion*     -> /Tapi:Context/_vnwService/TapiVirtualNetwork:_vnwConstraint/localId
    |        |  +--ro requestedCapacity
    |        |  |  +--ro totalSize?                  FixedCapacityValue
    |        |  |  +--ro packetBwProfileType?        BandwidthProfileType
@@ -149,10 +147,8 @@ rpcs:
    |        |  +--ro administrativeState?   AdministrativeState
    |        |  +--ro operationalState?      OperationalState
    |        |  +--ro lifecycleState?        LifecycleState
-   |        +--ro layerProtocolName*      Tapi:LayerProtocolName
-   |        +--ro serviceSpecification?   string
-   |        +--ro serviceSpecTarget?      string
-   |        +--ro uuid?                   UniversalId
+   |        +--ro layerProtocolName*   Tapi:LayerProtocolName
+   |        +--ro uuid?                UniversalId
    |        +--ro name* [valueName]
    |        |  +--ro valueName    string
    |        |  +--ro value?       string
@@ -167,9 +163,9 @@ rpcs:
    |  |  +---w serviceIdOrName?   string
    |  +--ro output
    |     +--ro vnwService
-   |        +--ro _topology?              -> /Tapi:Context/_nwTopologyService/TapiTopology:_topology/uuid
+   |        +--ro _topology?           -> /Tapi:Context/_topology/uuid
    |        +--ro _servicePort* [localId]
-   |        |  +--ro _serviceEndPoint?   -> /Tapi:Context/_serviceEndPoint/TapiConnectivity:uuid
+   |        |  +--ro _serviceEndPoint?   -> /Tapi:Context/_serviceEndPoint/uuid
    |        |  +--ro role?               Tapi:PortRole
    |        |  +--ro direction?          Tapi:PortDirection
    |        |  +--ro serviceLayer?       Tapi:LayerProtocolName
@@ -178,9 +174,9 @@ rpcs:
    |        |     +--ro extensionsSpecification    string
    |        |     +--ro extensionsSpecTarget*      string
    |        +--ro _vnwConstraint* [localId]
-   |        |  +--ro _srcServiceEndPoint?     -> /Tapi:Context/_serviceEndPoint/TapiConnectivity:uuid
-   |        |  +--ro _sinkServiceEndPoint?    -> /Tapi:Context/_serviceEndPoint/TapiConnectivity:uuid
-   |        |  +--ro _diversityExclusion*     -> /Tapi:Context/_vnwService/_vnwConstraint/localId
+   |        |  +--ro _srcServiceEndPoint?     -> /Tapi:Context/_serviceEndPoint/uuid
+   |        |  +--ro _sinkServiceEndPoint?    -> /Tapi:Context/_serviceEndPoint/uuid
+   |        |  +--ro _diversityExclusion*     -> /Tapi:Context/_vnwService/TapiVirtualNetwork:_vnwConstraint/localId
    |        |  +--ro requestedCapacity
    |        |  |  +--ro totalSize?                  FixedCapacityValue
    |        |  |  +--ro packetBwProfileType?        BandwidthProfileType
@@ -213,10 +209,8 @@ rpcs:
    |        |  +--ro administrativeState?   AdministrativeState
    |        |  +--ro operationalState?      OperationalState
    |        |  +--ro lifecycleState?        LifecycleState
-   |        +--ro layerProtocolName*      Tapi:LayerProtocolName
-   |        +--ro serviceSpecification?   string
-   |        +--ro serviceSpecTarget?      string
-   |        +--ro uuid?                   UniversalId
+   |        +--ro layerProtocolName*   Tapi:LayerProtocolName
+   |        +--ro uuid?                UniversalId
    |        +--ro name* [valueName]
    |        |  +--ro valueName    string
    |        |  +--ro value?       string
@@ -231,9 +225,9 @@ rpcs:
    |  |  +---w serviceIdOrName?   string
    |  +--ro output
    |     +--ro vnwService
-   |        +--ro _topology?              -> /Tapi:Context/_nwTopologyService/TapiTopology:_topology/uuid
+   |        +--ro _topology?           -> /Tapi:Context/_topology/uuid
    |        +--ro _servicePort* [localId]
-   |        |  +--ro _serviceEndPoint?   -> /Tapi:Context/_serviceEndPoint/TapiConnectivity:uuid
+   |        |  +--ro _serviceEndPoint?   -> /Tapi:Context/_serviceEndPoint/uuid
    |        |  +--ro role?               Tapi:PortRole
    |        |  +--ro direction?          Tapi:PortDirection
    |        |  +--ro serviceLayer?       Tapi:LayerProtocolName
@@ -242,9 +236,9 @@ rpcs:
    |        |     +--ro extensionsSpecification    string
    |        |     +--ro extensionsSpecTarget*      string
    |        +--ro _vnwConstraint* [localId]
-   |        |  +--ro _srcServiceEndPoint?     -> /Tapi:Context/_serviceEndPoint/TapiConnectivity:uuid
-   |        |  +--ro _sinkServiceEndPoint?    -> /Tapi:Context/_serviceEndPoint/TapiConnectivity:uuid
-   |        |  +--ro _diversityExclusion*     -> /Tapi:Context/_vnwService/_vnwConstraint/localId
+   |        |  +--ro _srcServiceEndPoint?     -> /Tapi:Context/_serviceEndPoint/uuid
+   |        |  +--ro _sinkServiceEndPoint?    -> /Tapi:Context/_serviceEndPoint/uuid
+   |        |  +--ro _diversityExclusion*     -> /Tapi:Context/_vnwService/TapiVirtualNetwork:_vnwConstraint/localId
    |        |  +--ro requestedCapacity
    |        |  |  +--ro totalSize?                  FixedCapacityValue
    |        |  |  +--ro packetBwProfileType?        BandwidthProfileType
@@ -277,10 +271,8 @@ rpcs:
    |        |  +--ro administrativeState?   AdministrativeState
    |        |  +--ro operationalState?      OperationalState
    |        |  +--ro lifecycleState?        LifecycleState
-   |        +--ro layerProtocolName*      Tapi:LayerProtocolName
-   |        +--ro serviceSpecification?   string
-   |        +--ro serviceSpecTarget?      string
-   |        +--ro uuid?                   UniversalId
+   |        +--ro layerProtocolName*   Tapi:LayerProtocolName
+   |        +--ro uuid?                UniversalId
    |        +--ro name* [valueName]
    |        |  +--ro valueName    string
    |        |  +--ro value?       string
@@ -293,9 +285,9 @@ rpcs:
    +---x getVirtualNetworkServiceList
       +--ro output
          +--ro vnwService*
-            +--ro _topology?              -> /Tapi:Context/_nwTopologyService/TapiTopology:_topology/uuid
+            +--ro _topology?           -> /Tapi:Context/_topology/uuid
             +--ro _servicePort* [localId]
-            |  +--ro _serviceEndPoint?   -> /Tapi:Context/_serviceEndPoint/TapiConnectivity:uuid
+            |  +--ro _serviceEndPoint?   -> /Tapi:Context/_serviceEndPoint/uuid
             |  +--ro role?               Tapi:PortRole
             |  +--ro direction?          Tapi:PortDirection
             |  +--ro serviceLayer?       Tapi:LayerProtocolName
@@ -304,9 +296,9 @@ rpcs:
             |     +--ro extensionsSpecification    string
             |     +--ro extensionsSpecTarget*      string
             +--ro _vnwConstraint* [localId]
-            |  +--ro _srcServiceEndPoint?     -> /Tapi:Context/_serviceEndPoint/TapiConnectivity:uuid
-            |  +--ro _sinkServiceEndPoint?    -> /Tapi:Context/_serviceEndPoint/TapiConnectivity:uuid
-            |  +--ro _diversityExclusion*     -> /Tapi:Context/_vnwService/_vnwConstraint/localId
+            |  +--ro _srcServiceEndPoint?     -> /Tapi:Context/_serviceEndPoint/uuid
+            |  +--ro _sinkServiceEndPoint?    -> /Tapi:Context/_serviceEndPoint/uuid
+            |  +--ro _diversityExclusion*     -> /Tapi:Context/_vnwService/TapiVirtualNetwork:_vnwConstraint/localId
             |  +--ro requestedCapacity
             |  |  +--ro totalSize?                  FixedCapacityValue
             |  |  +--ro packetBwProfileType?        BandwidthProfileType
@@ -339,10 +331,8 @@ rpcs:
             |  +--ro administrativeState?   AdministrativeState
             |  +--ro operationalState?      OperationalState
             |  +--ro lifecycleState?        LifecycleState
-            +--ro layerProtocolName*      Tapi:LayerProtocolName
-            +--ro serviceSpecification?   string
-            +--ro serviceSpecTarget?      string
-            +--ro uuid?                   UniversalId
+            +--ro layerProtocolName*   Tapi:LayerProtocolName
+            +--ro uuid?                UniversalId
             +--ro name* [valueName]
             |  +--ro valueName    string
             |  +--ro value?       string
