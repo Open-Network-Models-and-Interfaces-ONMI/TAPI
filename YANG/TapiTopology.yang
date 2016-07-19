@@ -12,19 +12,18 @@ module TapiTopology {
         Editor: your-name
                 <mailto:your-email@example.com>";
     description "none";
-    revision 2016-07-11 {
+    revision 2016-07-19 {
         description "Latest revision";
         reference "RFC 6020 and RFC 6087";
     }
-    
-    augment "/Tapi:Context/Tapi:_nwTopologyService" {
-        uses NetworkTopologyService;
-    }
-    
     augment "/Tapi:Context/Tapi:_topology" {
         uses Topology;
+        description "none";
     }
-    
+    augment "/Tapi:Context/Tapi:_nwTopologyService" {
+        uses NetworkTopologyService;
+        description "none";
+    }
     /***********************
     * package ObjectClasses
     **********************/ 
@@ -38,7 +37,7 @@ module TapiTopology {
             }
             leaf-list _node {
                 type leafref {
-                    path '/Tapi:Context/Tapi:_nwTopologyService/_topology/_node/uuid';
+                    path '/Tapi:Context/Tapi:_topology/TapiTopology:_node/TapiTopology:uuid';
                 }
                 config false;
                 min-elements 2;
@@ -109,14 +108,14 @@ module TapiTopology {
             }
             leaf-list _aggregatedNodeEdgePoint {
                 type leafref {
-                    path '/Tapi:Context/Tapi:_nwTopologyService/_topology/_node/_ownedNodeEdgePoint/uuid';
+                    path '/Tapi:Context/Tapi:_topology/TapiTopology:_node/TapiTopology:_ownedNodeEdgePoint/TapiTopology:uuid';
                 }
                 config false;
                 description "none";
             }
             leaf _encapTopology {
                 type leafref {
-                    path '/Tapi:Context/Tapi:_nwTopologyService/_topology/uuid';
+                    path '/Tapi:Context/Tapi:_topology/Tapi:uuid';
                 }
                 config false;
                 description "none";
@@ -172,7 +171,6 @@ module TapiTopology {
             leaf-list layerProtocolName {
                 type Tapi:LayerProtocolName;
                 config false;
-                min-elements 1;
                 description "none";
             }
             uses Tapi:ResourceSpec;
@@ -187,7 +185,7 @@ module TapiTopology {
             }
             leaf-list _nodeEdgePoint {
                 type leafref {
-                    path '/Tapi:Context/Tapi:_nwTopologyService/_topology/_node/_ownedNodeEdgePoint/uuid';
+                    path '/Tapi:Context/Tapi:_topology/TapiTopology:_node/TapiTopology:_ownedNodeEdgePoint/TapiTopology:uuid';
                 }
                 min-elements 1;
                 description "Lists the LTPs that define the layer protocol transition of the transitional link.";
@@ -201,7 +199,7 @@ module TapiTopology {
         grouping LinkPort {
             leaf _nodeEdgePoint {
                 type leafref {
-                    path '/Tapi:Context/Tapi:_nwTopologyService/_topology/_node/_ownedNodeEdgePoint/uuid';
+                    path '/Tapi:Context/Tapi:_topology/TapiTopology:_node/TapiTopology:_ownedNodeEdgePoint/TapiTopology:uuid';
                 }
                 config false;
                 description "none";
@@ -233,9 +231,15 @@ module TapiTopology {
             }
             leaf-list _clientNodeEdgePoint {
                 type leafref {
-                    path '/Tapi:Context/Tapi:_nwTopologyService/_topology/_node/_ownedNodeEdgePoint/uuid';
+                    path '/Tapi:Context/Tapi:_topology/TapiTopology:_node/TapiTopology:_ownedNodeEdgePoint/TapiTopology:uuid';
                 }
                 config false;
+                description "none";
+            }
+            leaf-list _mappedServiceEndPoint {
+                type leafref {
+                    path '/Tapi:Context/Tapi:_serviceEndPoint/Tapi:uuid';
+                }
                 description "none";
             }
             container _state {
@@ -377,7 +381,7 @@ module TapiTopology {
         grouping TeLink {
             leaf-list _node {
                 type leafref {
-                    path '/Tapi:Context/Tapi:_nwTopologyService/_topology/_node/uuid';
+                    path '/Tapi:Context/Tapi:_topology/TapiTopology:_node/TapiTopology:uuid';
                 }
                 config false;
                 min-elements 2;
@@ -386,7 +390,7 @@ module TapiTopology {
             }
             leaf-list _nodeEdgePoint {
                 type leafref {
-                    path '/Tapi:Context/Tapi:_nwTopologyService/_topology/_node/_ownedNodeEdgePoint/uuid';
+                    path '/Tapi:Context/Tapi:_topology/Tapi:uuid/TapiTopology:_node/TapiTopology:_ownedNodeEdgePoint/TapiTopology:uuid';
                 }
                 config false;
                 max-elements 2;
@@ -396,25 +400,15 @@ module TapiTopology {
             description "The Link object class models effective adjacency between two or more ForwardingDomains (FD). ";
         }
         grouping NetworkTopologyService {
-            leaf serviceSpecification {
-                type string;
-                default "/Tapi:Context/Tapi:_nwTopologyService";
-                config false;
-                description "none";
-            }
-            leaf serviceSpecTarget {
-                type string;
-                default "/Tapi:Context/Tapi:_nwTopologyService";
-                config false;
-                description "none";
-            }
             leaf-list _topology {
                 type leafref {
-                    path '/Tapi:Context/Tapi:_topology/uuid';
+                    path '/Tapi:Context/Tapi:_topology/Tapi:uuid';
                 }
                 config false;
                 description "none";
             }
+            uses Tapi:ServiceSpec;
+            description "none";
         }
     
     /***********************
