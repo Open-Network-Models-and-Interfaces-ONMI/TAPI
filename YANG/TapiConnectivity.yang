@@ -15,31 +15,31 @@ module TapiConnectivity {
         Editor: your-name
                 <mailto:your-email@example.com>";
     description "none";
-    revision 2016-07-11 {
+    revision 2016-07-19 {
         description "Latest revision";
         reference "RFC 6020 and RFC 6087";
     }
-    
     augment "/Tapi:Context/Tapi:_connection" {
         uses Connection;
+        description "none";
     }
-    
     augment "/Tapi:Context/Tapi:_connectivityService" {
         uses ConnectivityService;
+        description "none";
     }
-    
-    augment "/Tapi:Context/Tapi:_serviceEndPoint" {
-        uses ServiceEndPoint;
-    }
-    
     /***********************
     * package ObjectClasses
     **********************/ 
-
+        list Connection {
+            key 'uuid';
+            uses Connection;
+            description "none";
+        }
         grouping Connection {
             list _connectionPort {
                 key 'localId';
                 config false;
+                min-elements 2;
                 uses ConnectionPort;
                 description "none";
             }
@@ -51,7 +51,7 @@ module TapiConnectivity {
             }
             leaf _node {
                 type leafref {
-                    path '/Tapi:Context/Tapi:_nwTopologyService/TapiTopology:_topology/TapiTopology:_node/TapiTopology:uuid';
+                    path '/TapiTopology:Topology/TapiTopology:_node/TapiTopology:uuid';
                 }
                 config false;
                 description "none";
@@ -85,21 +85,21 @@ module TapiConnectivity {
             }
             leaf-list _clientNodeEdgePoint {
                 type leafref {
-                    path '/Tapi:Context/Tapi:_nwTopologyService/TapiTopology:_topology/TapiTopology:_node/TapiTopology:_ownedNodeEdgePoint/TapiTopology:uuid';
+                    path '/TapiTopology:Topology/TapiTopology:_node/TapiTopology:_ownedNodeEdgePoint/TapiTopology:uuid';
                 }
                 config false;
                 description "none";
             }
             leaf _serverNodeEdgePoint {
                 type leafref {
-                    path '/Tapi:Context/Tapi:_nwTopologyService/TapiTopology:_topology/TapiTopology:_node/TapiTopology:_ownedNodeEdgePoint/TapiTopology:uuid';
+                    path '/TapiTopology:Topology/TapiTopology:_node/TapiTopology:_ownedNodeEdgePoint/TapiTopology:uuid';
                 }
                 config false;
                 description "none";
             }
             leaf _peerConnectionEndPoint {
                 type leafref {
-                    path '/Tapi:Context/Tapi:_serviceEndPoint/_connectionEndPoint/uuid';
+                    path '/Connection/_connectionPort/_connectionEndPoint/uuid';
                 }
                 config false;
                 description "none";
@@ -119,11 +119,9 @@ module TapiConnectivity {
                 The structure of LTP supports all transport protocols including circuit and packet forms.";
         }
         grouping ConnectionPort {
-            leaf _connectionEndPoint {
-                type leafref {
-                    path '/Tapi:Context/Tapi:_serviceEndPoint/_connectionEndPoint/uuid';
-                }
+            container _connectionEndPoint {
                 config false;
+                uses ConnectionEndPoint;
                 description "none";
             }
             leaf role {
@@ -180,20 +178,20 @@ module TapiConnectivity {
             }
             leaf-list _diversityExclusion {
                 type leafref {
-                    path '/Tapi:Context/Tapi:_connectivityService/uuid';
+                    path '/ConnectivityService/uuid';
                 }
                 description "none";
             }
             leaf-list _includeTopology {
                 type leafref {
-                    path '/Tapi:Context/Tapi:_nwTopologyService/TapiTopology:_topology/TapiTopology:uuid';
+                    path '/TapiTopology:Topology/TapiTopology:uuid';
                 }
                 config false;
                 description "none";
             }
             leaf-list _avoidTopology {
                 type leafref {
-                    path '/Tapi:Context/Tapi:_nwTopologyService/TapiTopology:_topology/TapiTopology:uuid';
+                    path '/TapiTopology:Topology/TapiTopology:uuid';
                 }
                 config false;
                 description "none";
@@ -213,17 +211,22 @@ module TapiConnectivity {
             uses Tapi:LocalClass;
             description "none";
         }
-
+        list ConnectivityService {
+            key 'uuid';
+            uses ConnectivityService;
+            description "none";
+        }
         grouping ConnectivityService {
             leaf-list _connection {
                 type leafref {
-                    path '/Tapi:Context/Tapi:_connection/uuid';
+                    path '/Connection/uuid';
                 }
                 config false;
                 description "none";
             }
             list _servicePort {
                 key 'localId';
+                min-elements 2;
                 uses ConnectivityServicePort;
                 description "none";
             }
@@ -254,7 +257,7 @@ module TapiConnectivity {
         grouping ConnectivityServicePort {
             leaf _serviceEndPoint {
                 type leafref {
-                    path '/Tapi:Context/Tapi:_serviceEndPoint/uuid';
+                    path '/Tapi:ServiceEndPoint/Tapi:uuid';
                 }
                 config false;
                 description "none";
@@ -286,7 +289,7 @@ module TapiConnectivity {
         grouping Route {
             leaf-list _lowerConnection {
                 type leafref {
-                    path '/Tapi:Context/Tapi:_connection/uuid';
+                    path '/Connection/uuid';
                 }
                 config false;
                 min-elements 1;
@@ -296,41 +299,6 @@ module TapiConnectivity {
             description "The FC Route (FcRoute) object class models the individual routes of an FC. 
                 The route of an FC object is represented by a list of FCs at a lower level. 
                 Note that depending on the service supported by an FC, an the FC can have multiple routes.";
-        }
-
-        grouping ServiceEndPoint {
-            list _layerProtocol {
-                key 'localId';
-                config false;
-                uses Tapi:LayerProtocol;
-                description "none";
-            }
-            leaf-list _mappedNodeEdgePoint {
-                type leafref {
-                    path '/Tapi:Context/Tapi:_nwTopologyService/TapiTopology:_topology/TapiTopology:_node/TapiTopology:_ownedNodeEdgePoint/TapiTopology:uuid';
-                }
-                config false;
-                description "none";
-            }
-            list _connectionEndPoint {
-                key 'uuid';
-                config false;
-                uses ConnectionEndPoint;
-                description "none";
-            }
-            container _state {
-                config false;
-                uses Tapi:LifecycleStatePac;
-                description "none";
-            }
-            leaf direction {
-                type Tapi:TerminationDirection;
-                config false;
-                description "none";
-            }
-            uses Tapi:ResourceSpec;
-            description "The LogicalTerminationPoint (LTP) object class encapsulates the termination and adaptation functions of one or more transport layers. 
-                The structure of LTP supports all transport protocols including circuit and packet forms.";
         }
     
     /***********************
@@ -414,8 +382,8 @@ module TapiConnectivity {
                 }
             }
             output {
-                container serviceEndPoint {
-                    uses ServiceEndPoint;
+                leaf serviceEndPoint {
+                    type string;
                     description "none";
                 }
             }
@@ -438,8 +406,8 @@ module TapiConnectivity {
         rpc getServiceEndPointList {
             description "none";
             output {
-                list serviceEndPoint {
-                    uses ServiceEndPoint;
+                leaf serviceEndPoint {
+                    type string;
                     description "none";
                 }
             }

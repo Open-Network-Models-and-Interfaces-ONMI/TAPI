@@ -18,23 +18,14 @@ module TapiEth {
         Editor: your-name
                 <mailto:your-email@example.com>";
     description "none";
-    revision 2016-07-11 {
+    revision 2016-07-19 {
         description "Latest revision";
         reference "RFC 6020 and RFC 6087";
     }
-    
-    augment "/Tapi:Context/Tapi:_serviceEndPoint/TapiConnectivity:_connectionEndPoint/TapiConnectivity:_layerProtocol/TapiConnectivity:_extensions" {
-        uses ConnectionEndPointLpSpec;
-    }
-    
-    augment "/Tapi:Context/Tapi:_topology/TapiTopology:_node/TapiTopology:_ownedNodeEdgePoint/TapiTopology:_layerProtocol/TapiTopology:_extensions" {
-        uses NodeEdgePointLpSpec;
-    }
-    
     /***********************
     * package ObjectClasses
     **********************/ 
-        grouping ConnectionPointAndAdapterSpec {
+        grouping ConnectionPointAndAdapterPac {
             leaf-list auxiliaryFunctionPositionSequence {
                 type string;
                 description "This attribute indicates the positions (i.e., the relative order) of all the MEP, MIP, and TCS objects which are associated with the CTP.";
@@ -55,6 +46,8 @@ module TapiEth {
             }
             leaf-list filterConfigSnk {
                 type MacAddress;
+                min-elements 33;
+                max-elements 33;
                 description "This attribute models the FilteConfig MI defined in 8.3/G.8021. It indicates the configured filter action for each of the 33 group MAC addresses for control frames. The 33 MAC addresses are:
                     01-80-C2-00-00-10, 
                     01-80-C2-00-00-00 to 01-80-C2-00-00-0F, and 
@@ -147,19 +140,32 @@ module TapiEth {
             }
             description "none";
         }
-        grouping ConnectionEndPointLpSpec {
+        list ConnectionEndPointLpSpec {
+            key 'extensionsSpecification';
+            leaf extesnsionsSpecification {
+                type string;
+                default "/TapiEth:ConnectionEndPointLpSpec";
+                config false;
+                description "none";
+            }
+            leaf extensionsSpecTarget {
+                type string;
+                default "/Tapi:Context/Tapi:_serviceEndPoint/TapiConnectivity:_connectionEndPoint/Tapi:_layerProtocol/Tapi:_extensions";
+                config false;
+                description "none";
+            }
             container _terminationSpec {
-                uses TerminationSpecEth;
+                uses EthTerminationPac;
                 description "none";
             }
             container _adapterSpec {
-                uses ConnectionPointAndAdapterSpec;
+                uses ConnectionPointAndAdapterPac;
                 description "none";
             }
             uses Tapi:ExtensionsSpec;
             description "none";
         }
-        grouping TerminationSpecEth {
+        grouping EthTerminationPac {
             container priorityRegenerate {
                 uses PriorityMapping;
                 description "This attribute models the ETHx/ETH-m _A_Sk_MI_P_Regenerate information defined in G.8021.";
@@ -170,6 +176,8 @@ module TapiEth {
             }
             leaf-list filterConfig {
                 type MacAddress;
+                min-elements 33;
+                max-elements 33;
                 description "This attribute models the ETHx/ETH-m_A_Sk_MI_Filter_Config information defined in G.8021.
                     It indicates the configured filter action for each of the 33 group MAC addresses for control frames.
                     The 33 MAC addresses are:
@@ -194,7 +202,9 @@ module TapiEth {
                     range of type : see Enumeration";
             }
             leaf portVid {
-                type Vid;
+                type Vid {
+                    range "0..4095";
+                }
                 default "1";
                 description "This attribute models the ETHx/ETH-m _A_Sk_MI_PVID information defined in G.8021.";
             }
@@ -206,7 +216,7 @@ module TapiEth {
             }
             description "This object class models the Ethernet Flow Termination function located at a layer boundary.";
         }
-        grouping TerminationSpecEty {
+        grouping EtyTerminationPac {
             leaf isFtsEnabled {
                 type boolean;
                 description "This attribute indicates whether Forced Transmitter Shutdown (FTS) is enabled or not. It models the ETYn_TT_So_MI_FTSEnable information.";
@@ -227,7 +237,7 @@ module TapiEth {
             }
             description "none";
         }
-        container TrafficConditioningSpec {
+        container TrafficConditioningPac {
             list prioConfigList {
                 config false;
                 min-elements 1;
@@ -257,7 +267,7 @@ module TapiEth {
             description "This object class models the ETH traffic conditioning function as defined in G.8021.
                 Basic attributes: codirectional, condConfigList, prioConfigList";
         }
-        container TrafficShapingSpec {
+        container TrafficShapingPac {
             list prioConfigList {
                 config false;
                 min-elements 1;
@@ -287,10 +297,22 @@ module TapiEth {
             description "This object class models the ETH traffic shaping function as defined in G.8021.
                 Basic attribute: codirectional, prioConfigList, queueConfigList, schedConfig";
         }
-        grouping NodeEdgePointLpSpec {
-            
+        list NodeEdgePointLpSpec {
+            key 'extensionsSpecification';
+            leaf extensionsSpecification {
+                type string;
+                default "/TapiEth:NodeEdgePointLpSpec";
+                config false;
+                description "none";
+            }
+            leaf extensionsSpecTarget {
+                type string;
+                default "/Tapi:Context/Tapi:_topology/TapiTopology:_node/TapiTopology:_ownedNodeEdgePoint/Tapi:_layerProtocol/Tapi:_extensions";
+                config false;
+                description "none";
+            }
             container _terminationSpec {
-                uses TerminationSpecEty;
+                uses EtyTerminationPac;
                 description "none";
             }
             uses Tapi:ExtensionsSpec;

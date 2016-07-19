@@ -18,24 +18,22 @@ module TapiOch {
         Editor: your-name
                 <mailto:your-email@example.com>";
     description "none";
-    revision 2016-07-11 {
+    revision 2016-07-19 {
         description "Latest revision";
         reference "RFC 6020 and RFC 6087";
     }
-    
-    augment "/Tapi:Context/Tapi:_serviceEndPoint/TapiConnectivity:_connectionEndPoint/TapiConnectivity:_layerProtocol/TapiConnectivity:_extensions" {
+    augment "/Tapi:Context/Tapi:_serviceEndPoint/TapiConnectivity:_connectionEndPoint/Tapi:_layerProtocol/Tapi:_extensions" {
         uses ConnectionEndPointLpSpec;
+        description "none";
     }
-    
-    augment "/Tapi:Context/Tapi:_topology/TapiTopology:_node/TapiTopology:_ownedNodeEdgePoint/TapiTopology:_layerProtocol/TapiTopology:_extensions" {
+    augment "/Tapi:Context/Tapi:_topology/TapiTopology:_node/TapiTopology:_ownedNodeEdgePoint/Tapi:_layerProtocol/Tapi:_extensions" {
         uses NodeEdgePointLpSpec;
+        description "none";
     }
-    
-    
     /***********************
     * package ObjectClasses
     **********************/ 
-        grouping AdapterAndConnectionPointSpec {
+        grouping AdapterAndConnectionPointPac {
             leaf monitoredDirection {
                 type MonitoredDirection;
                 config false;
@@ -43,19 +41,24 @@ module TapiOch {
             }
             description "none";
         }
+        list ConnectionEndPointLpSpec {
+            key 'extensionsSpecification';
+            uses ConnectionEndPointLpSpec;
+            description "none";
+        }
         grouping ConnectionEndPointLpSpec {
             container _adapterSpec {
-                uses AdapterAndConnectionPointSpec;
+                uses AdapterAndConnectionPointPac;
                 description "none";
             }
             container _terminationSpec {
-                uses TerminationSpec;
+                uses TerminationPac;
                 description "none";
             }
             uses Tapi:ExtensionsSpec;
             description "none";
         }
-        grouping TerminationSpec {
+        grouping TerminationPac {
             container selectedApplicationIdentifier {
                 uses ApplicationIdentifier;
                 description "This attribute indicates the selected Application Identifier that is used by the OCh trail termination function. The syntax of ApplicationIdentifier is a pair {ApplicationIdentifierType, PrintableString}. The value of ApplicationIdentifierType is either STANDARD or PROPRIETARY. The value of PrintableString represents the standard application code as defined in the ITU-T Recommendations or a vendor-specific proprietary code. If the ApplicationIdentifierType is STANDARD the value of PrintableString represents a standard application code as defined in the ITU-T Recommendations. If the ApplicationIdentifierType is PROPRIETARY, the first six characters of the PrintableString must contain the Hexadecimal representation of an OUI assigned to the vendor whose implementation generated the Application Identifier; the remaining octets of the PrintableString are unspecified. The value of this attribute of an object instance has to be one of the values identified in the attribute SupportableApplicationIdentifierList of the same object instance. The values and value ranges of the optical interface parameters of a standard application code must be consistent with those values specified in the ITU-T Recommendation for that application code.";
@@ -68,7 +71,7 @@ module TapiOch {
             }
             description "none";
         }
-        grouping PoolPropertySpec {
+        grouping PoolPropertyPac {
             leaf clientCapacity {
                 type uint64;
                 description "none";
@@ -83,10 +86,15 @@ module TapiOch {
             }
             description "none";
         }
+        list NodeEdgePointLpSpec {
+            key 'extensionsSpecification';
+            uses NodeEdgePointLpSpec;
+            description "none";
+        }
         grouping NodeEdgePointLpSpec {
             container _ochPoolPropertySpec {
                 config false;
-                uses PoolPropertySpec;
+                uses PoolPropertyPac;
                 description "none";
             }
             uses Tapi:ExtensionsSpec;

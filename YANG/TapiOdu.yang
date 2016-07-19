@@ -18,24 +18,22 @@ module TapiOdu {
         Editor: your-name
                 <mailto:your-email@example.com>";
     description "none";
-    revision 2016-07-11 {
+    revision 2016-07-19 {
         description "Latest revision";
         reference "RFC 6020 and RFC 6087";
     }
-    
-    augment "/Tapi:Context/Tapi:_serviceEndPoint/TapiConnectivity:_connectionEndPoint/TapiConnectivity:_layerProtocol/TapiConnectivity:_extensions" {
+    augment "/Tapi:Context/Tapi:_serviceEndPoint/TapiConnectivity:_connectionEndPoint/Tapi:_layerProtocol/Tapi:_extensions" {
         uses ConnectionEndPointLpSpec;
+        description "none";
     }
-    
-    augment "/Tapi:Context/Tapi:_topology/TapiTopology:_node/TapiTopology:_ownedNodeEdgePoint/TapiTopology:_layerProtocol/TapiTopology:_extensions" {
+    augment "/Tapi:Context/Tapi:_topology/TapiTopology:_node/TapiTopology:_ownedNodeEdgePoint/Tapi:_layerProtocol/Tapi:_extensions" {
         uses NodeEdgePointLpSpec;
+        description "none";
     }
-
-            
     /***********************
     * package ObjectClasses
     **********************/ 
-        grouping AdapterAndConnectionPointSpec {
+        grouping AdapterAndConnectionPointPac {
             leaf adaptationActive {
                 type boolean;
                 config false;
@@ -76,6 +74,7 @@ module TapiOdu {
             leaf-list tributarySlotList {
                 type uint64;
                 config false;
+                min-elements 1;
                 description "This attribute contains a set of distinct (i.e. unique) integers (e.g. 2, 3, 5, 9, 15 representing the tributary slots TS2, TS3, TS5, TS9 and TS15) which represents the resources occupied by the Low Order ODUk Link Connection (e.g. carrying an ODUflex with a bit rate of 6.25G). This attribute applies when the LO ODUk_ ConnectionTerminationPoint connects with an HO ODUk_TrailTerminationPoint object. It will not apply if this ODUk_ ConnectionTerminationPoint object directly connects to an OTUk_TrailTerminationPoint object (i.e. OTUk has no trib slots). The upper bound of the integer allowed in this set is a function of the HO-ODUk server layer to which the ODUk connection has been mapped (adapted). Thus, for example, M=8/32/80 for ODU2/ODU3/ODU4 server layers (respectively). Note that the value of this attribute can be changed only in the case of ODUflex and has to be through specific operations (i.e. not be changing the attribute tributarySlotList directly).";
             }
             leaf applicableProblems {
@@ -113,6 +112,7 @@ module TapiOdu {
             leaf-list currentNumberOfTributarySlots {
                 type uint64;
                 config false;
+                min-elements 1;
                 description "This attribute applies only to ODUflex(GFP) connections. It represents the current number of tributary slots allocated to this ODUflex(GFP) connection in the HO-ODU server layer. The value of this parameter determines the bit rate of the ODUflex connection. 
                     The upper bound of this attribute is dependent on the HO-ODUk server layer. 
                     When the ODUflex(GFP) connection is initially created, this represents the actual number of tributary slots in use for the connection. When an ODUflex(GFP) connection is undergoing a resize operation, this attribute reflects the desired (resized) number of tributary slots only after the following stages (see G.7044[5] for details):
@@ -127,7 +127,7 @@ module TapiOdu {
             }
             description "none";
         }
-        grouping TerminationSpec {
+        grouping TerminationPac {
             leaf rate {
                 type string;
                 config false;
@@ -177,20 +177,24 @@ module TapiOdu {
             }
             description "none";
         }
+        list ConnectionEndPointLpSpec {
+            key 'extensionsSpecification';
+            uses ConnectionEndPointLpSpec;
+            description "none";
+        }
         grouping ConnectionEndPointLpSpec {
-            
             container _terminationSpec {
-                uses TerminationSpec;
+                uses TerminationPac;
                 description "none";
             }
             container _adapterSpec {
-                uses AdapterAndConnectionPointSpec;
+                uses AdapterAndConnectionPointPac;
                 description "none";
             }
             uses Tapi:ExtensionsSpec;
             description "none";
         }
-        grouping PoolPropertySpec {
+        grouping PoolPropertyPac {
             leaf clientCapacity {
                 type uint64;
                 description "none";
@@ -207,10 +211,14 @@ module TapiOdu {
             }
             description "none";
         }
+        list NodeEdgePointLpSpec {
+            key 'extensionsSpecification';
+            uses NodeEdgePointLpSpec;
+            description "none";
+        }
         grouping NodeEdgePointLpSpec {
-
             container _oduPoolPropertySpec {
-                uses PoolPropertySpec;
+                uses PoolPropertyPac;
                 description "none";
             }
             uses Tapi:ExtensionsSpec;
