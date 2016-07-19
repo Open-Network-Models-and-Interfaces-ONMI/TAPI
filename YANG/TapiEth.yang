@@ -22,12 +22,20 @@ module TapiEth {
         description "Latest revision";
         reference "RFC 6020 and RFC 6087";
     }
+    augment "/Tapi:Context/Tapi:_connection/TapiConnectivity:_connectionPort/TapiConnectivity:_connectionEndPoint/TapiConnectivity:_layerProtocol/TapiConnectivity:_extensions" {
+        uses ConnectionEndPointLpSpec;
+        description "none";
+    }
+    augment "/Tapi:Context/Tapi:_topology/TapiTopology:_node/TapiTopology:_ownedNodeEdgePoint/TapiTopology:_layerProtocol/TapiTopology:_extensions" {
+        uses NodeEdgePointLpSpec;
+        description "none";
+    }
     /***********************
     * package ObjectClasses
     **********************/ 
         grouping ConnectionPointAndAdapterPac {
             leaf-list auxiliaryFunctionPositionSequence {
-                type string;
+                type uint64;
                 description "This attribute indicates the positions (i.e., the relative order) of all the MEP, MIP, and TCS objects which are associated with the CTP.";
             }
             leaf vlanConfig {
@@ -140,9 +148,8 @@ module TapiEth {
             }
             description "none";
         }
-        list ConnectionEndPointLpSpec {
-            key 'extensionsSpecification';
-            leaf extesnsionsSpecification {
+        grouping ConnectionEndPointLpSpec {
+            leaf extensionsSpecification {
                 type string;
                 default "/TapiEth:ConnectionEndPointLpSpec";
                 config false;
@@ -150,7 +157,7 @@ module TapiEth {
             }
             leaf extensionsSpecTarget {
                 type string;
-                default "/Tapi:Context/Tapi:_serviceEndPoint/TapiConnectivity:_connectionEndPoint/Tapi:_layerProtocol/Tapi:_extensions";
+                default "/Tapi:Context/Tapi:_connection/TapiConnectivity:_connectionPort/TapiConnectivity:_connectionEndPoint/TapiConnectivity:_layerProtocol/TapiConnectivity:_extensions";
                 config false;
                 description "none";
             }
@@ -297,8 +304,7 @@ module TapiEth {
             description "This object class models the ETH traffic shaping function as defined in G.8021.
                 Basic attribute: codirectional, prioConfigList, queueConfigList, schedConfig";
         }
-        list NodeEdgePointLpSpec {
-            key 'extensionsSpecification';
+        grouping NodeEdgePointLpSpec {
             leaf extensionsSpecification {
                 type string;
                 default "/TapiEth:NodeEdgePointLpSpec";
@@ -307,7 +313,7 @@ module TapiEth {
             }
             leaf extensionsSpecTarget {
                 type string;
-                default "/Tapi:Context/Tapi:_topology/TapiTopology:_node/TapiTopology:_ownedNodeEdgePoint/Tapi:_layerProtocol/Tapi:_extensions";
+                default "/Tapi:Context/Tapi:_topology/TapiTopology:_node/TapiTopology:_ownedNodeEdgePoint/TapiTopology:_layerProtocol/TapiTopology:_extensions";
                 config false;
                 description "none";
             }
@@ -461,7 +467,7 @@ module TapiEth {
                 description "This attribute contains the MAC address of the address tuple.";
             }
             leaf-list portList {
-                type string;
+                type MacAddress;
                 description "This attribute contains the ports associated to the MAC address in the address tuple.";
             }
             description "This data type contains an address tuple consisting of a MAC address and a corresponding port list.";
