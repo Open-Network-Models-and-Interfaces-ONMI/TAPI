@@ -9,11 +9,11 @@ from objects_common.enumType import EnumType
 class _notificationSchema(ResourceSpec):
 
     def __init__(self, json_struct=None):
-        self.targetObjectIdentifier=""
-        self.layerProtocolName=Layerprotocolname(0)
-        self.name=KeyedArrayType(NameAndValue, 'valueName')
-        self.changedAttributes=ArrayType.factory(NameAndValueChange)
         self.additionalInfo=KeyedArrayType(NameAndValue, 'valueName')
+        self.layerProtocolName=Layerprotocolname(0)
+        self.sequenceNumber=""
+        self.changedAttributes=ArrayType.factory(NameAndValueChange)
+        self.targetObjectIdentifier=""
         self.additionalText=""
         self.notificationType=Notificationtype(0)
         self.label=KeyedArrayType(NameAndValue, 'valueName')
@@ -23,6 +23,7 @@ class _notificationSchema(ResourceSpec):
         self.targetObjectName=KeyedArrayType(NameAndValue, 'valueName')
         self._extensions=KeyedArrayType(ExtensionsSpec, 'extensionsSpecification')
         self.notificationUuid=""
+        self.name=KeyedArrayType(NameAndValue, 'valueName')
         super(_notificationSchema, self).__init__(json_struct)
 
 class Layerprotocolname(EnumType):
@@ -32,8 +33,8 @@ class Layerprotocolname(EnumType):
     def __init__(self, initial_value):
         super(Layerprotocolname, self).__init__(initial_value)
 class Notificationtype(EnumType):
-    possible_values = ['OBJECT_CREATION', 'OBJECT_DELETION', 'ATTRIBUTE_VALUE_CHANGE', 'STATE_CHANGE']
-    range_end = 4
+    possible_values = ['OBJECT_CREATION', 'OBJECT_DELETION', 'ATTRIBUTE_VALUE_CHANGE']
+    range_end = 3
 
     def __init__(self, initial_value):
         super(Notificationtype, self).__init__(initial_value)

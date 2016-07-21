@@ -1,5 +1,6 @@
-from subscriptionFilter import SubscriptionFilter
 from notification import Notification
+from subscriptionFilter import SubscriptionFilter
+from notificationChannel import NotificationChannel
 from serviceSpec import ServiceSpec
 from objects_common.arrayType import ArrayType
 from objects_common.keyedArrayType import KeyedArrayType
@@ -8,11 +9,12 @@ from objects_common.enumType import EnumType
 class NotificationSubscriptionService(ServiceSpec):
 
     def __init__(self, json_struct=None):
-        self._subscriptionFilter=SubscriptionFilter() #import
-        self.supportedObjectTypes=ArrayType.factory(str)
         self._notification=KeyedArrayType(Notification, 'uuid')
-        self.supportedNotificationTypes=ArrayType.factory(str)
+        self._subscriptionFilter=SubscriptionFilter() #import
         self.subscriptionState=Subscriptionstate(0)
+        self._notificationChannel=NotificationChannel() #import
+        self.supportedObjectTypes=ArrayType.factory(str)
+        self.supportedNotificationTypes=ArrayType.factory(str)
         super(NotificationSubscriptionService, self).__init__(json_struct)
 
 class Subscriptionstate(EnumType):
