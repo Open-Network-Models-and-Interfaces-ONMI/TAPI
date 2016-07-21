@@ -7,13 +7,13 @@ import base64
 import re
 
 # BACKEND FUNCTIONS
-from funcs_TapiVirtualNetwork.context_VnwserviceUuid_VnwconstraintLocalidCostcharacteristicCostalgorithmImpl import Context_VnwserviceUuid_VnwconstraintLocalidCostcharacteristicCostalgorithmImpl
 from funcs_TapiVirtualNetwork.context_VnwserviceUuid_VnwconstraintLocalid_ExtensionsImpl import Context_VnwserviceUuid_VnwconstraintLocalid_ExtensionsImpl
 from funcs_TapiVirtualNetwork.context_VnwserviceUuid_StateImpl import Context_VnwserviceUuid_StateImpl
 from funcs_TapiVirtualNetwork.context_VnwserviceUuidLabelImpl import Context_VnwserviceUuidLabelImpl
+from funcs_TapiVirtualNetwork.context_VnwserviceUuid_ExtensionsExtensionsspecificationImpl import Context_VnwserviceUuid_ExtensionsExtensionsspecificationImpl
+from funcs_TapiVirtualNetwork.context_VnwserviceUuid_VnwconstraintLocalidLatencycharacteristicTrafficpropertynameImpl import Context_VnwserviceUuid_VnwconstraintLocalidLatencycharacteristicTrafficpropertynameImpl
 from funcs_TapiVirtualNetwork.context_VnwserviceUuid_ScheduleImpl import Context_VnwserviceUuid_ScheduleImpl
 from funcs_TapiVirtualNetwork.getvirtualnetworkservicedetailsImpl import GetvirtualnetworkservicedetailsImpl
-from funcs_TapiVirtualNetwork.context_VnwserviceUuidNameImpl import Context_VnwserviceUuidNameImpl
 from funcs_TapiVirtualNetwork.context_VnwserviceUuidNameValuenameImpl import Context_VnwserviceUuidNameValuenameImpl
 from funcs_TapiVirtualNetwork.context_VnwserviceUuid_VnwconstraintLocalidLatencycharacteristicImpl import Context_VnwserviceUuid_VnwconstraintLocalidLatencycharacteristicImpl
 from funcs_TapiVirtualNetwork.createvirtualnetworkserviceImpl import CreatevirtualnetworkserviceImpl
@@ -24,46 +24,46 @@ from funcs_TapiVirtualNetwork.context_VnwserviceUuid_VnwconstraintLocalidRequest
 from funcs_TapiVirtualNetwork.context_VnwserviceUuid_VnwconstraintLocalidImpl import Context_VnwserviceUuid_VnwconstraintLocalidImpl
 from funcs_TapiVirtualNetwork.context_VnwserviceUuid_VnwconstraintLocalidCostcharacteristicImpl import Context_VnwserviceUuid_VnwconstraintLocalidCostcharacteristicImpl
 from funcs_TapiVirtualNetwork.deletevirtualnetworkserviceImpl import DeletevirtualnetworkserviceImpl
-from funcs_TapiVirtualNetwork.context_VnwserviceUuid_ExtensionsExtensionsspecificationImpl import Context_VnwserviceUuid_ExtensionsExtensionsspecificationImpl
 from funcs_TapiVirtualNetwork.context_VnwserviceUuid_ServiceportLocalidImpl import Context_VnwserviceUuid_ServiceportLocalidImpl
+from funcs_TapiVirtualNetwork.context_VnwserviceUuid_VnwconstraintLocalidCostcharacteristicCostnameImpl import Context_VnwserviceUuid_VnwconstraintLocalidCostcharacteristicCostnameImpl
+from funcs_TapiVirtualNetwork.context_VnwserviceUuid_ServiceportLocalid_ExtensionsExtensionsspecificationImpl import Context_VnwserviceUuid_ServiceportLocalid_ExtensionsExtensionsspecificationImpl
+from funcs_TapiVirtualNetwork.context_VnwserviceUuid_ServiceportLocalid_ExtensionsImpl import Context_VnwserviceUuid_ServiceportLocalid_ExtensionsImpl
+from funcs_TapiVirtualNetwork.context_VnwserviceUuid_ServiceportImpl import Context_VnwserviceUuid_ServiceportImpl
+from funcs_TapiVirtualNetwork.context_VnwserviceUuid_VnwconstraintLocalid_ExtensionsExtensionsspecificationImpl import Context_VnwserviceUuid_VnwconstraintLocalid_ExtensionsExtensionsspecificationImpl
 from funcs_TapiVirtualNetwork.context_VnwserviceUuid_VnwconstraintImpl import Context_VnwserviceUuid_VnwconstraintImpl
 from funcs_TapiVirtualNetwork.context_VnwserviceImpl import Context_VnwserviceImpl
-from funcs_TapiVirtualNetwork.context_VnwserviceUuid_VnwconstraintLocalid_ExtensionsExtensionsspecificationImpl import Context_VnwserviceUuid_VnwconstraintLocalid_ExtensionsExtensionsspecificationImpl
-from funcs_TapiVirtualNetwork.context_VnwserviceUuid_ServiceportLocalid_ExtensionsExtensionsspecificationImpl import Context_VnwserviceUuid_ServiceportLocalid_ExtensionsExtensionsspecificationImpl
-from funcs_TapiVirtualNetwork.context_VnwserviceUuid_VnwconstraintLocalidRiskcharacteristicImpl import Context_VnwserviceUuid_VnwconstraintLocalidRiskcharacteristicImpl
-from funcs_TapiVirtualNetwork.context_VnwserviceUuid_ServiceportImpl import Context_VnwserviceUuid_ServiceportImpl
-from funcs_TapiVirtualNetwork.context_VnwserviceUuid_VnwconstraintLocalidLatencycharacteristicLatencyvalueImpl import Context_VnwserviceUuid_VnwconstraintLocalidLatencycharacteristicLatencyvalueImpl
-from funcs_TapiVirtualNetwork.context_VnwserviceUuid_VnwconstraintLocalidRiskcharacteristicRiskcharacteristicnameImpl import Context_VnwserviceUuid_VnwconstraintLocalidRiskcharacteristicRiskcharacteristicnameImpl
-from funcs_TapiVirtualNetwork.context_VnwserviceUuid_ServiceportLocalid_ExtensionsImpl import Context_VnwserviceUuid_ServiceportLocalid_ExtensionsImpl
 from funcs_TapiVirtualNetwork.context_VnwserviceUuidImpl import Context_VnwserviceUuidImpl
+from funcs_TapiVirtualNetwork.context_VnwserviceUuidNameImpl import Context_VnwserviceUuidNameImpl
 
 # CALLABLE OBJECTS
 from objects_TapiVirtualNetwork.linkPort import LinkPort
 from objects_TapiVirtualNetwork.virtualNetworkServicePort import VirtualNetworkServicePort
 from objects_TapiVirtualNetwork.createVirtualNetworkServiceRPCOutputSchema import CreateVirtualNetworkServiceRPCOutputSchema
 from objects_TapiVirtualNetwork.capacity import Capacity
-from objects_TapiVirtualNetwork.service import Service
 from objects_TapiVirtualNetwork.transferCostPac import TransferCostPac
+from objects_TapiVirtualNetwork.networkTopologyService import NetworkTopologyService
 from objects_TapiVirtualNetwork.timeRange import TimeRange
 from objects_TapiVirtualNetwork.layerProtocolTransitionPac import LayerProtocolTransitionPac
 from objects_TapiVirtualNetwork.transferTimingPac import TransferTimingPac
 from objects_TapiVirtualNetwork.transferIntegrityPac import TransferIntegrityPac
 from objects_TapiVirtualNetwork.nameAndValue import NameAndValue
 from objects_TapiVirtualNetwork.adminStatePac import AdminStatePac
+from objects_TapiVirtualNetwork.serviceEndPoint import ServiceEndPoint
 from objects_TapiVirtualNetwork.validationMechanism import ValidationMechanism
 from objects_TapiVirtualNetwork.node import Node
+from objects_TapiVirtualNetwork.resourceSpec import ResourceSpec
 from objects_TapiVirtualNetwork.teLink import TeLink
 from objects_TapiVirtualNetwork.costCharacteristic import CostCharacteristic
+from objects_TapiVirtualNetwork.latencyCharacteristic import LatencyCharacteristic
 from objects_TapiVirtualNetwork.createVirtualNetworkServiceRPCInputSchema import CreateVirtualNetworkServiceRPCInputSchema
+from objects_TapiVirtualNetwork.serviceSpec import ServiceSpec
 from objects_TapiVirtualNetwork.getVirtualNetworkServiceListRPCOutputSchema import GetVirtualNetworkServiceListRPCOutputSchema
 from objects_TapiVirtualNetwork.link import Link
 from objects_TapiVirtualNetwork.localClass import LocalClass
 from objects_TapiVirtualNetwork.deleteVirtualNetworkServiceRPCOutputSchema import DeleteVirtualNetworkServiceRPCOutputSchema
 from objects_TapiVirtualNetwork.topology import Topology
-from objects_TapiVirtualNetwork.queuingLatency import QueuingLatency
 from objects_TapiVirtualNetwork.extensionsSpec import ExtensionsSpec
 from objects_TapiVirtualNetwork._vnwServiceSchema import _vnwServiceSchema
-from objects_TapiVirtualNetwork.resource import Resource
 from objects_TapiVirtualNetwork.virtualNetworkService import VirtualNetworkService
 from objects_TapiVirtualNetwork.nodeEdgePoint import NodeEdgePoint
 from objects_TapiVirtualNetwork.virtualNetworkConstraint import VirtualNetworkConstraint
@@ -222,92 +222,6 @@ class Successful(Response):
         self.data = info
 
 
-#/restconf/config/Context/_vnwService/(\w+)/_vnwConstraint/(\w+)/costCharacteristic/(\w+)/
-class Context_VnwserviceUuid_VnwconstraintLocalidCostcharacteristicCostalgorithmMethodView(MethodView):
-
-    def put(self, uuid, localId, costAlgorithm):
-        print "Update operation of resource: costCharacteristic"
-        json_struct = request.get_json() #json parser.
-        try:
-            existing_object = Context_VnwserviceUuid_VnwconstraintLocalidCostcharacteristicCostalgorithmImpl.get(uuid, localId, costAlgorithm)
-        except KeyError as inst:
-            if inst.args[0] != 'costAlgorithm':
-                return NotFoundError(inst.args[0] + " not found")
-
-            new_object = create_instance(CostCharacteristic, json_struct)
-            if isinstance(new_object, BadRequestError):
-                return new_object
-            elif isinstance(new_object, NotFoundError):
-                return new_object
-            else:
-                try:
-                    Context_VnwserviceUuid_VnwconstraintLocalidCostcharacteristicCostalgorithmImpl.put(uuid, localId, costAlgorithm, new_object)
-                    js=new_object.json_serializer()
-                except KeyError as inst:
-                    return NotFoundError(inst.args[0] + " not found")
-        else:
-            existing_object = modify_instance(existing_object, json_struct)
-            if isinstance(existing_object, BadRequestError):
-                return existing_object
-            elif isinstance(existing_object, NotFoundError):
-                return existing_object
-            else:
-                try:
-                    Context_VnwserviceUuid_VnwconstraintLocalidCostcharacteristicCostalgorithmImpl.put(uuid, localId, costAlgorithm, existing_object)
-                    js=existing_object.json_serializer()
-                except KeyError as inst:
-                    return NotFoundError(inst.args[0] + " not found")
-
-        return Successful("Successful operation",json_dumps(js))
-
-
-
-    def post(self, uuid, localId, costAlgorithm):
-        print "Create operation of resource: costCharacteristic"
-        try:
-            response = Context_VnwserviceUuid_VnwconstraintLocalidCostcharacteristicCostalgorithmImpl.get(uuid, localId, costAlgorithm)
-        except KeyError as inst:
-            if inst.args[0] != 'costAlgorithm':
-                return NotFoundError(inst.args[0] + " not found")
-
-            json_struct = request.get_json() #json parser.
-            new_object = create_instance(CostCharacteristic, json_struct, (costAlgorithm,'costAlgorithm'))
-            if isinstance(new_object, BadRequestError):
-                return new_object
-            elif isinstance(new_object, NotFoundError):
-                return new_object
-            else:
-                try:
-                    Context_VnwserviceUuid_VnwconstraintLocalidCostcharacteristicCostalgorithmImpl.post(uuid, localId, costAlgorithm, new_object)
-                    js=new_object.json_serializer()
-                except KeyError as inst:
-                    return NotFoundError(inst.args[0] + " not found")
-        else:
-            return BadRequestError("Object already exists. For updates use PUT.")
-        return Successful("Successful operation",json_dumps(js))
-
-
-    def delete(self, uuid, localId, costAlgorithm):
-        print "Delete operation of resource: costCharacteristic"
-        try:
-            response=Context_VnwserviceUuid_VnwconstraintLocalidCostcharacteristicCostalgorithmImpl.delete(uuid, localId, costAlgorithm)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            return Successful('Successful operation')
-
-
-    def get(self, uuid, localId, costAlgorithm):
-        print "Retrieve operation of resource: costCharacteristic"
-        try:
-            response = Context_VnwserviceUuid_VnwconstraintLocalidCostcharacteristicCostalgorithmImpl.get(uuid, localId, costAlgorithm)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
 #/restconf/config/Context/_vnwService/(\w+)/_vnwConstraint/(\w+)/_extensions/
 class Context_VnwserviceUuid_VnwconstraintLocalid_ExtensionsMethodView(MethodView):
 
@@ -415,6 +329,106 @@ class Context_VnwserviceUuidLabelMethodView(MethodView):
         print "Retrieve operation of resource: label"
         try:
             response = Context_VnwserviceUuidLabelImpl.get(uuid)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_vnwService/(\w+)/_extensions/(\w+)/
+class Context_VnwserviceUuid_ExtensionsExtensionsspecificationMethodView(MethodView):
+
+    def get(self, uuid, extensionsSpecification):
+        print "Retrieve operation of resource: _extensions"
+        try:
+            response = Context_VnwserviceUuid_ExtensionsExtensionsspecificationImpl.get(uuid, extensionsSpecification)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_vnwService/(\w+)/_vnwConstraint/(\w+)/latencyCharacteristic/(\w+)/
+class Context_VnwserviceUuid_VnwconstraintLocalidLatencycharacteristicTrafficpropertynameMethodView(MethodView):
+
+    def put(self, uuid, localId, trafficPropertyName):
+        print "Update operation of resource: latencyCharacteristic"
+        json_struct = request.get_json() #json parser.
+        try:
+            existing_object = Context_VnwserviceUuid_VnwconstraintLocalidLatencycharacteristicTrafficpropertynameImpl.get(uuid, localId, trafficPropertyName)
+        except KeyError as inst:
+            if inst.args[0] != 'trafficPropertyName':
+                return NotFoundError(inst.args[0] + " not found")
+
+            new_object = create_instance(LatencyCharacteristic, json_struct)
+            if isinstance(new_object, BadRequestError):
+                return new_object
+            elif isinstance(new_object, NotFoundError):
+                return new_object
+            else:
+                try:
+                    Context_VnwserviceUuid_VnwconstraintLocalidLatencycharacteristicTrafficpropertynameImpl.put(uuid, localId, trafficPropertyName, new_object)
+                    js=new_object.json_serializer()
+                except KeyError as inst:
+                    return NotFoundError(inst.args[0] + " not found")
+        else:
+            existing_object = modify_instance(existing_object, json_struct)
+            if isinstance(existing_object, BadRequestError):
+                return existing_object
+            elif isinstance(existing_object, NotFoundError):
+                return existing_object
+            else:
+                try:
+                    Context_VnwserviceUuid_VnwconstraintLocalidLatencycharacteristicTrafficpropertynameImpl.put(uuid, localId, trafficPropertyName, existing_object)
+                    js=existing_object.json_serializer()
+                except KeyError as inst:
+                    return NotFoundError(inst.args[0] + " not found")
+
+        return Successful("Successful operation",json_dumps(js))
+
+
+
+    def post(self, uuid, localId, trafficPropertyName):
+        print "Create operation of resource: latencyCharacteristic"
+        try:
+            response = Context_VnwserviceUuid_VnwconstraintLocalidLatencycharacteristicTrafficpropertynameImpl.get(uuid, localId, trafficPropertyName)
+        except KeyError as inst:
+            if inst.args[0] != 'trafficPropertyName':
+                return NotFoundError(inst.args[0] + " not found")
+
+            json_struct = request.get_json() #json parser.
+            new_object = create_instance(LatencyCharacteristic, json_struct, (trafficPropertyName,'trafficPropertyName'))
+            if isinstance(new_object, BadRequestError):
+                return new_object
+            elif isinstance(new_object, NotFoundError):
+                return new_object
+            else:
+                try:
+                    Context_VnwserviceUuid_VnwconstraintLocalidLatencycharacteristicTrafficpropertynameImpl.post(uuid, localId, trafficPropertyName, new_object)
+                    js=new_object.json_serializer()
+                except KeyError as inst:
+                    return NotFoundError(inst.args[0] + " not found")
+        else:
+            return BadRequestError("Object already exists. For updates use PUT.")
+        return Successful("Successful operation",json_dumps(js))
+
+
+    def delete(self, uuid, localId, trafficPropertyName):
+        print "Delete operation of resource: latencyCharacteristic"
+        try:
+            response=Context_VnwserviceUuid_VnwconstraintLocalidLatencycharacteristicTrafficpropertynameImpl.delete(uuid, localId, trafficPropertyName)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            return Successful('Successful operation')
+
+
+    def get(self, uuid, localId, trafficPropertyName):
+        print "Retrieve operation of resource: latencyCharacteristic"
+        try:
+            response = Context_VnwserviceUuid_VnwconstraintLocalidLatencycharacteristicTrafficpropertynameImpl.get(uuid, localId, trafficPropertyName)
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -535,20 +549,6 @@ class GetvirtualnetworkservicedetailsMethodView(MethodView):
             return BadRequestError("Object already exists. For updates use PUT.")
         return Successful("Successful operation",json_dumps(js))
 
-
-
-#/restconf/config/Context/_vnwService/(\w+)/name/
-class Context_VnwserviceUuidNameMethodView(MethodView):
-
-    def get(self, uuid):
-        print "Retrieve operation of resource: name"
-        try:
-            response = Context_VnwserviceUuidNameImpl.get(uuid)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
 
 
 #/restconf/config/Context/_vnwService/(\w+)/name/(\w+)/
@@ -1006,20 +1006,6 @@ class DeletevirtualnetworkserviceMethodView(MethodView):
 
 
 
-#/restconf/config/Context/_vnwService/(\w+)/_extensions/(\w+)/
-class Context_VnwserviceUuid_ExtensionsExtensionsspecificationMethodView(MethodView):
-
-    def get(self, uuid, extensionsSpecification):
-        print "Retrieve operation of resource: _extensions"
-        try:
-            response = Context_VnwserviceUuid_ExtensionsExtensionsspecificationImpl.get(uuid, extensionsSpecification)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
 #/restconf/config/Context/_vnwService/(\w+)/_servicePort/(\w+)/
 class Context_VnwserviceUuid_ServiceportLocalidMethodView(MethodView):
 
@@ -1106,41 +1092,85 @@ class Context_VnwserviceUuid_ServiceportLocalidMethodView(MethodView):
             return Successful("Successful operation",json_dumps(js))
 
 
-#/restconf/config/Context/_vnwService/(\w+)/_vnwConstraint/
-class Context_VnwserviceUuid_VnwconstraintMethodView(MethodView):
+#/restconf/config/Context/_vnwService/(\w+)/_vnwConstraint/(\w+)/costCharacteristic/(\w+)/
+class Context_VnwserviceUuid_VnwconstraintLocalidCostcharacteristicCostnameMethodView(MethodView):
 
-    def get(self, uuid):
-        print "Retrieve operation of resource: _vnwConstraint"
+    def put(self, uuid, localId, costName):
+        print "Update operation of resource: costCharacteristic"
+        json_struct = request.get_json() #json parser.
         try:
-            response = Context_VnwserviceUuid_VnwconstraintImpl.get(uuid)
+            existing_object = Context_VnwserviceUuid_VnwconstraintLocalidCostcharacteristicCostnameImpl.get(uuid, localId, costName)
+        except KeyError as inst:
+            if inst.args[0] != 'costName':
+                return NotFoundError(inst.args[0] + " not found")
+
+            new_object = create_instance(CostCharacteristic, json_struct)
+            if isinstance(new_object, BadRequestError):
+                return new_object
+            elif isinstance(new_object, NotFoundError):
+                return new_object
+            else:
+                try:
+                    Context_VnwserviceUuid_VnwconstraintLocalidCostcharacteristicCostnameImpl.put(uuid, localId, costName, new_object)
+                    js=new_object.json_serializer()
+                except KeyError as inst:
+                    return NotFoundError(inst.args[0] + " not found")
+        else:
+            existing_object = modify_instance(existing_object, json_struct)
+            if isinstance(existing_object, BadRequestError):
+                return existing_object
+            elif isinstance(existing_object, NotFoundError):
+                return existing_object
+            else:
+                try:
+                    Context_VnwserviceUuid_VnwconstraintLocalidCostcharacteristicCostnameImpl.put(uuid, localId, costName, existing_object)
+                    js=existing_object.json_serializer()
+                except KeyError as inst:
+                    return NotFoundError(inst.args[0] + " not found")
+
+        return Successful("Successful operation",json_dumps(js))
+
+
+
+    def post(self, uuid, localId, costName):
+        print "Create operation of resource: costCharacteristic"
+        try:
+            response = Context_VnwserviceUuid_VnwconstraintLocalidCostcharacteristicCostnameImpl.get(uuid, localId, costName)
+        except KeyError as inst:
+            if inst.args[0] != 'costName':
+                return NotFoundError(inst.args[0] + " not found")
+
+            json_struct = request.get_json() #json parser.
+            new_object = create_instance(CostCharacteristic, json_struct, (costName,'costName'))
+            if isinstance(new_object, BadRequestError):
+                return new_object
+            elif isinstance(new_object, NotFoundError):
+                return new_object
+            else:
+                try:
+                    Context_VnwserviceUuid_VnwconstraintLocalidCostcharacteristicCostnameImpl.post(uuid, localId, costName, new_object)
+                    js=new_object.json_serializer()
+                except KeyError as inst:
+                    return NotFoundError(inst.args[0] + " not found")
+        else:
+            return BadRequestError("Object already exists. For updates use PUT.")
+        return Successful("Successful operation",json_dumps(js))
+
+
+    def delete(self, uuid, localId, costName):
+        print "Delete operation of resource: costCharacteristic"
+        try:
+            response=Context_VnwserviceUuid_VnwconstraintLocalidCostcharacteristicCostnameImpl.delete(uuid, localId, costName)
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
+            return Successful('Successful operation')
 
 
-#/restconf/config/Context/_vnwService/
-class Context_VnwserviceMethodView(MethodView):
-
-    def get(self, ):
-        print "Retrieve operation of resource: _vnwService"
+    def get(self, uuid, localId, costName):
+        print "Retrieve operation of resource: costCharacteristic"
         try:
-            response = Context_VnwserviceImpl.get()
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
-#/restconf/config/Context/_vnwService/(\w+)/_vnwConstraint/(\w+)/_extensions/(\w+)/
-class Context_VnwserviceUuid_VnwconstraintLocalid_ExtensionsExtensionsspecificationMethodView(MethodView):
-
-    def get(self, uuid, localId, extensionsSpecification):
-        print "Retrieve operation of resource: _extensions"
-        try:
-            response = Context_VnwserviceUuid_VnwconstraintLocalid_ExtensionsExtensionsspecificationImpl.get(uuid, localId, extensionsSpecification)
+            response = Context_VnwserviceUuid_VnwconstraintLocalidCostcharacteristicCostnameImpl.get(uuid, localId, costName)
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -1162,13 +1192,13 @@ class Context_VnwserviceUuid_ServiceportLocalid_ExtensionsExtensionsspecificatio
             return Successful("Successful operation",json_dumps(js))
 
 
-#/restconf/config/Context/_vnwService/(\w+)/_vnwConstraint/(\w+)/riskCharacteristic/
-class Context_VnwserviceUuid_VnwconstraintLocalidRiskcharacteristicMethodView(MethodView):
+#/restconf/config/Context/_vnwService/(\w+)/_servicePort/(\w+)/_extensions/
+class Context_VnwserviceUuid_ServiceportLocalid_ExtensionsMethodView(MethodView):
 
     def get(self, uuid, localId):
-        print "Retrieve operation of resource: riskCharacteristic"
+        print "Retrieve operation of resource: _extensions"
         try:
-            response = Context_VnwserviceUuid_VnwconstraintLocalidRiskcharacteristicImpl.get(uuid, localId)
+            response = Context_VnwserviceUuid_ServiceportLocalid_ExtensionsImpl.get(uuid, localId)
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -1190,185 +1220,41 @@ class Context_VnwserviceUuid_ServiceportMethodView(MethodView):
             return Successful("Successful operation",json_dumps(js))
 
 
-#/restconf/config/Context/_vnwService/(\w+)/_vnwConstraint/(\w+)/latencyCharacteristic/(\w+)/
-class Context_VnwserviceUuid_VnwconstraintLocalidLatencycharacteristicLatencyvalueMethodView(MethodView):
+#/restconf/config/Context/_vnwService/(\w+)/_vnwConstraint/(\w+)/_extensions/(\w+)/
+class Context_VnwserviceUuid_VnwconstraintLocalid_ExtensionsExtensionsspecificationMethodView(MethodView):
 
-    def put(self, uuid, localId, latencyValue):
-        print "Update operation of resource: latencyCharacteristic"
-        json_struct = request.get_json() #json parser.
-        try:
-            existing_object = Context_VnwserviceUuid_VnwconstraintLocalidLatencycharacteristicLatencyvalueImpl.get(uuid, localId, latencyValue)
-        except KeyError as inst:
-            if inst.args[0] != 'latencyValue':
-                return NotFoundError(inst.args[0] + " not found")
-
-            new_object = create_instance(QueuingLatency, json_struct)
-            if isinstance(new_object, BadRequestError):
-                return new_object
-            elif isinstance(new_object, NotFoundError):
-                return new_object
-            else:
-                try:
-                    Context_VnwserviceUuid_VnwconstraintLocalidLatencycharacteristicLatencyvalueImpl.put(uuid, localId, latencyValue, new_object)
-                    js=new_object.json_serializer()
-                except KeyError as inst:
-                    return NotFoundError(inst.args[0] + " not found")
-        else:
-            existing_object = modify_instance(existing_object, json_struct)
-            if isinstance(existing_object, BadRequestError):
-                return existing_object
-            elif isinstance(existing_object, NotFoundError):
-                return existing_object
-            else:
-                try:
-                    Context_VnwserviceUuid_VnwconstraintLocalidLatencycharacteristicLatencyvalueImpl.put(uuid, localId, latencyValue, existing_object)
-                    js=existing_object.json_serializer()
-                except KeyError as inst:
-                    return NotFoundError(inst.args[0] + " not found")
-
-        return Successful("Successful operation",json_dumps(js))
-
-
-
-    def post(self, uuid, localId, latencyValue):
-        print "Create operation of resource: latencyCharacteristic"
-        try:
-            response = Context_VnwserviceUuid_VnwconstraintLocalidLatencycharacteristicLatencyvalueImpl.get(uuid, localId, latencyValue)
-        except KeyError as inst:
-            if inst.args[0] != 'latencyValue':
-                return NotFoundError(inst.args[0] + " not found")
-
-            json_struct = request.get_json() #json parser.
-            new_object = create_instance(QueuingLatency, json_struct, (latencyValue,'latencyValue'))
-            if isinstance(new_object, BadRequestError):
-                return new_object
-            elif isinstance(new_object, NotFoundError):
-                return new_object
-            else:
-                try:
-                    Context_VnwserviceUuid_VnwconstraintLocalidLatencycharacteristicLatencyvalueImpl.post(uuid, localId, latencyValue, new_object)
-                    js=new_object.json_serializer()
-                except KeyError as inst:
-                    return NotFoundError(inst.args[0] + " not found")
-        else:
-            return BadRequestError("Object already exists. For updates use PUT.")
-        return Successful("Successful operation",json_dumps(js))
-
-
-    def delete(self, uuid, localId, latencyValue):
-        print "Delete operation of resource: latencyCharacteristic"
-        try:
-            response=Context_VnwserviceUuid_VnwconstraintLocalidLatencycharacteristicLatencyvalueImpl.delete(uuid, localId, latencyValue)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            return Successful('Successful operation')
-
-
-    def get(self, uuid, localId, latencyValue):
-        print "Retrieve operation of resource: latencyCharacteristic"
-        try:
-            response = Context_VnwserviceUuid_VnwconstraintLocalidLatencycharacteristicLatencyvalueImpl.get(uuid, localId, latencyValue)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
-#/restconf/config/Context/_vnwService/(\w+)/_vnwConstraint/(\w+)/riskCharacteristic/(\w+)/
-class Context_VnwserviceUuid_VnwconstraintLocalidRiskcharacteristicRiskcharacteristicnameMethodView(MethodView):
-
-    def put(self, uuid, localId, riskCharacteristicName):
-        print "Update operation of resource: riskCharacteristic"
-        json_struct = request.get_json() #json parser.
-        try:
-            existing_object = Context_VnwserviceUuid_VnwconstraintLocalidRiskcharacteristicRiskcharacteristicnameImpl.get(uuid, localId, riskCharacteristicName)
-        except KeyError as inst:
-            if inst.args[0] != 'riskCharacteristicName':
-                return NotFoundError(inst.args[0] + " not found")
-
-            new_object = create_instance(RiskCharacteristic, json_struct)
-            if isinstance(new_object, BadRequestError):
-                return new_object
-            elif isinstance(new_object, NotFoundError):
-                return new_object
-            else:
-                try:
-                    Context_VnwserviceUuid_VnwconstraintLocalidRiskcharacteristicRiskcharacteristicnameImpl.put(uuid, localId, riskCharacteristicName, new_object)
-                    js=new_object.json_serializer()
-                except KeyError as inst:
-                    return NotFoundError(inst.args[0] + " not found")
-        else:
-            existing_object = modify_instance(existing_object, json_struct)
-            if isinstance(existing_object, BadRequestError):
-                return existing_object
-            elif isinstance(existing_object, NotFoundError):
-                return existing_object
-            else:
-                try:
-                    Context_VnwserviceUuid_VnwconstraintLocalidRiskcharacteristicRiskcharacteristicnameImpl.put(uuid, localId, riskCharacteristicName, existing_object)
-                    js=existing_object.json_serializer()
-                except KeyError as inst:
-                    return NotFoundError(inst.args[0] + " not found")
-
-        return Successful("Successful operation",json_dumps(js))
-
-
-
-    def post(self, uuid, localId, riskCharacteristicName):
-        print "Create operation of resource: riskCharacteristic"
-        try:
-            response = Context_VnwserviceUuid_VnwconstraintLocalidRiskcharacteristicRiskcharacteristicnameImpl.get(uuid, localId, riskCharacteristicName)
-        except KeyError as inst:
-            if inst.args[0] != 'riskCharacteristicName':
-                return NotFoundError(inst.args[0] + " not found")
-
-            json_struct = request.get_json() #json parser.
-            new_object = create_instance(RiskCharacteristic, json_struct, (riskCharacteristicName,'riskCharacteristicName'))
-            if isinstance(new_object, BadRequestError):
-                return new_object
-            elif isinstance(new_object, NotFoundError):
-                return new_object
-            else:
-                try:
-                    Context_VnwserviceUuid_VnwconstraintLocalidRiskcharacteristicRiskcharacteristicnameImpl.post(uuid, localId, riskCharacteristicName, new_object)
-                    js=new_object.json_serializer()
-                except KeyError as inst:
-                    return NotFoundError(inst.args[0] + " not found")
-        else:
-            return BadRequestError("Object already exists. For updates use PUT.")
-        return Successful("Successful operation",json_dumps(js))
-
-
-    def delete(self, uuid, localId, riskCharacteristicName):
-        print "Delete operation of resource: riskCharacteristic"
-        try:
-            response=Context_VnwserviceUuid_VnwconstraintLocalidRiskcharacteristicRiskcharacteristicnameImpl.delete(uuid, localId, riskCharacteristicName)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            return Successful('Successful operation')
-
-
-    def get(self, uuid, localId, riskCharacteristicName):
-        print "Retrieve operation of resource: riskCharacteristic"
-        try:
-            response = Context_VnwserviceUuid_VnwconstraintLocalidRiskcharacteristicRiskcharacteristicnameImpl.get(uuid, localId, riskCharacteristicName)
-        except KeyError as inst:
-            return NotFoundError(inst.args[0] + " not found")
-        else:
-            js = response.json_serializer()
-            return Successful("Successful operation",json_dumps(js))
-
-
-#/restconf/config/Context/_vnwService/(\w+)/_servicePort/(\w+)/_extensions/
-class Context_VnwserviceUuid_ServiceportLocalid_ExtensionsMethodView(MethodView):
-
-    def get(self, uuid, localId):
+    def get(self, uuid, localId, extensionsSpecification):
         print "Retrieve operation of resource: _extensions"
         try:
-            response = Context_VnwserviceUuid_ServiceportLocalid_ExtensionsImpl.get(uuid, localId)
+            response = Context_VnwserviceUuid_VnwconstraintLocalid_ExtensionsExtensionsspecificationImpl.get(uuid, localId, extensionsSpecification)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_vnwService/(\w+)/_vnwConstraint/
+class Context_VnwserviceUuid_VnwconstraintMethodView(MethodView):
+
+    def get(self, uuid):
+        print "Retrieve operation of resource: _vnwConstraint"
+        try:
+            response = Context_VnwserviceUuid_VnwconstraintImpl.get(uuid)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+#/restconf/config/Context/_vnwService/
+class Context_VnwserviceMethodView(MethodView):
+
+    def get(self, ):
+        print "Retrieve operation of resource: _vnwService"
+        try:
+            response = Context_VnwserviceImpl.get()
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
@@ -1462,14 +1348,28 @@ class Context_VnwserviceUuidMethodView(MethodView):
             return Successful("Successful operation",json_dumps(js))
 
 
+#/restconf/config/Context/_vnwService/(\w+)/name/
+class Context_VnwserviceUuidNameMethodView(MethodView):
 
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_vnwConstraint/<localId>/costCharacteristic/<costAlgorithm>/", view_func = globals()["Context_VnwserviceUuid_VnwconstraintLocalidCostcharacteristicCostalgorithmMethodView"].as_view('"Context_VnwserviceUuid_VnwconstraintLocalidCostcharacteristicCostalgorithm"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
+    def get(self, uuid):
+        print "Retrieve operation of resource: name"
+        try:
+            response = Context_VnwserviceUuidNameImpl.get(uuid)
+        except KeyError as inst:
+            return NotFoundError(inst.args[0] + " not found")
+        else:
+            js = response.json_serializer()
+            return Successful("Successful operation",json_dumps(js))
+
+
+
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_vnwConstraint/<localId>/_extensions/", view_func = globals()["Context_VnwserviceUuid_VnwconstraintLocalid_ExtensionsMethodView"].as_view('"Context_VnwserviceUuid_VnwconstraintLocalid_Extensions"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_state/", view_func = globals()["Context_VnwserviceUuid_StateMethodView"].as_view('"Context_VnwserviceUuid_State"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/label/", view_func = globals()["Context_VnwserviceUuidLabelMethodView"].as_view('"Context_VnwserviceUuidLabel"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_extensions/<extensionsSpecification>/", view_func = globals()["Context_VnwserviceUuid_ExtensionsExtensionsspecificationMethodView"].as_view('"Context_VnwserviceUuid_ExtensionsExtensionsspecification"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_vnwConstraint/<localId>/latencyCharacteristic/<trafficPropertyName>/", view_func = globals()["Context_VnwserviceUuid_VnwconstraintLocalidLatencycharacteristicTrafficpropertynameMethodView"].as_view('"Context_VnwserviceUuid_VnwconstraintLocalidLatencycharacteristicTrafficpropertyname"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_schedule/", view_func = globals()["Context_VnwserviceUuid_ScheduleMethodView"].as_view('"Context_VnwserviceUuid_Schedule"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/operations/getVirtualNetworkServiceDetails/", view_func = globals()["GetvirtualnetworkservicedetailsMethodView"].as_view('"Getvirtualnetworkservicedetails"'+'"_api"'), methods=['POST'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/name/", view_func = globals()["Context_VnwserviceUuidNameMethodView"].as_view('"Context_VnwserviceUuidName"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/name/<valueName>/", view_func = globals()["Context_VnwserviceUuidNameValuenameMethodView"].as_view('"Context_VnwserviceUuidNameValuename"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_vnwConstraint/<localId>/latencyCharacteristic/", view_func = globals()["Context_VnwserviceUuid_VnwconstraintLocalidLatencycharacteristicMethodView"].as_view('"Context_VnwserviceUuid_VnwconstraintLocalidLatencycharacteristic"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/operations/createVirtualNetworkService/", view_func = globals()["CreatevirtualnetworkserviceMethodView"].as_view('"Createvirtualnetworkservice"'+'"_api"'), methods=['POST'])
@@ -1480,15 +1380,13 @@ getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_vnwConstraint/<localId>/", view_func = globals()["Context_VnwserviceUuid_VnwconstraintLocalidMethodView"].as_view('"Context_VnwserviceUuid_VnwconstraintLocalid"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_vnwConstraint/<localId>/costCharacteristic/", view_func = globals()["Context_VnwserviceUuid_VnwconstraintLocalidCostcharacteristicMethodView"].as_view('"Context_VnwserviceUuid_VnwconstraintLocalidCostcharacteristic"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/operations/deleteVirtualNetworkService/", view_func = globals()["DeletevirtualnetworkserviceMethodView"].as_view('"Deletevirtualnetworkservice"'+'"_api"'), methods=['POST'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_extensions/<extensionsSpecification>/", view_func = globals()["Context_VnwserviceUuid_ExtensionsExtensionsspecificationMethodView"].as_view('"Context_VnwserviceUuid_ExtensionsExtensionsspecification"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_servicePort/<localId>/", view_func = globals()["Context_VnwserviceUuid_ServiceportLocalidMethodView"].as_view('"Context_VnwserviceUuid_ServiceportLocalid"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_vnwConstraint/<localId>/costCharacteristic/<costName>/", view_func = globals()["Context_VnwserviceUuid_VnwconstraintLocalidCostcharacteristicCostnameMethodView"].as_view('"Context_VnwserviceUuid_VnwconstraintLocalidCostcharacteristicCostname"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_servicePort/<localId>/_extensions/<extensionsSpecification>/", view_func = globals()["Context_VnwserviceUuid_ServiceportLocalid_ExtensionsExtensionsspecificationMethodView"].as_view('"Context_VnwserviceUuid_ServiceportLocalid_ExtensionsExtensionsspecification"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_servicePort/<localId>/_extensions/", view_func = globals()["Context_VnwserviceUuid_ServiceportLocalid_ExtensionsMethodView"].as_view('"Context_VnwserviceUuid_ServiceportLocalid_Extensions"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_servicePort/", view_func = globals()["Context_VnwserviceUuid_ServiceportMethodView"].as_view('"Context_VnwserviceUuid_Serviceport"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_vnwConstraint/<localId>/_extensions/<extensionsSpecification>/", view_func = globals()["Context_VnwserviceUuid_VnwconstraintLocalid_ExtensionsExtensionsspecificationMethodView"].as_view('"Context_VnwserviceUuid_VnwconstraintLocalid_ExtensionsExtensionsspecification"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_vnwConstraint/", view_func = globals()["Context_VnwserviceUuid_VnwconstraintMethodView"].as_view('"Context_VnwserviceUuid_Vnwconstraint"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/", view_func = globals()["Context_VnwserviceMethodView"].as_view('"Context_Vnwservice"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_vnwConstraint/<localId>/_extensions/<extensionsSpecification>/", view_func = globals()["Context_VnwserviceUuid_VnwconstraintLocalid_ExtensionsExtensionsspecificationMethodView"].as_view('"Context_VnwserviceUuid_VnwconstraintLocalid_ExtensionsExtensionsspecification"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_servicePort/<localId>/_extensions/<extensionsSpecification>/", view_func = globals()["Context_VnwserviceUuid_ServiceportLocalid_ExtensionsExtensionsspecificationMethodView"].as_view('"Context_VnwserviceUuid_ServiceportLocalid_ExtensionsExtensionsspecification"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_vnwConstraint/<localId>/riskCharacteristic/", view_func = globals()["Context_VnwserviceUuid_VnwconstraintLocalidRiskcharacteristicMethodView"].as_view('"Context_VnwserviceUuid_VnwconstraintLocalidRiskcharacteristic"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_servicePort/", view_func = globals()["Context_VnwserviceUuid_ServiceportMethodView"].as_view('"Context_VnwserviceUuid_Serviceport"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_vnwConstraint/<localId>/latencyCharacteristic/<latencyValue>/", view_func = globals()["Context_VnwserviceUuid_VnwconstraintLocalidLatencycharacteristicLatencyvalueMethodView"].as_view('"Context_VnwserviceUuid_VnwconstraintLocalidLatencycharacteristicLatencyvalue"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_vnwConstraint/<localId>/riskCharacteristic/<riskCharacteristicName>/", view_func = globals()["Context_VnwserviceUuid_VnwconstraintLocalidRiskcharacteristicRiskcharacteristicnameMethodView"].as_view('"Context_VnwserviceUuid_VnwconstraintLocalidRiskcharacteristicRiskcharacteristicname"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/_servicePort/<localId>/_extensions/", view_func = globals()["Context_VnwserviceUuid_ServiceportLocalid_ExtensionsMethodView"].as_view('"Context_VnwserviceUuid_ServiceportLocalid_Extensions"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/", view_func = globals()["Context_VnwserviceUuidMethodView"].as_view('"Context_VnwserviceUuid"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_vnwService/<uuid>/name/", view_func = globals()["Context_VnwserviceUuidNameMethodView"].as_view('"Context_VnwserviceUuidName"'+'"_api"'), methods=['GET'])

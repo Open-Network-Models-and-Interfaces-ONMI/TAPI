@@ -4,7 +4,7 @@ from objects_common.arrayType import ArrayType
 class ExtensionsSpec(JsonObject):
 
     def __init__(self, json_struct=None):
-        self.extensionsTarget=ArrayType.factory(str)
+        self.extensionsSpecTarget=ArrayType.factory(str)
         self.extensionsSpecification=""
         super(ExtensionsSpec, self).__init__(json_struct)
 

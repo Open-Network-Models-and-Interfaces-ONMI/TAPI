@@ -1,11 +1,11 @@
 from operationalStatePac import OperationalStatePac
 from layerProtocol import LayerProtocol
-from resource import Resource
+from resourceSpec import ResourceSpec
 from objects_common.arrayType import ArrayType
 from objects_common.keyedArrayType import KeyedArrayType
 from objects_common.enumType import EnumType
 
-class ConnectionEndPoint(Resource):
+class ConnectionEndPoint(ResourceSpec):
 
     def __init__(self, json_struct=None):
         self.direction=Direction(0)

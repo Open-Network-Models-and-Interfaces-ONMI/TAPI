@@ -4,11 +4,11 @@ from nodeEdgePoint import NodeEdgePoint
 from transferCapacityPac import TransferCapacityPac
 from transferCostPac import TransferCostPac
 from transferIntegrityPac import TransferIntegrityPac
-from resource import Resource
+from resourceSpec import ResourceSpec
 from objects_common.arrayType import ArrayType
 from objects_common.keyedArrayType import KeyedArrayType
 
-class Node(Resource):
+class Node(ResourceSpec):
 
     def __init__(self, json_struct=None):
         self.layerProtocolName=ArrayType.factory(str)

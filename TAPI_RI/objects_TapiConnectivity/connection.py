@@ -1,11 +1,11 @@
 from route import Route
 from connectionPort import ConnectionPort
 from operationalStatePac import OperationalStatePac
-from resource import Resource
+from resourceSpec import ResourceSpec
 from objects_common.keyedArrayType import KeyedArrayType
 from objects_common.enumType import EnumType
 
-class Connection(Resource):
+class Connection(ResourceSpec):
 
     def __init__(self, json_struct=None):
         self.direction=Direction(0)

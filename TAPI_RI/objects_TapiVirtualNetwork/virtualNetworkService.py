@@ -2,11 +2,11 @@ from virtualNetworkServicePort import VirtualNetworkServicePort
 from timeRange import TimeRange
 from virtualNetworkConstraint import VirtualNetworkConstraint
 from adminStatePac import AdminStatePac
-from service import Service
+from serviceSpec import ServiceSpec
 from objects_common.arrayType import ArrayType
 from objects_common.keyedArrayType import KeyedArrayType
 
-class VirtualNetworkService(Service):
+class VirtualNetworkService(ServiceSpec):
 
     def __init__(self, json_struct=None):
         self._servicePort=KeyedArrayType(VirtualNetworkServicePort, 'localId')
