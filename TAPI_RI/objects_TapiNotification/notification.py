@@ -1,5 +1,5 @@
-from nameAndValueChange import NameAndValueChange
 from nameAndValue import NameAndValue
+from nameAndValueChange import NameAndValueChange
 from resourceSpec import ResourceSpec
 from objects_common.arrayType import ArrayType
 from objects_common.keyedArrayType import KeyedArrayType
@@ -8,10 +8,11 @@ from objects_common.enumType import EnumType
 class Notification(ResourceSpec):
 
     def __init__(self, json_struct=None):
-        self.targetObjectIdentifier=""
+        self.additionalInfo=KeyedArrayType(NameAndValue, 'valueName')
         self.layerProtocolName=Layerprotocolname(0)
         self.changedAttributes=ArrayType.factory(NameAndValueChange)
-        self.additionalInfo=KeyedArrayType(NameAndValue, 'valueName')
+        self.sequenceNumber=""
+        self.targetObjectIdentifier=""
         self.additionalText=""
         self.notificationType=Notificationtype(0)
         self.targetObjectType=Targetobjecttype(0)
@@ -27,8 +28,8 @@ class Layerprotocolname(EnumType):
     def __init__(self, initial_value):
         super(Layerprotocolname, self).__init__(initial_value)
 class Notificationtype(EnumType):
-    possible_values = ['OBJECT_CREATION', 'OBJECT_DELETION', 'ATTRIBUTE_VALUE_CHANGE', 'STATE_CHANGE']
-    range_end = 4
+    possible_values = ['OBJECT_CREATION', 'OBJECT_DELETION', 'ATTRIBUTE_VALUE_CHANGE']
+    range_end = 3
 
     def __init__(self, initial_value):
         super(Notificationtype, self).__init__(initial_value)

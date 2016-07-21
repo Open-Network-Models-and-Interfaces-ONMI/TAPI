@@ -8,5 +8,6 @@ class SubscriptionFilter(JsonObject):
         self.requestedLayerProtocols=ArrayType.factory(str)
         self.requestedObjectIdentifier=ArrayType.factory(str)
         self.requestedNotificationTypes=ArrayType.factory(str)
+        self.includeContent=False
         super(SubscriptionFilter, self).__init__(json_struct)
 
