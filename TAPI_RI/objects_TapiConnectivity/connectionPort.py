@@ -1,3 +1,4 @@
+from connectionEndPoint import ConnectionEndPoint
 from localClass import LocalClass
 from objects_common.enumType import EnumType
 
@@ -5,7 +6,7 @@ class ConnectionPort(LocalClass):
 
     def __init__(self, json_struct=None):
         self.direction=Direction(0)
-        self._connectionEndPoint=""
+        self._connectionEndPoint=ConnectionEndPoint() #import
         self.role=Role(0)
         super(ConnectionPort, self).__init__(json_struct)
 

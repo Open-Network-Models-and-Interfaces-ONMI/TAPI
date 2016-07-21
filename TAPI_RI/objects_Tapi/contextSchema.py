@@ -1,11 +1,13 @@
-from resource import Resource
-from service import Service
+from resourceSpec import ResourceSpec
+from serviceSpec import ServiceSpec
+from _serviceEndPointSchema import _serviceEndPointSchema
 from globalClass import GlobalClass
 from objects_common.keyedArrayType import KeyedArrayType
+
 from objects_TapiTopology._topologySchema import _topologySchema
+from objects_TapiTopology._nwTopologyServiceSchema import _nwTopologyServiceSchema
 from objects_TapiConnectivity._connectivityServiceSchema import _connectivityServiceSchema
 from objects_TapiConnectivity._connectionSchema import _connectionSchema
-from objects_TapiConnectivity._serviceEndPointSchema import _serviceEndPointSchema
 from objects_TapiNotification.notification import Notification
 from objects_TapiNotification.notificationSubscriptionService import NotificationSubscriptionService
 from objects_TapiVirtualNetwork.virtualNetworkService import VirtualNetworkService
@@ -22,6 +24,7 @@ class ContextSchema(GlobalClass):
         self._notifSubscription=KeyedArrayType(NotificationSubscriptionService, 'uuid')
         self._serviceEndPoint=KeyedArrayType(_serviceEndPointSchema, 'uuid')
         self._pathCompService=KeyedArrayType(_pathCompServiceSchema, 'uuid')
+        self._nwTopologyService=KeyedArrayType(_nwTopologyServiceSchema, 'uuid') #import
         self._connectivityService=KeyedArrayType(_connectivityServiceSchema, 'uuid')
         self._path=KeyedArrayType(_pathSchema, 'uuid')
         super(ContextSchema, self).__init__(json_struct)

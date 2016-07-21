@@ -7,11 +7,11 @@ from transferCostPac import TransferCostPac
 from riskParameterPac import RiskParameterPac
 from transferTimingPac import TransferTimingPac
 from validationPac import ValidationPac
-from resource import Resource
+from resourceSpec import ResourceSpec
 from objects_common.arrayType import ArrayType
 from objects_common.keyedArrayType import KeyedArrayType
 
-class Link(Resource):
+class Link(ResourceSpec):
 
     def __init__(self, json_struct=None):
         self.direction=""

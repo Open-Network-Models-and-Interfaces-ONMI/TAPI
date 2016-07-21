@@ -2,12 +2,12 @@ from connectivityServicePort import ConnectivityServicePort
 from timeRange import TimeRange
 from adminStatePac import AdminStatePac
 from connectivityConstraint import ConnectivityConstraint
-from service import Service
+from serviceSpec import ServiceSpec
 from objects_common.arrayType import ArrayType
 from objects_common.keyedArrayType import KeyedArrayType
 from objects_common.enumType import EnumType
 
-class ConnectivityService(Service):
+class ConnectivityService(ServiceSpec):
 
     def __init__(self, json_struct=None):
         self._connection=ArrayType.factory(str)

@@ -2,16 +2,15 @@ from link import Link
 from nameAndValue import NameAndValue
 from node import Node
 from extensionsSpec import ExtensionsSpec
-from resource import Resource
+from resourceSpec import ResourceSpec
 from objects_common.arrayType import ArrayType
 from objects_common.keyedArrayType import KeyedArrayType
 
-class _topologySchema(Resource):
+class _topologySchema(ResourceSpec):
 
     def __init__(self, json_struct=None):
         self.layerProtocolName=ArrayType.factory(str)
         self.uuid=""
-        self.resourceSpecification=""
         self._link=KeyedArrayType(Link, 'uuid')
         self.label=KeyedArrayType(NameAndValue, 'valueName')
         self._node=KeyedArrayType(Node, 'uuid')

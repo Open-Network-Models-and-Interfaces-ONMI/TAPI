@@ -1,9 +1,9 @@
 from routingConstraint import RoutingConstraint
 from teLink import TeLink
-from resource import Resource
+from resourceSpec import ResourceSpec
 from objects_common.keyedArrayType import KeyedArrayType
 
-class Path(Resource):
+class Path(ResourceSpec):
 
     def __init__(self, json_struct=None):
         self._routingConstraint=RoutingConstraint() #import

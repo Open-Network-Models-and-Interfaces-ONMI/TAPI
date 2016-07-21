@@ -4,12 +4,12 @@ from adminStatePac import AdminStatePac
 from extensionsSpec import ExtensionsSpec
 from connectivityConstraint import ConnectivityConstraint
 from timeRange import TimeRange
-from service import Service
+from serviceSpec import ServiceSpec
 from objects_common.arrayType import ArrayType
 from objects_common.keyedArrayType import KeyedArrayType
 from objects_common.enumType import EnumType
 
-class _connectivityServiceSchema(Service):
+class _connectivityServiceSchema(ServiceSpec):
 
     def __init__(self, json_struct=None):
         self._connection=ArrayType.factory(str)
@@ -20,7 +20,6 @@ class _connectivityServiceSchema(Service):
         self.name=KeyedArrayType(NameAndValue, 'valueName')
         self._state=AdminStatePac() #import
         self.label=KeyedArrayType(NameAndValue, 'valueName')
-        self.serviceSpecification=""
         self._extensions=KeyedArrayType(ExtensionsSpec, 'extensionsSpecification')
         self._connConstraint=ConnectivityConstraint() #import
         self._schedule=TimeRange() #import

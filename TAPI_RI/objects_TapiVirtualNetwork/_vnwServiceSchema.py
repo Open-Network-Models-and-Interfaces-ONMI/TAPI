@@ -4,11 +4,11 @@ from virtualNetworkConstraint import VirtualNetworkConstraint
 from adminStatePac import AdminStatePac
 from extensionsSpec import ExtensionsSpec
 from timeRange import TimeRange
-from service import Service
+from serviceSpec import ServiceSpec
 from objects_common.arrayType import ArrayType
 from objects_common.keyedArrayType import KeyedArrayType
 
-class _vnwServiceSchema(Service):
+class _vnwServiceSchema(ServiceSpec):
 
     def __init__(self, json_struct=None):
         self._servicePort=KeyedArrayType(VirtualNetworkServicePort, 'localId')
@@ -19,7 +19,6 @@ class _vnwServiceSchema(Service):
         self._state=AdminStatePac() #import
         self._topology=""
         self.label=KeyedArrayType(NameAndValue, 'valueName')
-        self.serviceSpecification=""
         self._extensions=KeyedArrayType(ExtensionsSpec, 'extensionsSpecification')
         self._schedule=TimeRange() #import
         super(_vnwServiceSchema, self).__init__(json_struct)

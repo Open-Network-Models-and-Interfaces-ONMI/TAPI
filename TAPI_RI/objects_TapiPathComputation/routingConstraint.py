@@ -1,8 +1,7 @@
 from teLink import TeLink
 from capacity import Capacity
 from costCharacteristic import CostCharacteristic
-from queuingLatency import QueuingLatency
-from riskCharacteristic import RiskCharacteristic
+from latencyCharacteristic import LatencyCharacteristic
 from localClass import LocalClass
 from objects_common.arrayType import ArrayType
 from objects_common.keyedArrayType import KeyedArrayType
@@ -14,11 +13,10 @@ class RoutingConstraint(LocalClass):
         self._excludePath=KeyedArrayType(TeLink, 'localId')
         self._includePath=KeyedArrayType(TeLink, 'localId')
         self.requestedCapacity=Capacity() #import
-        self.costCharacteristic=KeyedArrayType(CostCharacteristic, 'costAlgorithm')
+        self.costCharacteristic=KeyedArrayType(CostCharacteristic, 'costName')
         self._avoidTopology=ArrayType.factory(str)
-        self.latencyCharacteristic=KeyedArrayType(QueuingLatency, 'latencyValue')
+        self.latencyCharacteristic=KeyedArrayType(LatencyCharacteristic, 'trafficPropertyName')
         self.serviceLevel=""
         self._includeTopology=ArrayType.factory(str)
-        self.riskCharacteristic=KeyedArrayType(RiskCharacteristic, 'riskCharacteristicName')
         super(RoutingConstraint, self).__init__(json_struct)
 

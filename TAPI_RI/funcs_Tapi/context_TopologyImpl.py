@@ -9,11 +9,6 @@ class Context_TopologyImpl:
     def get(cls, ):
         print 'handling get'
         if be.Context:
-            array_cs=[]
-            for cs in be.Context._topology:
-                uri="http://127.0.0.1:8080/restconf/config/Context/_topology/"+be.Context._topology[cs].uuid+"/"
-                print uri
-                array_cs.append(uri)
-            return array_cs
+            return be.Context
         else:
             raise KeyError('')

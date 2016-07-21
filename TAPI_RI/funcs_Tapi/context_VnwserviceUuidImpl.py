@@ -6,16 +6,16 @@ import backend.backend as be
 class Context_VnwserviceUuidImpl:
 
     @classmethod
-    def put(cls, uuid, service):
-        print str(service)
+    def put(cls, uuid, servicespec):
+        print str(servicespec)
         print 'handling put'
-        be.Context._vnwService[uuid] = service
+        be.Context._vnwService[uuid] = servicespec
 
     @classmethod
-    def post(cls, uuid, service):
-        print str(service)
+    def post(cls, uuid, servicespec):
+        print str(servicespec)
         print 'handling post'
-        be.Context._vnwService[uuid] = service
+        be.Context._vnwService[uuid] = servicespec
 
     @classmethod
     def delete(cls, uuid):

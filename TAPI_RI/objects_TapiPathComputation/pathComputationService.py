@@ -2,11 +2,11 @@ from routingConstraint import RoutingConstraint
 from pathCompServicePort import PathCompServicePort
 from pathObjectiveFunction import PathObjectiveFunction
 from pathOptimizationConstraint import PathOptimizationConstraint
-from service import Service
+from serviceSpec import ServiceSpec
 from objects_common.arrayType import ArrayType
 from objects_common.keyedArrayType import KeyedArrayType
 
-class PathComputationService(Service):
+class PathComputationService(ServiceSpec):
 
     def __init__(self, json_struct=None):
         self._routingConstraint=RoutingConstraint() #import

@@ -1,11 +1,11 @@
 from nameAndValueChange import NameAndValueChange
 from nameAndValue import NameAndValue
-from resource import Resource
+from resourceSpec import ResourceSpec
 from objects_common.arrayType import ArrayType
 from objects_common.keyedArrayType import KeyedArrayType
 from objects_common.enumType import EnumType
 
-class Notification(Resource):
+class Notification(ResourceSpec):
 
     def __init__(self, json_struct=None):
         self.targetObjectIdentifier=""

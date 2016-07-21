@@ -3,18 +3,17 @@ from connectionPort import ConnectionPort
 from operationalStatePac import OperationalStatePac
 from nameAndValue import NameAndValue
 from extensionsSpec import ExtensionsSpec
-from resource import Resource
+from resourceSpec import ResourceSpec
 from objects_common.keyedArrayType import KeyedArrayType
 from objects_common.enumType import EnumType
 
-class _connectionSchema(Resource):
+class _connectionSchema(ResourceSpec):
 
     def __init__(self, json_struct=None):
         self.direction=Direction(0)
         self.layerProtocolName=Layerprotocolname(0)
         self._route=KeyedArrayType(Route, 'localId')
         self.uuid=""
-        self.resourceSpecification=""
         self._connectionPort=KeyedArrayType(ConnectionPort, 'localId')
         self._state=OperationalStatePac() #import
         self.label=KeyedArrayType(NameAndValue, 'valueName')
