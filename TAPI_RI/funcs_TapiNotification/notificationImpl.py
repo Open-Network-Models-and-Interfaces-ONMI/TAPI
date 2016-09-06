@@ -21,5 +21,5 @@ class NotificationImpl (threading.Thread):
         while self.event:
             time.sleep(1)
 
-        payload = json.dumps(Notification({"callId":"Example_Notification"}).json_serializer()).encode('utf8')
+        payload = json.dumps(Notification({"uuid":"Example_Notification"}).json_serializer()).encode('utf8')
         self.handler.sendMessage(payload, False)
