@@ -1700,7 +1700,7 @@ class Context_ServiceendpointMethodView(MethodView):
         except KeyError as inst:
             return NotFoundError(inst.args[0] + " not found")
         else:
-            js = response.json_serializer()
+            js = response
             return Successful("Successful operation",json_dumps(js))
 
 

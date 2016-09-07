@@ -14,6 +14,7 @@ class Context_ConnectivityserviceImpl:
                 uri="http://127.0.0.1:8080/restconf/config/Context/_connectivityService/"+be.Context._connectivityService[cs].uuid+"/"
                 print uri
                 array_cs.append(uri)
-            return array_cs
+            json = { 'itemlist' : array_cs }
+            return json
         else:
             raise KeyError('')
