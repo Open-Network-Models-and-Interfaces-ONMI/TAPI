@@ -11,7 +11,7 @@ class Context_ConnectivityserviceImpl:
         if be.Context:
             array_cs=[]
             for cs in be.Context._connectivityService:
-                uri="http://127.0.0.1:8080/restconf/config/Context/_connectivityService/"+be.Context._connectivityService[cs].uuid+"/"
+                uri="restconf/config/Context/_connectivityService/"+be.Context._connectivityService[cs].uuid+"/"
                 print uri
                 array_cs.append(uri)
             json = { 'itemlist' : array_cs }
