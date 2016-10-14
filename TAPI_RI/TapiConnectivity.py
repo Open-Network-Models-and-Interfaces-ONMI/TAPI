@@ -5,6 +5,7 @@ from objects_common.keyedArrayType import KeyedArrayKeyError
 
 import base64
 import re
+import random
 
 # BACKEND FUNCTIONS
 from funcs_TapiConnectivity.context_ConnectionUuid_StateImpl import Context_ConnectionUuid_StateImpl
@@ -201,7 +202,8 @@ def create_instance(klass, json_struct, id=None):
                               inst.args[2])
     else:
         # Check if the id given in the URL matches the id given in the body
-        if id != None and id[0] != getattr(new_object, id[1]):
+        print getattr(new_object, id[1])
+        if id != None and id[0] != getattr(new_object, id[1]) and getattr(new_object, id[1]) != ""  :
             return BadRequestError(id[1] + " in body not matching " + id[1] + " in URL")
         else:
             return new_object
@@ -1191,6 +1193,25 @@ class Context_ConnectivityserviceMethodView(MethodView):
             js = response
             return Successful("Successful operation",json_dumps(js))
 
+    def post(self):
+        print "Create operation of resource: _connectivityService"
+        json_struct = request.get_json() #json parser.
+        uuid=str(random.randint(1,256))
+        print "CREATING uuid" + uuid
+        new_object = create_instance(_connectivityServiceSchema, json_struct, (uuid,'uuid'))
+        if isinstance(new_object, BadRequestError):
+            return new_object
+        elif isinstance(new_object, NotFoundError):
+            return new_object
+        else:
+            try:
+                print "Sending UUID" + uuid
+                Context_ConnectivityserviceImpl.post(uuid, new_object)
+                js=new_object.json_serializer()
+            except KeyError as inst:
+                return NotFoundError(inst.args[0] + " not found")
+
+        return Successful("Successful operation",json_dumps(js))
 
 #/restconf/config/Context/_connection/(\w+)/name/(\w+)/
 class Context_ConnectionUuidNameValuenameMethodView(MethodView):
@@ -1874,7 +1895,7 @@ getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connection/<uuid>/_extensions/", view_func = globals()["Context_ConnectionUuid_ExtensionsMethodView"].as_view('"Context_ConnectionUuid_Extensions"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/operations/createConnectivityService/", view_func = globals()["CreateconnectivityserviceMethodView"].as_view('"Createconnectivityservice"'+'"_api"'), methods=['POST'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connection/<uuid>/_connectionPort/<localId>/_connectionEndPoint/label/<valueName>/", view_func = globals()["Context_ConnectionUuid_ConnectionportLocalid_ConnectionendpointLabelValuenameMethodView"].as_view('"Context_ConnectionUuid_ConnectionportLocalid_ConnectionendpointLabelValuename"'+'"_api"'), methods=['GET'])
-getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connectivityService/", view_func = globals()["Context_ConnectivityserviceMethodView"].as_view('"Context_Connectivityservice"'+'"_api"'), methods=['GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connectivityService/", view_func = globals()["Context_ConnectivityserviceMethodView"].as_view('"Context_Connectivityservice"'+'"_api"'), methods=['GET','POST'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connection/<uuid>/name/<valueName>/", view_func = globals()["Context_ConnectionUuidNameValuenameMethodView"].as_view('"Context_ConnectionUuidNameValuename"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connection/<uuid>/_connectionPort/<localId>/_connectionEndPoint/", view_func = globals()["Context_ConnectionUuid_ConnectionportLocalid_ConnectionendpointMethodView"].as_view('"Context_ConnectionUuid_ConnectionportLocalid_Connectionendpoint"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connection/<uuid>/_route/<localId>/_extensions/", view_func = globals()["Context_ConnectionUuid_RouteLocalid_ExtensionsMethodView"].as_view('"Context_ConnectionUuid_RouteLocalid_Extensions"'+'"_api"'), methods=['GET'])
