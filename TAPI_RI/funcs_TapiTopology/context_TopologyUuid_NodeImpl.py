@@ -11,7 +11,7 @@ class Context_TopologyUuid_NodeImpl:
         if uuid in be.Context._topology:
             array_cs=[]
             for cs in be.Context._topology[uuid]._node:
-                uri="http://127.0.0.1:8080/restconf/config/Context/_topology/"+uuid+"/_node/"+be.Context._topology[uuid]._node[cs].uuid+"/"
+                uri="restconf/config/Context/_topology/"+uuid+"/_node/"+be.Context._topology[uuid]._node[cs].uuid+"/"
                 print uri
                 array_cs.append(uri)
             json = { 'itemlist' : array_cs }

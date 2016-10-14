@@ -37,7 +37,7 @@ curl -X GET -H "Content-Type: application/json" http://127.0.0.1:8080/restconf/c
 curl -X GET -H "Content-Type: application/json" http://127.0.0.1:8080/restconf/config/Context/_serviceEndPoint/se2/
 
 #Create Connectivity Service
-curl -X POST -H "Content-Type: application/json" http://127.0.0.1:8080/restconf/config/Context/_connectivityService/cs1/ -d'{"uuid":"cs1", "_connConstraint":{"serviceType":"POINT_TO_POINT_CONNECTIVITY", "serviceLayer":["OCH"] }, "_servicePort":[ { "localId":"sp1", "serviceLayer":"OCH" , "direction":"BIDIRECTIONAL", "role":"SYMMETRIC", "_serviceEndPoint":"http://127.0.0.1:8080/restconf/config/Context/_serviceEndPoint/se1"}, { "localId":"sp2", "serviceLayer":"OCH" , "direction":"BIDIRECTIONAL", "role":"SYMMETRIC", "_serviceEndPoint":"http://127.0.0.1:8080/restconf/config/Context/_serviceEndPoint/se2"} ] }'
+curl -X POST -H "Content-Type: application/json" http://127.0.0.1:8080/restconf/config/Context/_connectivityService/ -d'{ "_connConstraint":{"serviceType":"POINT_TO_POINT_CONNECTIVITY", "serviceLayer":["OCH"] }, "_servicePort":[ { "localId":"sp1", "serviceLayer":"OCH" , "direction":"BIDIRECTIONAL", "role":"SYMMETRIC", "_serviceEndPoint":"http://127.0.0.1:8080/restconf/config/Context/_serviceEndPoint/se1"}, { "localId":"sp2", "serviceLayer":"OCH" , "direction":"BIDIRECTIONAL", "role":"SYMMETRIC", "_serviceEndPoint":"http://127.0.0.1:8080/restconf/config/Context/_serviceEndPoint/se2"} ] }'
 
 #Get Connectivity Services
 curl -X GET -H "Content-Type: application/json" http://127.0.0.1:8080/restconf/config/Context/_connectivityService/
