@@ -8,7 +8,7 @@ class LifecycleStatePac(JsonObject):
         super(LifecycleStatePac, self).__init__(json_struct)
 
 class Lifecyclestate(EnumType):
-    possible_values = ['PLANNED', 'POTENTIAL', 'INSTALLED', 'PENDING_REMOVAL']
+    possible_values = ['PLANNED', 'POTENTIAL', 'INSTALLED', 'RESTORING', 'PENDING_REMOVAL']
     range_end = 4
 
     def __init__(self, initial_value):
