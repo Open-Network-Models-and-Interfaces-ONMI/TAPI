@@ -19,6 +19,7 @@ class ConnectivityConstraint(LocalClass):
         self.serviceLevel=""
         self.latencyCharacteristic=KeyedArrayType(LatencyCharacteristic, 'trafficPropertyName')
         self._diversityExclusion=ArrayType.factory(str)
+        self._corouteInclusion=ArrayType.factory(str)
         self._includeTopology=ArrayType.factory(str)
         self._excludePath=KeyedArrayType(TeLink, 'localId')
         super(ConnectivityConstraint, self).__init__(json_struct)

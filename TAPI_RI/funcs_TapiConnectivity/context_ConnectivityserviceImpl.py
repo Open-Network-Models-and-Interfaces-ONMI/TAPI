@@ -34,7 +34,7 @@ class Context_ConnectivityserviceImpl:
         print 'Creating connection...' + conn_uuid
         
         connection = Connection( json_struct={'uuid':conn_uuid, 'direction': 'BIDIRECTIONAL'})
-        connection.layerProtocolName = Layerprotocolname('OCH')
+        connection.layerProtocolName = Layerprotocolname('ETH')
         
         nep1_url = 'restconf/config/Context/_topology/_node/node1/_ownedNodeEdgePoint/pe113/'
         nep2_url = 'restconf/config/Context/_topology/_node/node1/_ownedNodeEdgePoint/pe11/'
