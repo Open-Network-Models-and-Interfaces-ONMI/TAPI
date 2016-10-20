@@ -21,6 +21,7 @@ from funcs_TapiConnectivity.context_ConnectionUuid_ExtensionsExtensionsspecifica
 from funcs_TapiConnectivity.context_ConnectionUuid_ConnectionportLocalid_ConnectionendpointLabelImpl import Context_ConnectionUuid_ConnectionportLocalid_ConnectionendpointLabelImpl
 from funcs_TapiConnectivity.context_ConnectivityserviceUuid_StateImpl import Context_ConnectivityserviceUuid_StateImpl
 from funcs_TapiConnectivity.getconnectivityservicelistImpl import GetconnectivityservicelistImpl
+from funcs_TapiConnectivity.getconnectionlistImpl import GetconnectionlistImpl
 from funcs_TapiConnectivity.deleteconnectivityserviceImpl import DeleteconnectivityserviceImpl
 from funcs_TapiConnectivity.context_ConnectionUuid_ConnectionportLocalid_Connectionendpoint_ExtensionsImpl import Context_ConnectionUuid_ConnectionportLocalid_Connectionendpoint_ExtensionsImpl
 from funcs_TapiConnectivity.context_ConnectivityserviceUuid_ServiceportLocalid_ExtensionsImpl import Context_ConnectivityserviceUuid_ServiceportLocalid_ExtensionsImpl
@@ -130,6 +131,7 @@ from objects_TapiConnectivity.nodeEdgePoint import NodeEdgePoint
 from objects_TapiConnectivity.createConnectivityServiceRPCInputSchema import CreateConnectivityServiceRPCInputSchema
 from objects_TapiConnectivity.lifecycleStatePac import LifecycleStatePac
 from objects_TapiConnectivity.validationPac import ValidationPac
+from objects_TapiConnectivity.getConnectionListRPCOutputSchema import GetConnectionListRPCOutputSchema
 from objects_TapiConnectivity.getConnectivityServiceListRPCOutputSchema import GetConnectivityServiceListRPCOutputSchema
 from objects_TapiConnectivity.getConnectionDetailsRPCInputSchema import GetConnectionDetailsRPCInputSchema
 from objects_TapiConnectivity.createConnectivityServiceRPCOutputSchema import CreateConnectivityServiceRPCOutputSchema
@@ -586,6 +588,16 @@ class Context_ConnectivityserviceUuid_StateMethodView(MethodView):
         else:
             js = response.json_serializer()
             return Successful("Successful operation",json_dumps(js))
+
+#/restconf/operations/getConnectionList/
+class GetconnectionlistMethodView(MethodView):
+
+    def post(self, ):
+        print "Create operation of resource: getConnectionList"
+        json_struct = request.get_json() #json parser.
+        new_object = (json_struct) #It creates an object instance from the json_input data.
+        response = GetconnectionlistImpl.post( new_object)
+        return Successful('Successful operation','{"description":"Create operation of resource: getConnectionList"}')
 
 
 #/restconf/operations/getConnectivityServiceList/
@@ -1866,6 +1878,7 @@ getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connection/<uuid>/_extensions/<extensionsSpecification>/", view_func = globals()["Context_ConnectionUuid_ExtensionsExtensionsspecificationMethodView"].as_view('"Context_ConnectionUuid_ExtensionsExtensionsspecification"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connection/<uuid>/_connectionPort/<localId>/_connectionEndPoint/label/", view_func = globals()["Context_ConnectionUuid_ConnectionportLocalid_ConnectionendpointLabelMethodView"].as_view('"Context_ConnectionUuid_ConnectionportLocalid_ConnectionendpointLabel"'+'"_api"'), methods=['GET'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connectivityService/<uuid>/_state/", view_func = globals()["Context_ConnectivityserviceUuid_StateMethodView"].as_view('"Context_ConnectivityserviceUuid_State"'+'"_api"'), methods=['PUT', 'POST', 'DELETE', 'GET'])
+getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/operations/getConnectionList/", view_func = globals()["GetconnectionlistMethodView"].as_view('"Getconnectionlist"'+'"_api"'), methods=['POST'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/operations/getConnectivityServiceList/", view_func = globals()["GetconnectivityservicelistMethodView"].as_view('"Getconnectivityservicelist"'+'"_api"'), methods=['POST'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/operations/deleteConnectivityService/", view_func = globals()["DeleteconnectivityserviceMethodView"].as_view('"Deleteconnectivityservice"'+'"_api"'), methods=['POST'])
 getattr(sys.modules[__name__], __name__).add_url_rule("/restconf/config/Context/_connection/<uuid>/_connectionPort/<localId>/_connectionEndPoint/_extensions/", view_func = globals()["Context_ConnectionUuid_ConnectionportLocalid_Connectionendpoint_ExtensionsMethodView"].as_view('"Context_ConnectionUuid_ConnectionportLocalid_Connectionendpoint_Extensions"'+'"_api"'), methods=['GET'])
