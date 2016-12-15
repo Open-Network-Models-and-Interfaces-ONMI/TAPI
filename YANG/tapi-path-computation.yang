@@ -1,74 +1,84 @@
-module TapiPathComputation {
+module tapi-path-computation {
     namespace "urn:onf:params:xml:ns:yang:TapiPathComputation";
-    prefix TapiPathComputation;
-    import TapiTopology {
-        prefix TapiTopology;
+    prefix tapi-abc;
+    import tapi-topology {
+        prefix tapi-topology;
     }
-    import Tapi {
-        prefix Tapi;
+    import tapi-common {
+        prefix tapi-common;
     }
-    organization "ONF (Open Networking Foundation) IMP Working Group";
-    contact "WG Web: <https://www.opennetworking.org/technical-communities/areas/services/>
-        WG List: <mailto: <wg list name>@opennetworking.org>
-        WG Chair: your-WG-chair
-                <mailto:your-WG-chair@example.com>
-        Editor: your-name
-                <mailto:your-email@example.com>";
+    organization "Open Networking Foundation (ONF) / Open Transport Working Group(OTWG) / Transport API (TAPI) Project";
+    contact "
+        WG Web: TAPI SDK Project <http://opensourcesdn.org/projects/project-snowmass/>
+        WG List: TAPI Discussion list <mailto: transport-api@login.opennetworking.org>,
+        WG Chair: Karthik Sethuraman <mailto:karthik.sethuraman@necam.com>,
+        Editor: Ricard Vilalta <mailto:ricard.vilalta@cttc.es>";
     description "none";
-    revision 2016-07-19 {
-        description "Latest revision";
-        reference "RFC 6020 and RFC 6087";
+    revision 2016-12-15 {
+        description "TAPI SDK 1.1.alpha";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 6020 and RFC 6087";
     }
     augment "/Tapi:Context/Tapi:_path" {
-        uses Path;
+        uses path;
         description "none";
     }
     augment "/Tapi:Context/Tapi:_pathCompService" {
-        uses PathComputationService;
+        uses path-computation-service;
         description "none";
     }
     /***********************
-    * package ObjectClasses
+    * package object-classes
     **********************/ 
-        grouping Path {
-            list _telink {
-                key 'localId';
+        list path {
+            key 'uuid';
+            uses path;
+            description "none";
+        }
+        grouping path {
+            list telink {
+                key 'local-id';
                 config false;
-                uses TapiTopology:TeLink;
+                min-elements 1;
+                uses tapi-topology:te-link;
                 description "none";
             }
-            container _routingConstraint {
+            container routing-constraint {
                 config false;
-                uses RoutingConstraint;
+                uses routing-constraint;
                 description "none";
             }
-            uses Tapi:ResourceSpec;
+            uses tapi-common:resource-spec;
             description "Path is described by an ordered list of TE Links. A TE Link is defined by a pair of Node/NodeEdgePoint IDs. A Connection is realized by concatenating link resources (associated with a Link) and the lower-level connections (cross-connections) in the different nodes";
         }
-        grouping PathCompServicePort {
-            leaf _serviceEndPoint {
+        list path-comp-service-port {
+            key 'local-id';
+            uses path-comp-service-port;
+            description "none";
+        }
+        grouping path-comp-service-port {
+            leaf service-end-point {
                 type leafref {
-                    path '/Tapi:Context/Tapi:_serviceEndPoint/Tapi:uuid';
+                    path '/tapi:context/tapi:service-end-point/tapi:uuid';
                 }
                 config false;
                 description "none";
             }
             leaf role {
-                type Tapi:PortRole;
+                type tapi-common:port-role;
                 config false;
                 description "Each EP of the FC has a role (e.g., working, protection, protected, symmetric, hub, spoke, leaf, root)  in the context of the FC with respect to the FC function. ";
             }
             leaf direction {
-                type Tapi:PortDirection;
+                type tapi-common:port-direction;
                 config false;
                 description "The orientation of defined flow at the EndPoint.";
             }
-            leaf serviceLayer {
-                type Tapi:LayerProtocolName;
+            leaf service-layer {
+                type tapi-common:layer-protocol-name;
                 config false;
                 description "none";
             }
-            uses Tapi:LocalClass;
+            uses tapi-common:local-class;
             description "The association of the FC to LTPs is made via EndPoints.
                 The EndPoint (EP) object class models the access to the FC function. 
                 The traffic forwarding between the associated EPs of the FC depends upon the type of FC and may be associated with FcSwitch object instances.  
@@ -77,199 +87,218 @@ module TapiPathComputation {
                 The EP replaces the Protection Unit of a traditional protection model. 
                 The ForwadingConstruct can be considered as a component and the EndPoint as a Port on that component";
         }
-        grouping PathComputationService {
-            leaf-list _path {
+        container path-computation-service {
+            uses path-computation-service;
+            description "none";
+        }
+        grouping path-computation-service {
+            leaf-list path {
                 type leafref {
-                    path '/Tapi:Context/Tapi:_path/Tapi:uuid';
+                    path '/tapi:context/tapi:path/tapi:uuid';
                 }
                 config false;
+                min-elements 1;
                 description "none";
             }
-            list _servicePort {
-                key 'localId';
-                uses PathCompServicePort;
+            list service-port {
+                key 'local-id';
+                min-elements 2;
+                max-elements 2;
+                uses path-comp-service-port;
                 description "none";
             }
-            container _routingConstraint {
-                uses RoutingConstraint;
+            container routing-constraint {
+                uses routing-constraint;
                 description "none";
             }
-            container _objectiveFunction {
-                uses PathObjectiveFunction;
+            container objective-function {
+                uses path-objective-function;
                 description "none";
             }
-            container _optimizationConstraint {
-                uses PathOptimizationConstraint;
+            container optimization-constraint {
+                uses path-optimization-constraint;
                 description "none";
             }
-            uses Tapi:ServiceSpec;
+            uses tapi-common:service-spec;
             description "none";
         }
-        grouping PathObjectiveFunction {
-            leaf bandwidthOptimization {
-                type Tapi:DirectiveValue;
-                config false;
-                description "none";
-            }
-            leaf concurrentPaths {
-                type Tapi:DirectiveValue;
-                config false;
-                description "none";
-            }
-            leaf costOptimization {
-                type Tapi:DirectiveValue;
-                config false;
-                description "none";
-            }
-            leaf linkUtilization {
-                type Tapi:DirectiveValue;
-                config false;
-                description "none";
-            }
-            leaf resourceSharing {
-                type Tapi:DirectiveValue;
-                config false;
-                description "none";
-            }
-            uses Tapi:LocalClass;
+        container path-objective-function {
+            uses path-objective-function;
             description "none";
         }
-        grouping PathOptimizationConstraint {
-            leaf trafficInterruption {
-                type Tapi:DirectiveValue;
+        grouping path-objective-function {
+            leaf bandwidth-optimization {
+                type tapi-common:directive-value;
                 config false;
                 description "none";
             }
-            uses Tapi:LocalClass;
+            leaf concurrent-paths {
+                type tapi-common:directive-value;
+                config false;
+                description "none";
+            }
+            leaf cost-optimization {
+                type tapi-common:directive-value;
+                config false;
+                description "none";
+            }
+            leaf link-utilization {
+                type tapi-common:directive-value;
+                config false;
+                description "none";
+            }
+            leaf resource-sharing {
+                type tapi-common:directive-value;
+                config false;
+                description "none";
+            }
+            uses tapi-common:local-class;
             description "none";
         }
-        grouping RoutingConstraint {
-            container requestedCapacity {
+        container path-optimization-constraint {
+            uses path-optimization-constraint;
+            description "none";
+        }
+        grouping path-optimization-constraint {
+            leaf traffic-interruption {
+                type tapi-common:directive-value;
                 config false;
-                uses TapiTopology:Capacity;
                 description "none";
             }
-            leaf serviceLevel {
+            uses tapi-common:local-class;
+            description "none";
+        }
+        container routing-constraint {
+            uses routing-constraint;
+            description "none";
+        }
+        grouping routing-constraint {
+            container requested-capacity {
+                config false;
+                uses tapi-topology:capacity;
+                description "none";
+            }
+            leaf service-level {
                 type string;
                 config false;
                 description "An abstract value the meaning of which is mutually agreed – typically represents metrics such as - Class of service, priority, resiliency, availability";
             }
-            leaf-list pathLayer {
-                type Tapi:LayerProtocolName;
+            leaf-list path-layer {
+                type tapi-common:layer-protocol-name;
                 config false;
                 description "none";
             }
-            list costCharacteristic {
-                key 'costName costValue costAlgorithm';
+            list cost-characteristic {
+                key 'cost-name cost-value cost-algorithm';
                 config false;
-                uses TapiTopology:CostCharacteristic;
+                uses tapi-topology:cost-characteristic;
                 description "The list of costs where each cost relates to some aspect of the TopologicalEntity.";
             }
-            list latencyCharacteristic {
-                key 'trafficPropertyName trafficPropertyQueingLatency';
+            list latency-characteristic {
+                key 'traffic-property-name traffic-property-queing-latency';
                 config false;
-                uses TapiTopology:LatencyCharacteristic;
+                uses tapi-topology:latency-characteristic;
                 description "The effect on the latency of a queuing process. This only has significant effect for packet based systems and has a complex characteristic.";
             }
-            leaf-list _includeTopology {
+            leaf-list include-topology {
                 type leafref {
-                    path '/Tapi:Context/Tapi:_topology/Tapi:uuid';
+                    path '/tapi:context/tapi:topology/tapi:uuid';
                 }
                 config false;
                 description "none";
             }
-            leaf-list _avoidTopology {
+            leaf-list avoid-topology {
                 type leafref {
-                    path '/Tapi:Context/Tapi:_topology/Tapi:uuid';
+                    path '/tapi:context/tapi:topology/tapi:uuid';
                 }
                 config false;
                 description "none";
             }
-            list _includePath {
-                key 'localId';
+            list include-path {
+                key 'local-id';
                 config false;
-                uses TapiTopology:TeLink;
+                uses tapi-topology:te-link;
                 description "none";
             }
-            list _excludePath {
-                key 'localId';
+            list exclude-path {
+                key 'local-id';
                 config false;
-                uses TapiTopology:TeLink;
+                uses tapi-topology:te-link;
                 description "none";
             }
-            uses Tapi:LocalClass;
+            uses tapi-common:local-class;
             description "none";
         }
-    
+
     /***********************
-    * package Interfaces
+    * package interfaces
     **********************/ 
-        rpc computeP2PPath {
+        rpc compute-p2ppath {
             description "none";
             input {
-                list servicePort {
+                list service-port {
                     min-elements 2;
                     max-elements 2;
-                    uses PathCompServicePort;
+                    uses path-comp-service-port;
                     description "none";
                 }
-                container routingConstraint {
-                    uses RoutingConstraint;
+                container routing-constraint {
+                    uses routing-constraint;
                     description "none";
                 }
-                container objectiveFunction {
-                    uses PathObjectiveFunction;
+                container objective-function {
+                    uses path-objective-function;
                     description "none";
                 }
             }
             output {
-                container pathCompService {
-                    uses PathComputationService;
+                container path-comp-service {
+                    uses path-computation-service;
                     description "none";
                 }
             }
         }
-        rpc optimizeP2PPath {
+        rpc optimize-p2ppath {
             description "none";
             input {
-                leaf pathIdOrName {
+                leaf path-id-or-name {
                     type string;
                     description "none";
                 }
-                container routingConstraint {
-                    uses RoutingConstraint;
+                container routing-constraint {
+                    uses routing-constraint;
                     description "none";
                 }
-                container optimizationConstraint {
-                    uses PathOptimizationConstraint;
+                container optimization-constraint {
+                    uses path-optimization-constraint;
                     description "none";
                 }
-                container objectiveFunction {
-                    uses PathObjectiveFunction;
+                container objective-function {
+                    uses path-objective-function;
                     description "none";
                 }
             }
             output {
-                container pathCompService {
-                    uses PathComputationService;
+                container path-comp-service {
+                    uses path-computation-service;
                     description "none";
                 }
             }
         }
-        rpc deleteP2PPath {
+        rpc delete-p2ppath {
             description "none";
             input {
-                leaf pathIdOrName {
+                leaf path-id-or-name {
                     type string;
                     description "none";
                 }
             }
             output {
-                container pathCompService {
-                    uses PathComputationService;
+                container path-comp-service {
+                    uses path-computation-service;
                     description "none";
                 }
             }
         }
-    
+
 }
