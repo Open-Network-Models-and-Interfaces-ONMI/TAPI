@@ -1,59 +1,64 @@
-module TapiEth {
+module tapi-eth {
     namespace "urn:onf:params:xml:ns:yang:TapiEth";
-    prefix TapiEth;
-    import Tapi {
-        prefix Tapi;
+    prefix tapi-abc;
+    import tapi-common {
+        prefix tapi-common;
     }
-    import TapiTopology {
-        prefix TapiTopology;
+    import tapi-topology {
+        prefix tapi-topology;
     }
-    import TapiConnectivity {
-        prefix TapiConnectivity;
+    import tapi-connectivity {
+        prefix tapi-connectivity;
     }
-    organization "ONF (Open Networking Foundation) IMP Working Group";
-    contact "WG Web: <https://www.opennetworking.org/technical-communities/areas/services/>
-        WG List: <mailto: <wg list name>@opennetworking.org>
-        WG Chair: your-WG-chair
-                <mailto:your-WG-chair@example.com>
-        Editor: your-name
-                <mailto:your-email@example.com>";
+    organization "Open Networking Foundation (ONF) / Open Transport Working Group(OTWG) / Transport API (TAPI) Project";
+    contact "
+        WG Web: TAPI SDK Project <http://opensourcesdn.org/projects/project-snowmass/>
+        WG List: TAPI Discussion list <mailto: transport-api@login.opennetworking.org>,
+        WG Chair: Karthik Sethuraman <mailto:karthik.sethuraman@necam.com>,
+        Editor: Ricard Vilalta <mailto:ricard.vilalta@cttc.es>";
     description "none";
-    revision 2016-07-19 {
-        description "Latest revision";
-        reference "RFC 6020 and RFC 6087";
+    revision 2016-12-15 {
+        description "TAPI SDK 1.1.alpha";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 6020 and RFC 6087";
     }
     augment "/Tapi:Context/Tapi:_connection/TapiConnectivity:_connectionPort/TapiConnectivity:_connectionEndPoint/TapiConnectivity:_layerProtocol/TapiConnectivity:_extensions" {
-        uses ConnectionEndPointLpSpec;
+        uses connection-end-point-lp-spec;
         description "none";
     }
     augment "/Tapi:Context/Tapi:_topology/TapiTopology:_node/TapiTopology:_ownedNodeEdgePoint/TapiTopology:_layerProtocol/TapiTopology:_extensions" {
-        uses NodeEdgePointLpSpec;
+        uses node-edge-point-lp-spec;
         description "none";
     }
     /***********************
-    * package ObjectClasses
+    * package object-classes
     **********************/ 
-        grouping ConnectionPointAndAdapterPac {
-            leaf-list auxiliaryFunctionPositionSequence {
+        container connection-point-and-adapter-pac {
+            uses connection-point-and-adapter-pac;
+            description "none";
+        }
+        grouping connection-point-and-adapter-pac {
+            leaf-list auxiliary-function-position-sequence {
                 type uint64;
                 description "This attribute indicates the positions (i.e., the relative order) of all the MEP, MIP, and TCS objects which are associated with the CTP.";
             }
-            leaf vlanConfig {
+            leaf vlan-config {
                 type uint64;
                 description "This attribute models the ETHx/ETH-m_A_So_MI_Vlan_Config information defined in G.8021.
                     range of type : -1, 0, 1..4094";
             }
-            leaf csfRdiFdiEnable {
+            leaf csf-rdi-fdi-enable {
                 type boolean;
                 description "This attribute models the MI_CSFrdifdiEnable information defined in G.8021.";
             }
-            leaf csfReport {
+            leaf csf-report {
                 type boolean;
                 description "This attribute models the MI_CSF_Reported information defined in G.8021.
                     range of type : true, false";
             }
-            leaf-list filterConfigSnk {
-                type MacAddress;
+            leaf-list filter-config-snk {
+                type mac-address;
+                min-elements 33;
+                max-elements 33;
                 description "This attribute models the FilteConfig MI defined in 8.3/G.8021. It indicates the configured filter action for each of the 33 group MAC addresses for control frames. The 33 MAC addresses are:
                     01-80-C2-00-00-10, 
                     01-80-C2-00-00-00 to 01-80-C2-00-00-0F, and 
@@ -62,14 +67,14 @@ module TapiEth {
                     If the destination address of the incoming ETH_CI_D matches one of the above addresses, the filter process shall perform the corresponding configured filter action. 
                     If none of the above addresses match, the ETH_CI_D is passed.";
             }
-            leaf macLength {
+            leaf mac-length {
                 type uint64;
                 default "2000";
                 description "This attribute models the MAC_Lenght MI defined in 8.6/G.8021 for the MAC Length Check process. It indicates the allowed maximum frame length in bytes.
                     range of type : 1518, 1522, 2000";
             }
-            container filterConfig {
-                uses ControlFrameFilter;
+            container filter-config {
+                uses control-frame-filter;
                 description "This attribute models the FilterConfig MI defined in section 8.3/G.8021. It indicates the configured filter action for each of the 33 group MAC addresses for control frames. The 33 MAC addresses are:
                     - All bridges address: 01-80-C2-00-00-10,
                     - Reserved addresses: 01-80-C2-00-00-00 to 01-80-C2-00-00-0F,
@@ -78,17 +83,17 @@ module TapiEth {
                     If the destination address of the incoming ETH_CI_D matches one of the above addresses, the filter process shall perform the corresponding configured filter action. 
                     If none of the above addresses match, the ETH_CI_D is passed.";
             }
-            leaf isSsfReported {
+            leaf is-ssf-reported {
                 type boolean;
                 description "This attribute provisions whether the SSF defect should be reported as fault cause or not.
                     It models the ETH-LAG_FT_Sk_MI_SSF_Reported defined in G.8021.";
             }
-            leaf pllThr {
+            leaf pll-thr {
                 type uint64;
                 description "This attribute provisions the threshold for the number of active ports. If the number of active ports is more than zero but less than the provisioned threshold, a cPLL (Partial Link Loss) is raised. See section 9.7.1.2 of G.8021.
                     range of type : 0..number of ports";
             }
-            leaf actorOperKey {
+            leaf actor-oper-key {
                 type uint64;
                 config false;
                 description "See 802.1AX:
@@ -96,79 +101,89 @@ module TapiEth {
                     The meaning of particular Key values is of local significance.
                     range of type : 16 bit";
             }
-            leaf actorSystemId {
-                type MacAddress;
+            leaf actor-system-id {
+                type mac-address;
                 description "See 802.1AX:
                     A MAC address used as a unique identifier for the System that contains this Aggregator.";
             }
-            leaf actorSystemPriority {
+            leaf actor-system-priority {
                 type uint64;
                 description "See 802.1AX:
                     Indicating the priority associated with the Actor’s System ID.
                     range of type : 2-octet";
             }
-            leaf collectorMaxDelay {
+            leaf collector-max-delay {
                 type uint64;
                 description "See 802.1AX:
                     The value of this attribute defines the maximum delay, in tens of microseconds, that may be imposed by the Frame Collector between receiving a frame from an Aggregator Parser, and either delivering the frame to its MAC Client or discarding the frame (see IEEE 802.1AX clause 5.2.3.1.1).
                     range of type : 16-bit";
             }
-            leaf dataRate {
+            leaf data-rate {
                 type uint64;
                 config false;
                 description "See 802.1AX:
                     The current data rate, in bits per second, of the aggregate link. The value is calculated as N times the data rate of a single link in the aggregation, where N is the number of active links.";
             }
-            leaf partnerOperKey {
+            leaf partner-oper-key {
                 type uint64;
                 config false;
                 description "See 802.1AX:
                     The current operational value of the Key for the Aggregator’s current protocol Partner. If the aggregation is manually configured, this Key value will be a value assigned by the local System.
                     range of type : 16-bit";
             }
-            leaf partnerSystemId {
-                type MacAddress;
+            leaf partner-system-id {
+                type mac-address;
                 config false;
                 description "See 802.1AX:
                     A MAC address consisting of the unique identifier for the current protocol Partner of this Aggregator. A value of zero indicates that there is no known Partner. If the aggregation is manually configured, this System ID value will be a value assigned by the local System.";
             }
-            leaf partnerSystemPriority {
+            leaf partner-system-priority {
                 type uint64;
                 config false;
                 description "See 802.1AX:
                     Indicates the priority associated with the Partner’s System ID. If the aggregation is manually configured, this System Priority value will be a value assigned by the local System.
                     range of type : 2-octet";
             }
-            leaf csfConfig {
-                type CsfConfig;
+            leaf csf-config {
+                type csf-config;
                 description "This attribute models the combination of all CSF related MI signals (MI_CSF_Enable, MI_CSFrdifdi_Enable, MI_CSFdci_Enable) as defined in G.8021.
                     range of type : true, false";
             }
             description "none";
         }
-        grouping ConnectionEndPointLpSpec {
-            container _terminationSpec {
-                uses EthTerminationPac;
-                description "none";
-            }
-            container _adapterSpec {
-                uses ConnectionPointAndAdapterPac;
-                description "none";
-            }
-            uses Tapi:ExtensionsSpec;
+        container connection-end-point-lp-spec {
+            uses connection-end-point-lp-spec;
             description "none";
         }
-        grouping EthTerminationPac {
-            container priorityRegenerate {
-                uses PriorityMapping;
+        grouping connection-end-point-lp-spec {
+            container termination-spec {
+                uses eth-termination-pac;
+                description "none";
+            }
+            container adapter-spec {
+                uses connection-point-and-adapter-pac;
+                description "none";
+            }
+            uses tapi-common:extensions-spec;
+            description "none";
+        }
+        container eth-termination-pac {
+            uses eth-termination-pac;
+            description "none";
+        }
+        grouping eth-termination-pac {
+            container priority-regenerate {
+                uses priority-mapping;
                 description "This attribute models the ETHx/ETH-m _A_Sk_MI_P_Regenerate information defined in G.8021.";
             }
-            leaf etherType {
-                type VlanType;
+            leaf ether-type {
+                type vlan-type;
                 description "This attribute models the ETHx/ETH-m _A_Sk_MI_Etype information defined in G.8021.";
             }
-            leaf-list filterConfig {
-                type MacAddress;
+            leaf-list filter-config {
+                type mac-address;
+                min-elements 33;
+                max-elements 33;
                 description "This attribute models the ETHx/ETH-m_A_Sk_MI_Filter_Config information defined in G.8021.
                     It indicates the configured filter action for each of the 33 group MAC addresses for control frames.
                     The 33 MAC addresses are:
@@ -187,58 +202,68 @@ module TapiEth {
                     ActionEnum:
                     PASS, BLOCK";
             }
-            leaf frametypeConfig {
-                type FrameType;
+            leaf frametype-config {
+                type frame-type;
                 description "This attribute models the ETHx/ETH-m_A_Sk_MI_Frametype_Config information defined in G.8021.
                     range of type : see Enumeration";
             }
-            leaf portVid {
-                type Vid;
+            leaf port-vid {
+                type vid {
+                    range "0..4095";
+                }
                 default "1";
                 description "This attribute models the ETHx/ETH-m _A_Sk_MI_PVID information defined in G.8021.";
             }
-            leaf priorityCodePointConfig {
-                type PcpCoding;
+            leaf priority-code-point-config {
+                type pcp-coding;
                 default "8P0D";
                 description "This attribute models the ETHx/ETH-m _A_Sk_MI_PCP_Config information defined in G.8021.
                     range of type : see Enumeration";
             }
             description "This object class models the Ethernet Flow Termination function located at a layer boundary.";
         }
-        grouping EtyTerminationPac {
-            leaf isFtsEnabled {
+        container ety-termination-pac {
+            uses ety-termination-pac;
+            description "none";
+        }
+        grouping ety-termination-pac {
+            leaf is-fts-enabled {
                 type boolean;
                 description "This attribute indicates whether Forced Transmitter Shutdown (FTS) is enabled or not. It models the ETYn_TT_So_MI_FTSEnable information.";
             }
-            leaf isTxPauseEnabled {
+            leaf is-tx-pause-enabled {
                 type boolean;
                 description "This attribute identifies whether the Transmit Pause process is enabled or not. It models the MI_TxPauseEnable defined in G.8021.";
             }
-            leaf phyType {
-                type ETY_PhyType;
+            leaf phy-type {
+                type ety-phy-type;
                 config false;
                 description "This attribute identifies the PHY type of the ETY trail termination. See IEEE 802.3 clause 30.3.2.1.2.";
             }
-            leaf-list phyTypeList {
-                type ETY_PhyType;
+            leaf-list phy-type-list {
+                type ety-phy-type;
                 config false;
                 description "This attribute identifies the possible PHY types that could be supported at the ETY trail termination. See IEEE 802.3 clause 30.3.2.1.3.";
             }
             description "none";
         }
-        container TrafficConditioningPac {
-            list prioConfigList {
+        container traffic-conditioning-pac {
+            uses traffic-conditioning-pac;
+            description "none";
+        }
+        grouping traffic-conditioning-pac {
+            list prio-config-list {
                 config false;
                 min-elements 1;
                 max-elements 8;
-                uses PriorityConfiguration;
+                uses priority-configuration;
                 description "This attribute indicates the Priority Splitter function for the mapping of the Ethernet frame priority (ETH_CI_P) values to the output queue.";
             }
-            list condConfigList {
+            list cond-config-list {
                 config false;
                 min-elements 1;
                 max-elements 8;
-                uses TrafficConditioningConfiguration;
+                uses traffic-conditioning-configuration;
                 description "This attribute indicates for the conditioner process the conditioning parameters:
                     - Queue ID: Indicates the Queue ID
                     - Committed Information Rate (CIR): number of bits per second
@@ -256,23 +281,27 @@ module TapiEth {
             description "This object class models the ETH traffic conditioning function as defined in G.8021.
                 Basic attributes: codirectional, condConfigList, prioConfigList";
         }
-        container TrafficShapingPac {
-            list prioConfigList {
+        container traffic-shaping-pac {
+            uses traffic-shaping-pac;
+            description "none";
+        }
+        grouping traffic-shaping-pac {
+            list prio-config-list {
                 config false;
                 min-elements 1;
                 max-elements 8;
-                uses PriorityConfiguration;
+                uses priority-configuration;
                 description "This attribute configures the Priority Splitter function for the mapping of the Ethernet frame priority (ETH_CI_P) values to the output queue.";
             }
-            list queueConfigList {
+            list queue-config-list {
                 config false;
                 min-elements 1;
                 max-elements 8;
-                uses QueueConfiguration;
+                uses queue-configuration;
                 description "This attribute configures the Queue depth and Dropping threshold parameters of the Queue process. The Queue depth sets the maximum size of the queue in bytes. An incoming ETH_CI traffic unit is dropped if there is insufficient space in the queue to hold the whole unit. The Dropping threshold sets the threshold of the queue. If the queue is filled beyond this threshold, incoming ETH_CI traffic units accompanied by the ETH_CI_DE signal set are dropped.";
             }
-            leaf schedConfig {
-                type SchedulingConfiguration;
+            leaf sched-config {
+                type scheduling-configuration;
                 config false;
                 description "This attribute configures the scheduler process. The value of this attribute is for further study because it is for further study in G.8021.
                     Scheduler is a pointer to a Scheduler object, which is to be defined in the future (because in G.8021, this is FFS).
@@ -286,26 +315,34 @@ module TapiEth {
             description "This object class models the ETH traffic shaping function as defined in G.8021.
                 Basic attribute: codirectional, prioConfigList, queueConfigList, schedConfig";
         }
-        grouping NodeEdgePointLpSpec {
-            container _terminationSpec {
-                uses EtyTerminationPac;
-                description "none";
-            }
-            uses Tapi:ExtensionsSpec;
+        container node-edge-point-lp-spec {
+            uses node-edge-point-lp-spec;
             description "none";
         }
-    
+        grouping node-edge-point-lp-spec {
+            container termination-spec {
+                uses ety-termination-pac;
+                description "none";
+            }
+            uses tapi-common:extensions-spec;
+            description "none";
+        }
+
     /***********************
-    * package TypeDefinitions
+    * package type-definitions
     **********************/ 
-        grouping PriorityConfiguration {
+        list priority-configuration {
+            uses priority-configuration;
+            description "none";
+        }
+        grouping priority-configuration {
             leaf priority {
                 type uint64 {
                     range "0..7";
                 }
                 description "none";
             }
-            leaf queueId {
+            leaf queue-id {
                 type uint64 {
                     range "1..8";
                 }
@@ -313,22 +350,30 @@ module TapiEth {
             }
             description "none";
         }
-        grouping QueueConfiguration {
-            leaf queueId {
+        list queue-configuration {
+            uses queue-configuration;
+            description "none";
+        }
+        grouping queue-configuration {
+            leaf queue-id {
                 type uint64;
                 description "This attribute indicates the queue id.";
             }
-            leaf queueDepth {
+            leaf queue-depth {
                 type uint64;
                 description "This attribute defines the depth of the queue in bytes.";
             }
-            leaf queueThreshold {
+            leaf queue-threshold {
                 type uint64;
                 description "This attribute defines the threshold of the queue in bytes.";
             }
             description "none";
         }
-        grouping TrafficConditioningConfiguration {
+        list traffic-conditioning-configuration {
+            uses traffic-conditioning-configuration;
+            description "none";
+        }
+        grouping traffic-conditioning-configuration {
             leaf cir {
                 type uint64;
                 description "This attribute indicates the Committed Information Rate in bits/s.";
@@ -345,15 +390,15 @@ module TapiEth {
                 type uint64;
                 description "This attribute indicates the Excess Burst Size in bytes.";
             }
-            leaf couplingFlag {
+            leaf coupling-flag {
                 type boolean;
                 description "This attribute indicates the coupling flag.";
             }
-            leaf colourMode {
-                type ColourMode;
+            leaf colour-mode {
+                type colour-mode;
                 description "This attribute indicates the colour mode.";
             }
-            leaf queueId {
+            leaf queue-id {
                 type uint64 {
                     range "1..8";
                 }
@@ -361,60 +406,64 @@ module TapiEth {
             }
             description "none";
         }
-        typedef MacAddress {
+        typedef mac-address {
             type string;
             description "This primitive data type contains an Ethernet MAC address defined by IEEE 802a. The format of the address consists of 12 hexadecimal characters, grouped in pairs and separated by '-' (e.g., 03-27-AC-75-3E-1D).";
         }
-        grouping PriorityMapping {
-            leaf Priority0 {
+        container priority-mapping {
+            uses priority-mapping;
+            description "none";
+        }
+        grouping priority-mapping {
+            leaf priority0 {
                 type uint64 {
                     range "0..7";
                 }
                 description "This attribute defines the new priority value for the old priority value 0.";
             }
-            leaf Priority1 {
+            leaf priority1 {
                 type uint64 {
                     range "0..7";
                 }
                 default "1";
                 description "This attribute defines the new priority value for the old priority value 1.";
             }
-            leaf Priority2 {
+            leaf priority2 {
                 type uint64 {
                     range "0..7";
                 }
                 default "2";
                 description "This attribute defines the new priority value for the old priority value 2.";
             }
-            leaf Priority3 {
+            leaf priority3 {
                 type uint64 {
                     range "0..7";
                 }
                 default "3";
                 description "This attribute defines the new priority value for the old priority value 3.";
             }
-            leaf Priority4 {
+            leaf priority4 {
                 type uint64 {
                     range "0..7";
                 }
                 default "4";
                 description "This attribute defines the new priority value for the old priority value 4.";
             }
-            leaf Priority5 {
+            leaf priority5 {
                 type uint64 {
                     range "0..7";
                 }
                 default "5";
                 description "This attribute defines the new priority value for the old priority value 5.";
             }
-            leaf Priority6 {
+            leaf priority6 {
                 type uint64 {
                     range "0..7";
                 }
                 default "6";
                 description "This attribute defines the new priority value for the old priority value 6.";
             }
-            leaf Priority7 {
+            leaf priority7 {
                 type uint64 {
                     range "0..7";
                 }
@@ -423,159 +472,167 @@ module TapiEth {
             }
             description "This data type provides the priority mapping done in the 'P Regenerate' process defined in G.8021.";
         }
-        typedef Vid {
+        typedef vid {
             type string;
             description "This primitive type models the 12 Bit VLAN identifier of a VLAN tag.";
         }
-        typedef ModifyCrossConnectionData {
+        typedef modify-cross-connection-data {
             type string;
             description "none";
         }
-        grouping AddressTuple {
+        container address-tuple {
+            uses address-tuple;
+            description "none";
+        }
+        grouping address-tuple {
             leaf address {
-                type MacAddress;
+                type mac-address;
                 description "This attribute contains the MAC address of the address tuple.";
             }
-            leaf-list portList {
-                type MacAddress;
+            leaf-list port-list {
+                type mac-address;
                 description "This attribute contains the ports associated to the MAC address in the address tuple.";
             }
             description "This data type contains an address tuple consisting of a MAC address and a corresponding port list.";
         }
-        typedef SchedulingConfiguration {
+        typedef scheduling-configuration {
             type string;
             description "The syntax of this dataType is pending on the specification in G.8021, which is for further study.";
         }
-        grouping ControlFrameFilter {
-            leaf C2_00_00_10 {
+        container control-frame-filter {
+            uses control-frame-filter;
+            description "none";
+        }
+        grouping control-frame-filter {
+            leaf c2-00-00-10 {
                 type boolean;
                 description "This attribute identifies the 'All LANs Bridge Management Group Address'.";
             }
-            leaf C2_00_00_00 {
+            leaf c2-00-00-00 {
                 type boolean;
                 description "This attribute identifies the STP/RSTP/MSTP protocol address.";
             }
-            leaf C2_00_00_01 {
+            leaf c2-00-00-01 {
                 type boolean;
                 description "This attribute identifies the IEEE MAC-specific Control Protocols group address (PAUSE protocol).";
             }
-            leaf C2_00_00_02 {
+            leaf c2-00-00-02 {
                 type boolean;
                 description "This attribute identifies the IEEE 802.3 Slow_Protocols_Multicast address (LACP/LAMP or Link OAM protocols).";
             }
-            leaf C2_00_00_03 {
+            leaf c2-00-00-03 {
                 type boolean;
                 description "This attribute identifies the Nearest non-TPMR Bridge group address (Port Authentication protocol).";
             }
-            leaf C2_00_00_04 {
+            leaf c2-00-00-04 {
                 type boolean;
                 description "This attribute identifies the IEEE MAC-specific Control Protocols group address.";
             }
-            leaf C2_00_00_05 {
+            leaf c2-00-00-05 {
                 type boolean;
                 description "Reserved for future standardization.";
             }
-            leaf C2_00_00_06 {
+            leaf c2-00-00-06 {
                 type boolean;
                 description "Reserved for future standardization.";
             }
-            leaf C2_00_00_07 {
+            leaf c2-00-00-07 {
                 type boolean;
                 description "This attribute identifies the Metro Ethernet Forum E-LMI protocol group address.";
             }
-            leaf C2_00_00_08 {
+            leaf c2-00-00-08 {
                 type boolean;
                 description "This attribute identifies the Provider Bridge Group address.";
             }
-            leaf C2_00_00_09 {
+            leaf c2-00-00-09 {
                 type boolean;
                 description "Reserved for future standardization.";
             }
-            leaf C2_00_00_0A {
+            leaf c2-00-00-0a {
                 type boolean;
                 description "Reserved for future standardization.";
             }
-            leaf C2_00_00_0B {
+            leaf c2-00-00-0b {
                 type boolean;
                 description "Reserved for future standardization.";
             }
-            leaf C2_00_00_0C {
+            leaf c2-00-00-0c {
                 type boolean;
                 description "Reserved for future standardization.";
             }
-            leaf C2_00_00_0D {
+            leaf c2-00-00-0d {
                 type boolean;
                 description "This attribute identifies the Provider Bridge MVRP address.";
             }
-            leaf C2_00_00_0E {
+            leaf c2-00-00-0e {
                 type boolean;
                 description "This attribute identifies the Individual LAN Scope group address, Nearest Bridge group address (LLDP protocol).";
             }
-            leaf C2_00_00_0F {
+            leaf c2-00-00-0f {
                 type boolean;
                 description "Reserved for future standardization.";
             }
-            leaf C2_00_00_20 {
+            leaf c2-00-00-20 {
                 type boolean;
                 description "This attribute identifies the Customer and Provider Bridge MMRP address.";
             }
-            leaf C2_00_00_21 {
+            leaf c2-00-00-21 {
                 type boolean;
                 description "This attribute identifies the Customer Bridge MVRP address.";
             }
-            leaf C2_00_00_22 {
+            leaf c2-00-00-22 {
                 type boolean;
                 description "Reserved for future standardization.";
             }
-            leaf C2_00_00_23 {
+            leaf c2-00-00-23 {
                 type boolean;
                 description "Reserved for future standardization.";
             }
-            leaf C2_00_00_24 {
+            leaf c2-00-00-24 {
                 type boolean;
                 description "Reserved for future standardization.";
             }
-            leaf C2_00_00_25 {
+            leaf c2-00-00-25 {
                 type boolean;
                 description "Reserved for future standardization.";
             }
-            leaf C2_00_00_26 {
+            leaf c2-00-00-26 {
                 type boolean;
                 description "Reserved for future standardization.";
             }
-            leaf C2_00_00_27 {
+            leaf c2-00-00-27 {
                 type boolean;
                 description "Reserved for future standardization.";
             }
-            leaf C2_00_00_28 {
+            leaf c2-00-00-28 {
                 type boolean;
                 description "Reserved for future standardization.";
             }
-            leaf C2_00_00_29 {
+            leaf c2-00-00-29 {
                 type boolean;
                 description "Reserved for future standardization.";
             }
-            leaf C2_00_00_2A {
+            leaf c2-00-00-2a {
                 type boolean;
                 description "Reserved for future standardization.";
             }
-            leaf C2_00_00_2B {
+            leaf c2-00-00-2b {
                 type boolean;
                 description "Reserved for future standardization.";
             }
-            leaf C2_00_00_2C {
+            leaf c2-00-00-2c {
                 type boolean;
                 description "Reserved for future standardization.";
             }
-            leaf C2_00_00_2D {
+            leaf c2-00-00-2d {
                 type boolean;
                 description "Reserved for future standardization.";
             }
-            leaf C2_00_00_2E {
+            leaf c2-00-00-2e {
                 type boolean;
                 description "Reserved for future standardization.";
             }
-            leaf C2_00_00_2F {
+            leaf c2-00-00-2f {
                 type boolean;
                 description "Reserved for future standardization.";
             }
@@ -583,74 +640,78 @@ module TapiEth {
                 Value 'false' means block: The frame is discarded by the filter process.
                 Value 'true' means pass: The frame is passed unchanged through the filter process.";
         }
-        grouping BandwidthReport {
-            leaf sourceMacAddress {
-                type MacAddress;
+        container bandwidth-report {
+            uses bandwidth-report;
+            description "none";
+        }
+        grouping bandwidth-report {
+            leaf source-mac-address {
+                type mac-address;
                 description "The sourceMacAddress is the address from the far end.";
             }
-            leaf portId {
+            leaf port-id {
                 type uint64;
                 description "This attribute returns the far end port identifier.";
             }
-            leaf nominalBandwidth {
+            leaf nominal-bandwidth {
                 type uint64;
                 description "This attribute returns the configured bandwidth";
             }
-            leaf currentBandwidth {
+            leaf current-bandwidth {
                 type uint64;
                 description "This attribute returns the current bandwidth.";
             }
             description "Data type for the bandwidth report.";
         }
-        typedef AdminState {
+        typedef admin-state {
             type enumeration {
-                enum LOCK {
+                enum lock {
                     description "none";
                 }
-                enum NORMAL {
+                enum normal {
                     description "none";
                 }
             }
             description "none";
         }
-        typedef ColourMode {
+        typedef colour-mode {
             type enumeration {
-                enum COLOUR_BLIND {
+                enum colour-blind {
                     description "none";
                 }
-                enum COLOUR_AWARE {
+                enum colour-aware {
                     description "none";
                 }
             }
             description "none";
         }
-        typedef CsfConfig {
+        typedef csf-config {
             type enumeration {
-                enum DISABLED {
+                enum disabled {
                     description "This literal covers the following states of the CSF related MI informations:
                         - MI_CSF_Enable is false
                         - MI_CSFrdifdi_Enable is false
                         - MI_CSFdci_Enable is false.";
                 }
-                enum ENABLED {
+                enum enabled {
                     description "This literal covers the following states of the CSF related MI informations:
                         - MI_CSF_Enable is true
                         - MI_CSFrdifdi_Enable is false
                         - MI_CSFdci_Enable is false.";
                 }
-                enum ENABLED_WITH_RDI_FDI {
+                enum enabled-with-rdi-fdi {
                     description "This literal covers the following states of the CSF related MI informations:
                         - MI_CSF_Enable is true
                         - MI_CSFrdifdi_Enable is true
                         - MI_CSFdci_Enable is false.";
                 }
-                enum ENABLED_WITH_RDI_FDI_DCI {
+                enum enabled-with-rdi-fdi-dci {
                     description "This literal covers the following states of the CSF related MI informations:
                         - MI_CSF_Enable is true
                         - MI_CSFrdifdi_Enable is true
                         - MI_CSFdci_Enable is true.";
                 }
-                enum ENABLED_WITH_DCI {
+                enum enabled-with-dci {
                     description "This literal covers the following states of the CSF related MI informations:
                         - MI_CSF_Enable is true
                         - MI_CSFrdifdi_Enable is false
@@ -659,127 +720,127 @@ module TapiEth {
             }
             description "none";
         }
-        typedef ETY_PhyType {
+        typedef ety-phy-type {
             type enumeration {
-                enum OTHER {
+                enum other {
                     description "none";
                 }
-                enum UNKNOWN {
+                enum unknown {
                     description "none";
                 }
-                enum NONE {
+                enum none {
                     description "none";
                 }
-                enum 2BASE_TL {
+                enum 2base-tl {
                     description "none";
                 }
-                enum 10MBIT_S {
+                enum 10mbit-s {
                     description "none";
                 }
-                enum 10PASS_TS {
+                enum 10pass-ts {
                     description "none";
                 }
-                enum 100BASE_T4 {
+                enum 100base-t4 {
                     description "none";
                 }
-                enum 100BASE_X {
+                enum 100base-x {
                     description "none";
                 }
-                enum 100BASE_T2 {
+                enum 100base-t2 {
                     description "none";
                 }
-                enum 1000BASE_X {
+                enum 1000base-x {
                     description "none";
                 }
-                enum 1000BASE_T {
+                enum 1000base-t {
                     description "none";
                 }
-                enum 10GBASE_X {
+                enum 10gbase-x {
                     description "none";
                 }
-                enum 10GBASE_R {
+                enum 10gbase-r {
                     description "none";
                 }
-                enum 10GBASE_W {
+                enum 10gbase-w {
                     description "none";
                 }
             }
             description "none";
         }
-        typedef FrameType {
+        typedef frame-type {
             type enumeration {
-                enum ADMIT_ONLY_VLAN_TAGGED_FRAMES {
+                enum admit-only-vlan-tagged-frames {
                     description "none";
                 }
-                enum ADMIT_ONLY_UNTAGGED_AND_PRIORITY_TAGGED_FRAMES {
+                enum admit-only-untagged-and-priority-tagged-frames {
                     description "none";
                 }
-                enum ADMIT_ALL_FRAMES {
+                enum admit-all-frames {
                     description "none";
                 }
             }
             description "none";
         }
-        typedef OamPeriod {
+        typedef oam-period {
             type enumeration {
-                enum 3_33MS {
+                enum 3-33ms {
                     description "Default for protection.";
                 }
-                enum 10MS {
+                enum 10ms {
                     description "none";
                 }
-                enum 100MS {
+                enum 100ms {
                     description "none";
                 }
-                enum 1S {
+                enum 1s {
                     description "none";
                 }
-                enum 10S {
+                enum 10s {
                     description "none";
                 }
-                enum 1MIN {
+                enum 1min {
                     description "none";
                 }
-                enum 10MIN {
+                enum 10min {
                     description "none";
                 }
             }
             description "Provides the frequency for the OAM PDU insertion.";
         }
-        typedef PcpCoding {
+        typedef pcp-coding {
             type enumeration {
-                enum 8P0D {
+                enum 8p0d {
                     description "none";
                 }
-                enum 7P1D {
+                enum 7p1d {
                     description "none";
                 }
-                enum 6P2D {
+                enum 6p2d {
                     description "none";
                 }
-                enum 5P3D {
+                enum 5p3d {
                     description "none";
                 }
-                enum DEI {
+                enum dei {
                     description "This enumeration value means that all priorities should be drop eligible.
                         DEI = Drop Eligibility Indicator";
                 }
             }
             description "This enum models the coding of the Priority Code Point as defined in section 'Priority Code Point encoding' of IEEE 802.1Q.";
         }
-        typedef VlanType {
+        typedef vlan-type {
             type enumeration {
-                enum C_Tag {
+                enum c-tag {
                     description "0x8100";
                 }
-                enum S_Tag {
+                enum s-tag {
                     description "0x88a8";
                 }
-                enum I_Tag {
+                enum i-tag {
                     description "88-e7";
                 }
             }
             description "This enumeration contains the Ethertypes defined in IEEE 802.1Q.";
         }
-    
+
 }

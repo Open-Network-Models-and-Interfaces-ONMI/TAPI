@@ -1,257 +1,192 @@
-module Tapi {
-    namespace "urn:onf:params:xml:ns:yang:Tapi";
-    prefix Tapi;
-    organization "ONF (Open Networking Foundation) IMP Working Group";
-    contact "WG Web: <https://www.opennetworking.org/technical-communities/areas/services/>
-        WG List: <mailto: <wg list name>@opennetworking.org>
-        WG Chair: your-WG-chair
-                <mailto:your-WG-chair@example.com>
-        Editor: your-name
-                <mailto:your-email@example.com>";
+module tapi-common {
+    namespace "urn:onf:params:xml:ns:yang:TapiCommon";
+    prefix tapi-abc;
+    organization "Open Networking Foundation (ONF) / Open Transport Working Group(OTWG) / Transport API (TAPI) Project";
+    contact "
+        WG Web: TAPI SDK Project <http://opensourcesdn.org/projects/project-snowmass/>
+        WG List: TAPI Discussion list <mailto: transport-api@login.opennetworking.org>,
+        WG Chair: Karthik Sethuraman <mailto:karthik.sethuraman@necam.com>,
+        Editor: Ricard Vilalta <mailto:ricard.vilalta@cttc.es>";
     description "none";
-    revision 2016-09-14 {
-        description "Latest revision";
-        reference "RFC 6020 and RFC 6087";
+    revision 2016-12-15 {
+        description "TAPI SDK 1.1.alpha";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 6020 and RFC 6087";
     }
     augment "/Tapi:Context/Tapi:_serviceEndPoint" {
-        uses ServiceEndPoint;
+        uses service-end-point;
         description "none";
     }
     /***********************
-    * package ObjectClasses
+    * package object-classes
     **********************/ 
-        grouping AdminStatePac {
-            leaf administrativeState {
-                type AdministrativeState;
+        grouping admin-state-pac {
+            leaf administrative-state {
+                type administrative-state;
                 description "none";
             }
-            leaf operationalState {
-                type OperationalState;
+            leaf operational-state {
+                type operational-state;
                 description "none";
             }
-            leaf lifecycleState {
-                type LifecycleState;
+            leaf lifecycle-state {
+                type lifecycle-state;
                 description "none";
             }
             description "Provides state attributes that are applicable to an entity that can be administered. Such an entity also has operational and lifecycle aspects.";
         }
-        grouping GlobalClass {
+        grouping global-class {
             leaf uuid {
-                type UniversalId;
+                type universal-id;
                 description "UUID: An identifier that is universally unique
                     (consider in the context of Identifier: A property of an entity/role with a value that is unique within an identifier space, where the identifier space is itself globally unique, and immutable. An identifier carries no semantics with respect to the purpose or state of the entity)";
             }
             list name {
-                key 'valueName';
-                uses NameAndValue;
+                key 'value-name';
+                min-elements 1;
+                uses name-and-value;
                 description "List of names. A property of an entity with a value that is unique in some namespace but may change during the life of the entity. A name carries no semantics with respect to the purpose of the entity.";
             }
             list label {
-                key 'valueName';
-                uses NameAndValue;
+                key 'value-name';
+                uses name-and-value;
                 description "List of labels.A property of an entity with a value that is not expected to be unique and is allowed to change. A label carries no semantics with respect to the purpose of the entity and has no effect on the entity behavior or state.";
-            }
-            list _extensions {
-                key 'extensionsSpecification';
-                config false;
-                uses ExtensionsSpec;
-                description "none";
             }
             description "The TAPI GlobalComponent serves as the super class for all TAPI entities that can be directly retrieved by their ID. As such, these are first class entities and their ID is expected to be globally unique. ";
         }
-        grouping LayerProtocol {
-            leaf layerProtocolName {
-                type LayerProtocolName;
+        list layer-protocol {
+            key 'local-id';
+            uses layer-protocol;
+            description "none";
+        }
+        grouping layer-protocol {
+            leaf layer-protocol-name {
+                type layer-protocol-name;
                 description "Indicate the specific layer-protocol described by the LayerProtocol entity.";
             }
-            leaf terminationDirection {
-                type TerminationDirection;
+            leaf termination-direction {
+                type termination-direction;
                 description "The overall directionality of the LP. 
                     - A BIDIRECTIONAL LP will have some SINK and/or SOURCE flowss.
                     - A SINK LP can only contain elements with SINK flows or CONTRA_DIRECTION_SOURCE flows
                     - A SOURCE LP can only contain SOURCE flows or CONTRA_DIRECTION_SINK flows";
             }
-            leaf terminationState {
-                type TerminationState;
+            leaf termination-state {
+                type termination-state;
                 description "Indicates whether the layer is terminated and if so how.";
             }
-            uses LocalClass;
+            uses local-class;
             description "Each transport layer is represented by a LayerProtocol (LP) instance. The LayerProtocol instances it can be used for controlling termination and monitoring functionality. 
                 It can also be used for controlling the adaptation (i.e. encapsulation and/or multiplexing of client signal), tandem connection monitoring, traffic conditioning and/or shaping functionality at an intermediate point along a connection. 
                 Where the client – server relationship is fixed 1:1 and immutable, the layers can be encapsulated in a single LTP instance. Where the is a n:1 relationship between client and server, the layers must be split over two separate instances of LTP. ";
         }
-        grouping LifecycleStatePac {
-            leaf lifecycleState {
-                type LifecycleState;
+        grouping lifecycle-state-pac {
+            leaf lifecycle-state {
+                type lifecycle-state;
                 description "none";
             }
             description "Provides state attributes for an entity that has lifeccycle aspects only.";
         }
-        grouping LocalClass {
-            leaf localId {
+        grouping local-class {
+            leaf local-id {
                 type string;
                 description "none";
             }
             list name {
-                key 'valueName';
-                uses NameAndValue;
+                key 'value-name';
+                uses name-and-value;
                 description "List of names. A property of an entity with a value that is unique in some namespace but may change during the life of the entity. A name carries no semantics with respect to the purpose of the entity.";
-            }
-            list _extensions {
-                key 'extensionsSpecification';
-                config false;
-                uses ExtensionsSpec;
-                description "none";
             }
             description "The TAPI GlobalComponent serves as the super class for all TAPI entities that can be directly retrieved by their ID. As such, these are first class entities and their ID is expected to be globally unique. ";
         }
-        grouping OperationalStatePac {
-            leaf operationalState {
-                type OperationalState;
+        grouping operational-state-pac {
+            leaf operational-state {
+                type operational-state;
                 description "none";
             }
-            leaf lifecycleState {
-                type LifecycleState;
+            leaf lifecycle-state {
+                type lifecycle-state;
                 description "none";
             }
             description "Provides state attributes that are applicable to an entity that reflects operational aspects. Such an entity is expected to also have lifecycle aspects.";
         }
-        grouping TimeRange {
-            leaf endTime {
-                type DateAndTime;
+        container time-range {
+            uses time-range;
+            description "none";
+        }
+        grouping time-range {
+            leaf end-time {
+                type date-and-time;
                 description "none";
             }
-            leaf startTime {
-                type DateAndTime;
+            leaf start-time {
+                type date-and-time;
                 description "none";
             }
             description "none";
         }
-        grouping ExtensionsSpec {
-            leaf extensionsSpecification {
-                type string;
-                config false;
-                description "none";
-            }
-            leaf-list extensionsSpecTarget {
-                type string;
-                config false;
-                min-elements 0;
-                description "none";
-            }
+        grouping extensions-spec {
             description "none";
         }
-        grouping Context {
-            container _nwTopologyService {
-                presence "Context is available";
-                config false;
-                uses ServiceSpec;
-                description "none";
-            }
-            list _connectivityService {             
-                key 'uuid';
-                uses ServiceSpec;
-                description "none";
-            }
-            list _vnwService {
-                key 'uuid';
-                uses ServiceSpec;
-                description "none";
-            }
-            list _pathCompService {
-                key 'uuid';
-                uses ServiceSpec;
-                description "none";
-            }
-            list _notifSubscription {
-                key 'uuid';
-                uses ServiceSpec;
-                description "none";
-            }
-            list _serviceEndPoint {
-                key 'uuid';
-                config false;
-                uses ResourceSpec;
-                description "none";
-            }
-            list _topology {
-                key 'uuid';
-                config false;
-                uses ResourceSpec;
-                description "none";
-            }
-            list _connection {
-                key 'uuid';
-                config false;
-                uses ResourceSpec;
-                description "none";
-            }
-            list _path {
-                key 'uuid';
-                config false;
-                uses ResourceSpec;
-                description "none";
-            }
-            list _notification {
-                key 'uuid';
-                config false;
-                uses ResourceSpec;
-                description "none";
-            }
-            uses GlobalClass;
+        list context {
+            key 'uuid';
+            uses context;
+            description "none";
+        }
+        grouping context {
+            uses global-class;
             description "The Network Control Domain (NCD) object class represents the scope of control that a particular SDN controller has with respect to a particular network, (i.e., encompassing a designated set of interconnected (virtual) network elements).";
         }
-        container Context {
-            presence "Context is available";
-            uses Context;
-            description "none";        
-        }
-        grouping ResourceSpec {
-            uses GlobalClass;
+        grouping resource-spec {
+            uses global-class;
             description "none";
         }
-        grouping ServiceSpec {
-            uses GlobalClass;
+        grouping service-spec {
+            uses global-class;
             description "none";
         }
-        grouping ServiceEndPoint {
-            list _layerProtocol {
-                key 'localId';
+        list service-end-point {
+            key 'uuid';
+            uses service-end-point;
+            description "none";
+        }
+        grouping service-end-point {
+            list layer-protocol {
+                key 'local-id';
                 config false;
                 min-elements 1;
-                uses LayerProtocol;
+                uses layer-protocol;
                 description "none";
             }
-            container _state {
+            container state {
                 config false;
-                uses LifecycleStatePac;
+                uses lifecycle-state-pac;
                 description "none";
             }
             leaf direction {
-                type TerminationDirection;
+                type termination-direction;
                 config false;
                 description "none";
             }
-            //uses ResourceSpec;
+            uses resource-spec;
             description "The LogicalTerminationPoint (LTP) object class encapsulates the termination and adaptation functions of one or more transport layers. 
                 The structure of LTP supports all transport protocols including circuit and packet forms.";
         }
-    
+
     /***********************
-    * package TypeDefinitions
+    * package type-definitions
     **********************/ 
-        typedef AdministrativeState {
+        typedef administrative-state {
             type enumeration {
-                enum LOCKED {
+                enum locked {
                     description "Users are administratively prohibited from making use of the resource.";
                 }
-                enum UNLOCKED {
+                enum unlocked {
                     description "Users are allowed to use the resource";
                 }
             }
             description "The possible values of the administrativeState.";
         }
-        typedef DateAndTime {
+        typedef date-and-time {
             type string;
             description "This primitive type defines the date and time according to the following structure:
                 yyyyMMddhhmmss.s[Z|{+|-}HHMm] where:
@@ -267,52 +202,52 @@ module Tapi {
                 HH        00..23            time zone difference in hours
                 Mm    00..59            time zone difference in minutes.";
         }
-        typedef DirectiveValue {
+        typedef directive-value {
             type enumeration {
-                enum MINIMIZE {
+                enum minimize {
                     description "none";
                 }
-                enum MAXIMIZE {
+                enum maximize {
                     description "none";
                 }
-                enum ALLOW {
+                enum allow {
                     description "none";
                 }
-                enum DISALLOW {
+                enum disallow {
                     description "none";
                 }
-                enum DONT_CARE {
+                enum dont-care {
                     description "none";
                 }
             }
             description "none";
         }
-        typedef ForwardingDirection {
+        typedef forwarding-direction {
             type enumeration {
-                enum BIDIRECTIONAL {
+                enum bidirectional {
                     description "The Fowarding entity supports both BIDIRECTIONAL flows at all Ports (i.e. all Ports have both an INPUT flow and an OUTPUT flow defined)";
                 }
-                enum UNIDIRECTIONAL {
+                enum unidirectional {
                     description "The Forwarding entity has Ports that are either INPUT or OUTPUT. It has no BIDIRECTIONAL Ports.";
                 }
-                enum UNDEFINED_OR_UNKNOWN {
+                enum undefined-or-unknown {
                     description "Not a normal state. The system is unable to determine the correct value.";
                 }
             }
             description "The directionality of a Forwarding entity.";
         }
-        typedef LayerProtocolName {
+        typedef layer-protocol-name {
             type enumeration {
-                enum OCH {
+                enum och {
                     description "none";
                 }
-                enum ODU {
+                enum odu {
                     description "none";
                 }
-                enum ETH {
+                enum eth {
                     description "none";
                 }
-                enum MPLS_TP {
+                enum mpls-tp {
                     description "none";
                 }
             }
@@ -323,30 +258,32 @@ module Tapi {
                 -    Layer 2 (L2): Carrier Grade Ethernet (ETY, ETH), MPLS-TP (MT)
                 ";
         }
-        typedef LifecycleState {
+        typedef lifecycle-state {
             type enumeration {
-                enum PLANNED {
+                enum planned {
                     description "The resource is planned but is not present in the network.";
                 }
-                enum POTENTIAL {
+                enum potential {
                     description "The supporting resources are present in the network but are shared with other clients; or require further configuration before they can be used; or both.
                         o    When a potential resource is configured and allocated to a client it is moved to the “installed” state for that client.
                         o    If the potential resource has been consumed (e.g. allocated to another client) it is moved to the “planned” state for all other clients.";
                 }
-                enum INSTALLED {
+                enum installed {
                     description "The resource is present in the network and is capable of providing the service expected.";
                 }
-                enum RESTORING {
-                    description "The resource is resilient and is performing a restoration operation.";
-                }
-                enum PENDING_REMOVAL {
+                enum pending-removal {
                     description "The resource has been marked for removal";
                 }
             }
             description "The possible values of the lifecycleState.";
         }
-        grouping NameAndValue {
-            leaf valueName {
+        list name-and-value {
+            key 'value-name';
+            uses name-and-value;
+            description "none";
+        }
+        grouping name-and-value {
+            leaf value-name {
                 type string;
                 description "The name of the value. The value need not have a name.";
             }
@@ -356,57 +293,57 @@ module Tapi {
             }
             description "A scoped name-value pair";
         }
-        typedef OperationalState {
+        typedef operational-state {
             type enumeration {
-                enum DISABLED {
+                enum disabled {
                     description "The resource is unable to meet the SLA of the user of the resource. If no (explicit) SLA is defined the resource is disabled if it is totally inoperable and unable to provide service to the user.";
                 }
-                enum ENABLED {
+                enum enabled {
                     description "The resource is partially or fully operable and available for use";
                 }
             }
             description "The possible values of the operationalState.";
         }
-        typedef PortDirection {
+        typedef port-direction {
             type enumeration {
-                enum BIDIRECTIONAL {
+                enum bidirectional {
                     description "The Port has both an INPUT flow and an OUTPUT flow defined.";
                 }
-                enum INPUT {
+                enum input {
                     description "The Port only has definition for a flow into the Forwarding entity (i.e. an ingress flow).";
                 }
-                enum OUTPUT {
+                enum output {
                     description "The Port only has definition for a flow out of the Forwarding entity (i.e. an egress flow).";
                 }
-                enum UNIDENTIFIED_OR_UNKNOWN {
+                enum unidentified-or-unknown {
                     description "Not a normal state. The system is unable to determine the correct value.";
                 }
             }
             description "The orientation of flow at the Port of a Forwarding entity";
         }
-        typedef PortRole {
+        typedef port-role {
             type enumeration {
-                enum SYMMETRIC {
+                enum symmetric {
                     description "none";
                 }
-                enum ROOT {
+                enum root {
                     description "none";
                 }
-                enum LEAF {
+                enum leaf {
                     description "none";
                 }
-                enum UNKNOWN {
+                enum unknown {
                     description "none";
                 }
             }
             description "The role of an end in the context of the function of the forwarding entity that it bounds";
         }
-        typedef TerminationDirection {
+        typedef termination-direction {
             type enumeration {
-                enum BIDIRECTIONAL {
+                enum bidirectional {
                     description "A Termination with both SINK and SOURCE flows.";
                 }
-                enum SINK {
+                enum sink {
                     description "The flow is up the layer stack from the server side to the client side. 
                         Considering an example of a Termination function within the termination entity, a SINK flow:
                         - will arrive at at the base of the termination function (the server side) where it is essentially at an INPUT to the termination component
@@ -415,7 +352,7 @@ module Tapi {
                         A SINK termination is one that only supports a SINK flow.
                         A SINK termiation can be bound to an OUTPUT Port of a Forwarding entity";
                 }
-                enum SOURCE {
+                enum source {
                     description "The flow is down the layer stack from the server side to the client side. 
                         Considering an example of a Termination function within the termination entity, a SOURCE flow:
                         - will arrive at at the top of the termination function (the client side) where it is essentially at an INPUT to the termination component
@@ -424,82 +361,70 @@ module Tapi {
                         A SOURCE termination is one that only supports a SOURCE flow.
                         A SOURCE termiation can be bound to an INPUT Port of a Forwarding entity";
                 }
-                enum UNDEFINED_OR_UNKNOWN {
+                enum undefined-or-unknown {
                     description "Not a normal state. The system is unable to determine the correct value.";
                 }
             }
             description "The directionality of a termination entity";
         }
-        typedef TerminationState {
+        typedef termination-state {
             type enumeration {
-                enum LP_CAN_NEVER_TERMINATE {
+                enum lp-can-never-terminate {
                     description "A non-flexible case that can never be terminated.";
                 }
-                enum LT_NOT_TERMINATED {
+                enum lt-not-terminated {
                     description "A flexible termination that can terminate but is currently not terminated.";
                 }
-                enum TERMINATED_SERVER_TO_CLIENT_FLOW {
+                enum terminated-server-to-client-flow {
                     description "A flexible termination that is currently terminated for server to client flow only.";
                 }
-                enum TERMINATED_CLIENT_TO_SERVER_FLOW {
+                enum terminated-client-to-server-flow {
                     description "A flexible termination that is currently terminated for client to server flow only.";
                 }
-                enum TERMINATED_BIDIRECTIONAL {
+                enum terminated-bidirectional {
                     description "A flexible termination that is currently terminated in both directions of flow.";
                 }
-                enum LT_PERMENANTLY_TERMINATED {
+                enum lt-permenantly-terminated {
                     description "A non-flexible termination that is always terminated (in both directions of flow for a bidirectional case and in the one direction of flow for both unidirectional cases).";
                 }
-                enum TERMINATION_STATE_UNKNOWN {
+                enum termination-state-unknown {
                     description "There TerminationState cannot be determined.";
                 }
             }
             description "Provides support for the range of behaviours and specific states that an LP can take with respect to termination of the signal.
                 Indicates to what degree the LayerTermination is terminated.";
         }
-        typedef UniversalId {
-            type string {
-                pattern '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12}';
-            }
-           description
-            "A Universally Unique IDentifier in the string representation
-             defined in RFC 4122.  The canonical representation uses
-             lowercase characters.
-    
-             The following is an example of a UUID in string representation:
-             f81d4fae-7dec-11d0-a765-00a0c91e6bf6
-             ";
-           reference
-            "RFC 4122: A Universally Unique IDentifier (UUID) URN
-                       Namespace";
-       }
-    
+        typedef universal-id {
+            type string;
+            description "The univeral ID value where the mechanism for generation is defned by some authority not directly referenced in the structure.";
+        }
+
     /***********************
-    * package Interfaces
+    * package interfaces
     **********************/ 
-        rpc getServiceEndPointDetails {
+        rpc get-service-end-point-details {
             description "none";
             input {
-                leaf serviceEPIdOrName {
+                leaf service-epid-or-name {
                     type string;
                     description "none";
                 }
             }
             output {
-                container serviceEndPoint {
-                    uses ServiceEndPoint;
+                container service-end-point {
+                    uses service-end-point;
                     description "none";
                 }
             }
         }
-        rpc getServiceEndPointList {
+        rpc get-service-end-point-list {
             description "none";
             output {
-                list serviceEndPoint {
-                    uses ServiceEndPoint;
+                list service-end-point {
+                    uses service-end-point;
                     description "none";
                 }
             }
         }
-    
+
 }
