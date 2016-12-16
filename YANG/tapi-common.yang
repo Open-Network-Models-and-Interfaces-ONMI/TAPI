@@ -12,7 +12,7 @@ module tapi-common {
         description "TAPI SDK 1.1.alpha";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 6020 and RFC 6087";
     }
-    augment "/Tapi:Context/Tapi:_serviceEndPoint" {
+    augment "/tapi-common:context/tapi-common:service-end-point" {
         uses service-end-point;
         description "none";
     }
@@ -51,12 +51,12 @@ module tapi-common {
                 uses name-and-value;
                 description "List of labels.A property of an entity with a value that is not expected to be unique and is allowed to change. A label carries no semantics with respect to the purpose of the entity and has no effect on the entity behavior or state.";
             }
+            container extensions {
+                config false;
+                uses extensions-spec;
+                description "none";
+            }
             description "The TAPI GlobalComponent serves as the super class for all TAPI entities that can be directly retrieved by their ID. As such, these are first class entities and their ID is expected to be globally unique. ";
-        }
-        list layer-protocol {
-            key 'local-id';
-            uses layer-protocol;
-            description "none";
         }
         grouping layer-protocol {
             leaf layer-protocol-name {
@@ -96,6 +96,11 @@ module tapi-common {
                 uses name-and-value;
                 description "List of names. A property of an entity with a value that is unique in some namespace but may change during the life of the entity. A name carries no semantics with respect to the purpose of the entity.";
             }
+            container extensions {
+                config false;
+                uses extensions-spec;
+                description "none";
+            }
             description "The TAPI GlobalComponent serves as the super class for all TAPI entities that can be directly retrieved by their ID. As such, these are first class entities and their ID is expected to be globally unique. ";
         }
         grouping operational-state-pac {
@@ -108,10 +113,6 @@ module tapi-common {
                 description "none";
             }
             description "Provides state attributes that are applicable to an entity that reflects operational aspects. Such an entity is expected to also have lifecycle aspects.";
-        }
-        container time-range {
-            uses time-range;
-            description "none";
         }
         grouping time-range {
             leaf end-time {
@@ -127,12 +128,67 @@ module tapi-common {
         grouping extensions-spec {
             description "none";
         }
-        list context {
-            key 'uuid';
+        container context {
             uses context;
             description "none";
         }
         grouping context {
+            container nw-topology-service {
+                config false;
+                uses service-spec;
+                description "none";
+            }
+            list connectivity-service {
+                key 'uuid';
+                uses service-spec;
+                description "none";
+            }
+            list virtual-nw-service {
+                key 'uuid';
+                uses service-spec;
+                description "none";
+            }
+            list path-comp-service {
+                key 'uuid';
+                uses service-spec;
+                description "none";
+            }
+            list notif-subscription {
+                key 'uuid';
+                uses service-spec;
+                description "none";
+            }
+            list service-end-point {
+                key 'uuid';
+                config false;
+                min-elements 2;
+                uses resource-spec;
+                description "none";
+            }
+            list topology {
+                key 'uuid';
+                config false;
+                uses resource-spec;
+                description "none";
+            }
+            list connection {
+                key 'uuid';
+                config false;
+                uses resource-spec;
+                description "none";
+            }
+            list path {
+                key 'uuid';
+                config false;
+                uses resource-spec;
+                description "none";
+            }
+            list notification {
+                key 'uuid';
+                config false;
+                uses resource-spec;
+                description "none";
+            }
             uses global-class;
             description "The Network Control Domain (NCD) object class represents the scope of control that a particular SDN controller has with respect to a particular network, (i.e., encompassing a designated set of interconnected (virtual) network elements).";
         }
@@ -142,11 +198,6 @@ module tapi-common {
         }
         grouping service-spec {
             uses global-class;
-            description "none";
-        }
-        list service-end-point {
-            key 'uuid';
-            uses service-end-point;
             description "none";
         }
         grouping service-end-point {
@@ -276,11 +327,6 @@ module tapi-common {
                 }
             }
             description "The possible values of the lifecycleState.";
-        }
-        list name-and-value {
-            key 'value-name';
-            uses name-and-value;
-            description "none";
         }
         grouping name-and-value {
             leaf value-name {
