@@ -7,9 +7,9 @@ module tapi-connectivity {
     import tapi-topology {
         prefix tapi-topology;
     }
-//    import tapi-path-computation {
-//        prefix tapi-path-computation;
-//    }
+    import tapi-path-computation {
+        prefix tapi-path-computation;
+    }
     organization "Open Networking Foundation (ONF) / Open Transport Working Group(OTWG) / Transport API (TAPI) Project";
     contact "
         WG Web: TAPI SDK Project <http://opensourcesdn.org/projects/project-snowmass/>
@@ -21,12 +21,8 @@ module tapi-connectivity {
         description "TAPI SDK 1.1.alpha";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 6020 and RFC 6087";
     }
-    augment "/tapi-common:context/tapi-common:connection" {
-        uses connection;
-        description "none";
-    }
-    augment "/tapi-common:context/tapi-common:connectivity-service" {
-        uses connectivity-service;
+    augment "/tapi-common:context" {
+        uses connectivity-context;
         description "none";
     }
     /***********************
@@ -36,7 +32,7 @@ module tapi-connectivity {
             list connection-end-point {
                 key 'uuid';
                 config false;
-//                min-elements 2;
+                min-elements 2;
                 uses connection-end-point;
                 description "none";
             }
@@ -48,7 +44,7 @@ module tapi-connectivity {
             }
             leaf node {
                 type leafref {
-                    path '/tapi-common:context/tapi-common:topology/tapi-topology:node/tapi-topology:uuid';
+                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:uuid';
                 }
                 config false;
                 description "none";
@@ -82,21 +78,21 @@ module tapi-connectivity {
             }
             leaf-list client-node-edge-point {
                 type leafref {
-                    path '/tapi-common:context/tapi-common:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-topology:uuid';
+                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-topology:uuid';
                 }
                 config false;
                 description "none";
             }
             leaf server-node-edge-point {
                 type leafref {
-                    path '/tapi-common:context/tapi-common:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-topology:uuid';
+                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-topology:uuid';
                 }
                 config false;
                 description "none";
             }
             leaf peer-connection-end-point {
                 type leafref {
-                    path '/tapi-common:context/tapi-common:connection/tapi-connectivity:connection-end-point/tapi-connectivity:uuid';
+                    path '/tapi-common:context/tapi-connectivity:connection/tapi-connectivity:connection-end-point/tapi-connectivity:uuid';
                 }
                 config false;
                 description "none";
@@ -160,40 +156,40 @@ module tapi-connectivity {
             }
             leaf coroute-inclusion {
                 type leafref {
-                    path '/tapi-common:context/tapi-common:connectivity-service/tapi-common:uuid';
+                    path '/tapi-common:context/tapi-connectivity:connectivity-service/tapi-connectivity:uuid';
                 }
                 description "none";
             }
             leaf-list diversity-exclusion {
                 type leafref {
-                    path '/tapi-common:context/tapi-common:connectivity-service/tapi-common:uuid';
+                    path '/tapi-common:context/tapi-connectivity:connectivity-service/tapi-connectivity:uuid';
                 }
                 description "none";
             }
             leaf-list include-topology {
                 type leafref {
-                    path '/tapi-common:context/tapi-common:topology/tapi-common:uuid';
+                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:uuid';
                 }
                 config false;
                 description "none";
             }
             leaf-list avoid-topology {
                 type leafref {
-                    path '/tapi-common:context/tapi-common:topology/tapi-common:uuid';
+                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:uuid';
                 }
                 config false;
                 description "none";
             }
             leaf-list include-path {
                 type leafref {
-                    path '/tapi-common:context/tapi-common:path/tapi-common:uuid';
+                    path '/tapi-common:context/tapi-path-computation:path/tapi-path-computation:uuid';
                 }
                 config false;
                 description "none";
             }
             leaf-list exclude-path {
                 type leafref {
-                    path '/tapi-common:context/tapi-common:path/tapi-common:uuid';
+                    path '/tapi-common:context/tapi-path-computation:path/tapi-path-computation:uuid';
                 }
                 config false;
                 description "none";
@@ -216,14 +212,14 @@ module tapi-connectivity {
         grouping connectivity-service {
             leaf-list connection {
                 type leafref {
-                    path '/tapi-common:context/tapi-common:connection/tapi-common:uuid';
+                    path '/tapi-common:context/tapi-connectivity:connection/tapi-connectivity:uuid';
                 }
                 config false;
                 description "none";
             }
             list service-port {
                 key 'local-id';
-//                min-elements 2;
+                min-elements 2;
                 uses connectivity-service-port;
                 description "none";
             }
@@ -286,7 +282,7 @@ module tapi-connectivity {
         grouping route {
             leaf-list lower-connection {
                 type leafref {
-                    path '/tapi-common:context/tapi-common:connection/tapi-common:uuid';
+                    path '/tapi-common:context/tapi-connectivity:connection/tapi-connectivity:uuid';
                 }
                 config false;
                 min-elements 1;
@@ -296,6 +292,21 @@ module tapi-connectivity {
             description "The FC Route (FcRoute) object class models the individual routes of an FC. 
                 The route of an FC object is represented by a list of FCs at a lower level. 
                 Note that depending on the service supported by an FC, an the FC can have multiple routes.";
+        }
+        grouping connectivity-context {
+            list connectivity-service {
+                key 'uuid';
+                config false;
+                uses connectivity-service;
+                description "none";
+            }
+            list connection {
+                key 'uuid';
+                config false;
+                uses connection;
+                description "none";
+            }
+            description "none";
         }
 
     /***********************
