@@ -18,12 +18,8 @@ module tapi-path-computation {
         description "TAPI SDK 1.1.alpha";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 6020 and RFC 6087";
     }
-    augment "/tapi-common:context/tapi-common:path" {
-        uses path;
-        description "none";
-    }
-    augment "/tapi-common:context/tapi-common:path-comp-service" {
-        uses path-computation-service;
+    augment "/tapi-common:context" {
+        uses path-computation-context;
         description "none";
     }
     /***********************
@@ -33,7 +29,7 @@ module tapi-path-computation {
             list telink {
                 key 'local-id';
                 config false;
-//                min-elements 1;
+                min-elements 1;
                 uses tapi-topology:te-link;
                 description "none";
             }
@@ -80,15 +76,15 @@ module tapi-path-computation {
         grouping path-computation-service {
             leaf-list path {
                 type leafref {
-                    path '/tapi-common:context/tapi-common:path/tapi-common:uuid';
+                    path '/tapi-common:context/tapi-path-computation:path/tapi-path-computation:uuid';
                 }
                 config false;
-//                min-elements 1;
+                min-elements 1;
                 description "none";
             }
             list service-port {
                 key 'local-id';
-//                min-elements 2;
+                min-elements 2;
                 max-elements 2;
                 uses path-comp-service-port;
                 description "none";
@@ -176,14 +172,14 @@ module tapi-path-computation {
             }
             leaf-list include-topology {
                 type leafref {
-                    path '/tapi-common:context/tapi-common:topology/tapi-common:uuid';
+                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:uuid';
                 }
                 config false;
                 description "none";
             }
             leaf-list avoid-topology {
                 type leafref {
-                    path '/tapi-common:context/tapi-common:topology/tapi-common:uuid';
+                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:uuid';
                 }
                 config false;
                 description "none";
@@ -201,6 +197,21 @@ module tapi-path-computation {
                 description "none";
             }
             uses tapi-common:local-class;
+            description "none";
+        }
+        grouping path-computation-context {
+            list path-comp-service {
+                key 'uuid';
+                config false;
+                uses path-computation-service;
+                description "none";
+            }
+            list path {
+                key 'uuid';
+                config false;
+                uses path;
+                description "none";
+            }
             description "none";
         }
 

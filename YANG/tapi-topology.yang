@@ -15,12 +15,8 @@ module tapi-topology {
         description "TAPI SDK 1.1.alpha";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 6020 and RFC 6087";
     }
-    augment "/tapi-common:context/tapi-common:topology" {
-        uses topology;
-        description "none";
-    }
-    augment "/tapi-common:context/tapi-common:nw-topology-service" {
-        uses network-topology-service;
+    augment "/tapi-common:context" {
+        uses topology-context;
         description "none";
     }
     /***********************
@@ -29,7 +25,7 @@ module tapi-topology {
         grouping link {
             leaf-list node-edge-point {
                 type leafref {
-                    path '/tapi-common:context/tapi-common:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-topology:uuid';
+                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-topology:uuid';
                 }
                 config false;
                 min-elements 2;
@@ -37,7 +33,7 @@ module tapi-topology {
             }
             leaf-list node {
                 type leafref {
-                    path '/tapi-common:context/tapi-common:topology/tapi-topology:node/tapi-topology:uuid';
+                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:uuid';
                 }
                 config false;
                 min-elements 2;
@@ -108,14 +104,14 @@ module tapi-topology {
             }
             leaf-list aggregated-node-edge-point {
                 type leafref {
-                    path '/tapi-common:context/tapi-common:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-topology:uuid';
+                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-topology:uuid';
                 }
                 config false;
                 description "none";
             }
             leaf encap-topology {
                 type leafref {
-                    path '/tapi-common:context/tapi-common:topology/tapi-common:uuid';
+                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:uuid';
                 }
                 config false;
                 description "none";
@@ -171,7 +167,7 @@ module tapi-topology {
             leaf-list layer-protocol-name {
                 type tapi-common:layer-protocol-name;
                 config false;
-//                min-elements 1;
+                min-elements 1;
                 description "none";
             }
             uses tapi-common:resource-spec;
@@ -186,7 +182,7 @@ module tapi-topology {
             }
             leaf-list node-edge-point {
                 type leafref {
-                    path '/tapi-common:context/tapi-common:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-topology:uuid';
+                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-topology:uuid';
                 }
                 min-elements 1;
                 description "Lists the LTPs that define the layer protocol transition of the transitional link.";
@@ -207,7 +203,7 @@ module tapi-topology {
             }
             leaf-list client-node-edge-point {
                 type leafref {
-                    path '/tapi-common:context/tapi-common:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-topology:uuid';
+                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-topology:uuid';
                 }
                 config false;
                 description "none";
@@ -367,7 +363,7 @@ module tapi-topology {
         grouping te-link {
             leaf-list node {
                 type leafref {
-                    path '/tapi-common:context/tapi-common:topology/tapi-topology:node/tapi-topology:uuid';
+                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:uuid';
                 }
                 config false;
                 min-elements 2;
@@ -376,7 +372,7 @@ module tapi-topology {
             }
             leaf-list node-edge-point {
                 type leafref {
-                    path '/tapi-common:context/tapi-common:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-topology:uuid';
+                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-topology:uuid';
                 }
                 config false;
                 max-elements 2;
@@ -388,12 +384,25 @@ module tapi-topology {
         grouping network-topology-service {
             leaf-list topology {
                 type leafref {
-                    path '/tapi-common:context/tapi-common:topology/tapi-common:uuid';
+                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:uuid';
                 }
                 config false;
                 description "none";
             }
             uses tapi-common:service-spec;
+            description "none";
+        }
+        grouping topology-context {
+            container nw-topology-service {
+                config false;
+                uses network-topology-service;
+                description "none";
+            }
+            list topology {
+                key 'uuid';
+                uses topology;
+                description "none";
+            }
             description "none";
         }
 
