@@ -1,0 +1,462 @@
+module tapi-connectivity {
+    namespace "urn:onf:params:xml:ns:yang:TapiConnectivity";
+    prefix tapi-connectivity;
+    import tapi-common {
+        prefix tapi-common;
+    }
+    import tapi-topology {
+        prefix tapi-topology;
+    }
+    import tapi-path-computation {
+        prefix tapi-path-computation;
+    }
+    organization "Open Networking Foundation (ONF) / Open Transport Working Group(OTWG) / Transport API (TAPI) Project";
+    contact "
+        WG Web: TAPI SDK Project <http://opensourcesdn.org/projects/project-snowmass/>
+        WG List: TAPI Discussion list <mailto: transport-api@login.opennetworking.org>,
+        WG Chair: Karthik Sethuraman <mailto:karthik.sethuraman@necam.com>,
+        Editor: Ricard Vilalta <mailto:ricard.vilalta@cttc.es>";
+    description "none";
+    revision 2016-12-15 {
+        description "TAPI SDK 1.1.alpha";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 6020 and RFC 6087";
+    }
+    augment "/tapi-common:context" {
+        uses connectivity-context;
+        description "none";
+    }
+    /***********************
+    * package object-classes
+    **********************/ 
+        grouping connection {
+            list connection-end-point {
+                key 'uuid';
+                config false;
+                min-elements 2;
+                uses connection-end-point;
+                description "none";
+            }
+            list route {
+                key 'local-id';
+                config false;
+                uses route;
+                description "none";
+            }
+            leaf node {
+                type leafref {
+                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:uuid';
+                }
+                config false;
+                description "none";
+            }
+            container state {
+                config false;
+                uses tapi-common:operational-state-pac;
+                description "none";
+            }
+            leaf layer-protocol-name {
+                type tapi-common:layer-protocol-name;
+                config false;
+                description "none";
+            }
+            leaf direction {
+                type tapi-common:forwarding-direction;
+                config false;
+                description "none";
+            }
+            uses tapi-common:resource-spec;
+            description "The ForwardingConstruct (FC) object class models enabled potential for forwarding between two or more LTPs and like the LTP supports any transport protocol including all circuit and packet forms.
+                At the lowest level of recursion, a FC represents a cross-connection within an NE.";
+        }
+        grouping connection-end-point {
+            list layer-protocol {
+                key 'local-id';
+                config false;
+                min-elements 1;
+                uses tapi-common:layer-protocol;
+                description "none";
+            }
+            leaf-list client-node-edge-point {
+                type leafref {
+                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-topology:uuid';
+                }
+                config false;
+                description "none";
+            }
+            leaf server-node-edge-point {
+                type leafref {
+                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-topology:uuid';
+                }
+                config false;
+                description "none";
+            }
+            leaf peer-connection-end-point {
+                type leafref {
+                    path '/tapi-common:context/tapi-connectivity:connection/tapi-connectivity:connection-end-point/tapi-connectivity:uuid';
+                }
+                config false;
+                description "none";
+            }
+            container state {
+                config false;
+                uses tapi-common:operational-state-pac;
+                description "none";
+            }
+            leaf termination-direction {
+                type tapi-common:termination-direction;
+                config false;
+                description "none";
+            }
+            leaf connection-port-direction {
+                type tapi-common:port-direction;
+                config false;
+                description "The orientation of defined flow at the EndPoint.";
+            }
+            leaf connection-port-role {
+                type tapi-common:port-role;
+                config false;
+                description "Each EP of the FC has a role (e.g., working, protection, protected, symmetric, hub, spoke, leaf, root)  in the context of the FC with respect to the FC function. ";
+            }
+            uses tapi-common:resource-spec;
+            description "The LogicalTerminationPoint (LTP) object class encapsulates the termination and adaptation functions of one or more transport layers. 
+                The structure of LTP supports all transport protocols including circuit and packet forms.";
+        }
+        grouping connectivity-constraint {
+            leaf service-type {
+                type service-type;
+                config false;
+                description "none";
+            }
+            leaf service-level {
+                type string;
+                config false;
+                description "An abstract value the meaning of which is mutually agreed – typically represents metrics such as - Class of service, priority, resiliency, availability";
+            }
+            leaf-list preferred-transport-layer {
+                type tapi-common:layer-protocol-name;
+                config false;
+                description "soft constraint requested by client to indicate the layer(s) of transport connection that it prefers to carry the service. This could be same as the service layer or one of the supported server layers";
+            }
+            container requested-capacity {
+                config false;
+                uses tapi-topology:capacity;
+                description "none";
+            }
+            list cost-characteristic {
+                key 'cost-name cost-value cost-algorithm';
+                config false;
+                uses tapi-topology:cost-characteristic;
+                description "The list of costs where each cost relates to some aspect of the TopologicalEntity.";
+            }
+            list latency-characteristic {
+                key 'traffic-property-name traffic-property-queing-latency';
+                config false;
+                uses tapi-topology:latency-characteristic;
+                description "The effect on the latency of a queuing process. This only has significant effect for packet based systems and has a complex characteristic.";
+            }
+            leaf coroute-inclusion {
+                type leafref {
+                    path '/tapi-common:context/tapi-connectivity:connectivity-service/tapi-connectivity:uuid';
+                }
+                description "none";
+            }
+            leaf-list diversity-exclusion {
+                type leafref {
+                    path '/tapi-common:context/tapi-connectivity:connectivity-service/tapi-connectivity:uuid';
+                }
+                description "none";
+            }
+            leaf-list include-topology {
+                type leafref {
+                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:uuid';
+                }
+                config false;
+                description "none";
+            }
+            leaf-list avoid-topology {
+                type leafref {
+                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:uuid';
+                }
+                config false;
+                description "none";
+            }
+            leaf-list include-path {
+                type leafref {
+                    path '/tapi-common:context/tapi-path-computation:path/tapi-path-computation:uuid';
+                }
+                config false;
+                description "none";
+            }
+            leaf-list exclude-path {
+                type leafref {
+                    path '/tapi-common:context/tapi-path-computation:path/tapi-path-computation:uuid';
+                }
+                config false;
+                description "none";
+            }
+            list include-route {
+                key 'local-id';
+                config false;
+                uses tapi-topology:te-link;
+                description "none";
+            }
+            list exclude-route {
+                key 'local-id';
+                config false;
+                uses tapi-topology:te-link;
+                description "none";
+            }
+            uses tapi-common:local-class;
+            description "none";
+        }
+        grouping connectivity-service {
+            leaf-list connection {
+                type leafref {
+                    path '/tapi-common:context/tapi-connectivity:connection/tapi-connectivity:uuid';
+                }
+                config false;
+                description "none";
+            }
+            list service-port {
+                key 'local-id';
+                min-elements 2;
+                uses connectivity-service-port;
+                description "none";
+            }
+            container conn-constraint {
+                uses connectivity-constraint;
+                description "none";
+            }
+            container schedule {
+                uses tapi-common:time-range;
+                description "none";
+            }
+            container state {
+                uses tapi-common:admin-state-pac;
+                description "none";
+            }
+            leaf direction {
+                type tapi-common:forwarding-direction;
+                description "none";
+            }
+            leaf layer-protocol-name {
+                type tapi-common:layer-protocol-name;
+                description "none";
+            }
+            uses tapi-common:service-spec;
+            description "The ForwardingConstruct (FC) object class models enabled potential for forwarding between two or more LTPs and like the LTP supports any transport protocol including all circuit and packet forms.
+                At the lowest level of recursion, a FC represents a cross-connection within an NE.";
+        }
+        grouping connectivity-service-port {
+            leaf service-end-point {
+                type leafref {
+                    path '/tapi-common:context/tapi-common:service-end-point/tapi-common:uuid';
+                }
+                config false;
+                description "none";
+            }
+            leaf role {
+                type tapi-common:port-role;
+                config false;
+                description "Each EP of the FC has a role (e.g., working, protection, protected, symmetric, hub, spoke, leaf, root)  in the context of the FC with respect to the FC function. ";
+            }
+            leaf direction {
+                type tapi-common:port-direction;
+                config false;
+                description "The orientation of defined flow at the EndPoint.";
+            }
+            leaf layer-protocol-name {
+                type tapi-common:layer-protocol-name;
+                config false;
+                description "none";
+            }
+            uses tapi-common:local-class;
+            description "The association of the FC to LTPs is made via EndPoints.
+                The EndPoint (EP) object class models the access to the FC function. 
+                The traffic forwarding between the associated EPs of the FC depends upon the type of FC and may be associated with FcSwitch object instances.  
+                In cases where there is resilience the EndPoint may convey the resilience role of the access to the FC. 
+                It can represent a protected (resilient/reliable) point or a protecting (unreliable working or protection) point.
+                The EP replaces the Protection Unit of a traditional protection model. 
+                The ForwadingConstruct can be considered as a component and the EndPoint as a Port on that component";
+        }
+        grouping route {
+            leaf-list lower-connection {
+                type leafref {
+                    path '/tapi-common:context/tapi-connectivity:connection/tapi-connectivity:uuid';
+                }
+                config false;
+                min-elements 1;
+                description "none";
+            }
+            uses tapi-common:local-class;
+            description "The FC Route (FcRoute) object class models the individual routes of an FC. 
+                The route of an FC object is represented by a list of FCs at a lower level. 
+                Note that depending on the service supported by an FC, an the FC can have multiple routes.";
+        }
+        grouping connectivity-context {
+            list connectivity-service {
+                key 'uuid';
+                config false;
+                uses connectivity-service;
+                description "none";
+            }
+            list connection {
+                key 'uuid';
+                config false;
+                uses connection;
+                description "none";
+            }
+            description "none";
+        }
+
+    /***********************
+    * package type-definitions
+    **********************/ 
+        typedef service-type {
+            type enumeration {
+                enum point-to-point-connectivity {
+                    description "none";
+                }
+                enum point-to-multipoint-connectivty {
+                    description "none";
+                }
+                enum multipoint-connectivity {
+                    description "none";
+                }
+            }
+            description "none";
+        }
+
+    /***********************
+    * package interfaces
+    **********************/ 
+        rpc get-connection-details {
+            description "none";
+            input {
+                leaf service-id-or-name {
+                    type string;
+                    description "none";
+                }
+                leaf connection-id-or-name {
+                    type string;
+                    description "none";
+                }
+            }
+            output {
+                container connection {
+                    uses connection;
+                    description "none";
+                }
+            }
+        }
+        rpc get-connectivity-service-list {
+            description "none";
+            output {
+                list conn-service {
+                    uses connectivity-service;
+                    description "none";
+                }
+            }
+        }
+        rpc get-connection-end-point-details {
+            description "none";
+            input {
+                leaf service-id-or-name {
+                    type string;
+                    description "none";
+                }
+                leaf connection-id-or-name {
+                    type string;
+                    description "none";
+                }
+                leaf conn-epid-or-name {
+                    type string;
+                    description "none";
+                }
+            }
+            output {
+                container conn-ep {
+                    uses connection-end-point;
+                    description "none";
+                }
+            }
+        }
+        rpc get-connectivity-service-details {
+            description "none";
+            input {
+                leaf service-id-or-name {
+                    type string;
+                    description "none";
+                }
+            }
+            output {
+                container conn-service {
+                    uses connectivity-service;
+                    description "none";
+                }
+            }
+        }
+        rpc create-connectivity-service {
+            description "none";
+            input {
+                list service-port {
+                    min-elements 2;
+                    uses connectivity-service-port;
+                    description "none";
+                }
+                container conn-constraint {
+                    uses connectivity-constraint;
+                    description "none";
+                }
+                leaf conn-schedule {
+                    type string;
+                    description "none";
+                }
+            }
+            output {
+                container conn-service {
+                    uses connectivity-service;
+                    description "none";
+                }
+            }
+        }
+        rpc update-connectivity-service {
+            description "none";
+            input {
+                leaf service-id-or-name {
+                    type string;
+                    description "none";
+                }
+                container conn-constraint {
+                    uses connectivity-constraint;
+                    description "none";
+                }
+                leaf conn-schedule {
+                    type string;
+                    description "none";
+                }
+            }
+            output {
+                container conn-service {
+                    uses connectivity-service;
+                    description "none";
+                }
+            }
+        }
+        rpc delete-connectivity-service {
+            description "none";
+            input {
+                leaf service-id-or-name {
+                    type string;
+                    description "none";
+                }
+            }
+            output {
+                container conn-service {
+                    uses connectivity-service;
+                    description "none";
+                }
+            }
+        }
+
+}
