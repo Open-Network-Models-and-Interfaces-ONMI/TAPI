@@ -1,9 +1,9 @@
 {
     "swagger": "2.0",
     "info": {
-        "version": "1.0.0",
+        "title": "tapi-eth API",
         "description": "tapi-eth API generated from tapi-eth.yang",
-        "title": "tapi-eth API"
+        "version": "1.0.0"
     },
     "host": "localhost:8080",
     "basePath": "/restconf",
@@ -12,75 +12,298 @@
     ],
     "paths": {},
     "definitions": {
-        "traffic-shaping-pac": {
+        "bandwidth-report": {
+            "description": "Data type for the bandwidth report.",
             "properties": {
-                "codirectional": {
-                    "type": "boolean",
-                    "description": "This attribute indicates the direction of the shaping function. The value of true means that the shaping (modeled as a TCS Source according to G.8021) is associated with the source part of the containing CTP. The value of false means that the shaping (modeled as a TCS Source according to G.8021) is associated with the sink part of the containing CTP."
+                "nominal-bandwidth": {
+                    "description": "This attribute returns the configured bandwidth",
+                    "type": "string"
                 },
-                "prio-config-list": {
-                    "type": "array",
-                    "description": "This attribute configures the Priority Splitter function for the mapping of the Ethernet frame priority (ETH_CI_P) values to the output queue.",
-                    "items": {
-                        "$ref": "#/definitions/priority-configuration"
-                    }
+                "current-bandwidth": {
+                    "description": "This attribute returns the current bandwidth.",
+                    "type": "string"
                 },
-                "sched-config": {
-                    "type": "string",
-                    "description": "This attribute configures the scheduler process. The value of this attribute is for further study because it is for further study in G.8021.\nScheduler is a pointer to a Scheduler object, which is to be defined in the future (because in G.8021, this is FFS).\nNote that the only significance of the GTCS function defined in G.8021 is the use of a common scheduler for shaping. Given that, G.8052 models the common scheduler feature by having a common value for this attribute."
+                "port-id": {
+                    "description": "This attribute returns the far end port identifier.",
+                    "type": "string"
                 },
-                "queue-config-list": {
-                    "type": "array",
-                    "description": "This attribute configures the Queue depth and Dropping threshold parameters of the Queue process. The Queue depth sets the maximum size of the queue in bytes. An incoming ETH_CI traffic unit is dropped if there is insufficient space in the queue to hold the whole unit. The Dropping threshold sets the threshold of the queue. If the queue is filled beyond this threshold, incoming ETH_CI traffic units accompanied by the ETH_CI_DE signal set are dropped.",
-                    "items": {
-                        "$ref": "#/definitions/queue-configuration"
-                    }
-                }
-            },
-            "description": "This object class models the ETH traffic shaping function as defined in G.8021.\nBasic attribute: codirectional, prioConfigList, queueConfigList, schedConfig"
-        },
-        "traffic-conditioning-configuration": {
-            "properties": {
-                "cir": {
-                    "type": "string",
-                    "description": "This attribute indicates the Committed Information Rate in bits/s."
-                },
-                "cbs": {
-                    "type": "string",
-                    "description": "This attribute indicates the Committed Burst Size in bytes."
-                },
-                "ebs": {
-                    "type": "string",
-                    "description": "This attribute indicates the Excess Burst Size in bytes."
-                },
-                "colour-mode": {
-                    "type": "string",
-                    "description": "This attribute indicates the colour mode.",
-                    "enum": [
-                        "colour-blind",
-                        "colour-aware"
-                    ]
-                },
-                "eir": {
-                    "type": "string",
-                    "description": "This attribute indicates the Excess Information Rate in bits/s."
-                },
-                "coupling-flag": {
-                    "type": "boolean",
-                    "description": "This attribute indicates the coupling flag."
-                },
-                "queue-id": {
-                    "type": "string",
-                    "description": "This attribute indicates the queue id."
+                "source-mac-address": {
+                    "description": "The sourceMacAddress is the address from the far end.",
+                    "type": "string"
                 }
             }
         },
-        "priority-configuration": {
+        "connection-point-and-adapter-pac": {
             "properties": {
-                "queue-id": {
+                "vlan-config": {
+                    "description": "This attribute models the ETHx/ETH-m_A_So_MI_Vlan_Config information defined in G.8021.\nrange of type : -1, 0, 1..4094",
                     "type": "string"
                 },
-                "priority": {
+                "collector-max-delay": {
+                    "description": "See 802.1AX:\nThe value of this attribute defines the maximum delay, in tens of microseconds, that may be imposed by the Frame Collector between receiving a frame from an Aggregator Parser, and either delivering the frame to its MAC Client or discarding the frame (see IEEE 802.1AX clause 5.2.3.1.1).\nrange of type : 16-bit",
+                    "type": "string"
+                },
+                "traffic-conditioning": {
+                    "$ref": "#/definitions/traffic-conditioning-pac"
+                },
+                "data-rate": {
+                    "description": "See 802.1AX:\nThe current data rate, in bits per second, of the aggregate link. The value is calculated as N times the data rate of a single link in the aggregation, where N is the number of active links.",
+                    "type": "string"
+                },
+                "filter-config-snk": {
+                    "items": {
+                        "description": "This attribute models the FilteConfig MI defined in 8.3/G.8021. It indicates the configured filter action for each of the 33 group MAC addresses for control frames. The 33 MAC addresses are:\n01-80-C2-00-00-10, \n01-80-C2-00-00-00 to 01-80-C2-00-00-0F, and \n01-80-C2-00-00-20 to 01-80-C2-00-00-2F.\nThe filter action is Pass or Block. \nIf the destination address of the incoming ETH_CI_D matches one of the above addresses, the filter process shall perform the corresponding configured filter action. \nIf none of the above addresses match, the ETH_CI_D is passed.",
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "pll-thr": {
+                    "description": "This attribute provisions the threshold for the number of active ports. If the number of active ports is more than zero but less than the provisioned threshold, a cPLL (Partial Link Loss) is raised. See section 9.7.1.2 of G.8021.\nrange of type : 0..number of ports",
+                    "type": "string"
+                },
+                "is-ssf-reported": {
+                    "description": "This attribute provisions whether the SSF defect should be reported as fault cause or not.\nIt models the ETH-LAG_FT_Sk_MI_SSF_Reported defined in G.8021.",
+                    "type": "boolean"
+                },
+                "filter-config": {
+                    "description": "This attribute models the FilterConfig MI defined in section 8.3/G.8021. It indicates the configured filter action for each of the 33 group MAC addresses for control frames. The 33 MAC addresses are:\n- All bridges address: 01-80-C2-00-00-10,\n- Reserved addresses: 01-80-C2-00-00-00 to 01-80-C2-00-00-0F,\n- GARP Application addresses: 01-80-C2-00-00-20 to 01-80-C2-00-00-2F.\nThe filter action is Pass or Block. \nIf the destination address of the incoming ETH_CI_D matches one of the above addresses, the filter process shall perform the corresponding configured filter action. \nIf none of the above addresses match, the ETH_CI_D is passed.",
+                    "$ref": "#/definitions/control-frame-filter"
+                },
+                "actor-system-priority": {
+                    "description": "See 802.1AX:\nIndicating the priority associated with the Actor\u2019s System ID.\nrange of type : 2-octet",
+                    "type": "string"
+                },
+                "partner-system-id": {
+                    "description": "See 802.1AX:\nA MAC address consisting of the unique identifier for the current protocol Partner of this Aggregator. A value of zero indicates that there is no known Partner. If the aggregation is manually configured, this System ID value will be a value assigned by the local System.",
+                    "type": "string"
+                },
+                "csf-config": {
+                    "enum": [
+                        "disabled",
+                        "enabled",
+                        "enabled-with-rdi-fdi",
+                        "enabled-with-rdi-fdi-dci",
+                        "enabled-with-dci"
+                    ],
+                    "description": "This attribute models the combination of all CSF related MI signals (MI_CSF_Enable, MI_CSFrdifdi_Enable, MI_CSFdci_Enable) as defined in G.8021.\nrange of type : true, false",
+                    "type": "string"
+                },
+                "auxiliary-function-position-sequence": {
+                    "items": {
+                        "description": "This attribute indicates the positions (i.e., the relative order) of all the MEP, MIP, and TCS objects which are associated with the CTP.",
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "csf-rdi-fdi-enable": {
+                    "description": "This attribute models the MI_CSFrdifdiEnable information defined in G.8021.",
+                    "type": "boolean"
+                },
+                "csf-report": {
+                    "description": "This attribute models the MI_CSF_Reported information defined in G.8021.\nrange of type : true, false",
+                    "type": "boolean"
+                },
+                "partner-oper-key": {
+                    "description": "See 802.1AX:\nThe current operational value of the Key for the Aggregator\u2019s current protocol Partner. If the aggregation is manually configured, this Key value will be a value assigned by the local System.\nrange of type : 16-bit",
+                    "type": "string"
+                },
+                "actor-system-id": {
+                    "description": "See 802.1AX:\nA MAC address used as a unique identifier for the System that contains this Aggregator.",
+                    "type": "string"
+                },
+                "actor-oper-key": {
+                    "description": "See 802.1AX:\nThe current operational value of the Key for the Aggregator. The administrative Key value may differ from the operational Key value for the reasons discussed in 5.6.2.\nThe meaning of particular Key values is of local significance.\nrange of type : 16 bit",
+                    "type": "string"
+                },
+                "partner-system-priority": {
+                    "description": "See 802.1AX:\nIndicates the priority associated with the Partner\u2019s System ID. If the aggregation is manually configured, this System Priority value will be a value assigned by the local System.\nrange of type : 2-octet",
+                    "type": "string"
+                },
+                "mac-length": {
+                    "description": "This attribute models the MAC_Lenght MI defined in 8.6/G.8021 for the MAC Length Check process. It indicates the allowed maximum frame length in bytes.\nrange of type : 1518, 1522, 2000",
+                    "type": "string"
+                },
+                "traffic-shaping": {
+                    "$ref": "#/definitions/traffic-shaping-pac"
+                }
+            }
+        },
+        "traffic-shaping-pac": {
+            "description": "This object class models the ETH traffic shaping function as defined in G.8021.\nBasic attribute: codirectional, prioConfigList, queueConfigList, schedConfig",
+            "properties": {
+                "prio-config-list": {
+                    "description": "This attribute configures the Priority Splitter function for the mapping of the Ethernet frame priority (ETH_CI_P) values to the output queue.",
+                    "items": {
+                        "$ref": "#/definitions/priority-configuration"
+                    },
+                    "type": "array"
+                },
+                "sched-config": {
+                    "description": "This attribute configures the scheduler process. The value of this attribute is for further study because it is for further study in G.8021.\nScheduler is a pointer to a Scheduler object, which is to be defined in the future (because in G.8021, this is FFS).\nNote that the only significance of the GTCS function defined in G.8021 is the use of a common scheduler for shaping. Given that, G.8052 models the common scheduler feature by having a common value for this attribute.",
+                    "type": "string"
+                },
+                "queue-config-list": {
+                    "description": "This attribute configures the Queue depth and Dropping threshold parameters of the Queue process. The Queue depth sets the maximum size of the queue in bytes. An incoming ETH_CI traffic unit is dropped if there is insufficient space in the queue to hold the whole unit. The Dropping threshold sets the threshold of the queue. If the queue is filled beyond this threshold, incoming ETH_CI traffic units accompanied by the ETH_CI_DE signal set are dropped.",
+                    "items": {
+                        "$ref": "#/definitions/queue-configuration"
+                    },
+                    "type": "array"
+                },
+                "codirectional": {
+                    "description": "This attribute indicates the direction of the shaping function. The value of true means that the shaping (modeled as a TCS Source according to G.8021) is associated with the source part of the containing CTP. The value of false means that the shaping (modeled as a TCS Source according to G.8021) is associated with the sink part of the containing CTP.",
+                    "type": "boolean"
+                }
+            }
+        },
+        "control-frame-filter": {
+            "description": "This data type identifies the filter action for each of the 33 group MAC addresses (control frames).\nValue 'false' means block: The frame is discarded by the filter process.\nValue 'true' means pass: The frame is passed unchanged through the filter process.",
+            "properties": {
+                "c2-00-00-0b": {
+                    "description": "Reserved for future standardization.",
+                    "type": "boolean"
+                },
+                "c2-00-00-26": {
+                    "description": "Reserved for future standardization.",
+                    "type": "boolean"
+                },
+                "c2-00-00-2b": {
+                    "description": "Reserved for future standardization.",
+                    "type": "boolean"
+                },
+                "c2-00-00-25": {
+                    "description": "Reserved for future standardization.",
+                    "type": "boolean"
+                },
+                "c2-00-00-03": {
+                    "description": "This attribute identifies the Nearest non-TPMR Bridge group address (Port Authentication protocol).",
+                    "type": "boolean"
+                },
+                "c2-00-00-02": {
+                    "description": "This attribute identifies the IEEE 802.3 Slow_Protocols_Multicast address (LACP/LAMP or Link OAM protocols).",
+                    "type": "boolean"
+                },
+                "c2-00-00-10": {
+                    "description": "This attribute identifies the 'All LANs Bridge Management Group Address'.",
+                    "type": "boolean"
+                },
+                "c2-00-00-2d": {
+                    "description": "Reserved for future standardization.",
+                    "type": "boolean"
+                },
+                "c2-00-00-00": {
+                    "description": "This attribute identifies the STP/RSTP/MSTP protocol address.",
+                    "type": "boolean"
+                },
+                "c2-00-00-0e": {
+                    "description": "This attribute identifies the Individual LAN Scope group address, Nearest Bridge group address (LLDP protocol).",
+                    "type": "boolean"
+                },
+                "c2-00-00-2c": {
+                    "description": "Reserved for future standardization.",
+                    "type": "boolean"
+                },
+                "c2-00-00-2f": {
+                    "description": "Reserved for future standardization.",
+                    "type": "boolean"
+                },
+                "c2-00-00-04": {
+                    "description": "This attribute identifies the IEEE MAC-specific Control Protocols group address.",
+                    "type": "boolean"
+                },
+                "c2-00-00-0d": {
+                    "description": "This attribute identifies the Provider Bridge MVRP address.",
+                    "type": "boolean"
+                },
+                "c2-00-00-08": {
+                    "description": "This attribute identifies the Provider Bridge Group address.",
+                    "type": "boolean"
+                },
+                "c2-00-00-0c": {
+                    "description": "Reserved for future standardization.",
+                    "type": "boolean"
+                },
+                "c2-00-00-2a": {
+                    "description": "Reserved for future standardization.",
+                    "type": "boolean"
+                },
+                "c2-00-00-23": {
+                    "description": "Reserved for future standardization.",
+                    "type": "boolean"
+                },
+                "c2-00-00-27": {
+                    "description": "Reserved for future standardization.",
+                    "type": "boolean"
+                },
+                "c2-00-00-0a": {
+                    "description": "Reserved for future standardization.",
+                    "type": "boolean"
+                },
+                "c2-00-00-01": {
+                    "description": "This attribute identifies the IEEE MAC-specific Control Protocols group address (PAUSE protocol).",
+                    "type": "boolean"
+                },
+                "c2-00-00-0f": {
+                    "description": "Reserved for future standardization.",
+                    "type": "boolean"
+                },
+                "c2-00-00-06": {
+                    "description": "Reserved for future standardization.",
+                    "type": "boolean"
+                },
+                "c2-00-00-09": {
+                    "description": "Reserved for future standardization.",
+                    "type": "boolean"
+                },
+                "c2-00-00-05": {
+                    "description": "Reserved for future standardization.",
+                    "type": "boolean"
+                },
+                "c2-00-00-22": {
+                    "description": "Reserved for future standardization.",
+                    "type": "boolean"
+                },
+                "c2-00-00-21": {
+                    "description": "This attribute identifies the Customer Bridge MVRP address.",
+                    "type": "boolean"
+                },
+                "c2-00-00-24": {
+                    "description": "Reserved for future standardization.",
+                    "type": "boolean"
+                },
+                "c2-00-00-07": {
+                    "description": "This attribute identifies the Metro Ethernet Forum E-LMI protocol group address.",
+                    "type": "boolean"
+                },
+                "c2-00-00-29": {
+                    "description": "Reserved for future standardization.",
+                    "type": "boolean"
+                },
+                "c2-00-00-2e": {
+                    "description": "Reserved for future standardization.",
+                    "type": "boolean"
+                },
+                "c2-00-00-20": {
+                    "description": "This attribute identifies the Customer and Provider Bridge MMRP address.",
+                    "type": "boolean"
+                },
+                "c2-00-00-28": {
+                    "description": "Reserved for future standardization.",
+                    "type": "boolean"
+                }
+            }
+        },
+        "queue-configuration": {
+            "properties": {
+                "queue-depth": {
+                    "description": "This attribute defines the depth of the queue in bytes.",
+                    "type": "string"
+                },
+                "queue-threshold": {
+                    "description": "This attribute defines the threshold of the queue in bytes.",
+                    "type": "string"
+                },
+                "queue-id": {
+                    "description": "This attribute indicates the queue id.",
                     "type": "string"
                 }
             }
@@ -88,16 +311,14 @@
         "ety-termination-pac": {
             "properties": {
                 "is-tx-pause-enabled": {
-                    "type": "boolean",
-                    "description": "This attribute identifies whether the Transmit Pause process is enabled or not. It models the MI_TxPauseEnable defined in G.8021."
+                    "description": "This attribute identifies whether the Transmit Pause process is enabled or not. It models the MI_TxPauseEnable defined in G.8021.",
+                    "type": "boolean"
                 },
                 "is-fts-enabled": {
-                    "type": "boolean",
-                    "description": "This attribute indicates whether Forced Transmitter Shutdown (FTS) is enabled or not. It models the ETYn_TT_So_MI_FTSEnable information."
+                    "description": "This attribute indicates whether Forced Transmitter Shutdown (FTS) is enabled or not. It models the ETYn_TT_So_MI_FTSEnable information.",
+                    "type": "boolean"
                 },
                 "phy-type": {
-                    "type": "string",
-                    "description": "This attribute identifies the PHY type of the ETY trail termination. See IEEE 802.3 clause 30.3.2.1.2.",
                     "enum": [
                         "other",
                         "unknown",
@@ -113,13 +334,12 @@
                         "10gbase-x",
                         "10gbase-r",
                         "10gbase-w"
-                    ]
+                    ],
+                    "description": "This attribute identifies the PHY type of the ETY trail termination. See IEEE 802.3 clause 30.3.2.1.2.",
+                    "type": "string"
                 },
                 "phy-type-list": {
-                    "type": "array",
                     "items": {
-                        "type": "string",
-                        "description": "This attribute identifies the possible PHY types that could be supported at the ETY trail termination. See IEEE 802.3 clause 30.3.2.1.3.",
                         "enum": [
                             "other",
                             "unknown",
@@ -135,316 +355,122 @@
                             "10gbase-x",
                             "10gbase-r",
                             "10gbase-w"
-                        ]
-                    }
+                        ],
+                        "description": "This attribute identifies the possible PHY types that could be supported at the ETY trail termination. See IEEE 802.3 clause 30.3.2.1.3.",
+                        "type": "string"
+                    },
+                    "type": "array"
                 }
             }
         },
-        "bandwidth-report": {
+        "traffic-conditioning-configuration": {
             "properties": {
-                "source-mac-address": {
-                    "type": "string",
-                    "description": "The sourceMacAddress is the address from the far end."
+                "ebs": {
+                    "description": "This attribute indicates the Excess Burst Size in bytes.",
+                    "type": "string"
                 },
-                "port-id": {
-                    "type": "string",
-                    "description": "This attribute returns the far end port identifier."
+                "colour-mode": {
+                    "enum": [
+                        "colour-blind",
+                        "colour-aware"
+                    ],
+                    "description": "This attribute indicates the colour mode.",
+                    "type": "string"
                 },
-                "nominal-bandwidth": {
-                    "type": "string",
-                    "description": "This attribute returns the configured bandwidth"
+                "coupling-flag": {
+                    "description": "This attribute indicates the coupling flag.",
+                    "type": "boolean"
                 },
-                "current-bandwidth": {
-                    "type": "string",
-                    "description": "This attribute returns the current bandwidth."
+                "queue-id": {
+                    "description": "This attribute indicates the queue id.",
+                    "type": "string"
+                },
+                "cir": {
+                    "description": "This attribute indicates the Committed Information Rate in bits/s.",
+                    "type": "string"
+                },
+                "cbs": {
+                    "description": "This attribute indicates the Committed Burst Size in bytes.",
+                    "type": "string"
+                },
+                "eir": {
+                    "description": "This attribute indicates the Excess Information Rate in bits/s.",
+                    "type": "string"
                 }
-            },
-            "description": "Data type for the bandwidth report."
-        },
-        "priority-mapping": {
-            "properties": {
-                "priority7": {
-                    "type": "string",
-                    "description": "This attribute defines the new priority value for the old priority value 7."
-                },
-                "priority5": {
-                    "type": "string",
-                    "description": "This attribute defines the new priority value for the old priority value 5."
-                },
-                "priority1": {
-                    "type": "string",
-                    "description": "This attribute defines the new priority value for the old priority value 1."
-                },
-                "priority4": {
-                    "type": "string",
-                    "description": "This attribute defines the new priority value for the old priority value 4."
-                },
-                "priority6": {
-                    "type": "string",
-                    "description": "This attribute defines the new priority value for the old priority value 6."
-                },
-                "priority0": {
-                    "type": "string",
-                    "description": "This attribute defines the new priority value for the old priority value 0."
-                },
-                "priority3": {
-                    "type": "string",
-                    "description": "This attribute defines the new priority value for the old priority value 3."
-                },
-                "priority2": {
-                    "type": "string",
-                    "description": "This attribute defines the new priority value for the old priority value 2."
-                }
-            },
-            "description": "This data type provides the priority mapping done in the 'P Regenerate' process defined in G.8021."
+            }
         },
         "address-tuple": {
+            "description": "This data type contains an address tuple consisting of a MAC address and a corresponding port list.",
             "properties": {
                 "address": {
-                    "type": "string",
-                    "description": "This attribute contains the MAC address of the address tuple."
+                    "description": "This attribute contains the MAC address of the address tuple.",
+                    "type": "string"
                 },
                 "port-list": {
-                    "type": "array",
                     "items": {
-                        "type": "string",
-                        "description": "This attribute contains the ports associated to the MAC address in the address tuple."
-                    }
-                }
-            },
-            "description": "This data type contains an address tuple consisting of a MAC address and a corresponding port list."
-        },
-        "connection-point-and-adapter-pac": {
-            "properties": {
-                "actor-oper-key": {
-                    "type": "string",
-                    "description": "See 802.1AX:\nThe current operational value of the Key for the Aggregator. The administrative Key value may differ from the operational Key value for the reasons discussed in 5.6.2.\nThe meaning of particular Key values is of local significance.\nrange of type : 16 bit"
-                },
-                "collector-max-delay": {
-                    "type": "string",
-                    "description": "See 802.1AX:\nThe value of this attribute defines the maximum delay, in tens of microseconds, that may be imposed by the Frame Collector between receiving a frame from an Aggregator Parser, and either delivering the frame to its MAC Client or discarding the frame (see IEEE 802.1AX clause 5.2.3.1.1).\nrange of type : 16-bit"
-                },
-                "pll-thr": {
-                    "type": "string",
-                    "description": "This attribute provisions the threshold for the number of active ports. If the number of active ports is more than zero but less than the provisioned threshold, a cPLL (Partial Link Loss) is raised. See section 9.7.1.2 of G.8021.\nrange of type : 0..number of ports"
-                },
-                "traffic-conditioning": {
-                    "$ref": "#/definitions/traffic-conditioning-pac"
-                },
-                "csf-rdi-fdi-enable": {
-                    "type": "boolean",
-                    "description": "This attribute models the MI_CSFrdifdiEnable information defined in G.8021."
-                },
-                "auxiliary-function-position-sequence": {
-                    "type": "array",
-                    "items": {
-                        "type": "string",
-                        "description": "This attribute indicates the positions (i.e., the relative order) of all the MEP, MIP, and TCS objects which are associated with the CTP."
-                    }
-                },
-                "actor-system-priority": {
-                    "type": "string",
-                    "description": "See 802.1AX:\nIndicating the priority associated with the Actor\u2019s System ID.\nrange of type : 2-octet"
-                },
-                "partner-system-id": {
-                    "type": "string",
-                    "description": "See 802.1AX:\nA MAC address consisting of the unique identifier for the current protocol Partner of this Aggregator. A value of zero indicates that there is no known Partner. If the aggregation is manually configured, this System ID value will be a value assigned by the local System."
-                },
-                "partner-system-priority": {
-                    "type": "string",
-                    "description": "See 802.1AX:\nIndicates the priority associated with the Partner\u2019s System ID. If the aggregation is manually configured, this System Priority value will be a value assigned by the local System.\nrange of type : 2-octet"
-                },
-                "is-ssf-reported": {
-                    "type": "boolean",
-                    "description": "This attribute provisions whether the SSF defect should be reported as fault cause or not.\nIt models the ETH-LAG_FT_Sk_MI_SSF_Reported defined in G.8021."
-                },
-                "csf-report": {
-                    "type": "boolean",
-                    "description": "This attribute models the MI_CSF_Reported information defined in G.8021.\nrange of type : true, false"
-                },
-                "csf-config": {
-                    "type": "string",
-                    "description": "This attribute models the combination of all CSF related MI signals (MI_CSF_Enable, MI_CSFrdifdi_Enable, MI_CSFdci_Enable) as defined in G.8021.\nrange of type : true, false",
-                    "enum": [
-                        "disabled",
-                        "enabled",
-                        "enabled-with-rdi-fdi",
-                        "enabled-with-rdi-fdi-dci",
-                        "enabled-with-dci"
-                    ]
-                },
-                "data-rate": {
-                    "type": "string",
-                    "description": "See 802.1AX:\nThe current data rate, in bits per second, of the aggregate link. The value is calculated as N times the data rate of a single link in the aggregation, where N is the number of active links."
-                },
-                "filter-config-snk": {
-                    "type": "array",
-                    "items": {
-                        "type": "string",
-                        "description": "This attribute models the FilteConfig MI defined in 8.3/G.8021. It indicates the configured filter action for each of the 33 group MAC addresses for control frames. The 33 MAC addresses are:\n01-80-C2-00-00-10, \n01-80-C2-00-00-00 to 01-80-C2-00-00-0F, and \n01-80-C2-00-00-20 to 01-80-C2-00-00-2F.\nThe filter action is Pass or Block. \nIf the destination address of the incoming ETH_CI_D matches one of the above addresses, the filter process shall perform the corresponding configured filter action. \nIf none of the above addresses match, the ETH_CI_D is passed."
-                    }
-                },
-                "vlan-config": {
-                    "type": "string",
-                    "description": "This attribute models the ETHx/ETH-m_A_So_MI_Vlan_Config information defined in G.8021.\nrange of type : -1, 0, 1..4094"
-                },
-                "traffic-shaping": {
-                    "$ref": "#/definitions/traffic-shaping-pac"
-                },
-                "filter-config": {
-                    "$ref": "#/definitions/control-frame-filter",
-                    "description": "This attribute models the FilterConfig MI defined in section 8.3/G.8021. It indicates the configured filter action for each of the 33 group MAC addresses for control frames. The 33 MAC addresses are:\n- All bridges address: 01-80-C2-00-00-10,\n- Reserved addresses: 01-80-C2-00-00-00 to 01-80-C2-00-00-0F,\n- GARP Application addresses: 01-80-C2-00-00-20 to 01-80-C2-00-00-2F.\nThe filter action is Pass or Block. \nIf the destination address of the incoming ETH_CI_D matches one of the above addresses, the filter process shall perform the corresponding configured filter action. \nIf none of the above addresses match, the ETH_CI_D is passed."
-                },
-                "partner-oper-key": {
-                    "type": "string",
-                    "description": "See 802.1AX:\nThe current operational value of the Key for the Aggregator\u2019s current protocol Partner. If the aggregation is manually configured, this Key value will be a value assigned by the local System.\nrange of type : 16-bit"
-                },
-                "mac-length": {
-                    "type": "string",
-                    "description": "This attribute models the MAC_Lenght MI defined in 8.6/G.8021 for the MAC Length Check process. It indicates the allowed maximum frame length in bytes.\nrange of type : 1518, 1522, 2000"
-                },
-                "actor-system-id": {
-                    "type": "string",
-                    "description": "See 802.1AX:\nA MAC address used as a unique identifier for the System that contains this Aggregator."
+                        "description": "This attribute contains the ports associated to the MAC address in the address tuple.",
+                        "type": "string"
+                    },
+                    "type": "array"
                 }
             }
         },
-        "control-frame-filter": {
+        "priority-mapping": {
+            "description": "This data type provides the priority mapping done in the 'P Regenerate' process defined in G.8021.",
             "properties": {
-                "c2-00-00-05": {
-                    "type": "boolean",
-                    "description": "Reserved for future standardization."
+                "priority5": {
+                    "description": "This attribute defines the new priority value for the old priority value 5.",
+                    "type": "string"
                 },
-                "c2-00-00-21": {
-                    "type": "boolean",
-                    "description": "This attribute identifies the Customer Bridge MVRP address."
+                "priority6": {
+                    "description": "This attribute defines the new priority value for the old priority value 6.",
+                    "type": "string"
                 },
-                "c2-00-00-2c": {
-                    "type": "boolean",
-                    "description": "Reserved for future standardization."
+                "priority0": {
+                    "description": "This attribute defines the new priority value for the old priority value 0.",
+                    "type": "string"
                 },
-                "c2-00-00-00": {
-                    "type": "boolean",
-                    "description": "This attribute identifies the STP/RSTP/MSTP protocol address."
+                "priority1": {
+                    "description": "This attribute defines the new priority value for the old priority value 1.",
+                    "type": "string"
                 },
-                "c2-00-00-03": {
-                    "type": "boolean",
-                    "description": "This attribute identifies the Nearest non-TPMR Bridge group address (Port Authentication protocol)."
+                "priority4": {
+                    "description": "This attribute defines the new priority value for the old priority value 4.",
+                    "type": "string"
                 },
-                "c2-00-00-2b": {
-                    "type": "boolean",
-                    "description": "Reserved for future standardization."
+                "priority2": {
+                    "description": "This attribute defines the new priority value for the old priority value 2.",
+                    "type": "string"
                 },
-                "c2-00-00-29": {
-                    "type": "boolean",
-                    "description": "Reserved for future standardization."
+                "priority3": {
+                    "description": "This attribute defines the new priority value for the old priority value 3.",
+                    "type": "string"
                 },
-                "c2-00-00-09": {
-                    "type": "boolean",
-                    "description": "Reserved for future standardization."
-                },
-                "c2-00-00-07": {
-                    "type": "boolean",
-                    "description": "This attribute identifies the Metro Ethernet Forum E-LMI protocol group address."
-                },
-                "c2-00-00-0d": {
-                    "type": "boolean",
-                    "description": "This attribute identifies the Provider Bridge MVRP address."
-                },
-                "c2-00-00-0a": {
-                    "type": "boolean",
-                    "description": "Reserved for future standardization."
-                },
-                "c2-00-00-23": {
-                    "type": "boolean",
-                    "description": "Reserved for future standardization."
-                },
-                "c2-00-00-0c": {
-                    "type": "boolean",
-                    "description": "Reserved for future standardization."
-                },
-                "c2-00-00-2e": {
-                    "type": "boolean",
-                    "description": "Reserved for future standardization."
-                },
-                "c2-00-00-0f": {
-                    "type": "boolean",
-                    "description": "Reserved for future standardization."
-                },
-                "c2-00-00-02": {
-                    "type": "boolean",
-                    "description": "This attribute identifies the IEEE 802.3 Slow_Protocols_Multicast address (LACP/LAMP or Link OAM protocols)."
-                },
-                "c2-00-00-20": {
-                    "type": "boolean",
-                    "description": "This attribute identifies the Customer and Provider Bridge MMRP address."
-                },
-                "c2-00-00-25": {
-                    "type": "boolean",
-                    "description": "Reserved for future standardization."
-                },
-                "c2-00-00-0e": {
-                    "type": "boolean",
-                    "description": "This attribute identifies the Individual LAN Scope group address, Nearest Bridge group address (LLDP protocol)."
-                },
-                "c2-00-00-10": {
-                    "type": "boolean",
-                    "description": "This attribute identifies the 'All LANs Bridge Management Group Address'."
-                },
-                "c2-00-00-08": {
-                    "type": "boolean",
-                    "description": "This attribute identifies the Provider Bridge Group address."
-                },
-                "c2-00-00-26": {
-                    "type": "boolean",
-                    "description": "Reserved for future standardization."
-                },
-                "c2-00-00-0b": {
-                    "type": "boolean",
-                    "description": "Reserved for future standardization."
-                },
-                "c2-00-00-24": {
-                    "type": "boolean",
-                    "description": "Reserved for future standardization."
-                },
-                "c2-00-00-28": {
-                    "type": "boolean",
-                    "description": "Reserved for future standardization."
-                },
-                "c2-00-00-2f": {
-                    "type": "boolean",
-                    "description": "Reserved for future standardization."
-                },
-                "c2-00-00-2a": {
-                    "type": "boolean",
-                    "description": "Reserved for future standardization."
-                },
-                "c2-00-00-06": {
-                    "type": "boolean",
-                    "description": "Reserved for future standardization."
-                },
-                "c2-00-00-27": {
-                    "type": "boolean",
-                    "description": "Reserved for future standardization."
-                },
-                "c2-00-00-01": {
-                    "type": "boolean",
-                    "description": "This attribute identifies the IEEE MAC-specific Control Protocols group address (PAUSE protocol)."
-                },
-                "c2-00-00-2d": {
-                    "type": "boolean",
-                    "description": "Reserved for future standardization."
-                },
-                "c2-00-00-22": {
-                    "type": "boolean",
-                    "description": "Reserved for future standardization."
-                },
-                "c2-00-00-04": {
-                    "type": "boolean",
-                    "description": "This attribute identifies the IEEE MAC-specific Control Protocols group address."
+                "priority7": {
+                    "description": "This attribute defines the new priority value for the old priority value 7.",
+                    "type": "string"
                 }
-            },
-            "description": "This data type identifies the filter action for each of the 33 group MAC addresses (control frames).\nValue 'false' means block: The frame is discarded by the filter process.\nValue 'true' means pass: The frame is passed unchanged through the filter process."
+            }
+        },
+        "priority-configuration": {
+            "properties": {
+                "priority": {
+                    "type": "string"
+                },
+                "queue-id": {
+                    "type": "string"
+                }
+            }
+        },
+        "connection-end-point-lp-spec": {
+            "properties": {
+                "termination-spec": {
+                    "$ref": "#/definitions/eth-termination-pac"
+                },
+                "adapter-spec": {
+                    "$ref": "#/definitions/connection-point-and-adapter-pac"
+                }
+            }
         },
         "node-edge-point-lp-spec": {
             "properties": {
@@ -453,103 +479,77 @@
                 }
             }
         },
-        "eth-termination-pac": {
+        "traffic-conditioning-pac": {
+            "description": "This object class models the ETH traffic conditioning function as defined in G.8021.\nBasic attributes: codirectional, condConfigList, prioConfigList",
             "properties": {
+                "prio-config-list": {
+                    "description": "This attribute indicates the Priority Splitter function for the mapping of the Ethernet frame priority (ETH_CI_P) values to the output queue.",
+                    "items": {
+                        "$ref": "#/definitions/priority-configuration"
+                    },
+                    "type": "array"
+                },
+                "cond-config-list": {
+                    "description": "This attribute indicates for the conditioner process the conditioning parameters:\n- Queue ID: Indicates the Queue ID\n- Committed Information Rate (CIR): number of bits per second\n- Committed Burst Size (CBS): number of bytes\n- Excess Information Rate (EIR): number of bits per second\n- Excess Burst Size (EBS): number of bytes\n- Coupling flag (CF): 0 or 1\n- Color mode (CM): color-blind and color-aware.",
+                    "items": {
+                        "$ref": "#/definitions/traffic-conditioning-configuration"
+                    },
+                    "type": "array"
+                },
+                "codirectional": {
+                    "description": "This attribute indicates the direction of the conditioner. The value of true means that the conditioner (modeled as a TCS Sink according to G.8021) is associated with the sink part of the containing CTP. The value of false means that the conditioner (modeled as a TCS Sink according to G.8021) is associated with the source part of the containing CTP.",
+                    "type": "boolean"
+                }
+            }
+        },
+        "eth-termination-pac": {
+            "description": "This object class models the Ethernet Flow Termination function located at a layer boundary.",
+            "properties": {
+                "ether-type": {
+                    "enum": [
+                        "c-tag",
+                        "s-tag",
+                        "i-tag"
+                    ],
+                    "description": "This attribute models the ETHx/ETH-m _A_Sk_MI_Etype information defined in G.8021.",
+                    "type": "string"
+                },
+                "frametype-config": {
+                    "enum": [
+                        "admit-only-vlan-tagged-frames",
+                        "admit-only-untagged-and-priority-tagged-frames",
+                        "admit-all-frames"
+                    ],
+                    "description": "This attribute models the ETHx/ETH-m_A_Sk_MI_Frametype_Config information defined in G.8021.\nrange of type : see Enumeration",
+                    "type": "string"
+                },
                 "priority-code-point-config": {
-                    "type": "string",
-                    "description": "This attribute models the ETHx/ETH-m _A_Sk_MI_PCP_Config information defined in G.8021.\nrange of type : see Enumeration",
                     "enum": [
                         "8p0d",
                         "7p1d",
                         "6p2d",
                         "5p3d",
                         "dei"
-                    ]
-                },
-                "ether-type": {
-                    "type": "string",
-                    "description": "This attribute models the ETHx/ETH-m _A_Sk_MI_Etype information defined in G.8021.",
-                    "enum": [
-                        "c-tag",
-                        "s-tag",
-                        "i-tag"
-                    ]
-                },
-                "port-vid": {
-                    "type": "string",
-                    "description": "This attribute models the ETHx/ETH-m _A_Sk_MI_PVID information defined in G.8021."
-                },
-                "priority-regenerate": {
-                    "$ref": "#/definitions/priority-mapping",
-                    "description": "This attribute models the ETHx/ETH-m _A_Sk_MI_P_Regenerate information defined in G.8021."
+                    ],
+                    "description": "This attribute models the ETHx/ETH-m _A_Sk_MI_PCP_Config information defined in G.8021.\nrange of type : see Enumeration",
+                    "type": "string"
                 },
                 "filter-config": {
-                    "type": "array",
                     "items": {
-                        "type": "string",
-                        "description": "This attribute models the ETHx/ETH-m_A_Sk_MI_Filter_Config information defined in G.8021.\nIt indicates the configured filter action for each of the 33 group MAC addresses for control frames.\nThe 33 MAC addresses are:\n01-80-C2-00-00-10, \n01-80-C2-00-00-00 to 01-80-C2-00-00-0F, and \n01-80-C2-00-00-20 to 01-80-C2-00-00-2F.\nThe filter action is Pass or Block. \nIf the destination address of the incoming ETH_CI_D matches one of the above addresses, the filter process shall perform the corresponding configured filter action. \nIf none of the above addresses match, the ETH_CI_D is passed.\nrange of type : MacAddress: \n01-80-C2-00-00-10, \n01-80-C2-00-00-00 to \n01-80-C2-00-00-0F, and \n01-80-C2-00-00-20 to \n01-80-C2-00-00-2F;\nActionEnum:\nPASS, BLOCK"
-                    }
+                        "description": "This attribute models the ETHx/ETH-m_A_Sk_MI_Filter_Config information defined in G.8021.\nIt indicates the configured filter action for each of the 33 group MAC addresses for control frames.\nThe 33 MAC addresses are:\n01-80-C2-00-00-10, \n01-80-C2-00-00-00 to 01-80-C2-00-00-0F, and \n01-80-C2-00-00-20 to 01-80-C2-00-00-2F.\nThe filter action is Pass or Block. \nIf the destination address of the incoming ETH_CI_D matches one of the above addresses, the filter process shall perform the corresponding configured filter action. \nIf none of the above addresses match, the ETH_CI_D is passed.\nrange of type : MacAddress: \n01-80-C2-00-00-10, \n01-80-C2-00-00-00 to \n01-80-C2-00-00-0F, and \n01-80-C2-00-00-20 to \n01-80-C2-00-00-2F;\nActionEnum:\nPASS, BLOCK",
+                        "type": "string"
+                    },
+                    "type": "array"
                 },
-                "frametype-config": {
-                    "type": "string",
-                    "description": "This attribute models the ETHx/ETH-m_A_Sk_MI_Frametype_Config information defined in G.8021.\nrange of type : see Enumeration",
-                    "enum": [
-                        "admit-only-vlan-tagged-frames",
-                        "admit-only-untagged-and-priority-tagged-frames",
-                        "admit-all-frames"
-                    ]
-                }
-            },
-            "description": "This object class models the Ethernet Flow Termination function located at a layer boundary."
-        },
-        "queue-configuration": {
-            "properties": {
-                "queue-depth": {
-                    "type": "string",
-                    "description": "This attribute defines the depth of the queue in bytes."
+                "port-vid": {
+                    "description": "This attribute models the ETHx/ETH-m _A_Sk_MI_PVID information defined in G.8021.",
+                    "type": "string"
                 },
-                "queue-id": {
-                    "type": "string",
-                    "description": "This attribute indicates the queue id."
-                },
-                "queue-threshold": {
-                    "type": "string",
-                    "description": "This attribute defines the threshold of the queue in bytes."
+                "priority-regenerate": {
+                    "description": "This attribute models the ETHx/ETH-m _A_Sk_MI_P_Regenerate information defined in G.8021.",
+                    "$ref": "#/definitions/priority-mapping"
                 }
             }
-        },
-        "connection-end-point-lp-spec": {
-            "properties": {
-                "adapter-spec": {
-                    "$ref": "#/definitions/connection-point-and-adapter-pac"
-                },
-                "termination-spec": {
-                    "$ref": "#/definitions/eth-termination-pac"
-                }
-            }
-        },
-        "traffic-conditioning-pac": {
-            "properties": {
-                "codirectional": {
-                    "type": "boolean",
-                    "description": "This attribute indicates the direction of the conditioner. The value of true means that the conditioner (modeled as a TCS Sink according to G.8021) is associated with the sink part of the containing CTP. The value of false means that the conditioner (modeled as a TCS Sink according to G.8021) is associated with the source part of the containing CTP."
-                },
-                "prio-config-list": {
-                    "type": "array",
-                    "description": "This attribute indicates the Priority Splitter function for the mapping of the Ethernet frame priority (ETH_CI_P) values to the output queue.",
-                    "items": {
-                        "$ref": "#/definitions/priority-configuration"
-                    }
-                },
-                "cond-config-list": {
-                    "type": "array",
-                    "description": "This attribute indicates for the conditioner process the conditioning parameters:\n- Queue ID: Indicates the Queue ID\n- Committed Information Rate (CIR): number of bits per second\n- Committed Burst Size (CBS): number of bytes\n- Excess Information Rate (EIR): number of bits per second\n- Excess Burst Size (EBS): number of bytes\n- Coupling flag (CF): 0 or 1\n- Color mode (CM): color-blind and color-aware.",
-                    "items": {
-                        "$ref": "#/definitions/traffic-conditioning-configuration"
-                    }
-                }
-            },
-            "description": "This object class models the ETH traffic conditioning function as defined in G.8021.\nBasic attributes: codirectional, condConfigList, prioConfigList"
         }
     }
 }
