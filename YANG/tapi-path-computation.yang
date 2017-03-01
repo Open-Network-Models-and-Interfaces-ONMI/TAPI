@@ -26,11 +26,12 @@ module tapi-path-computation {
     * package object-classes
     **********************/ 
         grouping path {
-            list telink {
-                key 'local-id';
+            leaf-list link {
+                type leafref {
+                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:link/tapi-topology:uuid';
+                }
                 config false;
                 min-elements 1;
-                uses tapi-topology:te-link;
                 description "none";
             }
             container routing-constraint {
@@ -41,10 +42,10 @@ module tapi-path-computation {
             uses tapi-common:resource-spec;
             description "Path is described by an ordered list of TE Links. A TE Link is defined by a pair of Node/NodeEdgePoint IDs. A Connection is realized by concatenating link resources (associated with a Link) and the lower-level connections (cross-connections) in the different nodes";
         }
-        grouping path-comp-service-port {
-            leaf service-end-point {
+        grouping path-service-end-point {
+            leaf service-interface-point {
                 type leafref {
-                    path '/tapi-common:context/tapi-common:service-end-point/tapi-common:uuid';
+                    path '/tapi-common:context/tapi-common:service-interface-point/tapi-common:uuid';
                 }
                 config false;
                 description "none";
@@ -86,7 +87,7 @@ module tapi-path-computation {
                 key 'local-id';
                 min-elements 2;
                 max-elements 2;
-                uses path-comp-service-port;
+                uses path-service-end-point;
                 description "none";
             }
             container routing-constraint {
@@ -184,18 +185,6 @@ module tapi-path-computation {
                 config false;
                 description "none";
             }
-            list include-path {
-                key 'local-id';
-                config false;
-                uses tapi-topology:te-link;
-                description "none";
-            }
-            list exclude-path {
-                key 'local-id';
-                config false;
-                uses tapi-topology:te-link;
-                description "none";
-            }
             uses tapi-common:local-class;
             description "none";
         }
@@ -220,10 +209,10 @@ module tapi-path-computation {
         rpc compute-p2ppath {
             description "none";
             input {
-                list service-port {
+                list sep {
                     min-elements 2;
                     max-elements 2;
-                    uses path-comp-service-port;
+                    uses path-service-end-point;
                     description "none";
                 }
                 container routing-constraint {
@@ -236,7 +225,7 @@ module tapi-path-computation {
                 }
             }
             output {
-                container path-comp-service {
+                container service {
                     uses path-computation-service;
                     description "none";
                 }
@@ -263,7 +252,7 @@ module tapi-path-computation {
                 }
             }
             output {
-                container path-comp-service {
+                container service {
                     uses path-computation-service;
                     description "none";
                 }
@@ -278,7 +267,7 @@ module tapi-path-computation {
                 }
             }
             output {
-                container path-comp-service {
+                container service {
                     uses path-computation-service;
                     description "none";
                 }
