@@ -28,14 +28,14 @@ module tapi-virtual-network {
         grouping virtual-network-constraint {
             leaf src-service-end-point {
                 type leafref {
-                    path '/tapi-common:context/tapi-common:service-end-point/tapi-common:uuid';
+                    path '/tapi-common:context/tapi-common:service-interface-point/tapi-common:uuid';
                 }
                 config false;
                 description "none";
             }
             leaf sink-service-end-point {
                 type leafref {
-                    path '/tapi-common:context/tapi-common:service-end-point/tapi-common:uuid';
+                    path '/tapi-common:context/tapi-common:service-interface-point/tapi-common:uuid';
                 }
                 config false;
                 description "none";
@@ -44,6 +44,7 @@ module tapi-virtual-network {
                 type leafref {
                     path '/tapi-common:context/tapi-virtual-network:virtual-nw-service/tapi-virtual-network:vnw-constraint/tapi-virtual-network:local-id';
                 }
+                config false;
                 description "none";
             }
             container requested-capacity {
@@ -82,7 +83,7 @@ module tapi-virtual-network {
             list service-port {
                 key 'local-id';
                 min-elements 2;
-                uses virtual-network-service-port;
+                uses virtual-network-service-end-point;
                 description "none";
             }
             list vnw-constraint {
@@ -108,10 +109,10 @@ module tapi-virtual-network {
             description "The ForwardingConstruct (FC) object class models enabled potential for forwarding between two or more LTPs and like the LTP supports any transport protocol including all circuit and packet forms.
                 At the lowest level of recursion, a FC represents a cross-connection within an NE.";
         }
-        grouping virtual-network-service-port {
-            leaf service-end-point {
+        grouping virtual-network-service-end-point {
+            leaf service-interface-point {
                 type leafref {
-                    path '/tapi-common:context/tapi-common:service-end-point/tapi-common:uuid';
+                    path '/tapi-common:context/tapi-common:service-interface-point/tapi-common:uuid';
                 }
                 config false;
                 description "none";
@@ -143,7 +144,6 @@ module tapi-virtual-network {
         grouping virtual-network-context {
             list virtual-nw-service {
                 key 'uuid';
-                config false;
                 uses virtual-network-service;
                 description "none";
             }
@@ -156,9 +156,9 @@ module tapi-virtual-network {
         rpc create-virtual-network-service {
             description "none";
             input {
-                list service-port {
+                list sep {
                     min-elements 2;
-                    uses virtual-network-service-port;
+                    uses virtual-network-service-end-point;
                     description "none";
                 }
                 container vnw-constraint {
@@ -171,7 +171,7 @@ module tapi-virtual-network {
                 }
             }
             output {
-                container vnw-service {
+                container service {
                     uses virtual-network-service;
                     description "none";
                 }
@@ -186,7 +186,7 @@ module tapi-virtual-network {
                 }
             }
             output {
-                container vnw-service {
+                container service {
                     uses virtual-network-service;
                     description "none";
                 }
@@ -201,7 +201,7 @@ module tapi-virtual-network {
                 }
             }
             output {
-                container vnw-service {
+                container service {
                     uses virtual-network-service;
                     description "none";
                 }
@@ -210,7 +210,7 @@ module tapi-virtual-network {
         rpc get-virtual-network-service-list {
             description "none";
             output {
-                list vnw-service {
+                list service {
                     uses virtual-network-service;
                     description "none";
                 }
