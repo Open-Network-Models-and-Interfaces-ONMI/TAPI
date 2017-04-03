@@ -22,17 +22,17 @@ module tapi-eth {
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 6020 and RFC 6087";
     }
     augment "/tapi-common:context/tapi-connectivity:connection/tapi-connectivity:connection-end-point/tapi-connectivity:layer-protocol" {
-        uses connection-end-point-lp-spec;
-        description "none";
+        uses connection-end-point-lp-spec-g;
+        description "Augments the base LayerProtocol information in ConnectionEndPoint with ETH-specific information";
     }
     augment "/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-topology:layer-protocol" {
-        uses node-edge-point-lp-spec;
-        description "none";
+        uses node-edge-point-lp-spec-g;
+        description "Augments the base LayerProtocol information in NodeEdgePoint with ETH-specific information";
     }
     /***********************
     * package object-classes
     **********************/ 
-        grouping connection-point-and-adapter-pac {
+        grouping connection-point-and-adapter-pac-g {
             leaf-list auxiliary-function-position-sequence {
                 type uint64;
                 description "This attribute indicates the positions (i.e., the relative order) of all the MEP, MIP, and TCS objects which are associated with the CTP.";
@@ -68,7 +68,7 @@ module tapi-eth {
                     range of type : 1518, 1522, 2000";
             }
             container filter-config {
-                uses control-frame-filter;
+                uses control-frame-filter-g;
                 description "This attribute models the FilterConfig MI defined in section 8.3/G.8021. It indicates the configured filter action for each of the 33 group MAC addresses for control frames. The 33 MAC addresses are:
                     - All bridges address: 01-80-C2-00-00-10,
                     - Reserved addresses: 01-80-C2-00-00-00 to 01-80-C2-00-00-0F,
@@ -144,29 +144,29 @@ module tapi-eth {
                     range of type : true, false";
             }
             container traffic-shaping {
-                uses traffic-shaping-pac;
+                uses traffic-shaping-pac-g;
                 description "none";
             }
             container traffic-conditioning {
-                uses traffic-conditioning-pac;
+                uses traffic-conditioning-pac-g;
                 description "none";
             }
             description "none";
         }
-        grouping connection-end-point-lp-spec {
+        grouping connection-end-point-lp-spec-g {
             container termination-spec {
-                uses eth-termination-pac;
+                uses eth-termination-pac-g;
                 description "none";
             }
             container adapter-spec {
-                uses connection-point-and-adapter-pac;
+                uses connection-point-and-adapter-pac-g;
                 description "none";
             }
             description "none";
         }
-        grouping eth-termination-pac {
+        grouping eth-termination-pac-g {
             container priority-regenerate {
-                uses priority-mapping;
+                uses priority-mapping-g;
                 description "This attribute models the ETHx/ETH-m _A_Sk_MI_P_Regenerate information defined in G.8021.";
             }
             leaf ether-type {
@@ -210,7 +210,7 @@ module tapi-eth {
             }
             description "This object class models the Ethernet Flow Termination function located at a layer boundary.";
         }
-        grouping ety-termination-pac {
+        grouping ety-termination-pac-g {
             leaf is-fts-enabled {
                 type boolean;
                 description "This attribute indicates whether Forced Transmitter Shutdown (FTS) is enabled or not. It models the ETYn_TT_So_MI_FTSEnable information.";
@@ -231,15 +231,15 @@ module tapi-eth {
             }
             description "none";
         }
-        grouping traffic-conditioning-pac {
+        grouping traffic-conditioning-pac-g {
             list prio-config-list {
                 config false;
-                uses priority-configuration;
+                uses priority-configuration-g;
                 description "This attribute indicates the Priority Splitter function for the mapping of the Ethernet frame priority (ETH_CI_P) values to the output queue.";
             }
             list cond-config-list {
                 config false;
-                uses traffic-conditioning-configuration;
+                uses traffic-conditioning-configuration-g;
                 description "This attribute indicates for the conditioner process the conditioning parameters:
                     - Queue ID: Indicates the Queue ID
                     - Committed Information Rate (CIR): number of bits per second
@@ -257,15 +257,15 @@ module tapi-eth {
             description "This object class models the ETH traffic conditioning function as defined in G.8021.
                 Basic attributes: codirectional, condConfigList, prioConfigList";
         }
-        grouping traffic-shaping-pac {
+        grouping traffic-shaping-pac-g {
             list prio-config-list {
                 config false;
-                uses priority-configuration;
+                uses priority-configuration-g;
                 description "This attribute configures the Priority Splitter function for the mapping of the Ethernet frame priority (ETH_CI_P) values to the output queue.";
             }
             list queue-config-list {
                 config false;
-                uses queue-configuration;
+                uses queue-configuration-g;
                 description "This attribute configures the Queue depth and Dropping threshold parameters of the Queue process. The Queue depth sets the maximum size of the queue in bytes. An incoming ETH_CI traffic unit is dropped if there is insufficient space in the queue to hold the whole unit. The Dropping threshold sets the threshold of the queue. If the queue is filled beyond this threshold, incoming ETH_CI traffic units accompanied by the ETH_CI_DE signal set are dropped.";
             }
             leaf sched-config {
@@ -283,9 +283,9 @@ module tapi-eth {
             description "This object class models the ETH traffic shaping function as defined in G.8021.
                 Basic attribute: codirectional, prioConfigList, queueConfigList, schedConfig";
         }
-        grouping node-edge-point-lp-spec {
+        grouping node-edge-point-lp-spec-g {
             container termination-spec {
-                uses ety-termination-pac;
+                uses ety-termination-pac-g;
                 description "none";
             }
             description "none";
@@ -294,7 +294,7 @@ module tapi-eth {
     /***********************
     * package type-definitions
     **********************/ 
-        grouping priority-configuration {
+        grouping priority-configuration-g {
             leaf priority {
                 type uint64 {
                     range "0..7";
@@ -309,7 +309,7 @@ module tapi-eth {
             }
             description "none";
         }
-        grouping queue-configuration {
+        grouping queue-configuration-g {
             leaf queue-id {
                 type uint64;
                 description "This attribute indicates the queue id.";
@@ -324,7 +324,7 @@ module tapi-eth {
             }
             description "none";
         }
-        grouping traffic-conditioning-configuration {
+        grouping traffic-conditioning-configuration-g {
             leaf cir {
                 type uint64;
                 description "This attribute indicates the Committed Information Rate in bits/s.";
@@ -361,7 +361,7 @@ module tapi-eth {
             type string;
             description "This primitive data type contains an Ethernet MAC address defined by IEEE 802a. The format of the address consists of 12 hexadecimal characters, grouped in pairs and separated by '-' (e.g., 03-27-AC-75-3E-1D).";
         }
-        grouping priority-mapping {
+        grouping priority-mapping-g {
             leaf priority0 {
                 type uint64 {
                     range "0..7";
@@ -427,7 +427,7 @@ module tapi-eth {
             type string;
             description "none";
         }
-        grouping address-tuple {
+        grouping address-tuple-g {
             leaf address {
                 type mac-address;
                 description "This attribute contains the MAC address of the address tuple.";
@@ -442,7 +442,7 @@ module tapi-eth {
             type string;
             description "The syntax of this dataType is pending on the specification in G.8021, which is for further study.";
         }
-        grouping control-frame-filter {
+        grouping control-frame-filter-g {
             leaf c2-00-00-10 {
                 type boolean;
                 description "This attribute identifies the 'All LANs Bridge Management Group Address'.";
@@ -579,7 +579,7 @@ module tapi-eth {
                 Value 'false' means block: The frame is discarded by the filter process.
                 Value 'true' means pass: The frame is passed unchanged through the filter process.";
         }
-        grouping bandwidth-report {
+        grouping bandwidth-report-g {
             leaf source-mac-address {
                 type mac-address;
                 description "The sourceMacAddress is the address from the far end.";
