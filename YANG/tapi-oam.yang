@@ -1,0 +1,246 @@
+module tapi-oam {
+    namespace "urn:onf:params:xml:ns:yang:TapiOam";
+    prefix tapi-oam;
+    import tapi-common {
+        prefix tapi-common;
+    }
+    import tapi-connectivity {
+        prefix tapi-connectivity;
+    }
+    organization "Open Networking Foundation (ONF) / Open Transport Working Group(OTWG) / Transport API (TAPI) Project";
+    contact "
+        WG Web: TAPI SDK Project <http://opensourcesdn.org/projects/project-snowmass/>
+        WG List: TAPI Discussion list <mailto: transport-api@login.opennetworking.org>,
+        WG Chair: Karthik Sethuraman <mailto:karthik.sethuraman@necam.com>,
+        Editor: Ricard Vilalta <mailto:ricard.vilalta@cttc.es>";
+    description "none";
+    revision 2016-12-15 {
+        description "TAPI SDK 1.1.alpha";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 6020 and RFC 6087";
+    }
+    augment "/tapi-common:context" {
+        uses oam-context-g;
+        description "Augments the base TAPI Context with OamService information";
+    }
+    augment "/tapi-common:context/tapi-connectivity:connection/tapi-connectivity:connection-end-point/tapi-connectivity:layer-protocol" {
+        uses oam-context-g;
+        description "none";
+    }
+    /***********************
+    * package object-classes
+    **********************/ 
+        grouping mep-g {
+            leaf-list me {
+                type leafref {
+                    path '/tapi-common:context/tapi-oam:meg/tapi-oam:me/tapi-oam:local-id';
+                }
+                description "none";
+            }
+            container mep-bidirectional {
+                uses mep-bidirectional-pac-g;
+                description "none";
+            }
+            container mep-sink {
+                uses mep-sink-pac-g;
+                description "none";
+            }
+            container mep-source {
+                uses mep-source-pac-g;
+                description "none";
+            }
+            list on-demand-measurement-job {
+                uses on-demand-measurement-job-g;
+                description "none";
+            }
+            list pro-active-measurement-job {
+                uses pro-active-measurement-job-g;
+                description "none";
+            }
+            leaf meg-identifier {
+                type string;
+                default "true";
+                description "none";
+            }
+            leaf admin-state {
+                type tapi-common:administrative-state;
+                default "true";
+                description "none";
+            }
+            uses tapi-common:local-class-g;
+            description "none";
+        }
+        grouping mep-source-pac-g {
+            leaf mep-identifier {
+                type string;
+                default "true";
+                description "none";
+            }
+            description "none";
+        }
+        grouping mep-sink-pac-g {
+            leaf-list peer-mep-ref-list {
+                type string;
+                min-elements 1;
+                description "none";
+            }
+            description "none";
+        }
+        grouping mep-bidirectional-pac-g {
+            description "none";
+        }
+        grouping on-demand-measurement-job-g {
+            description "none";
+        }
+        grouping pro-active-measurement-job-g {
+            description "none";
+        }
+        grouping meg-g {
+            list me {
+                key 'local-id';
+                uses me-g;
+                description "none";
+            }
+            leaf meg-level {
+                type uint64;
+                description "none";
+            }
+            uses tapi-common:resource-spec-g;
+            description "none";
+        }
+        grouping me-g {
+            leaf-list mep {
+                type leafref {
+                    path '/tapi-oam:oam-lp-spec/tapi-oam:mep/tapi-oam:local-id';
+                }
+                max-elements 2;
+                description "none";
+            }
+            leaf-list mip {
+                type leafref {
+                    path '/tapi-oam:oam-lp-spec/tapi-oam:mip/tapi-oam:local-id';
+                }
+                description "none";
+            }
+            uses tapi-common:local-class-g;
+            description "none";
+        }
+        grouping mip-g {
+            leaf-list me {
+                type leafref {
+                    path '/tapi-common:context/tapi-oam:meg/tapi-oam:me/tapi-oam:local-id';
+                }
+                description "none";
+            }
+            uses tapi-common:local-class-g;
+            description "none";
+        }
+        grouping oam-service-g {
+            leaf-list meg {
+                type leafref {
+                    path '/tapi-common:context/tapi-oam:meg/tapi-oam:uuid';
+                }
+                description "none";
+            }
+            list oamserviceendpoint {
+                min-elements 2;
+                uses oam-service-end-point-g;
+                description "none";
+            }
+            uses tapi-common:service-spec-g;
+            description "none";
+        }
+        grouping oam-context-g {
+            list meg {
+                key 'uuid';
+                uses meg-g;
+                description "none";
+            }
+            list oamservice {
+                key 'uuid';
+                uses oam-service-g;
+                description "none";
+            }
+            description "none";
+        }
+        grouping oam-lp-spec-g {
+            list mip {
+                key 'local-id';
+                uses mip-g;
+                description "none";
+            }
+            list mep {
+                key 'local-id';
+                uses mep-g;
+                description "none";
+            }
+            description "none";
+        }
+        grouping oam-service-end-point-g {
+            leaf serviceinterfacepoint {
+                type leafref {
+                    path '/tapi-common:context/tapi-common:service-interface-point/tapi-common:uuid';
+                }
+                description "none";
+            }
+            description "none";
+        }
+
+    /***********************
+    * package interfaces
+    **********************/ 
+        rpc create-mep {
+            description "none";
+        }
+        rpc modify-mep {
+            description "none";
+        }
+        rpc delete-mep {
+            description "none";
+        }
+        rpc get-all-contained-meps {
+            description "none";
+        }
+        rpc establish-measurement-job {
+            description "none";
+        }
+        rpc abort-measurement-job {
+            description "none";
+        }
+        rpc terminate-measurement-job {
+            description "none";
+        }
+        rpc enable-pro-active-measurement-job {
+            description "none";
+        }
+        rpc disable-pro-active-measurement-job {
+            description "none";
+        }
+        rpc get-all-contained-measurement-jobs {
+            description "none";
+        }
+        rpc create-meg {
+            description "none";
+        }
+        rpc modify-meg {
+            description "none";
+        }
+        rpc delete-meg {
+            description "none";
+        }
+        rpc get-all-contained-megs {
+            description "none";
+        }
+        rpc create-mip {
+            description "none";
+        }
+        rpc modify-mip {
+            description "none";
+        }
+        rpc delete-mip {
+            description "none";
+        }
+        rpc get-all-contained-mips {
+            description "none";
+        }
+
+}
