@@ -23,7 +23,7 @@ module tapi-oam {
         description "Augments the base TAPI Context with OamService information";
     }
     augment "/tapi-common:context/tapi-connectivity:connection/tapi-connectivity:connection-end-point/tapi-connectivity:layer-protocol" {
-        uses oam-context-g;
+        uses oam-lp-spec-g;
         description "none";
     }
     /***********************
@@ -63,7 +63,7 @@ module tapi-oam {
             }
             leaf admin-state {
                 type tapi-common:administrative-state;
-                default "true";
+                config false;
                 description "none";
             }
             uses tapi-common:local-class-g;
@@ -110,14 +110,14 @@ module tapi-oam {
         grouping me-g {
             leaf-list mep {
                 type leafref {
-                    path '/tapi-oam:oam-lp-spec/tapi-oam:mep/tapi-oam:local-id';
+                    path '/tapi-common:context/tapi-connectivity:connection/tapi-connectivity:connection-end-point/tapi-connectivity:layer-protocol/tapi-oam:mep/tapi-oam:local-id';
                 }
                 max-elements 2;
                 description "none";
             }
             leaf-list mip {
                 type leafref {
-                    path '/tapi-oam:oam-lp-spec/tapi-oam:mip/tapi-oam:local-id';
+                    path '/tapi-common:context/tapi-connectivity:connection/tapi-connectivity:connection-end-point/tapi-connectivity:layer-protocol/tapi-oam:mip/tapi-oam:local-id';
                 }
                 description "none";
             }
@@ -139,9 +139,11 @@ module tapi-oam {
                 type leafref {
                     path '/tapi-common:context/tapi-oam:meg/tapi-oam:uuid';
                 }
+                config false;
                 description "none";
             }
-            list oamserviceendpoint {
+            list end-point {
+                key 'local-id';
                 min-elements 2;
                 uses oam-service-end-point-g;
                 description "none";
@@ -150,14 +152,15 @@ module tapi-oam {
             description "none";
         }
         grouping oam-context-g {
-            list meg {
-                key 'uuid';
-                uses meg-g;
-                description "none";
-            }
-            list oamservice {
+            list oam-service {
                 key 'uuid';
                 uses oam-service-g;
+                description "none";
+            }
+            list meg {
+                key 'uuid';
+                config false;
+                uses meg-g;
                 description "none";
             }
             description "none";
@@ -176,12 +179,29 @@ module tapi-oam {
             description "none";
         }
         grouping oam-service-end-point-g {
-            leaf serviceinterfacepoint {
+            leaf service-interface-point {
                 type leafref {
                     path '/tapi-common:context/tapi-common:service-interface-point/tapi-common:uuid';
                 }
+                config false;
                 description "none";
             }
+            leaf role {
+                type tapi-common:port-role;
+                config false;
+                description "none";
+            }
+            leaf direction {
+                type tapi-common:port-direction;
+                config false;
+                description "none";
+            }
+            leaf layer-protocol-name {
+                type tapi-common:layer-protocol-name;
+                config false;
+                description "none";
+            }
+            uses tapi-common:local-class-g;
             description "none";
         }
 
