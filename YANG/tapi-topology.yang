@@ -46,7 +46,7 @@ module tapi-topology {
             }
             container transfer-capacity {
                 config false;
-                uses transfer-capacity-pac-g;
+                uses tapi-common:capacity-pac-g;
                 description "none";
             }
             container transfer-cost {
@@ -128,7 +128,7 @@ module tapi-topology {
             }
             container transfer-capacity {
                 config false;
-                uses transfer-capacity-pac-g;
+                uses tapi-common:capacity-pac-g;
                 description "none";
             }
             container transfer-cost {
@@ -252,35 +252,6 @@ module tapi-topology {
                 Shared risk between two TopologicalEntities compromises the integrity of any solution that use one of those TopologicalEntity as a backup for the other.
                 Where two TopologicalEntities have a common risk characteristic they have an elevated probability of failing simultaneously compared to two TopologicalEntities that do not share risk characteristics.";
         }
-        grouping transfer-capacity-pac-g {
-            container total-potential-capacity {
-                config false;
-                uses capacity-g;
-                description "An optimistic view of the capacity of the TopologicalEntity assuming that any shared capacity is available to be taken.";
-            }
-            container available-capacity {
-                config false;
-                uses capacity-g;
-                description "Capacity available to be assigned.";
-            }
-            list capacity-assigned-to-user-view {
-                key 'total-size';
-                config false;
-                uses capacity-g;
-                description "Capacity already assigned";
-            }
-            leaf capacity-interaction-algorithm {
-                type string;
-                config false;
-                description "A reference to an algorithm that describes how various chunks of allocated capacity interact (e.g. when shared)";
-            }
-            description "The TopologicalEntity derives capacity from the underlying realization. 
-                A TopologicalEntity may be an abstraction and virtualization of a subset of the underlying capability offered in a view or may be directly reflecting the underlying realization.
-                A TopologicalEntity may be directly used in the view or may be assigned to another view for use.
-                The clients supported by a multi-layer TopologicalEntity may interact such that the resources used by one client may impact those available to another. This is derived from the LTP spec details.
-                Represents the capacity available to user (client) along with client interaction and usage. 
-                A TopologicalEntity may reflect one or more client protocols and one or more members for each profile.";
-        }
         grouping transfer-cost-pac-g {
             list cost-characteristic {
                 key 'cost-name cost-value cost-algorithm';
@@ -393,7 +364,7 @@ module tapi-topology {
                 description "none";
             }
             container transfer-capacity {
-                uses transfer-capacity-pac-g;
+                uses tapi-common:capacity-pac-g;
                 description "none";
             }
             container transfer-cost {
@@ -437,7 +408,7 @@ module tapi-topology {
                 description "none";
             }
             container transfer-capacity {
-                uses transfer-capacity-pac-g;
+                uses tapi-common:capacity-pac-g;
                 description "none";
             }
             container transfer-cost {
@@ -475,41 +446,6 @@ module tapi-topology {
     /***********************
     * package type-definitions
     **********************/ 
-        grouping capacity-g {
-            leaf total-size {
-                type fixed-capacity-value;
-                description "Total capacity of the TopologicalEntity in MB/s";
-            }
-            leaf packet-bw-profile-type {
-                type bandwidth-profile-type;
-                description "none";
-            }
-            leaf committed-information-rate {
-                type uint64;
-                description "none";
-            }
-            leaf committed-burst-size {
-                type uint64;
-                description "none";
-            }
-            leaf peak-information-rate {
-                type uint64;
-                description "none";
-            }
-            leaf peak-burst-size {
-                type uint64;
-                description "none";
-            }
-            leaf color-aware {
-                type boolean;
-                description "none";
-            }
-            leaf coupling-flag {
-                type boolean;
-                description "none";
-            }
-            description "Information on capacity of a particular TopologicalEntity.";
-        }
         grouping cost-characteristic-g {
             leaf cost-name {
                 type string;
@@ -524,41 +460,6 @@ module tapi-topology {
                 description "The cost may vary based upon some properties of the TopologicalEntity. The rules for the variation are conveyed by the costAlgorithm.";
             }
             description "The information for a particular cost characteristic.";
-        }
-        typedef fixed-capacity-value {
-            type enumeration {
-                enum not-applicable {
-                    description "none";
-                }
-                enum 10mbps {
-                    description "none";
-                }
-                enum 100mbps {
-                    description "none";
-                }
-                enum 1gbps {
-                    description "none";
-                }
-                enum 2.4gbps {
-                    description "none";
-                }
-                enum 10gbps {
-                    description "none";
-                }
-                enum 40gbps {
-                    description "none";
-                }
-                enum 100gbps {
-                    description "none";
-                }
-                enum 200gbps {
-                    description "none";
-                }
-                enum 400gbps {
-                    description "none";
-                }
-            }
-            description "The Capacity (Bandwidth) values that are applicable for digital layers. ";
         }
         grouping latency-characteristic-g {
             leaf fixed-latency-characteristic {
@@ -616,26 +517,6 @@ module tapi-topology {
                 description "Quality of validation (i.e. how likely is the stated validation to be invalid)";
             }
             description "Identifies the validation mechanism and describes the characteristics of that mechanism";
-        }
-        typedef bandwidth-profile-type {
-            type enumeration {
-                enum not-applicable {
-                    description "none";
-                }
-                enum mef-10.x {
-                    description "none";
-                }
-                enum rfc-2697 {
-                    description "none";
-                }
-                enum rfc-2698 {
-                    description "none";
-                }
-                enum rfc-4115 {
-                    description "none";
-                }
-            }
-            description "none";
         }
         typedef forwarding-rule {
             type enumeration {
