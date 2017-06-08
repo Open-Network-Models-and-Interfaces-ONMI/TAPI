@@ -36,17 +36,32 @@ module tapi-connectivity {
                 uses connection-end-point-g;
                 description "none";
             }
-            list route {
-                key 'local-id';
-                config false;
-                uses route-g;
-                description "none";
+            leaf-list lower-connection {
+                type leafref {
+                    path '/tapi-common:context/tapi-connectivity:connection/tapi-connectivity:uuid';
+                }
+                description "An Connection object supports a recursive aggregation relationship such that the internal construction of an Connection can be exposed as multiple lower level Connection objects (partitioning).
+                    Aggregation is used as for the Node/Topology  to allow changes in hierarchy. 
+                    Connection aggregation reflects Node/Topology aggregation. 
+                    The FC represents a Cross-Connection in an NE. The Cross-Connection in an NE is not necessarily the lowest level of FC partitioning.";
             }
-            leaf node {
+            leaf-list supported-link {
+                type leafref {
+                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:link/tapi-topology:uuid';
+                }
+                description "An Connection that spans between CEPs that terminate the LayerProtocol usually supports one or more links in the client layer.";
+            }
+            leaf container-node {
                 type leafref {
                     path '/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:uuid';
                 }
                 config false;
+                description "none";
+            }
+            list route {
+                key 'local-id';
+                config false;
+                uses route-g;
                 description "none";
             }
             list switch-control {
@@ -247,9 +262,9 @@ module tapi-connectivity {
                 The ForwadingConstruct can be considered as a component and the EndPoint as a Port on that component";
         }
         grouping route-g {
-            leaf-list lower-connection {
+            leaf-list connection-end-point {
                 type leafref {
-                    path '/tapi-common:context/tapi-connectivity:connection/tapi-connectivity:uuid';
+                    path '/tapi-common:context/tapi-connectivity:connection/tapi-connectivity:connection-end-point/tapi-connectivity:uuid';
                 }
                 config false;
                 min-elements 1;
