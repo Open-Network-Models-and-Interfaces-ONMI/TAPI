@@ -7,6 +7,9 @@ module tapi-oam {
     import tapi-connectivity {
         prefix tapi-connectivity;
     }
+    import tapi-topology {
+        prefix tapi-topology;
+    }
     organization "Open Networking Foundation (ONF) / Open Transport Working Group(OTWG) / Transport API (TAPI) Project";
     contact "
         WG Web: TAPI SDK Project <http://opensourcesdn.org/projects/project-snowmass/>
@@ -19,47 +22,44 @@ module tapi-oam {
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 6020 and RFC 6087";
     }
     augment "/tapi-common:context" {
-        uses oam-context-g;
+        uses oam-context;
         description "Augments the base TAPI Context with OamService information";
     }
+    augment "/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-topology:layer-protocol" {
+        uses oam-spec;
+        description "none";
+    }
     augment "/tapi-common:context/tapi-connectivity:connection/tapi-connectivity:connection-end-point/tapi-connectivity:layer-protocol" {
-        uses mep-mip-reference-g;
+        uses oam-spec;
         description "none";
     }
     /***********************
     * package object-classes
     **********************/ 
-        grouping mep-g {
-            leaf-list me {
-                type leafref {
-                    path '/tapi-common:context/tapi-oam:meg/tapi-oam:me/tapi-oam:local-id';
-                }
-                config false;
-                description "none";
-            }
+        grouping mep {
             container mep-bidirectional {
                 config false;
-                uses mep-bidirectional-pac-g;
+                uses mep-bidirectional-pac;
                 description "none";
             }
             container mep-sink {
                 config false;
-                uses mep-sink-pac-g;
+                uses mep-sink-pac;
                 description "none";
             }
             container mep-source {
                 config false;
-                uses mep-source-pac-g;
+                uses mep-source-pac;
                 description "none";
             }
             list on-demand-measurement-job {
                 config false;
-                uses on-demand-measurement-job-g;
+                uses on-demand-measurement-job;
                 description "none";
             }
             list pro-active-measurement-job {
                 config false;
-                uses pro-active-measurement-job-g;
+                uses pro-active-measurement-job;
                 description "none";
             }
             leaf meg-identifier {
@@ -73,10 +73,10 @@ module tapi-oam {
                 config false;
                 description "none";
             }
-            uses tapi-common:local-class-g;
+            uses tapi-common:local-class;
             description "none";
         }
-        grouping mep-source-pac-g {
+        grouping mep-source-pac {
             leaf mep-identifier {
                 type string;
                 default "true";
@@ -84,7 +84,7 @@ module tapi-oam {
             }
             description "none";
         }
-        grouping mep-sink-pac-g {
+        grouping mep-sink-pac {
             leaf-list peer-mep-ref-list {
                 type string;
                 min-elements 1;
@@ -92,20 +92,21 @@ module tapi-oam {
             }
             description "none";
         }
-        grouping mep-bidirectional-pac-g {
+        grouping mep-bidirectional-pac {
             description "none";
         }
-        grouping on-demand-measurement-job-g {
+        grouping on-demand-measurement-job {
             description "none";
         }
-        grouping pro-active-measurement-job-g {
+        grouping pro-active-measurement-job {
             description "none";
         }
-        grouping meg-g {
+        grouping meg {
             list me {
                 key 'local-id';
                 config false;
-                uses me-g;
+                min-elements 1;
+                uses me;
                 description "none";
             }
             leaf meg-level {
@@ -113,40 +114,31 @@ module tapi-oam {
                 config false;
                 description "none";
             }
-            uses tapi-common:resource-spec-g;
+            uses tapi-common:resource-spec;
             description "none";
         }
-        grouping me-g {
-            leaf-list mep {
-                type leafref {
-                    path '/tapi-common:context/tapi-connectivity:connection/tapi-connectivity:connection-end-point/tapi-connectivity:layer-protocol/tapi-oam:mep/tapi-oam:local-id';
-                }
+        grouping me {
+            list mep {
+                key 'local-id';
                 config false;
                 max-elements 2;
+                uses mep;
                 description "none";
             }
-            leaf-list mip {
-                type leafref {
-                    path '/tapi-common:context/tapi-connectivity:connection/tapi-connectivity:connection-end-point/tapi-connectivity:layer-protocol/tapi-oam:mip/tapi-oam:local-id';
-                }
+            list mip {
+                key 'local-id';
                 config false;
+                uses mip;
                 description "none";
             }
-            uses tapi-common:local-class-g;
+            uses tapi-common:local-class;
             description "none";
         }
-        grouping mip-g {
-            leaf-list me {
-                type leafref {
-                    path '/tapi-common:context/tapi-oam:meg/tapi-oam:me/tapi-oam:local-id';
-                }
-                config false;
-                description "none";
-            }
-            uses tapi-common:local-class-g;
+        grouping mip {
+            uses tapi-common:local-class;
             description "none";
         }
-        grouping oam-service-g {
+        grouping oam-service {
             leaf-list meg {
                 type leafref {
                     path '/tapi-common:context/tapi-oam:meg/tapi-oam:uuid';
@@ -156,54 +148,44 @@ module tapi-oam {
             }
             list end-point {
                 key 'local-id';
-                min-elements 2;
-                uses oam-service-end-point-g;
+                min-elements 1;
+                uses oam-service-end-point;
                 description "none";
             }
-            uses tapi-common:service-spec-g;
+            uses tapi-common:service-spec;
             description "none";
         }
-        grouping oam-context-g {
+        grouping oam-context {
             list oam-service {
                 key 'uuid';
-                uses oam-service-g;
+                uses oam-service;
                 description "none";
             }
             list meg {
                 key 'uuid';
                 config false;
-                uses meg-g;
+                uses meg;
                 description "none";
             }
             description "none";
         }
-        grouping mep-mip-reference-g {
-            list mip {
-                key 'local-id';
-                config false;
-                uses mip-g;
-                description "none";
-            }
-            list mep {
-                key 'local-id';
-                config false;
-                uses mep-g;
-                description "none";
-            }
-            description "none";
-        }
-        grouping oam-service-end-point-g {
-            list layer-protocol {
-                key 'local-id';
-                min-elements 1;
-                uses tapi-common:layer-protocol-g;
-                description "none";
-            }
+        grouping oam-service-end-point {
             leaf service-interface-point {
                 type leafref {
                     path '/tapi-common:context/tapi-common:service-interface-point/tapi-common:uuid';
                 }
-                config false;
+                description "none";
+            }
+            leaf connectivity-service-end-point {
+                type leafref {
+                    path '/tapi-common:context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point/tapi-connectivity:local-id';
+                }
+                description "none";
+            }
+            list layer-protocol {
+                key 'local-id';
+                min-elements 1;
+                uses tapi-common:layer-protocol;
                 description "none";
             }
             leaf direction {
@@ -216,7 +198,22 @@ module tapi-oam {
                 config false;
                 description "none";
             }
-            uses tapi-common:local-class-g;
+            uses tapi-common:local-class;
+            description "none";
+        }
+        grouping oam-spec {
+            leaf-list mip {
+                type leafref {
+                    path '/tapi-common:context/tapi-oam:meg/tapi-oam:me/tapi-oam:mip/tapi-oam:local-id';
+                }
+                description "none";
+            }
+            leaf-list mep {
+                type leafref {
+                    path '/tapi-common:context/tapi-oam:meg/tapi-oam:me/tapi-oam:mep/tapi-oam:local-id';
+                }
+                description "none";
+            }
             description "none";
         }
 
