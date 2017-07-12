@@ -1,8 +1,8 @@
 module: tapi-connectivity
   augment /tapi-common:context:
     +--rw connectivity-service* [uuid]
-    |  +--ro connection*            -> /tapi-common:context/tapi-connectivity:connection/uuid
     |  +--rw end-point* [local-id]
+    |  |  +--rw service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
     |  |  +--rw layer-protocol* [local-id]
     |  |  |  +--rw layer-protocol-name?     layer-protocol-name
     |  |  |  +--rw termination-direction?   termination-direction
@@ -11,44 +11,57 @@ module: tapi-connectivity
     |  |  |  +--rw name* [value-name]
     |  |  |     +--rw value-name    string
     |  |  |     +--rw value?        string
-    |  |  +--ro service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
+    |  |  +--rw state
+    |  |  |  +--rw administrative-state?   administrative-state
+    |  |  |  +--ro operational-state?      operational-state
+    |  |  |  +--ro lifecycle-state?        lifecycle-state
     |  |  +--rw capacity
     |  |  |  +--ro total-potential-capacity
-    |  |  |  |  +--ro total-size?                   fixed-capacity-value
-    |  |  |  |  +--ro packet-bw-profile-type?       bandwidth-profile-type
-    |  |  |  |  +--ro committed-information-rate?   uint64
-    |  |  |  |  +--ro committed-burst-size?         uint64
-    |  |  |  |  +--ro peak-information-rate?        uint64
-    |  |  |  |  +--ro peak-burst-size?              uint64
-    |  |  |  |  +--ro color-aware?                  boolean
-    |  |  |  |  +--ro coupling-flag?                boolean
+    |  |  |  |  +--ro total-size
+    |  |  |  |  |  +--ro value?   uint64
+    |  |  |  |  |  +--ro unit?    capacity-unit
+    |  |  |  |  +--ro bandwidth-profile
+    |  |  |  |     +--ro bw-profile-type?              bandwidth-profile-type
+    |  |  |  |     +--ro committed-information-rate?   uint64
+    |  |  |  |     +--ro committed-burst-size?         uint64
+    |  |  |  |     +--ro peak-information-rate?        uint64
+    |  |  |  |     +--ro peak-burst-size?              uint64
+    |  |  |  |     +--ro color-aware?                  boolean
+    |  |  |  |     +--ro coupling-flag?                boolean
     |  |  |  +--ro available-capacity
-    |  |  |     +--ro total-size?                   fixed-capacity-value
-    |  |  |     +--ro packet-bw-profile-type?       bandwidth-profile-type
+    |  |  |     +--ro total-size
+    |  |  |     |  +--ro value?   uint64
+    |  |  |     |  +--ro unit?    capacity-unit
+    |  |  |     +--ro bandwidth-profile
+    |  |  |        +--ro bw-profile-type?              bandwidth-profile-type
+    |  |  |        +--ro committed-information-rate?   uint64
+    |  |  |        +--ro committed-burst-size?         uint64
+    |  |  |        +--ro peak-information-rate?        uint64
+    |  |  |        +--ro peak-burst-size?              uint64
+    |  |  |        +--ro color-aware?                  boolean
+    |  |  |        +--ro coupling-flag?                boolean
+    |  |  +--rw direction?                 tapi-common:port-direction
+    |  |  +--rw role?                      tapi-common:port-role
+    |  |  +--rw local-id                   string
+    |  |  +--rw name* [value-name]
+    |  |     +--rw value-name    string
+    |  |     +--rw value?        string
+    |  +--ro connection*            -> /tapi-common:context/tapi-connectivity:connection/uuid
+    |  +--rw conn-constraint
+    |  |  +--ro service-type?             service-type
+    |  |  +--ro service-level?            string
+    |  |  +--ro requested-capacity
+    |  |  |  +--ro total-size
+    |  |  |  |  +--ro value?   uint64
+    |  |  |  |  +--ro unit?    capacity-unit
+    |  |  |  +--ro bandwidth-profile
+    |  |  |     +--ro bw-profile-type?              bandwidth-profile-type
     |  |  |     +--ro committed-information-rate?   uint64
     |  |  |     +--ro committed-burst-size?         uint64
     |  |  |     +--ro peak-information-rate?        uint64
     |  |  |     +--ro peak-burst-size?              uint64
     |  |  |     +--ro color-aware?                  boolean
     |  |  |     +--ro coupling-flag?                boolean
-    |  |  +--ro direction?                 tapi-common:port-direction
-    |  |  +--ro role?                      tapi-common:port-role
-    |  |  +--rw local-id                   string
-    |  |  +--rw name* [value-name]
-    |  |     +--rw value-name    string
-    |  |     +--rw value?        string
-    |  +--rw conn-constraint
-    |  |  +--ro service-type?             service-type
-    |  |  +--ro service-level?            string
-    |  |  +--ro requested-capacity
-    |  |  |  +--ro total-size?                   fixed-capacity-value
-    |  |  |  +--ro packet-bw-profile-type?       bandwidth-profile-type
-    |  |  |  +--ro committed-information-rate?   uint64
-    |  |  |  +--ro committed-burst-size?         uint64
-    |  |  |  +--ro peak-information-rate?        uint64
-    |  |  |  +--ro peak-burst-size?              uint64
-    |  |  |  +--ro color-aware?                  boolean
-    |  |  |  +--ro coupling-flag?                boolean
     |  |  +--ro cost-characteristic* [cost-name cost-value cost-algorithm]
     |  |  |  +--ro cost-name         string
     |  |  |  +--ro cost-value        string
@@ -61,6 +74,9 @@ module: tapi-connectivity
     |  |  |  +--ro traffic-property-queing-latency    string
     |  |  +--ro coroute-inclusion?        -> /tapi-common:context/tapi-connectivity:connectivity-service/uuid
     |  |  +--ro diversity-exclusion*      -> /tapi-common:context/tapi-connectivity:connectivity-service/uuid
+    |  |  +--rw schedule
+    |  |  |  +--rw end-time?     date-and-time
+    |  |  |  +--rw start-time?   date-and-time
     |  |  +--rw local-id?                 string
     |  |  +--rw name* [value-name]
     |  |     +--rw value-name    string
@@ -79,16 +95,13 @@ module: tapi-connectivity
     |  |  +--rw name* [value-name]
     |  |     +--rw value-name    string
     |  |     +--rw value?        string
-    |  +--rw schedule
-    |  |  +--rw end-time?     date-and-time
-    |  |  +--rw start-time?   date-and-time
     |  +--rw state
     |  |  +--rw administrative-state?   administrative-state
-    |  |  +--rw operational-state?      operational-state
-    |  |  +--rw lifecycle-state?        lifecycle-state
+    |  |  +--ro operational-state?      operational-state
+    |  |  +--ro lifecycle-state?        lifecycle-state
     |  +--rw direction?             tapi-common:forwarding-direction
     |  +--rw layer-protocol-name?   tapi-common:layer-protocol-name
-    |  +--rw uuid                   universal-id
+    |  +--rw uuid                   uuid
     |  +--rw name* [value-name]
     |     +--rw value-name    string
     |     +--rw value?        string
@@ -110,7 +123,7 @@ module: tapi-connectivity
        |  |  +--ro lifecycle-state?     lifecycle-state
        |  +--ro connection-port-direction?   tapi-common:port-direction
        |  +--ro connection-port-role?        tapi-common:port-role
-       |  +--ro uuid                         universal-id
+       |  +--ro uuid                         uuid
        |  +--ro name* [value-name]
        |     +--ro value-name    string
        |     +--ro value?        string
@@ -150,9 +163,9 @@ module: tapi-connectivity
        +--ro state
        |  +--ro operational-state?   operational-state
        |  +--ro lifecycle-state?     lifecycle-state
-       +--ro layer-protocol-name?    tapi-common:layer-protocol-name
        +--ro direction?              tapi-common:forwarding-direction
-       +--ro uuid                    universal-id
+       +--ro layer-protocol-name?    tapi-common:layer-protocol-name
+       +--ro uuid                    uuid
        +--ro name* [value-name]
           +--ro value-name    string
           +--ro value?        string
@@ -181,7 +194,7 @@ module: tapi-connectivity
     |        |  |  +--ro lifecycle-state?     lifecycle-state
     |        |  +--ro connection-port-direction?   tapi-common:port-direction
     |        |  +--ro connection-port-role?        tapi-common:port-role
-    |        |  +--ro uuid                         universal-id
+    |        |  +--ro uuid                         uuid
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
@@ -221,17 +234,17 @@ module: tapi-connectivity
     |        +--ro state
     |        |  +--ro operational-state?   operational-state
     |        |  +--ro lifecycle-state?     lifecycle-state
-    |        +--ro layer-protocol-name?    tapi-common:layer-protocol-name
     |        +--ro direction?              tapi-common:forwarding-direction
-    |        +--ro uuid?                   universal-id
+    |        +--ro layer-protocol-name?    tapi-common:layer-protocol-name
+    |        +--ro uuid?                   uuid
     |        +--ro name* [value-name]
     |           +--ro value-name    string
     |           +--ro value?        string
     +---x get-connectivity-service-list
     |  +--ro output
     |     +--ro service*
-    |        +--ro connection*            -> /tapi-common:context/tapi-connectivity:connection/uuid
     |        +--ro end-point* [local-id]
+    |        |  +--ro service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
     |        |  +--ro layer-protocol* [local-id]
     |        |  |  +--ro layer-protocol-name?     layer-protocol-name
     |        |  |  +--ro termination-direction?   termination-direction
@@ -240,44 +253,57 @@ module: tapi-connectivity
     |        |  |  +--ro name* [value-name]
     |        |  |     +--ro value-name    string
     |        |  |     +--ro value?        string
-    |        |  +--ro service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro state
+    |        |  |  +--ro administrative-state?   administrative-state
+    |        |  |  +--ro operational-state?      operational-state
+    |        |  |  +--ro lifecycle-state?        lifecycle-state
     |        |  +--ro capacity
     |        |  |  +--ro total-potential-capacity
-    |        |  |  |  +--ro total-size?                   fixed-capacity-value
-    |        |  |  |  +--ro packet-bw-profile-type?       bandwidth-profile-type
-    |        |  |  |  +--ro committed-information-rate?   uint64
-    |        |  |  |  +--ro committed-burst-size?         uint64
-    |        |  |  |  +--ro peak-information-rate?        uint64
-    |        |  |  |  +--ro peak-burst-size?              uint64
-    |        |  |  |  +--ro color-aware?                  boolean
-    |        |  |  |  +--ro coupling-flag?                boolean
+    |        |  |  |  +--ro total-size
+    |        |  |  |  |  +--ro value?   uint64
+    |        |  |  |  |  +--ro unit?    capacity-unit
+    |        |  |  |  +--ro bandwidth-profile
+    |        |  |  |     +--ro bw-profile-type?              bandwidth-profile-type
+    |        |  |  |     +--ro committed-information-rate?   uint64
+    |        |  |  |     +--ro committed-burst-size?         uint64
+    |        |  |  |     +--ro peak-information-rate?        uint64
+    |        |  |  |     +--ro peak-burst-size?              uint64
+    |        |  |  |     +--ro color-aware?                  boolean
+    |        |  |  |     +--ro coupling-flag?                boolean
     |        |  |  +--ro available-capacity
-    |        |  |     +--ro total-size?                   fixed-capacity-value
-    |        |  |     +--ro packet-bw-profile-type?       bandwidth-profile-type
-    |        |  |     +--ro committed-information-rate?   uint64
-    |        |  |     +--ro committed-burst-size?         uint64
-    |        |  |     +--ro peak-information-rate?        uint64
-    |        |  |     +--ro peak-burst-size?              uint64
-    |        |  |     +--ro color-aware?                  boolean
-    |        |  |     +--ro coupling-flag?                boolean
+    |        |  |     +--ro total-size
+    |        |  |     |  +--ro value?   uint64
+    |        |  |     |  +--ro unit?    capacity-unit
+    |        |  |     +--ro bandwidth-profile
+    |        |  |        +--ro bw-profile-type?              bandwidth-profile-type
+    |        |  |        +--ro committed-information-rate?   uint64
+    |        |  |        +--ro committed-burst-size?         uint64
+    |        |  |        +--ro peak-information-rate?        uint64
+    |        |  |        +--ro peak-burst-size?              uint64
+    |        |  |        +--ro color-aware?                  boolean
+    |        |  |        +--ro coupling-flag?                boolean
     |        |  +--ro direction?                 tapi-common:port-direction
     |        |  +--ro role?                      tapi-common:port-role
     |        |  +--ro local-id                   string
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
+    |        +--ro connection*            -> /tapi-common:context/tapi-connectivity:connection/uuid
     |        +--ro conn-constraint
     |        |  +--ro service-type?             service-type
     |        |  +--ro service-level?            string
     |        |  +--ro requested-capacity
-    |        |  |  +--ro total-size?                   fixed-capacity-value
-    |        |  |  +--ro packet-bw-profile-type?       bandwidth-profile-type
-    |        |  |  +--ro committed-information-rate?   uint64
-    |        |  |  +--ro committed-burst-size?         uint64
-    |        |  |  +--ro peak-information-rate?        uint64
-    |        |  |  +--ro peak-burst-size?              uint64
-    |        |  |  +--ro color-aware?                  boolean
-    |        |  |  +--ro coupling-flag?                boolean
+    |        |  |  +--ro total-size
+    |        |  |  |  +--ro value?   uint64
+    |        |  |  |  +--ro unit?    capacity-unit
+    |        |  |  +--ro bandwidth-profile
+    |        |  |     +--ro bw-profile-type?              bandwidth-profile-type
+    |        |  |     +--ro committed-information-rate?   uint64
+    |        |  |     +--ro committed-burst-size?         uint64
+    |        |  |     +--ro peak-information-rate?        uint64
+    |        |  |     +--ro peak-burst-size?              uint64
+    |        |  |     +--ro color-aware?                  boolean
+    |        |  |     +--ro coupling-flag?                boolean
     |        |  +--ro cost-characteristic* [cost-name cost-value cost-algorithm]
     |        |  |  +--ro cost-name         string
     |        |  |  +--ro cost-value        string
@@ -290,6 +316,9 @@ module: tapi-connectivity
     |        |  |  +--ro traffic-property-queing-latency    string
     |        |  +--ro coroute-inclusion?        -> /tapi-common:context/tapi-connectivity:connectivity-service/uuid
     |        |  +--ro diversity-exclusion*      -> /tapi-common:context/tapi-connectivity:connectivity-service/uuid
+    |        |  +--ro schedule
+    |        |  |  +--ro end-time?     date-and-time
+    |        |  |  +--ro start-time?   date-and-time
     |        |  +--ro local-id?                 string
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
@@ -308,16 +337,13 @@ module: tapi-connectivity
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
-    |        +--ro schedule
-    |        |  +--ro end-time?     date-and-time
-    |        |  +--ro start-time?   date-and-time
     |        +--ro state
     |        |  +--ro administrative-state?   administrative-state
     |        |  +--ro operational-state?      operational-state
     |        |  +--ro lifecycle-state?        lifecycle-state
     |        +--ro direction?             tapi-common:forwarding-direction
     |        +--ro layer-protocol-name?   tapi-common:layer-protocol-name
-    |        +--ro uuid?                  universal-id
+    |        +--ro uuid?                  uuid
     |        +--ro name* [value-name]
     |           +--ro value-name    string
     |           +--ro value?        string
@@ -326,8 +352,8 @@ module: tapi-connectivity
     |  |  +---w service-id-or-name?   string
     |  +--ro output
     |     +--ro service
-    |        +--ro connection*            -> /tapi-common:context/tapi-connectivity:connection/uuid
     |        +--ro end-point* [local-id]
+    |        |  +--ro service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
     |        |  +--ro layer-protocol* [local-id]
     |        |  |  +--ro layer-protocol-name?     layer-protocol-name
     |        |  |  +--ro termination-direction?   termination-direction
@@ -336,44 +362,57 @@ module: tapi-connectivity
     |        |  |  +--ro name* [value-name]
     |        |  |     +--ro value-name    string
     |        |  |     +--ro value?        string
-    |        |  +--ro service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro state
+    |        |  |  +--ro administrative-state?   administrative-state
+    |        |  |  +--ro operational-state?      operational-state
+    |        |  |  +--ro lifecycle-state?        lifecycle-state
     |        |  +--ro capacity
     |        |  |  +--ro total-potential-capacity
-    |        |  |  |  +--ro total-size?                   fixed-capacity-value
-    |        |  |  |  +--ro packet-bw-profile-type?       bandwidth-profile-type
-    |        |  |  |  +--ro committed-information-rate?   uint64
-    |        |  |  |  +--ro committed-burst-size?         uint64
-    |        |  |  |  +--ro peak-information-rate?        uint64
-    |        |  |  |  +--ro peak-burst-size?              uint64
-    |        |  |  |  +--ro color-aware?                  boolean
-    |        |  |  |  +--ro coupling-flag?                boolean
+    |        |  |  |  +--ro total-size
+    |        |  |  |  |  +--ro value?   uint64
+    |        |  |  |  |  +--ro unit?    capacity-unit
+    |        |  |  |  +--ro bandwidth-profile
+    |        |  |  |     +--ro bw-profile-type?              bandwidth-profile-type
+    |        |  |  |     +--ro committed-information-rate?   uint64
+    |        |  |  |     +--ro committed-burst-size?         uint64
+    |        |  |  |     +--ro peak-information-rate?        uint64
+    |        |  |  |     +--ro peak-burst-size?              uint64
+    |        |  |  |     +--ro color-aware?                  boolean
+    |        |  |  |     +--ro coupling-flag?                boolean
     |        |  |  +--ro available-capacity
-    |        |  |     +--ro total-size?                   fixed-capacity-value
-    |        |  |     +--ro packet-bw-profile-type?       bandwidth-profile-type
-    |        |  |     +--ro committed-information-rate?   uint64
-    |        |  |     +--ro committed-burst-size?         uint64
-    |        |  |     +--ro peak-information-rate?        uint64
-    |        |  |     +--ro peak-burst-size?              uint64
-    |        |  |     +--ro color-aware?                  boolean
-    |        |  |     +--ro coupling-flag?                boolean
+    |        |  |     +--ro total-size
+    |        |  |     |  +--ro value?   uint64
+    |        |  |     |  +--ro unit?    capacity-unit
+    |        |  |     +--ro bandwidth-profile
+    |        |  |        +--ro bw-profile-type?              bandwidth-profile-type
+    |        |  |        +--ro committed-information-rate?   uint64
+    |        |  |        +--ro committed-burst-size?         uint64
+    |        |  |        +--ro peak-information-rate?        uint64
+    |        |  |        +--ro peak-burst-size?              uint64
+    |        |  |        +--ro color-aware?                  boolean
+    |        |  |        +--ro coupling-flag?                boolean
     |        |  +--ro direction?                 tapi-common:port-direction
     |        |  +--ro role?                      tapi-common:port-role
     |        |  +--ro local-id                   string
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
+    |        +--ro connection*            -> /tapi-common:context/tapi-connectivity:connection/uuid
     |        +--ro conn-constraint
     |        |  +--ro service-type?             service-type
     |        |  +--ro service-level?            string
     |        |  +--ro requested-capacity
-    |        |  |  +--ro total-size?                   fixed-capacity-value
-    |        |  |  +--ro packet-bw-profile-type?       bandwidth-profile-type
-    |        |  |  +--ro committed-information-rate?   uint64
-    |        |  |  +--ro committed-burst-size?         uint64
-    |        |  |  +--ro peak-information-rate?        uint64
-    |        |  |  +--ro peak-burst-size?              uint64
-    |        |  |  +--ro color-aware?                  boolean
-    |        |  |  +--ro coupling-flag?                boolean
+    |        |  |  +--ro total-size
+    |        |  |  |  +--ro value?   uint64
+    |        |  |  |  +--ro unit?    capacity-unit
+    |        |  |  +--ro bandwidth-profile
+    |        |  |     +--ro bw-profile-type?              bandwidth-profile-type
+    |        |  |     +--ro committed-information-rate?   uint64
+    |        |  |     +--ro committed-burst-size?         uint64
+    |        |  |     +--ro peak-information-rate?        uint64
+    |        |  |     +--ro peak-burst-size?              uint64
+    |        |  |     +--ro color-aware?                  boolean
+    |        |  |     +--ro coupling-flag?                boolean
     |        |  +--ro cost-characteristic* [cost-name cost-value cost-algorithm]
     |        |  |  +--ro cost-name         string
     |        |  |  +--ro cost-value        string
@@ -386,6 +425,9 @@ module: tapi-connectivity
     |        |  |  +--ro traffic-property-queing-latency    string
     |        |  +--ro coroute-inclusion?        -> /tapi-common:context/tapi-connectivity:connectivity-service/uuid
     |        |  +--ro diversity-exclusion*      -> /tapi-common:context/tapi-connectivity:connectivity-service/uuid
+    |        |  +--ro schedule
+    |        |  |  +--ro end-time?     date-and-time
+    |        |  |  +--ro start-time?   date-and-time
     |        |  +--ro local-id?                 string
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
@@ -404,22 +446,20 @@ module: tapi-connectivity
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
-    |        +--ro schedule
-    |        |  +--ro end-time?     date-and-time
-    |        |  +--ro start-time?   date-and-time
     |        +--ro state
     |        |  +--ro administrative-state?   administrative-state
     |        |  +--ro operational-state?      operational-state
     |        |  +--ro lifecycle-state?        lifecycle-state
     |        +--ro direction?             tapi-common:forwarding-direction
     |        +--ro layer-protocol-name?   tapi-common:layer-protocol-name
-    |        +--ro uuid?                  universal-id
+    |        +--ro uuid?                  uuid
     |        +--ro name* [value-name]
     |           +--ro value-name    string
     |           +--ro value?        string
     +---x create-connectivity-service
     |  +---w input
     |  |  +---w end-point*
+    |  |  |  +---w service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
     |  |  |  +---w layer-protocol* [local-id]
     |  |  |  |  +---w layer-protocol-name?     layer-protocol-name
     |  |  |  |  +---w termination-direction?   termination-direction
@@ -428,26 +468,35 @@ module: tapi-connectivity
     |  |  |  |  +---w name* [value-name]
     |  |  |  |     +---w value-name    string
     |  |  |  |     +---w value?        string
-    |  |  |  +---w service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
+    |  |  |  +---w state
+    |  |  |  |  +---w administrative-state?   administrative-state
+    |  |  |  |  +---w operational-state?      operational-state
+    |  |  |  |  +---w lifecycle-state?        lifecycle-state
     |  |  |  +---w capacity
     |  |  |  |  +---w total-potential-capacity
-    |  |  |  |  |  +---w total-size?                   fixed-capacity-value
-    |  |  |  |  |  +---w packet-bw-profile-type?       bandwidth-profile-type
-    |  |  |  |  |  +---w committed-information-rate?   uint64
-    |  |  |  |  |  +---w committed-burst-size?         uint64
-    |  |  |  |  |  +---w peak-information-rate?        uint64
-    |  |  |  |  |  +---w peak-burst-size?              uint64
-    |  |  |  |  |  +---w color-aware?                  boolean
-    |  |  |  |  |  +---w coupling-flag?                boolean
+    |  |  |  |  |  +---w total-size
+    |  |  |  |  |  |  +---w value?   uint64
+    |  |  |  |  |  |  +---w unit?    capacity-unit
+    |  |  |  |  |  +---w bandwidth-profile
+    |  |  |  |  |     +---w bw-profile-type?              bandwidth-profile-type
+    |  |  |  |  |     +---w committed-information-rate?   uint64
+    |  |  |  |  |     +---w committed-burst-size?         uint64
+    |  |  |  |  |     +---w peak-information-rate?        uint64
+    |  |  |  |  |     +---w peak-burst-size?              uint64
+    |  |  |  |  |     +---w color-aware?                  boolean
+    |  |  |  |  |     +---w coupling-flag?                boolean
     |  |  |  |  +---w available-capacity
-    |  |  |  |     +---w total-size?                   fixed-capacity-value
-    |  |  |  |     +---w packet-bw-profile-type?       bandwidth-profile-type
-    |  |  |  |     +---w committed-information-rate?   uint64
-    |  |  |  |     +---w committed-burst-size?         uint64
-    |  |  |  |     +---w peak-information-rate?        uint64
-    |  |  |  |     +---w peak-burst-size?              uint64
-    |  |  |  |     +---w color-aware?                  boolean
-    |  |  |  |     +---w coupling-flag?                boolean
+    |  |  |  |     +---w total-size
+    |  |  |  |     |  +---w value?   uint64
+    |  |  |  |     |  +---w unit?    capacity-unit
+    |  |  |  |     +---w bandwidth-profile
+    |  |  |  |        +---w bw-profile-type?              bandwidth-profile-type
+    |  |  |  |        +---w committed-information-rate?   uint64
+    |  |  |  |        +---w committed-burst-size?         uint64
+    |  |  |  |        +---w peak-information-rate?        uint64
+    |  |  |  |        +---w peak-burst-size?              uint64
+    |  |  |  |        +---w color-aware?                  boolean
+    |  |  |  |        +---w coupling-flag?                boolean
     |  |  |  +---w direction?                 tapi-common:port-direction
     |  |  |  +---w role?                      tapi-common:port-role
     |  |  |  +---w local-id?                  string
@@ -458,14 +507,17 @@ module: tapi-connectivity
     |  |  |  +---w service-type?             service-type
     |  |  |  +---w service-level?            string
     |  |  |  +---w requested-capacity
-    |  |  |  |  +---w total-size?                   fixed-capacity-value
-    |  |  |  |  +---w packet-bw-profile-type?       bandwidth-profile-type
-    |  |  |  |  +---w committed-information-rate?   uint64
-    |  |  |  |  +---w committed-burst-size?         uint64
-    |  |  |  |  +---w peak-information-rate?        uint64
-    |  |  |  |  +---w peak-burst-size?              uint64
-    |  |  |  |  +---w color-aware?                  boolean
-    |  |  |  |  +---w coupling-flag?                boolean
+    |  |  |  |  +---w total-size
+    |  |  |  |  |  +---w value?   uint64
+    |  |  |  |  |  +---w unit?    capacity-unit
+    |  |  |  |  +---w bandwidth-profile
+    |  |  |  |     +---w bw-profile-type?              bandwidth-profile-type
+    |  |  |  |     +---w committed-information-rate?   uint64
+    |  |  |  |     +---w committed-burst-size?         uint64
+    |  |  |  |     +---w peak-information-rate?        uint64
+    |  |  |  |     +---w peak-burst-size?              uint64
+    |  |  |  |     +---w color-aware?                  boolean
+    |  |  |  |     +---w coupling-flag?                boolean
     |  |  |  +---w cost-characteristic* [cost-name cost-value cost-algorithm]
     |  |  |  |  +---w cost-name         string
     |  |  |  |  +---w cost-value        string
@@ -478,6 +530,9 @@ module: tapi-connectivity
     |  |  |  |  +---w traffic-property-queing-latency    string
     |  |  |  +---w coroute-inclusion?        -> /tapi-common:context/tapi-connectivity:connectivity-service/uuid
     |  |  |  +---w diversity-exclusion*      -> /tapi-common:context/tapi-connectivity:connectivity-service/uuid
+    |  |  |  +---w schedule
+    |  |  |  |  +---w end-time?     date-and-time
+    |  |  |  |  +---w start-time?   date-and-time
     |  |  |  +---w local-id?                 string
     |  |  |  +---w name* [value-name]
     |  |  |     +---w value-name    string
@@ -496,17 +551,11 @@ module: tapi-connectivity
     |  |  |  +---w name* [value-name]
     |  |  |     +---w value-name    string
     |  |  |     +---w value?        string
-    |  |  +---w schedule
-    |  |  |  +---w end-time?     date-and-time
-    |  |  |  +---w start-time?   date-and-time
-    |  |  +---w state
-    |  |     +---w administrative-state?   administrative-state
-    |  |     +---w operational-state?      operational-state
-    |  |     +---w lifecycle-state?        lifecycle-state
+    |  |  +---w state?             string
     |  +--ro output
     |     +--ro service
-    |        +--ro connection*            -> /tapi-common:context/tapi-connectivity:connection/uuid
     |        +--ro end-point* [local-id]
+    |        |  +--ro service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
     |        |  +--ro layer-protocol* [local-id]
     |        |  |  +--ro layer-protocol-name?     layer-protocol-name
     |        |  |  +--ro termination-direction?   termination-direction
@@ -515,44 +564,57 @@ module: tapi-connectivity
     |        |  |  +--ro name* [value-name]
     |        |  |     +--ro value-name    string
     |        |  |     +--ro value?        string
-    |        |  +--ro service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro state
+    |        |  |  +--ro administrative-state?   administrative-state
+    |        |  |  +--ro operational-state?      operational-state
+    |        |  |  +--ro lifecycle-state?        lifecycle-state
     |        |  +--ro capacity
     |        |  |  +--ro total-potential-capacity
-    |        |  |  |  +--ro total-size?                   fixed-capacity-value
-    |        |  |  |  +--ro packet-bw-profile-type?       bandwidth-profile-type
-    |        |  |  |  +--ro committed-information-rate?   uint64
-    |        |  |  |  +--ro committed-burst-size?         uint64
-    |        |  |  |  +--ro peak-information-rate?        uint64
-    |        |  |  |  +--ro peak-burst-size?              uint64
-    |        |  |  |  +--ro color-aware?                  boolean
-    |        |  |  |  +--ro coupling-flag?                boolean
+    |        |  |  |  +--ro total-size
+    |        |  |  |  |  +--ro value?   uint64
+    |        |  |  |  |  +--ro unit?    capacity-unit
+    |        |  |  |  +--ro bandwidth-profile
+    |        |  |  |     +--ro bw-profile-type?              bandwidth-profile-type
+    |        |  |  |     +--ro committed-information-rate?   uint64
+    |        |  |  |     +--ro committed-burst-size?         uint64
+    |        |  |  |     +--ro peak-information-rate?        uint64
+    |        |  |  |     +--ro peak-burst-size?              uint64
+    |        |  |  |     +--ro color-aware?                  boolean
+    |        |  |  |     +--ro coupling-flag?                boolean
     |        |  |  +--ro available-capacity
-    |        |  |     +--ro total-size?                   fixed-capacity-value
-    |        |  |     +--ro packet-bw-profile-type?       bandwidth-profile-type
-    |        |  |     +--ro committed-information-rate?   uint64
-    |        |  |     +--ro committed-burst-size?         uint64
-    |        |  |     +--ro peak-information-rate?        uint64
-    |        |  |     +--ro peak-burst-size?              uint64
-    |        |  |     +--ro color-aware?                  boolean
-    |        |  |     +--ro coupling-flag?                boolean
+    |        |  |     +--ro total-size
+    |        |  |     |  +--ro value?   uint64
+    |        |  |     |  +--ro unit?    capacity-unit
+    |        |  |     +--ro bandwidth-profile
+    |        |  |        +--ro bw-profile-type?              bandwidth-profile-type
+    |        |  |        +--ro committed-information-rate?   uint64
+    |        |  |        +--ro committed-burst-size?         uint64
+    |        |  |        +--ro peak-information-rate?        uint64
+    |        |  |        +--ro peak-burst-size?              uint64
+    |        |  |        +--ro color-aware?                  boolean
+    |        |  |        +--ro coupling-flag?                boolean
     |        |  +--ro direction?                 tapi-common:port-direction
     |        |  +--ro role?                      tapi-common:port-role
     |        |  +--ro local-id                   string
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
+    |        +--ro connection*            -> /tapi-common:context/tapi-connectivity:connection/uuid
     |        +--ro conn-constraint
     |        |  +--ro service-type?             service-type
     |        |  +--ro service-level?            string
     |        |  +--ro requested-capacity
-    |        |  |  +--ro total-size?                   fixed-capacity-value
-    |        |  |  +--ro packet-bw-profile-type?       bandwidth-profile-type
-    |        |  |  +--ro committed-information-rate?   uint64
-    |        |  |  +--ro committed-burst-size?         uint64
-    |        |  |  +--ro peak-information-rate?        uint64
-    |        |  |  +--ro peak-burst-size?              uint64
-    |        |  |  +--ro color-aware?                  boolean
-    |        |  |  +--ro coupling-flag?                boolean
+    |        |  |  +--ro total-size
+    |        |  |  |  +--ro value?   uint64
+    |        |  |  |  +--ro unit?    capacity-unit
+    |        |  |  +--ro bandwidth-profile
+    |        |  |     +--ro bw-profile-type?              bandwidth-profile-type
+    |        |  |     +--ro committed-information-rate?   uint64
+    |        |  |     +--ro committed-burst-size?         uint64
+    |        |  |     +--ro peak-information-rate?        uint64
+    |        |  |     +--ro peak-burst-size?              uint64
+    |        |  |     +--ro color-aware?                  boolean
+    |        |  |     +--ro coupling-flag?                boolean
     |        |  +--ro cost-characteristic* [cost-name cost-value cost-algorithm]
     |        |  |  +--ro cost-name         string
     |        |  |  +--ro cost-value        string
@@ -565,6 +627,9 @@ module: tapi-connectivity
     |        |  |  +--ro traffic-property-queing-latency    string
     |        |  +--ro coroute-inclusion?        -> /tapi-common:context/tapi-connectivity:connectivity-service/uuid
     |        |  +--ro diversity-exclusion*      -> /tapi-common:context/tapi-connectivity:connectivity-service/uuid
+    |        |  +--ro schedule
+    |        |  |  +--ro end-time?     date-and-time
+    |        |  |  +--ro start-time?   date-and-time
     |        |  +--ro local-id?                 string
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
@@ -583,16 +648,13 @@ module: tapi-connectivity
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
-    |        +--ro schedule
-    |        |  +--ro end-time?     date-and-time
-    |        |  +--ro start-time?   date-and-time
     |        +--ro state
     |        |  +--ro administrative-state?   administrative-state
     |        |  +--ro operational-state?      operational-state
     |        |  +--ro lifecycle-state?        lifecycle-state
     |        +--ro direction?             tapi-common:forwarding-direction
     |        +--ro layer-protocol-name?   tapi-common:layer-protocol-name
-    |        +--ro uuid?                  universal-id
+    |        +--ro uuid?                  uuid
     |        +--ro name* [value-name]
     |           +--ro value-name    string
     |           +--ro value?        string
@@ -600,6 +662,7 @@ module: tapi-connectivity
     |  +---w input
     |  |  +---w service-id-or-name?   string
     |  |  +---w end-point
+    |  |  |  +---w service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
     |  |  |  +---w layer-protocol* [local-id]
     |  |  |  |  +---w layer-protocol-name?     layer-protocol-name
     |  |  |  |  +---w termination-direction?   termination-direction
@@ -608,26 +671,35 @@ module: tapi-connectivity
     |  |  |  |  +---w name* [value-name]
     |  |  |  |     +---w value-name    string
     |  |  |  |     +---w value?        string
-    |  |  |  +---w service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
+    |  |  |  +---w state
+    |  |  |  |  +---w administrative-state?   administrative-state
+    |  |  |  |  +---w operational-state?      operational-state
+    |  |  |  |  +---w lifecycle-state?        lifecycle-state
     |  |  |  +---w capacity
     |  |  |  |  +---w total-potential-capacity
-    |  |  |  |  |  +---w total-size?                   fixed-capacity-value
-    |  |  |  |  |  +---w packet-bw-profile-type?       bandwidth-profile-type
-    |  |  |  |  |  +---w committed-information-rate?   uint64
-    |  |  |  |  |  +---w committed-burst-size?         uint64
-    |  |  |  |  |  +---w peak-information-rate?        uint64
-    |  |  |  |  |  +---w peak-burst-size?              uint64
-    |  |  |  |  |  +---w color-aware?                  boolean
-    |  |  |  |  |  +---w coupling-flag?                boolean
+    |  |  |  |  |  +---w total-size
+    |  |  |  |  |  |  +---w value?   uint64
+    |  |  |  |  |  |  +---w unit?    capacity-unit
+    |  |  |  |  |  +---w bandwidth-profile
+    |  |  |  |  |     +---w bw-profile-type?              bandwidth-profile-type
+    |  |  |  |  |     +---w committed-information-rate?   uint64
+    |  |  |  |  |     +---w committed-burst-size?         uint64
+    |  |  |  |  |     +---w peak-information-rate?        uint64
+    |  |  |  |  |     +---w peak-burst-size?              uint64
+    |  |  |  |  |     +---w color-aware?                  boolean
+    |  |  |  |  |     +---w coupling-flag?                boolean
     |  |  |  |  +---w available-capacity
-    |  |  |  |     +---w total-size?                   fixed-capacity-value
-    |  |  |  |     +---w packet-bw-profile-type?       bandwidth-profile-type
-    |  |  |  |     +---w committed-information-rate?   uint64
-    |  |  |  |     +---w committed-burst-size?         uint64
-    |  |  |  |     +---w peak-information-rate?        uint64
-    |  |  |  |     +---w peak-burst-size?              uint64
-    |  |  |  |     +---w color-aware?                  boolean
-    |  |  |  |     +---w coupling-flag?                boolean
+    |  |  |  |     +---w total-size
+    |  |  |  |     |  +---w value?   uint64
+    |  |  |  |     |  +---w unit?    capacity-unit
+    |  |  |  |     +---w bandwidth-profile
+    |  |  |  |        +---w bw-profile-type?              bandwidth-profile-type
+    |  |  |  |        +---w committed-information-rate?   uint64
+    |  |  |  |        +---w committed-burst-size?         uint64
+    |  |  |  |        +---w peak-information-rate?        uint64
+    |  |  |  |        +---w peak-burst-size?              uint64
+    |  |  |  |        +---w color-aware?                  boolean
+    |  |  |  |        +---w coupling-flag?                boolean
     |  |  |  +---w direction?                 tapi-common:port-direction
     |  |  |  +---w role?                      tapi-common:port-role
     |  |  |  +---w local-id?                  string
@@ -638,14 +710,17 @@ module: tapi-connectivity
     |  |  |  +---w service-type?             service-type
     |  |  |  +---w service-level?            string
     |  |  |  +---w requested-capacity
-    |  |  |  |  +---w total-size?                   fixed-capacity-value
-    |  |  |  |  +---w packet-bw-profile-type?       bandwidth-profile-type
-    |  |  |  |  +---w committed-information-rate?   uint64
-    |  |  |  |  +---w committed-burst-size?         uint64
-    |  |  |  |  +---w peak-information-rate?        uint64
-    |  |  |  |  +---w peak-burst-size?              uint64
-    |  |  |  |  +---w color-aware?                  boolean
-    |  |  |  |  +---w coupling-flag?                boolean
+    |  |  |  |  +---w total-size
+    |  |  |  |  |  +---w value?   uint64
+    |  |  |  |  |  +---w unit?    capacity-unit
+    |  |  |  |  +---w bandwidth-profile
+    |  |  |  |     +---w bw-profile-type?              bandwidth-profile-type
+    |  |  |  |     +---w committed-information-rate?   uint64
+    |  |  |  |     +---w committed-burst-size?         uint64
+    |  |  |  |     +---w peak-information-rate?        uint64
+    |  |  |  |     +---w peak-burst-size?              uint64
+    |  |  |  |     +---w color-aware?                  boolean
+    |  |  |  |     +---w coupling-flag?                boolean
     |  |  |  +---w cost-characteristic* [cost-name cost-value cost-algorithm]
     |  |  |  |  +---w cost-name         string
     |  |  |  |  +---w cost-value        string
@@ -658,6 +733,9 @@ module: tapi-connectivity
     |  |  |  |  +---w traffic-property-queing-latency    string
     |  |  |  +---w coroute-inclusion?        -> /tapi-common:context/tapi-connectivity:connectivity-service/uuid
     |  |  |  +---w diversity-exclusion*      -> /tapi-common:context/tapi-connectivity:connectivity-service/uuid
+    |  |  |  +---w schedule
+    |  |  |  |  +---w end-time?     date-and-time
+    |  |  |  |  +---w start-time?   date-and-time
     |  |  |  +---w local-id?                 string
     |  |  |  +---w name* [value-name]
     |  |  |     +---w value-name    string
@@ -676,17 +754,11 @@ module: tapi-connectivity
     |  |  |  +---w name* [value-name]
     |  |  |     +---w value-name    string
     |  |  |     +---w value?        string
-    |  |  +---w schedule
-    |  |  |  +---w end-time?     date-and-time
-    |  |  |  +---w start-time?   date-and-time
-    |  |  +---w state
-    |  |     +---w administrative-state?   administrative-state
-    |  |     +---w operational-state?      operational-state
-    |  |     +---w lifecycle-state?        lifecycle-state
+    |  |  +---w state?                string
     |  +--ro output
     |     +--ro service
-    |        +--ro connection*            -> /tapi-common:context/tapi-connectivity:connection/uuid
     |        +--ro end-point* [local-id]
+    |        |  +--ro service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
     |        |  +--ro layer-protocol* [local-id]
     |        |  |  +--ro layer-protocol-name?     layer-protocol-name
     |        |  |  +--ro termination-direction?   termination-direction
@@ -695,44 +767,57 @@ module: tapi-connectivity
     |        |  |  +--ro name* [value-name]
     |        |  |     +--ro value-name    string
     |        |  |     +--ro value?        string
-    |        |  +--ro service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro state
+    |        |  |  +--ro administrative-state?   administrative-state
+    |        |  |  +--ro operational-state?      operational-state
+    |        |  |  +--ro lifecycle-state?        lifecycle-state
     |        |  +--ro capacity
     |        |  |  +--ro total-potential-capacity
-    |        |  |  |  +--ro total-size?                   fixed-capacity-value
-    |        |  |  |  +--ro packet-bw-profile-type?       bandwidth-profile-type
-    |        |  |  |  +--ro committed-information-rate?   uint64
-    |        |  |  |  +--ro committed-burst-size?         uint64
-    |        |  |  |  +--ro peak-information-rate?        uint64
-    |        |  |  |  +--ro peak-burst-size?              uint64
-    |        |  |  |  +--ro color-aware?                  boolean
-    |        |  |  |  +--ro coupling-flag?                boolean
+    |        |  |  |  +--ro total-size
+    |        |  |  |  |  +--ro value?   uint64
+    |        |  |  |  |  +--ro unit?    capacity-unit
+    |        |  |  |  +--ro bandwidth-profile
+    |        |  |  |     +--ro bw-profile-type?              bandwidth-profile-type
+    |        |  |  |     +--ro committed-information-rate?   uint64
+    |        |  |  |     +--ro committed-burst-size?         uint64
+    |        |  |  |     +--ro peak-information-rate?        uint64
+    |        |  |  |     +--ro peak-burst-size?              uint64
+    |        |  |  |     +--ro color-aware?                  boolean
+    |        |  |  |     +--ro coupling-flag?                boolean
     |        |  |  +--ro available-capacity
-    |        |  |     +--ro total-size?                   fixed-capacity-value
-    |        |  |     +--ro packet-bw-profile-type?       bandwidth-profile-type
-    |        |  |     +--ro committed-information-rate?   uint64
-    |        |  |     +--ro committed-burst-size?         uint64
-    |        |  |     +--ro peak-information-rate?        uint64
-    |        |  |     +--ro peak-burst-size?              uint64
-    |        |  |     +--ro color-aware?                  boolean
-    |        |  |     +--ro coupling-flag?                boolean
+    |        |  |     +--ro total-size
+    |        |  |     |  +--ro value?   uint64
+    |        |  |     |  +--ro unit?    capacity-unit
+    |        |  |     +--ro bandwidth-profile
+    |        |  |        +--ro bw-profile-type?              bandwidth-profile-type
+    |        |  |        +--ro committed-information-rate?   uint64
+    |        |  |        +--ro committed-burst-size?         uint64
+    |        |  |        +--ro peak-information-rate?        uint64
+    |        |  |        +--ro peak-burst-size?              uint64
+    |        |  |        +--ro color-aware?                  boolean
+    |        |  |        +--ro coupling-flag?                boolean
     |        |  +--ro direction?                 tapi-common:port-direction
     |        |  +--ro role?                      tapi-common:port-role
     |        |  +--ro local-id                   string
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
+    |        +--ro connection*            -> /tapi-common:context/tapi-connectivity:connection/uuid
     |        +--ro conn-constraint
     |        |  +--ro service-type?             service-type
     |        |  +--ro service-level?            string
     |        |  +--ro requested-capacity
-    |        |  |  +--ro total-size?                   fixed-capacity-value
-    |        |  |  +--ro packet-bw-profile-type?       bandwidth-profile-type
-    |        |  |  +--ro committed-information-rate?   uint64
-    |        |  |  +--ro committed-burst-size?         uint64
-    |        |  |  +--ro peak-information-rate?        uint64
-    |        |  |  +--ro peak-burst-size?              uint64
-    |        |  |  +--ro color-aware?                  boolean
-    |        |  |  +--ro coupling-flag?                boolean
+    |        |  |  +--ro total-size
+    |        |  |  |  +--ro value?   uint64
+    |        |  |  |  +--ro unit?    capacity-unit
+    |        |  |  +--ro bandwidth-profile
+    |        |  |     +--ro bw-profile-type?              bandwidth-profile-type
+    |        |  |     +--ro committed-information-rate?   uint64
+    |        |  |     +--ro committed-burst-size?         uint64
+    |        |  |     +--ro peak-information-rate?        uint64
+    |        |  |     +--ro peak-burst-size?              uint64
+    |        |  |     +--ro color-aware?                  boolean
+    |        |  |     +--ro coupling-flag?                boolean
     |        |  +--ro cost-characteristic* [cost-name cost-value cost-algorithm]
     |        |  |  +--ro cost-name         string
     |        |  |  +--ro cost-value        string
@@ -745,6 +830,9 @@ module: tapi-connectivity
     |        |  |  +--ro traffic-property-queing-latency    string
     |        |  +--ro coroute-inclusion?        -> /tapi-common:context/tapi-connectivity:connectivity-service/uuid
     |        |  +--ro diversity-exclusion*      -> /tapi-common:context/tapi-connectivity:connectivity-service/uuid
+    |        |  +--ro schedule
+    |        |  |  +--ro end-time?     date-and-time
+    |        |  |  +--ro start-time?   date-and-time
     |        |  +--ro local-id?                 string
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
@@ -763,16 +851,13 @@ module: tapi-connectivity
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
-    |        +--ro schedule
-    |        |  +--ro end-time?     date-and-time
-    |        |  +--ro start-time?   date-and-time
     |        +--ro state
     |        |  +--ro administrative-state?   administrative-state
     |        |  +--ro operational-state?      operational-state
     |        |  +--ro lifecycle-state?        lifecycle-state
     |        +--ro direction?             tapi-common:forwarding-direction
     |        +--ro layer-protocol-name?   tapi-common:layer-protocol-name
-    |        +--ro uuid?                  universal-id
+    |        +--ro uuid?                  uuid
     |        +--ro name* [value-name]
     |           +--ro value-name    string
     |           +--ro value?        string
@@ -781,8 +866,8 @@ module: tapi-connectivity
        |  +---w service-id-or-name?   string
        +--ro output
           +--ro service
-             +--ro connection*            -> /tapi-common:context/tapi-connectivity:connection/uuid
              +--ro end-point* [local-id]
+             |  +--ro service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
              |  +--ro layer-protocol* [local-id]
              |  |  +--ro layer-protocol-name?     layer-protocol-name
              |  |  +--ro termination-direction?   termination-direction
@@ -791,44 +876,57 @@ module: tapi-connectivity
              |  |  +--ro name* [value-name]
              |  |     +--ro value-name    string
              |  |     +--ro value?        string
-             |  +--ro service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
+             |  +--ro state
+             |  |  +--ro administrative-state?   administrative-state
+             |  |  +--ro operational-state?      operational-state
+             |  |  +--ro lifecycle-state?        lifecycle-state
              |  +--ro capacity
              |  |  +--ro total-potential-capacity
-             |  |  |  +--ro total-size?                   fixed-capacity-value
-             |  |  |  +--ro packet-bw-profile-type?       bandwidth-profile-type
-             |  |  |  +--ro committed-information-rate?   uint64
-             |  |  |  +--ro committed-burst-size?         uint64
-             |  |  |  +--ro peak-information-rate?        uint64
-             |  |  |  +--ro peak-burst-size?              uint64
-             |  |  |  +--ro color-aware?                  boolean
-             |  |  |  +--ro coupling-flag?                boolean
+             |  |  |  +--ro total-size
+             |  |  |  |  +--ro value?   uint64
+             |  |  |  |  +--ro unit?    capacity-unit
+             |  |  |  +--ro bandwidth-profile
+             |  |  |     +--ro bw-profile-type?              bandwidth-profile-type
+             |  |  |     +--ro committed-information-rate?   uint64
+             |  |  |     +--ro committed-burst-size?         uint64
+             |  |  |     +--ro peak-information-rate?        uint64
+             |  |  |     +--ro peak-burst-size?              uint64
+             |  |  |     +--ro color-aware?                  boolean
+             |  |  |     +--ro coupling-flag?                boolean
              |  |  +--ro available-capacity
-             |  |     +--ro total-size?                   fixed-capacity-value
-             |  |     +--ro packet-bw-profile-type?       bandwidth-profile-type
-             |  |     +--ro committed-information-rate?   uint64
-             |  |     +--ro committed-burst-size?         uint64
-             |  |     +--ro peak-information-rate?        uint64
-             |  |     +--ro peak-burst-size?              uint64
-             |  |     +--ro color-aware?                  boolean
-             |  |     +--ro coupling-flag?                boolean
+             |  |     +--ro total-size
+             |  |     |  +--ro value?   uint64
+             |  |     |  +--ro unit?    capacity-unit
+             |  |     +--ro bandwidth-profile
+             |  |        +--ro bw-profile-type?              bandwidth-profile-type
+             |  |        +--ro committed-information-rate?   uint64
+             |  |        +--ro committed-burst-size?         uint64
+             |  |        +--ro peak-information-rate?        uint64
+             |  |        +--ro peak-burst-size?              uint64
+             |  |        +--ro color-aware?                  boolean
+             |  |        +--ro coupling-flag?                boolean
              |  +--ro direction?                 tapi-common:port-direction
              |  +--ro role?                      tapi-common:port-role
              |  +--ro local-id                   string
              |  +--ro name* [value-name]
              |     +--ro value-name    string
              |     +--ro value?        string
+             +--ro connection*            -> /tapi-common:context/tapi-connectivity:connection/uuid
              +--ro conn-constraint
              |  +--ro service-type?             service-type
              |  +--ro service-level?            string
              |  +--ro requested-capacity
-             |  |  +--ro total-size?                   fixed-capacity-value
-             |  |  +--ro packet-bw-profile-type?       bandwidth-profile-type
-             |  |  +--ro committed-information-rate?   uint64
-             |  |  +--ro committed-burst-size?         uint64
-             |  |  +--ro peak-information-rate?        uint64
-             |  |  +--ro peak-burst-size?              uint64
-             |  |  +--ro color-aware?                  boolean
-             |  |  +--ro coupling-flag?                boolean
+             |  |  +--ro total-size
+             |  |  |  +--ro value?   uint64
+             |  |  |  +--ro unit?    capacity-unit
+             |  |  +--ro bandwidth-profile
+             |  |     +--ro bw-profile-type?              bandwidth-profile-type
+             |  |     +--ro committed-information-rate?   uint64
+             |  |     +--ro committed-burst-size?         uint64
+             |  |     +--ro peak-information-rate?        uint64
+             |  |     +--ro peak-burst-size?              uint64
+             |  |     +--ro color-aware?                  boolean
+             |  |     +--ro coupling-flag?                boolean
              |  +--ro cost-characteristic* [cost-name cost-value cost-algorithm]
              |  |  +--ro cost-name         string
              |  |  +--ro cost-value        string
@@ -841,6 +939,9 @@ module: tapi-connectivity
              |  |  +--ro traffic-property-queing-latency    string
              |  +--ro coroute-inclusion?        -> /tapi-common:context/tapi-connectivity:connectivity-service/uuid
              |  +--ro diversity-exclusion*      -> /tapi-common:context/tapi-connectivity:connectivity-service/uuid
+             |  +--ro schedule
+             |  |  +--ro end-time?     date-and-time
+             |  |  +--ro start-time?   date-and-time
              |  +--ro local-id?                 string
              |  +--ro name* [value-name]
              |     +--ro value-name    string
@@ -859,16 +960,13 @@ module: tapi-connectivity
              |  +--ro name* [value-name]
              |     +--ro value-name    string
              |     +--ro value?        string
-             +--ro schedule
-             |  +--ro end-time?     date-and-time
-             |  +--ro start-time?   date-and-time
              +--ro state
              |  +--ro administrative-state?   administrative-state
              |  +--ro operational-state?      operational-state
              |  +--ro lifecycle-state?        lifecycle-state
              +--ro direction?             tapi-common:forwarding-direction
              +--ro layer-protocol-name?   tapi-common:layer-protocol-name
-             +--ro uuid?                  universal-id
+             +--ro uuid?                  uuid
              +--ro name* [value-name]
                 +--ro value-name    string
                 +--ro value?        string
