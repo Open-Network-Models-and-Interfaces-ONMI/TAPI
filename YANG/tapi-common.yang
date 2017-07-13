@@ -15,24 +15,26 @@ module tapi-common {
     /***********************
     * package object-classes
     **********************/ 
-        grouping admin-state-pac-g {
+        grouping admin-state-pac {
             leaf administrative-state {
                 type administrative-state;
                 description "none";
             }
             leaf operational-state {
                 type operational-state;
+                config false;
                 description "none";
             }
             leaf lifecycle-state {
                 type lifecycle-state;
+                config false;
                 description "none";
             }
             description "Provides state attributes that are applicable to an entity that can be administered. Such an entity also has operational and lifecycle aspects.";
         }
-        grouping global-class-g {
+        grouping global-class {
             leaf uuid {
-                type universal-id;
+                type uuid;
                 description "UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable. An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -40,12 +42,12 @@ module tapi-common {
             }
             list name {
                 key 'value-name';
-                uses name-and-value-g;
+                uses name-and-value;
                 description "List of names. A property of an entity with a value that is unique in some namespace but may change during the life of the entity. A name carries no semantics with respect to the purpose of the entity.";
             }
             description "The TAPI GlobalComponent serves as the super class for all TAPI entities that can be directly retrieved by their ID. As such, these are first class entities and their ID is expected to be globally unique. ";
         }
-        grouping layer-protocol-g {
+        grouping layer-protocol {
             leaf layer-protocol-name {
                 type layer-protocol-name;
                 description "Indicate the specific layer-protocol described by the LayerProtocol entity.";
@@ -61,106 +63,95 @@ module tapi-common {
                 type termination-state;
                 description "Indicates whether the layer is terminated and if so how.";
             }
-            uses local-class-g;
+            uses local-class;
             description "Each transport layer is represented by a LayerProtocol (LP) instance. The LayerProtocol instances it can be used for controlling termination and monitoring functionality. 
                 It can also be used for controlling the adaptation (i.e. encapsulation and/or multiplexing of client signal), tandem connection monitoring, traffic conditioning and/or shaping functionality at an intermediate point along a connection. 
                 Where the client – server relationship is fixed 1:1 and immutable, the layers can be encapsulated in a single LTP instance. Where the is a n:1 relationship between client and server, the layers must be split over two separate instances of LTP. ";
         }
-        grouping lifecycle-state-pac-g {
+        grouping lifecycle-state-pac {
             leaf lifecycle-state {
                 type lifecycle-state;
+                config false;
                 description "none";
             }
             description "Provides state attributes for an entity that has lifeccycle aspects only.";
         }
-        grouping local-class-g {
+        grouping local-class {
             leaf local-id {
                 type string;
                 description "none";
             }
             list name {
                 key 'value-name';
-                uses name-and-value-g;
+                uses name-and-value;
                 description "List of names. A property of an entity with a value that is unique in some namespace but may change during the life of the entity. A name carries no semantics with respect to the purpose of the entity.";
             }
             description "The TAPI GlobalComponent serves as the super class for all TAPI entities that can be directly retrieved by their ID. As such, these are first class entities and their ID is expected to be globally unique. ";
         }
-        grouping operational-state-pac-g {
+        grouping operational-state-pac {
             leaf operational-state {
                 type operational-state;
+                config false;
                 description "none";
             }
             leaf lifecycle-state {
                 type lifecycle-state;
+                config false;
                 description "none";
             }
             description "Provides state attributes that are applicable to an entity that reflects operational aspects. Such an entity is expected to also have lifecycle aspects.";
         }
-        grouping time-range-g {
-            leaf end-time {
-                type date-and-time;
-                description "none";
-            }
-            leaf start-time {
-                type date-and-time;
-                description "none";
-            }
-            description "none";
-        }
         container context {
         	presence "TAPI";
-            uses context-g;
+            uses context;
             description "none";
         }
-        grouping context-g {
+        grouping context {
             list service-interface-point {
                 key 'uuid';
-                config false;
                 min-elements 2;
-                uses service-interface-point-g;
+                uses service-interface-point;
                 description "none";
             }
-            uses global-class-g;
+            uses global-class;
             description "The Network Control Domain (NCD) object class represents the scope of control that a particular SDN controller has with respect to a particular network, (i.e., encompassing a designated set of interconnected (virtual) network elements).";
         }
-        grouping resource-spec-g {
-            uses global-class-g;
+        grouping resource-spec {
+            uses global-class;
             description "none";
         }
-        grouping service-spec-g {
-            uses global-class-g;
+        grouping service-spec {
+            uses global-class;
             description "none";
         }
-        grouping service-interface-point-g {
+        grouping service-interface-point {
             list layer-protocol {
                 key 'local-id';
-                config false;
                 min-elements 1;
-                uses layer-protocol-g;
+                uses layer-protocol;
                 description "Usage of layerProtocol [>1]  in the ServiceInterfacePoint should be considered experimental";
             }
             container state {
-                config false;
-                uses lifecycle-state-pac-g;
+                uses admin-state-pac;
                 description "none";
             }
             container capacity {
-                uses capacity-pac-g;
+                uses capacity-pac;
                 description "none";
             }
-            uses resource-spec-g;
+            uses resource-spec;
             description "The LogicalTerminationPoint (LTP) object class encapsulates the termination and adaptation functions of one or more transport layers. 
                 The structure of LTP supports all transport protocols including circuit and packet forms.";
         }
-        grouping capacity-pac-g {
+        grouping capacity-pac {
             container total-potential-capacity {
                 config false;
-                uses capacity-g;
+                uses capacity;
                 description "An optimistic view of the capacity of the TopologicalEntity assuming that any shared capacity is available to be taken.";
             }
             container available-capacity {
                 config false;
-                uses capacity-g;
+                uses capacity;
                 description "Capacity available to be assigned.";
             }
             description "The TopologicalEntity derives capacity from the underlying realization. 
@@ -191,6 +182,25 @@ module tapi-common {
         }
         identity mpls-tp {
             base layer-protocol-name;
+            description "none";
+        }
+        identity capacity-unit {
+            description "none";
+        }
+        identity gbps {
+            base capacity-unit;
+            description "none";
+        }
+        identity kbps {
+            base capacity-unit;
+            description "none";
+        }
+        identity mbps {
+            base capacity-unit;
+            description "none";
+        }
+        identity not-applicable {
+            base capacity-unit;
             description "none";
         }
         typedef administrative-state {
@@ -284,7 +294,7 @@ module tapi-common {
             }
             description "The possible values of the lifecycleState.";
         }
-        grouping name-and-value-g {
+        grouping name-and-value {
             leaf value-name {
                 type string;
                 description "The name of the value. The value need not have a name.";
@@ -332,6 +342,9 @@ module tapi-common {
                     description "none";
                 }
                 enum leaf {
+                    description "none";
+                }
+                enum trunk {
                     description "none";
                 }
                 enum unknown {
@@ -396,19 +409,26 @@ module tapi-common {
             description "Provides support for the range of behaviours and specific states that an LP can take with respect to termination of the signal.
                 Indicates to what degree the LayerTermination is terminated.";
         }
-        typedef universal-id {
+        typedef uuid {
             type string;
             description "The univeral ID value where the mechanism for generation is defned by some authority not directly referenced in the structure.
                 UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                 Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
                 Example of a UUID in string representation: f81d4fae-7dec-11d0-a765-00a0c91e6bf6";
         }
-        grouping capacity-g {
-            leaf total-size {
-                type fixed-capacity-value;
+        grouping capacity {
+            container total-size {
+                uses fixed-capacity-value;
                 description "Total capacity of the TopologicalEntity in MB/s";
             }
-            leaf packet-bw-profile-type {
+            container bandwidth-profile {
+                uses bandwidth-profile;
+                description "none";
+            }
+            description "Information on capacity of a particular TopologicalEntity.";
+        }
+        grouping bandwidth-profile {
+            leaf bw-profile-type {
                 type bandwidth-profile-type;
                 description "none";
             }
@@ -436,42 +456,24 @@ module tapi-common {
                 type boolean;
                 description "none";
             }
-            description "Information on capacity of a particular TopologicalEntity.";
+            description "none";
         }
-        typedef fixed-capacity-value {
-            type enumeration {
-                enum not-applicable {
-                    description "none";
-                }
-                enum 10mbps {
-                    description "none";
-                }
-                enum 100mbps {
-                    description "none";
-                }
-                enum 1gbps {
-                    description "none";
-                }
-                enum 2.4gbps {
-                    description "none";
-                }
-                enum 10gbps {
-                    description "none";
-                }
-                enum 40gbps {
-                    description "none";
-                }
-                enum 100gbps {
-                    description "none";
-                }
-                enum 200gbps {
-                    description "none";
-                }
-                enum 400gbps {
-                    description "none";
-                }
+        grouping fixed-capacity-value {
+            leaf value {
+                type uint64;
+                description "none";
             }
-            description "The Capacity (Bandwidth) values that are applicable for digital layers. ";
+            leaf unit {
+                type capacity-unit;
+                description "none";
+            }
+            description "The Capacity (Bandwidth) values that are applicable for digital layers.";
+        }
+        typedef capacity-unit {
+            type identityref {
+                base capacity-unit;
+            }
+            description "none";
         }
         typedef bandwidth-profile-type {
             type enumeration {
@@ -493,6 +495,17 @@ module tapi-common {
             }
             description "none";
         }
+        grouping time-range {
+            leaf end-time {
+                type date-and-time;
+                description "none";
+            }
+            leaf start-time {
+                type date-and-time;
+                description "none";
+            }
+            description "none";
+        }
 
     /***********************
     * package interfaces
@@ -507,7 +520,7 @@ module tapi-common {
             }
             output {
                 container sip {
-                    uses service-interface-point-g;
+                    uses service-interface-point;
                     description "none";
                 }
             }
@@ -516,7 +529,20 @@ module tapi-common {
             description "none";
             output {
                 list sip {
-                    uses service-interface-point-g;
+                    uses service-interface-point;
+                    description "none";
+                }
+            }
+        }
+        rpc update-service-interface-point {
+            description "none";
+            input {
+                leaf sip-id-or-name {
+                    type string;
+                    description "none";
+                }
+                leaf state {
+                    type administrative-state;
                     description "none";
                 }
             }

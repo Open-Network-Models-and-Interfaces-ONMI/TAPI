@@ -22,17 +22,17 @@ module tapi-eth {
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 6020 and RFC 6087";
     }
     augment "/tapi-common:context/tapi-connectivity:connection/tapi-connectivity:connection-end-point/tapi-connectivity:layer-protocol" {
-        uses connection-end-point-lp-spec-g;
+        uses connection-end-point-lp-spec;
         description "Augments the base LayerProtocol information in ConnectionEndPoint with ETH-specific information";
     }
     augment "/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-topology:layer-protocol" {
-        uses node-edge-point-lp-spec-g;
+        uses node-edge-point-lp-spec;
         description "Augments the base LayerProtocol information in NodeEdgePoint with ETH-specific information";
     }
     /***********************
     * package object-classes
     **********************/ 
-        grouping connection-point-and-adapter-pac-g {
+        grouping connection-point-and-adapter-pac {
             leaf-list auxiliary-function-position-sequence {
                 type uint64;
                 description "This attribute indicates the positions (i.e., the relative order) of all the MEP, MIP, and TCS objects which are associated with the CTP.";
@@ -68,7 +68,7 @@ module tapi-eth {
                     range of type : 1518, 1522, 2000";
             }
             container filter-config {
-                uses control-frame-filter-g;
+                uses control-frame-filter;
                 description "This attribute models the FilterConfig MI defined in section 8.3/G.8021. It indicates the configured filter action for each of the 33 group MAC addresses for control frames. The 33 MAC addresses are:
                     - All bridges address: 01-80-C2-00-00-10,
                     - Reserved addresses: 01-80-C2-00-00-00 to 01-80-C2-00-00-0F,
@@ -144,29 +144,29 @@ module tapi-eth {
                     range of type : true, false";
             }
             container traffic-shaping {
-                uses traffic-shaping-pac-g;
+                uses traffic-shaping-pac;
                 description "none";
             }
             container traffic-conditioning {
-                uses traffic-conditioning-pac-g;
+                uses traffic-conditioning-pac;
                 description "none";
             }
             description "none";
         }
-        grouping connection-end-point-lp-spec-g {
+        grouping connection-end-point-lp-spec {
             container termination-spec {
-                uses eth-termination-pac-g;
+                uses eth-termination-pac;
                 description "none";
             }
             container adapter-spec {
-                uses connection-point-and-adapter-pac-g;
+                uses connection-point-and-adapter-pac;
                 description "none";
             }
             description "none";
         }
-        grouping eth-termination-pac-g {
+        grouping eth-termination-pac {
             container priority-regenerate {
-                uses priority-mapping-g;
+                uses priority-mapping;
                 description "This attribute models the ETHx/ETH-m _A_Sk_MI_P_Regenerate information defined in G.8021.";
             }
             leaf ether-type {
@@ -210,7 +210,7 @@ module tapi-eth {
             }
             description "This object class models the Ethernet Flow Termination function located at a layer boundary.";
         }
-        grouping ety-termination-pac-g {
+        grouping ety-termination-pac {
             leaf is-fts-enabled {
                 type boolean;
                 description "This attribute indicates whether Forced Transmitter Shutdown (FTS) is enabled or not. It models the ETYn_TT_So_MI_FTSEnable information.";
@@ -231,15 +231,15 @@ module tapi-eth {
             }
             description "none";
         }
-        grouping traffic-conditioning-pac-g {
+        grouping traffic-conditioning-pac {
             list prio-config-list {
                 config false;
-                uses priority-configuration-g;
+                uses priority-configuration;
                 description "This attribute indicates the Priority Splitter function for the mapping of the Ethernet frame priority (ETH_CI_P) values to the output queue.";
             }
             list cond-config-list {
                 config false;
-                uses traffic-conditioning-configuration-g;
+                uses traffic-conditioning-configuration;
                 description "This attribute indicates for the conditioner process the conditioning parameters:
                     - Queue ID: Indicates the Queue ID
                     - Committed Information Rate (CIR): number of bits per second
@@ -257,15 +257,15 @@ module tapi-eth {
             description "This object class models the ETH traffic conditioning function as defined in G.8021.
                 Basic attributes: codirectional, condConfigList, prioConfigList";
         }
-        grouping traffic-shaping-pac-g {
+        grouping traffic-shaping-pac {
             list prio-config-list {
                 config false;
-                uses priority-configuration-g;
+                uses priority-configuration;
                 description "This attribute configures the Priority Splitter function for the mapping of the Ethernet frame priority (ETH_CI_P) values to the output queue.";
             }
             list queue-config-list {
                 config false;
-                uses queue-configuration-g;
+                uses queue-configuration;
                 description "This attribute configures the Queue depth and Dropping threshold parameters of the Queue process. The Queue depth sets the maximum size of the queue in bytes. An incoming ETH_CI traffic unit is dropped if there is insufficient space in the queue to hold the whole unit. The Dropping threshold sets the threshold of the queue. If the queue is filled beyond this threshold, incoming ETH_CI traffic units accompanied by the ETH_CI_DE signal set are dropped.";
             }
             leaf sched-config {
@@ -283,9 +283,9 @@ module tapi-eth {
             description "This object class models the ETH traffic shaping function as defined in G.8021.
                 Basic attribute: codirectional, prioConfigList, queueConfigList, schedConfig";
         }
-        grouping node-edge-point-lp-spec-g {
+        grouping node-edge-point-lp-spec {
             container termination-spec {
-                uses ety-termination-pac-g;
+                uses ety-termination-pac;
                 description "none";
             }
             description "none";
@@ -294,7 +294,7 @@ module tapi-eth {
     /***********************
     * package type-definitions
     **********************/ 
-        grouping priority-configuration-g {
+        grouping priority-configuration {
             leaf priority {
                 type uint64 {
                     range "0..7";
@@ -309,7 +309,7 @@ module tapi-eth {
             }
             description "none";
         }
-        grouping queue-configuration-g {
+        grouping queue-configuration {
             leaf queue-id {
                 type uint64;
                 description "This attribute indicates the queue id.";
@@ -324,7 +324,7 @@ module tapi-eth {
             }
             description "none";
         }
-        grouping traffic-conditioning-configuration-g {
+        grouping traffic-conditioning-configuration {
             leaf cir {
                 type uint64;
                 description "This attribute indicates the Committed Information Rate in bits/s.";
@@ -361,7 +361,7 @@ module tapi-eth {
             type string;
             description "This primitive data type contains an Ethernet MAC address defined by IEEE 802a. The format of the address consists of 12 hexadecimal characters, grouped in pairs and separated by '-' (e.g., 03-27-AC-75-3E-1D).";
         }
-        grouping priority-mapping-g {
+        grouping priority-mapping {
             leaf priority-0 {
                 type uint64 {
                     range "0..7";
@@ -427,7 +427,7 @@ module tapi-eth {
             type string;
             description "none";
         }
-        grouping address-tuple-g {
+        grouping address-tuple {
             leaf address {
                 type mac-address;
                 description "This attribute contains the MAC address of the address tuple.";
@@ -442,7 +442,7 @@ module tapi-eth {
             type string;
             description "The syntax of this dataType is pending on the specification in G.8021, which is for further study.";
         }
-        grouping control-frame-filter-g {
+        grouping control-frame-filter {
             leaf c-2-00-00-10 {
                 type boolean;
                 description "This attribute identifies the 'All LANs Bridge Management Group Address'.";
@@ -579,7 +579,7 @@ module tapi-eth {
                 Value 'false' means block: The frame is discarded by the filter process.
                 Value 'true' means pass: The frame is passed unchanged through the filter process.";
         }
-        grouping bandwidth-report-g {
+        grouping bandwidth-report {
             leaf source-mac-address {
                 type mac-address;
                 description "The sourceMacAddress is the address from the far end.";
@@ -666,37 +666,37 @@ module tapi-eth {
                 enum none {
                     description "none";
                 }
-                enum 2base-tl {
+                enum 2-base-tl {
                     description "none";
                 }
-                enum 10mbit-s {
+                enum 10-mbit-s {
                     description "none";
                 }
-                enum 10pass-ts {
+                enum 10-pass-ts {
                     description "none";
                 }
-                enum 100base-t4 {
+                enum 100-base-t-4 {
                     description "none";
                 }
-                enum 100base-x {
+                enum 100-base-x {
                     description "none";
                 }
-                enum 100base-t2 {
+                enum 100-base-t-2 {
                     description "none";
                 }
-                enum 1000base-x {
+                enum 1000-base-x {
                     description "none";
                 }
-                enum 1000base-t {
+                enum 1000-base-t {
                     description "none";
                 }
-                enum 10gbase-x {
+                enum 10-gbase-x {
                     description "none";
                 }
-                enum 10gbase-r {
+                enum 10-gbase-r {
                     description "none";
                 }
-                enum 10gbase-w {
+                enum 10-gbase-w {
                     description "none";
                 }
             }
@@ -718,25 +718,25 @@ module tapi-eth {
         }
         typedef oam-period {
             type enumeration {
-                enum 3-33ms {
+                enum 3-33-ms {
                     description "Default for protection.";
                 }
-                enum 10ms {
+                enum 10-ms {
                     description "none";
                 }
-                enum 100ms {
+                enum 100-ms {
                     description "none";
                 }
-                enum 1s {
+                enum 1-s {
                     description "none";
                 }
-                enum 10s {
+                enum 10-s {
                     description "none";
                 }
-                enum 1min {
+                enum 1-min {
                     description "none";
                 }
-                enum 10min {
+                enum 10-min {
                     description "none";
                 }
             }
@@ -744,16 +744,16 @@ module tapi-eth {
         }
         typedef pcp-coding {
             type enumeration {
-                enum 8p0d {
+                enum 8-p-0-d {
                     description "none";
                 }
-                enum 7p1d {
+                enum 7-p-1-d {
                     description "none";
                 }
-                enum 6p2d {
+                enum 6-p-2-d {
                     description "none";
                 }
-                enum 5p3d {
+                enum 5-p-3-d {
                     description "none";
                 }
                 enum dei {
