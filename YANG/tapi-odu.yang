@@ -21,171 +21,87 @@ module tapi-odu {
         description "TAPI SDK 2.0-alpha";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 6020 and RFC 6087";
     }
-    augment "/tapi-common:context/tapi-connectivity:connection/tapi-connectivity:connection-end-point/tapi-connectivity:layer-protocol" {
-        uses connection-end-point-lp-spec;
-        description "Augments the base LayerProtocol information in ConnectionEndPoint with ODU-specific information";
-    }
     augment "/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-topology:layer-protocol" {
-        uses node-edge-point-lp-spec;
+        uses odu-node-edge-point-lp-spec;
         description "Augments the base LayerProtocol information in NodeEdgePoint with ODU-specific information";
+    }
+    augment "/tapi-common:context/tapi-connectivity:connection/tapi-connectivity:connection-end-point/tapi-connectivity:layer-protocol" {
+        uses odu-connection-end-point-lp-spec;
+        description "none";
     }
     /***********************
     * package object-classes
     **********************/ 
-        grouping adapter-and-connection-point-pac {
-            leaf adaptation-active {
-                type boolean;
+        grouping odu-client-adaptation-pac {
+            leaf opu-tributary-slot-size {
+                type odu-slot-size;
                 config false;
-                description "This attribute is applicable when the ODUk CTP object instance represents a lower order ODUk at the ODUkP/ODU[i]j or ODUkP/ODUj-21 adaptation function. This attribute indicates whether the adaptation function is activated or not. Valid values are true and false. The value of true means that the adaptation function shall access the access point when it is activated (MI_Active is true). Otherwise, it shall not access the access point.";
-            }
-            leaf aps-enable {
-                type boolean;
-                default "true";
-                description "This attribute is for enabling/disabling the automatic protection switching (APS) capability at the transport adaptation function that is represented by the ODUk_ConnectionTerminationPoint object class. It triggers the MI_APS_EN signal to the transport adaptation function.";
-            }
-            leaf aps-level {
-                type uint64;
-                description "This attribute is for configuring the automatic protection switching (APS) level that should operate at the transport adaptation function that is represented by the ODUk_ConnectionTerminationPoint object class. It triggers the MI_APS_LVL signal to the transport adaptation function. The value 0 means path and the values 1 through 6 mean TCM level 1 through 6 respectively.";
-            }
-            leaf k {
-                type oduk-ctp-kbit-rate;
-                config false;
-                description "This attribute specifies the index k that is used to represent a supported bit rate and the different versions of OPUk, ODUk and OTUk.
-                    When the ODU CTP is an instance of lower order ODU of a higher order ODU at the ODUkP/ODU[i]j adaptation function, valid values for the index and number of allowed instances of this object class are limited as specified in Table 14-27/G.798.  The restriction is basically HO index k=1, 2, 3 and LO j=0, 1, 2 with j less than k and optionally i=1 with i less than j.
-                    When the ODU CTP is an instance of lower order ODU of a higher order ODU at the client layer of the ODUkP/ODUj-21_A adaptation function, valid values for the index of this object class is limited by the rule HO index k=2, 3, 4 and LO j=0, 1, 2, 2e, 3, flex with j less than k.
-                    ";
-            }
-            leaf odu-type-and-rate {
-                type uint64;
-                description "This attribute is applicable when the ODUk CTP object instance represents a lower order ODUk CTP Source or Sink at the client layer of the ODUkP/ODUj-21 adaptation function. The value of this attribute specifies the type and rate of the adaptation and thus can be used to determine, according to Table 7-10/G.709, the mapping method and, in the case of GMP mapping, the base value and ranges for the parameters Cn and Cm. The value of this attribute is a triplet {j, k, size}, where j = 0, 1, 2, 2e, 3, flex; for the rate of the client ODUj  k = 1, 2, 3, 4; for the rate of the server ODUk size = 1.25G, 2.5G";
-            }
-            leaf-list position-seq {
-                type oduk-tcm-or-gcc-choice;
-                config false;
-                description "This attribute indicates the positions of the TCM and GCC processing functions within the ODUk TP.
-                    The order of the position in the positionSeq attribute together with the signal flow determine the processing sequence of the TCM and GCC functions within the ODUk TP. Once the positions are determined, the signal processing sequence will follow the signal flow for each direction of the signal.
-                    Within the ODUk_CTP, the position order is going from adaptation to connection function. Within the ODUk_TTP, the order is going from connection to adaptation function.
-                    The syntax of the PositionSeq attribute will be a SEQUENCE OF pointers, which point to the contained TCM and GCC function.
-                    The order of TCM and GCC access function in the positionSeq attribute is significant only when there are more than one TCM functions within the ODUk TP and also at least one of them have the TimActDisabled attribute set to FALSE (i.e. AIS is inserted upon TIM).
-                    If a GCC12_TP is contained in an ODUk_TTP and the GCC12_TP is not listed in the PositionSeq attribute of the ODUk_TTP, then the GCC access is at the AP side of the ODUk TT function.
-                    ";
-            }
-            leaf-list tributary-slot-list {
-                type uint64;
-                config false;
-                description "This attribute contains a set of distinct (i.e. unique) integers (e.g. 2, 3, 5, 9, 15 representing the tributary slots TS2, TS3, TS5, TS9 and TS15) which represents the resources occupied by the Low Order ODUk Link Connection (e.g. carrying an ODUflex with a bit rate of 6.25G). This attribute applies when the LO ODUk_ ConnectionTerminationPoint connects with an HO ODUk_TrailTerminationPoint object. It will not apply if this ODUk_ ConnectionTerminationPoint object directly connects to an OTUk_TrailTerminationPoint object (i.e. OTUk has no trib slots). The upper bound of the integer allowed in this set is a function of the HO-ODUk server layer to which the ODUk connection has been mapped (adapted). Thus, for example, M=8/32/80 for ODU2/ODU3/ODU4 server layers (respectively). Note that the value of this attribute can be changed only in the case of ODUflex and has to be through specific operations (i.e. not be changing the attribute tributarySlotList directly).";
-            }
-            leaf applicable-problems {
-                type oduk-ctp-problem-list;
-                config false;
-                description "This attribute's datatype indicates the potential failure conditions of the entity.   The values are to be used in the inherited currentProblemList.";
-            }
-            leaf expected-m-si {
-                type string;
-                description "This attribute is applicable when the ODUk CTP object instance represents a lower order ODU1 or ODU2 CTP Sink at the client layer of the ODU3P/ODU12 adaptation function or represents a lower order ODUj CTP Sink at the client layer of the ODUkP/ODUj-21 adaptation function. This attribute is a 1-byte field that configures the expected multiplex structure of the adaptation function. ";
-            }
-            leaf accepted-m-si {
-                type string;
-                config false;
-                description "This attribute is applicable when the ODUk CTP object instance represents a lower order ODU1 or ODU2 CTP Sink at the client layer of the ODU3P/ODU12 adaptation function or represents a lower order ODUj CTP Sink at the client layer of the ODUkP/ODUj-21 adaptation function. This attribute is a 1-byte field that represents the accepted multiplex structure of the adaptation function. ";
-            }
-            leaf accepted-payload-type {
-                type string;
-                config false;
-                description "This attribute is applicable when the ODUk CTP object instance represents a lower order ODUk CTP Sink at the client layer of the ODUkP/ODU[i]j or ODUkP/ODUj-21 adaptation function. This attribute is a 2-digit Hex code that indicates the new accepted payload type. ";
-            }
-            leaf transmitted-m-si {
-                type string;
-                description "This attribute is applicable when the ODUk CTP object instance represents a lower order ODU1 or ODU2 CTP Source at the client layer of the ODU3P/ODU12 adaptation function, or a lower order ODUj CTP Source at the client layer of the ODUkP/ODUj-21 adaptation function. This attribute is a 1-byte field that configures the transmitted multiplex structure identifier of the adaptation function.";
+                description "This attribute is applicable for ODU2 and ODU3 CTP only. It indicates the slot size of the ODU CTP.";
             }
             leaf auto-payload-type {
                 type boolean;
-                description "This attribute is applicable when the ODUk CTP object instance represents a lower order ODU CTP Source at the client layer of the ODUkP/ODUj-21 adaptation function. The value of true of this attribute configures that the adaptation source function shall fall back to the payload type PT=20 if the conditions specified in 14.3.10.1/G.798 are satisfied. ";
+                config false;
+                description "This attribute is applicable when the ODU CTP object instance represents a lower order ODU CTP Source at the client layer of the ODUP/ODUj-21 adaptation function. The value of true of this attribute configures that the adaptation source function shall fall back to the payload type PT=20 if the conditions specified in 14.3.10.1/G.798 are satisfied. ";
             }
-            leaf inserted-payload-type {
+            leaf configured-client-type {
                 type string;
                 config false;
-                description "This attribute is applicable when the ODUk CTP object instance represents a lower order ODU CTP Source at the client layer of the ODUkP/ODUj-21 adaptation function. The attribute reports the inserted payload type (i.e. TrPT) for the PT byte position of the PSI overhead. Valid values for this attribute are 20 and 21. For more details see 14.3.10.1/G.798. ";
+                description "This attribute configures the type of the client CTP of the server ODU TTP.";
             }
-            leaf-list current-number-of-tributary-slots {
+            leaf configured-mapping-type {
+                type mapping-type;
+                description "This attributes indicates the configured mapping type.";
+            }
+            container accepted-payload-type {
+                config false;
+                uses odu-payload-type;
+                description "This attribute is applicable when the ODU CTP object instance represents a lower order ODU CTP Sink at the client layer of the ODUP/ODU[i]j or ODUP/ODUj-21 adaptation function. 
+                    This attribute is a 2-digit Hex code that indicates the new accepted payload type.
+                    Valid values are defined in Table 15-8 of ITU-T Recommendation G.709 with one additional value UN_INTERPRETABLE.";
+            }
+            description "This Pac contains the attributes associated with the client adaptation function of the server layer TTP
+                It is present only if the CEP contains a TTP";
+        }
+        grouping odu-termination-pac {
+            description "This Pac contains the attributes associated with the termination function of the TTP
+                It is present only if the CEP contains a TTP";
+        }
+        grouping odu-connection-end-point-lp-spec {
+            leaf odu-type {
+                type odu-type;
+                config false;
+                description "This attribute specifies the type of the ODU termination point.";
+            }
+            leaf odu-rate {
                 type uint64;
                 config false;
-                description "This attribute applies only to ODUflex(GFP) connections. It represents the current number of tributary slots allocated to this ODUflex(GFP) connection in the HO-ODU server layer. The value of this parameter determines the bit rate of the ODUflex connection. 
-                    The upper bound of this attribute is dependent on the HO-ODUk server layer. 
-                    When the ODUflex(GFP) connection is initially created, this represents the actual number of tributary slots in use for the connection. When an ODUflex(GFP) connection is undergoing a resize operation, this attribute reflects the desired (resized) number of tributary slots only after the following stages (see G.7044[5] for details):
-                    - After the Bandwidth Resize (BWR) phase completes (In the case of bandwidth increase)
-                    - After the Link Connection Resize (LCR) phase of the ODUflex resize operation (in the case of bandwidth decrease)
-                    This attribute applies only to ODUflex(CBR) connections only. The value of this attribute is (239/238)* (Bit rate of the CBR client).
+                description "This attribute indicates the rate of the ODU terminatino point. 
+                    This attribute is Set at create; i.e., once created it cannot be changed directly. 
+                    In case of resizable ODU flex, its value can be changed via HAO (not directly on the attribute). 
                     ";
             }
-            container nominal-bit-rate-and-tolerance {
-                uses oduk-h-nominal-bit-rate-and-tolerance;
-                description "This attribute specifies the nominal clock frequency and its tolerance range. Valid values for the frequency (in kHz) and tolerance (in ppm) range are given in Table 14-2/G.798 and clause 12.2.5/G.709.";
-            }
-            description "none";
-        }
-        grouping termination-pac {
-            leaf rate {
-                type string;
-                config false;
-                description "This attribute applies only to ODUflex(CBR) connections only. The value of this attribute is (239/238)* (Bit rate of the CBR client).
-                    ";
-            }
-            leaf dm-source {
-                type boolean;
-                description "This attribute is for configuring the delay measurement process at the trail termination function represented by the subject TTP object class. It models the MI_DM_Source MI signal. If MI_DM_Source is false, then the value of the DMp bit is determined by the RI_DM. If MI_DM_Source is true, then the value of the DMp bit is set to MI_DMValue.";
-            }
-            leaf dm-value {
-                type boolean;
-                description "This attribute is for setting the DMp and DMti bits of the delay measurement process. The value of true sets the DMp and DMti bits to 0 and the value of false to 1.";
-            }
-            leaf acti {
-                type bit-string;
-                config false;
-                description "The Trail Trace Identifier (TTI) information recovered (Accepted) from the TTI overhead position at the sink of a trail.";
-            }
-            leaf deg-m {
+            leaf odu-rate-tolerance {
                 type uint64;
-                description "This attribute indicates the threshold level for declaring a Degraded Signal defect (dDEG). A dDEG shall be declared if DegM consecutive bad PM Seconds are detected.";
+                config false;
+                description "This attribute indicates the rate tolerance of the ODU termination point. 
+                    Valid values are real value in the unit of ppm. 
+                    Standardized values are defined in Table 7-2/G.709.";
             }
-            container deg-thr {
-                uses deg-thr;
-                description "This attribute indicates the threshold level for declaring a performance monitoring (PM) Second to be bad. The value of the threshold can be provisioned in terms of number of errored blocks or in terms of percentage of errored blocks. For percentage-based specification, in order to support provision of less than 1%, the specification consists of two fields. The first field indicates the granularity of percentage. For examples, in 1%, in 0.1%, or in 0.01%, etc. The second field indicates the multiple of the granularity. For number of errored block based, the value is a positive integer.";
-            }
-            leaf ex-dapi {
-                type bit-string;
-                description "The Expected Destination Access Point Identifier (ExDAPI), provisioned by the managing system, to be compared with the TTI accepted at the overhead position of the sink for the purpose of checking the integrity of connectivity.";
-            }
-            leaf ex-sapi {
-                type bit-string;
-                description "The Expected Source Access Point Identifier (ExSAPI), provisioned by the managing system, to be compared with the TTI accepted at the overhead position of the sink for the purpose of checking the integrity of connectivity.";
-            }
-            leaf tim-act-disabled {
-                type boolean;
-                description "This attribute provides the control capability for the managing system to enable or disable the Consequent Action function when detecting Trace Identifier Mismatch (TIM) at the trail termination sink. The value of TRUE means disabled.";
-            }
-            leaf tim-det-mode {
-                type tim-det-mo;
-                description "This attribute indicates the mode of the Trace Identifier Mismatch (TIM) Detection functionallowed values: off, SAPIonly, DAPIonly, SAPIandDAPI";
-            }
-            leaf txti {
-                type bit-string;
-                description "The Trail Trace Identifier (TTI) information, provisioned by the managing system at the termination source, to be placed in the TTI overhead position of the source of a trail for transmission.";
-            }
-            description "none";
-        }
-        grouping connection-end-point-lp-spec {
-            container termination-spec {
-                uses termination-pac;
+            container ctp-pac {
+                uses odu-ctp-pac;
                 description "none";
             }
-            container adapter-spec {
-                uses adapter-and-connection-point-pac;
+            container termination-pac {
+                uses odu-termination-pac;
+                description "none";
+            }
+            container adapter-pac {
+                uses odu-client-adaptation-pac;
                 description "none";
             }
             description "none";
         }
-        grouping pool-property-pac {
+        grouping odu-pool-property-pac {
             leaf client-capacity {
                 type uint64;
                 description "none";
@@ -202,10 +118,90 @@ module tapi-odu {
             }
             description "none";
         }
-        grouping node-edge-point-lp-spec {
+        grouping odu-node-edge-point-lp-spec {
             container odu-pool-property-spec {
-                uses pool-property-pac;
+                uses odu-pool-property-pac;
                 description "none";
+            }
+            description "none";
+        }
+        grouping odu-ctp-pac {
+            leaf-list tributary-slot-list {
+                type uint64;
+                config false;
+                description "This attribute contains a set of distinct (i.e. unique) integers (e.g. 2, 3, 5, 9, 15 representing the tributary slots TS2, TS3, TS5, TS9 and TS15) which represents the resources occupied by the Low Order ODU Link Connection (e.g. carrying an ODUflex with a bit rate of 6.25G). 
+                    This attribute applies when the LO ODU_ ConnectionTerminationPoint connects with an HO ODU_TrailTerminationPoint object. 
+                    It will not apply if this ODU_ ConnectionTerminationPoint object directly connects to an OTU_TrailTerminationPoint object (i.e. OTU has no trib slots). 
+                    The upper bound of the integer allowed in this set is a function of the HO-ODU server layer to which the ODU connection has been mapped (adapted). 
+                    Thus, for example, M=8/32/80 for ODU2/ODU3/ODU4 server layers (respectively). Note that the value of this attribute can be changed only in the case of ODUflex and has to be through specific operations (i.e. not be changing the attribute tributarySlotList directly).";
+            }
+            leaf tributary-port-number {
+                type uint64;
+                config false;
+                description "This attribute identifies the tributary port number that is associated with the ODU CTP.
+                    range of type : The value range depends on the size of the Tributary Port Number (TPN) field used which depends on th server-layer ODU or OTU.
+                    In case of ODUk mapping into OTUk, there is no TPN field, so the tributaryPortNumber shall be zero.
+                    In case of LO ODUj mapping over ODU1, ODU2 or ODU3, the TPN is encoded in a 6-bit field so the value range is 0-63. See clause 14.4.1/G.709-2016.
+                    In case of LO ODUj mapping over ODU4, the TPN is encoded in a 7-bit field so the value range is 0-127. See clause 14.4.1.4/G.709-2016.
+                    In case of ODUk mapping over ODUCn, the TPN is encoded in a 14-bit field so the value range is 0-16383. See clause 20.4.1.1/G.709-2016.
+                    ";
+            }
+            leaf accepted-m-si {
+                type string;
+                config false;
+                description "This attribute is applicable when the ODU CTP object instance represents a lower order ODU1 or ODU2 CTP Sink at the client layer of the ODU3P/ODU12 adaptation function or represents a lower order ODUj CTP Sink at the client layer of the ODUP/ODUj-21 adaptation function. This attribute is a 1-byte field that represents the accepted multiplex structure of the adaptation function. ";
+            }
+            description "This Pac contains the attributes associated with the CTP
+                It is present only if the CEP contains a CTP";
+        }
+        grouping odu-mep-spec {
+            leaf acti {
+                type string;
+                config false;
+                description "The Trail Trace Identifier (TTI) information recovered (Accepted) from the TTI overhead position at the sink of a trail.";
+            }
+            leaf deg-m {
+                type uint64;
+                description "This attribute indicates the threshold level for declaring a Degraded Signal defect (dDEG). A dDEG shall be declared if DegM consecutive bad PM Seconds are detected.";
+            }
+            leaf deg-thr {
+                type uint64;
+                description "This attribute indicates the threshold level for declaring a performance monitoring (PM) Second to be bad. The value of the threshold can be provisioned in terms of number of errored blocks or in terms of percentage of errored blocks. For percentage-based specification, in order to support provision of less than 1%, the specification consists of two fields. The first field indicates the granularity of percentage. For examples, in 1%, in 0.1%, or in 0.01%, etc. The second field indicates the multiple of the granularity. For number of errored block based, the value is a positive integer.";
+            }
+            leaf ex-dapi {
+                type string;
+                description "The Expected Destination Access Point Identifier (ExDAPI), provisioned by the managing system, to be compared with the TTI accepted at the overhead position of the sink for the purpose of checking the integrity of connectivity.";
+            }
+            leaf ex-sapi {
+                type string;
+                description "The Expected Source Access Point Identifier (ExSAPI), provisioned by the managing system, to be compared with the TTI accepted at the overhead position of the sink for the purpose of checking the integrity of connectivity.
+                    ";
+            }
+            leaf tim-act-disabled {
+                type boolean;
+                default "true";
+                description "This attribute provides the control capability for the managing system to enable or disable the Consequent Action function when detecting Trace Identifier Mismatch (TIM) at the trail termination sink.";
+            }
+            leaf tim-det-mode {
+                type tim-det-mo;
+                description "This attribute indicates the mode of the Trace Identifier Mismatch (TIM) Detection function allowed values: OFF, SAPIonly, DAPIonly, SAPIandDAPI";
+            }
+            leaf txti {
+                type string;
+                description "The Trail Trace Identifier (TTI) information, provisioned by the managing system at the termination source, to be placed in the TTI overhead position of the source of a trail for transmission.
+                    ";
+            }
+            description "none";
+        }
+        grouping protection-spec {
+            leaf aps-enable {
+                type boolean;
+                default "true";
+                description "This attribute is for enabling/disabling the automatic protection switching (APS) capability at the transport adaptation function that is represented by the ODU_ConnectionTerminationPoint object class. It triggers the MI_APS_EN signal to the transport adaptation function.";
+            }
+            leaf aps-level {
+                type uint64;
+                description "This attribute is for configuring the automatic protection switching (APS) level that should operate at the transport adaptation function that is represented by the ODU_ConnectionTerminationPoint object class. It triggers the MI_APS_LVL signal to the transport adaptation function. The value 0 means path and the values 1 through 6 mean TCM level 1 through 6 respectively.";
             }
             description "none";
         }
@@ -213,65 +209,57 @@ module tapi-odu {
     /***********************
     * package type-definitions
     **********************/ 
-        typedef bit-string {
-            type string;
-            description "This primitive type defines a bit oriented string.
-                The size of the BitString will be defined in the valueRange property of the attribute; according to ASN.1 (X.680).
-                The semantic of each bit position will be defined in the Documentation field of the attribute.";
-        }
-        grouping deg-thr {
-            leaf deg-thr-value {
-                type string;
-                description "Percentage of detected errored blocks";
-            }
-            leaf deg-thr-type {
-                type string;
-                description "Number of errored blocks";
-            }
-            leaf percentage-granularity {
-                type string;
-                description "none";
-            }
-            description "Degraded Threshold, specify either the percentage or the number of Errored Blocks in the defined interval. 
-                degThrValue when type is PERCENTAGE:
-                percentageGranularity is used to indicate the number of decimal points
-                So if percentageGranularity is 0 a value of 1 in degThrValue would indicate 1%, a value of 10 = 10%, a value of 100 = 100%
-                So if percentageGranularity is 3 (thousandths) a value of 1 in degThrValue would indicate 0.001%, a value of 1000 = 1%, a value of 1000000 = 100%
-                degThrValue when type is NUMBER_ERROR_BLOCKS:
-                Number of Errored Blocks is captured in an integer value.";
-        }
-        typedef oduk-ttp-kbit-rate {
+        typedef odu-type {
             type enumeration {
-                enum 1.25-g {
+                enum odu-0 {
                     description "none";
                 }
-                enum 2.5-g {
+                enum odu-1 {
                     description "none";
                 }
-                enum 10-g {
+                enum odu-2 {
                     description "none";
                 }
-                enum 10-g-2-e {
+                enum odu-2-e {
                     description "none";
                 }
-                enum 40-g {
+                enum odu-3 {
                     description "none";
                 }
-                enum 100-g {
+                enum odu-4 {
                     description "none";
                 }
-                enum flex-cbr {
-                    description "Represents ODUflex connection which carry a CBR client";
+                enum odu-flex {
+                    description "none";
                 }
-                enum flex-gfp {
-                    description "Represents ODUflex connection which carry packet traffic";
+                enum odu-cn {
+                    description "none";
                 }
             }
-            description "Provides an enumeration with the meaning of each k value.";
+            description "none";
         }
-        typedef oduk-tcm-or-gcc-choice {
-            type string;
-            description "A data type to constrain the values to particular types of ODUk CTPs.";
+        typedef mapping-type {
+            type enumeration {
+                enum amp {
+                    description "none";
+                }
+                enum bmp {
+                    description "none";
+                }
+                enum gfp-f {
+                    description "none";
+                }
+                enum gmp {
+                    description "none";
+                }
+                enum ttp-gfp-bmp {
+                    description "none";
+                }
+                enum null {
+                    description "none";
+                }
+            }
+            description "none";
         }
         typedef tim-det-mo {
             type enumeration {
@@ -284,153 +272,44 @@ module tapi-odu {
                 enum both {
                     description "none";
                 }
+                enum off {
+                    description "none";
+                }
             }
             description "List of modes for trace identifier mismatch detection.";
         }
-        typedef oduk-h-resizing-protocol-status {
+        typedef odu-slot-size {
             type enumeration {
-                enum lcr-initiated {
+                enum 1-g-25 {
                     description "none";
                 }
-                enum lcr-failed {
-                    description "none";
-                }
-                enum lcr-completed {
-                    description "none";
-                }
-                enum bwr-initiated {
-                    description "none";
-                }
-                enum bwr-completed {
-                    description "none";
-                }
-            }
-            description "The valid status' of the resizing protocol.";
-        }
-        typedef oduk-ctp-problem-list {
-            type enumeration {
-                enum plm {
-                    description "Payload Mismatch";
-                }
-                enum msim {
-                    description "MultiplexStructureIdentifier Mismatch, per time slot";
-                }
-                enum lof-lom {
-                    description "Loss of Frame, Loss of Multiframe, per time slot";
-                }
-                enum loomfi {
-                    description "Loss of OPU Multiframe Indicator";
-                }
-            }
-            description "The valid list of problems for the entity.";
-        }
-        typedef oduk-ctp-kbit-rate {
-            type enumeration {
-                enum 1.25-g {
-                    description "none";
-                }
-                enum 2.5-g {
-                    description "none";
-                }
-                enum 10-g {
-                    description "none";
-                }
-                enum 10-g-2-e {
-                    description "2e represents an approximate bit rate of 10 Gbit/s as a logical wrapper 10GBASE-R";
-                }
-                enum 40-g {
-                    description "none";
-                }
-                enum 100-g {
-                    description "none";
-                }
-                enum flex-cbr {
-                    description "Represents ODUflex connection which carry a CBR client";
-                }
-                enum flex-gfp {
-                    description "Represents ODUflex connection which carry packet traffic";
-                }
-            }
-            description "Provides an enumeration with the meaning of each k value.";
-        }
-        grouping oduk-h-nominal-bit-rate-and-tolerance {
-            leaf tolerance {
-                type uint64;
-                description "tolerance in ppm";
-            }
-            leaf frequency {
-                type string;
-                description "frequency in kilohertz";
-            }
-            description "Valid values for the frequency (in kHz) and tolerance (in ppm) range are given in Table 14-2/G.798 and clause 12.2.5/G.709.";
-        }
-        typedef tcm-mode {
-            type enumeration {
-                enum operational {
-                    description "none";
-                }
-                enum transparent {
-                    description "none";
-                }
-                enum monitor {
-                    description "none";
-                }
-            }
-            description "List of value modes for the sink side of the tandem connection monitoring function.";
-        }
-        typedef oduk-t-tcm-extension {
-            type enumeration {
-                enum normal {
-                    description "none";
-                }
-                enum pass-through {
-                    description "none";
-                }
-                enum erase {
+                enum 2-g-5 {
                     description "none";
                 }
             }
             description "none";
         }
-        typedef oduk-t-administration-state {
-            type enumeration {
-                enum locked {
-                    description "none";
-                }
-                enum normal {
-                    description "none";
-                }
+        grouping odu-payload-type {
+            leaf named-payload-type {
+                type odu-named-payload-type;
+                description "none";
             }
-            description "The list of valid adminstration states.";
+            leaf hex-payload-type {
+                type uint64;
+                description "none";
+            }
+            description "none";
         }
-        typedef oduk-tcm-status {
+        typedef odu-named-payload-type {
             type enumeration {
-                enum no-source-tc {
-                    description "TCM byte 3 (bits 6 7 8) -- 0 0 0, No source Tandem Connection";
+                enum unknown {
+                    description "none";
                 }
-                enum in-use-without-iae {
-                    description "TCM byte 3 (bits 6 7 8) -- 0 0 1,  In use without IAE (Incoming Alignment Error)";
-                }
-                enum in-use-with-iae {
-                    description "TCM byte 3 (bits 6 7 8) -- 0 1 0, In use with IAE (Incoming Alignment Error)";
-                }
-                enum reserved-1 {
-                    description "TCM byte 3 (bits 6 7 8) -- 0 1 1, Reserved for future international standardization";
-                }
-                enum reserved-2 {
-                    description "TCM byte 3 (bits 6 7 8) -- 1 0 0, Reserved for future international standardization";
-                }
-                enum lck {
-                    description "TCM byte 3 (bits 6 7 8) -- 1 0 1, Maintenance signal: ODUk-LCK";
-                }
-                enum oci {
-                    description "TCM byte 3 (bits 6 7 8) -- 1 1 0, Maintenance signal: ODUk-OCI";
-                }
-                enum ais {
-                    description "TCM byte 3 (bits 6 7 8) -- 1 1 1, Maintenance signal: ODUk-AIS";
+                enum uninterpretable {
+                    description "none";
                 }
             }
-            description "See Table 15-5/G.709/Y.1331 ";
+            description "none";
         }
 
 }
