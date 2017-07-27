@@ -3,6 +3,7 @@ module: tapi-connectivity
     +--rw connectivity-service* [uuid]
     |  +--rw end-point* [local-id]
     |  |  +--rw service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
+    |  |  +--ro connection-end-point*      -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/tapi-connectivity:connection-end-point/uuid
     |  |  +--rw layer-protocol* [local-id]
     |  |  |  +--rw layer-protocol-name?     layer-protocol-name
     |  |  |  +--rw termination-direction?   termination-direction
@@ -89,7 +90,7 @@ module: tapi-connectivity
     |  |  +--ro include-link*                -> /tapi-common:context/tapi-topology:topology/link/uuid
     |  |  +--ro exclude-link*                -> /tapi-common:context/tapi-topology:topology/link/uuid
     |  |  +--ro include-node*                -> /tapi-common:context/tapi-topology:topology/node/uuid
-    |  |  +--ro exclude-node*                 -> /tapi-common:context/tapi-topology:topology/node/uuid
+    |  |  +--ro exclude-node*                -> /tapi-common:context/tapi-topology:topology/node/uuid
     |  |  +--ro preferred-transport-layer*   tapi-common:layer-protocol-name
     |  |  +--rw local-id?                    string
     |  |  +--rw name* [value-name]
@@ -106,32 +107,12 @@ module: tapi-connectivity
     |     +--rw value-name    string
     |     +--rw value?        string
     +--ro connection* [uuid]
-       +--ro connection-end-point* [uuid]
-       |  +--ro layer-protocol* [local-id]
-       |  |  +--ro layer-protocol-name?     layer-protocol-name
-       |  |  +--ro termination-direction?   termination-direction
-       |  |  +--ro termination-state?       termination-state
-       |  |  +--ro local-id                 string
-       |  |  +--ro name* [value-name]
-       |  |     +--ro value-name    string
-       |  |     +--ro value?        string
-       |  +--ro client-node-edge-point*      -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/uuid
-       |  +--ro server-node-edge-point?      -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/uuid
-       |  +--ro peer-connection-end-point?   -> /tapi-common:context/tapi-connectivity:connection/connection-end-point/uuid
-       |  +--ro state
-       |  |  +--ro operational-state?   operational-state
-       |  |  +--ro lifecycle-state?     lifecycle-state
-       |  +--ro connection-port-direction?   tapi-common:port-direction
-       |  +--ro connection-port-role?        tapi-common:port-role
-       |  +--ro uuid                         uuid
-       |  +--ro name* [value-name]
-       |     +--ro value-name    string
-       |     +--ro value?        string
+       +--ro connection-end-point*   -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/tapi-connectivity:connection-end-point/uuid
        +--ro lower-connection*       -> /tapi-common:context/tapi-connectivity:connection/uuid
        +--ro supported-link*         -> /tapi-common:context/tapi-topology:topology/link/uuid
        +--ro container-node?         -> /tapi-common:context/tapi-topology:topology/node/uuid
        +--ro route* [local-id]
-       |  +--ro connection-end-point*   -> /tapi-common:context/tapi-connectivity:connection/connection-end-point/uuid
+       |  +--ro connection-end-point*   -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/tapi-connectivity:connection-end-point/uuid
        |  +--ro local-id                string
        |  +--ro name* [value-name]
        |     +--ro value-name    string
@@ -139,7 +120,7 @@ module: tapi-connectivity
        +--ro switch-control* [local-id]
        |  +--ro sub-switch-control*   -> /tapi-common:context/tapi-connectivity:connection/switch-control/local-id
        |  +--ro switch* [local-id]
-       |  |  +--ro selected-connection-end-point*   -> /tapi-common:context/tapi-connectivity:connection/connection-end-point/uuid
+       |  |  +--ro selected-connection-end-point*   -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/tapi-connectivity:connection-end-point/uuid
        |  |  +--ro selected-route*                  -> /tapi-common:context/tapi-connectivity:connection/route/local-id
        |  |  +--ro selection-control?               selection-control
        |  |  +--ro selection-reason?                selection-reason
@@ -169,6 +150,29 @@ module: tapi-connectivity
        +--ro name* [value-name]
           +--ro value-name    string
           +--ro value?        string
+  augment /tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point:
+    +--ro connection-end-point* [uuid]
+       +--ro layer-protocol* [local-id]
+       |  +--ro layer-protocol-name?     layer-protocol-name
+       |  +--ro termination-direction?   termination-direction
+       |  +--ro termination-state?       termination-state
+       |  +--ro local-id                 string
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
+       +--ro client-node-edge-point*      -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/uuid
+       +--ro server-node-edge-point?      -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/uuid
+       +--ro peer-connection-end-point?   -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/tapi-connectivity:connection-end-point/uuid
+       +--ro route*                       -> /tapi-common:context/tapi-connectivity:connection/route/local-id
+       +--ro state
+       |  +--ro operational-state?   operational-state
+       |  +--ro lifecycle-state?     lifecycle-state
+       +--ro connection-port-direction?   tapi-common:port-direction
+       +--ro connection-port-role?        tapi-common:port-role
+       +--ro uuid                         uuid
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
 
   rpcs:
     +---x get-connection-details
@@ -177,32 +181,12 @@ module: tapi-connectivity
     |  |  +---w connection-id-or-name?   string
     |  +--ro output
     |     +--ro connection
-    |        +--ro connection-end-point* [uuid]
-    |        |  +--ro layer-protocol* [local-id]
-    |        |  |  +--ro layer-protocol-name?     layer-protocol-name
-    |        |  |  +--ro termination-direction?   termination-direction
-    |        |  |  +--ro termination-state?       termination-state
-    |        |  |  +--ro local-id                 string
-    |        |  |  +--ro name* [value-name]
-    |        |  |     +--ro value-name    string
-    |        |  |     +--ro value?        string
-    |        |  +--ro client-node-edge-point*      -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/uuid
-    |        |  +--ro server-node-edge-point?      -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/uuid
-    |        |  +--ro peer-connection-end-point?   -> /tapi-common:context/tapi-connectivity:connection/connection-end-point/uuid
-    |        |  +--ro state
-    |        |  |  +--ro operational-state?   operational-state
-    |        |  |  +--ro lifecycle-state?     lifecycle-state
-    |        |  +--ro connection-port-direction?   tapi-common:port-direction
-    |        |  +--ro connection-port-role?        tapi-common:port-role
-    |        |  +--ro uuid                         uuid
-    |        |  +--ro name* [value-name]
-    |        |     +--ro value-name    string
-    |        |     +--ro value?        string
+    |        +--ro connection-end-point*   -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/tapi-connectivity:connection-end-point/uuid
     |        +--ro lower-connection*       -> /tapi-common:context/tapi-connectivity:connection/uuid
     |        +--ro supported-link*         -> /tapi-common:context/tapi-topology:topology/link/uuid
     |        +--ro container-node?         -> /tapi-common:context/tapi-topology:topology/node/uuid
     |        +--ro route* [local-id]
-    |        |  +--ro connection-end-point*   -> /tapi-common:context/tapi-connectivity:connection/connection-end-point/uuid
+    |        |  +--ro connection-end-point*   -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/tapi-connectivity:connection-end-point/uuid
     |        |  +--ro local-id                string
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
@@ -210,7 +194,7 @@ module: tapi-connectivity
     |        +--ro switch-control* [local-id]
     |        |  +--ro sub-switch-control*   -> /tapi-common:context/tapi-connectivity:connection/switch-control/local-id
     |        |  +--ro switch* [local-id]
-    |        |  |  +--ro selected-connection-end-point*   -> /tapi-common:context/tapi-connectivity:connection/connection-end-point/uuid
+    |        |  |  +--ro selected-connection-end-point*   -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/tapi-connectivity:connection-end-point/uuid
     |        |  |  +--ro selected-route*                  -> /tapi-common:context/tapi-connectivity:connection/route/local-id
     |        |  |  +--ro selection-control?               selection-control
     |        |  |  +--ro selection-reason?                selection-reason
@@ -245,6 +229,7 @@ module: tapi-connectivity
     |     +--ro service*
     |        +--ro end-point* [local-id]
     |        |  +--ro service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro connection-end-point*      -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/tapi-connectivity:connection-end-point/uuid
     |        |  +--ro layer-protocol* [local-id]
     |        |  |  +--ro layer-protocol-name?     layer-protocol-name
     |        |  |  +--ro termination-direction?   termination-direction
@@ -331,7 +316,7 @@ module: tapi-connectivity
     |        |  +--ro include-link*                -> /tapi-common:context/tapi-topology:topology/link/uuid
     |        |  +--ro exclude-link*                -> /tapi-common:context/tapi-topology:topology/link/uuid
     |        |  +--ro include-node*                -> /tapi-common:context/tapi-topology:topology/node/uuid
-    |        |  +--ro exclude-node*                 -> /tapi-common:context/tapi-topology:topology/node/uuid
+    |        |  +--ro exclude-node*                -> /tapi-common:context/tapi-topology:topology/node/uuid
     |        |  +--ro preferred-transport-layer*   tapi-common:layer-protocol-name
     |        |  +--ro local-id?                    string
     |        |  +--ro name* [value-name]
@@ -354,6 +339,7 @@ module: tapi-connectivity
     |     +--ro service
     |        +--ro end-point* [local-id]
     |        |  +--ro service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro connection-end-point*      -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/tapi-connectivity:connection-end-point/uuid
     |        |  +--ro layer-protocol* [local-id]
     |        |  |  +--ro layer-protocol-name?     layer-protocol-name
     |        |  |  +--ro termination-direction?   termination-direction
@@ -440,7 +426,7 @@ module: tapi-connectivity
     |        |  +--ro include-link*                -> /tapi-common:context/tapi-topology:topology/link/uuid
     |        |  +--ro exclude-link*                -> /tapi-common:context/tapi-topology:topology/link/uuid
     |        |  +--ro include-node*                -> /tapi-common:context/tapi-topology:topology/node/uuid
-    |        |  +--ro exclude-node*                 -> /tapi-common:context/tapi-topology:topology/node/uuid
+    |        |  +--ro exclude-node*                -> /tapi-common:context/tapi-topology:topology/node/uuid
     |        |  +--ro preferred-transport-layer*   tapi-common:layer-protocol-name
     |        |  +--ro local-id?                    string
     |        |  +--ro name* [value-name]
@@ -460,6 +446,7 @@ module: tapi-connectivity
     |  +---w input
     |  |  +---w end-point*
     |  |  |  +---w service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
+    |  |  |  +---w connection-end-point*      -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/tapi-connectivity:connection-end-point/uuid
     |  |  |  +---w layer-protocol* [local-id]
     |  |  |  |  +---w layer-protocol-name?     layer-protocol-name
     |  |  |  |  +---w termination-direction?   termination-direction
@@ -545,7 +532,7 @@ module: tapi-connectivity
     |  |  |  +---w include-link*                -> /tapi-common:context/tapi-topology:topology/link/uuid
     |  |  |  +---w exclude-link*                -> /tapi-common:context/tapi-topology:topology/link/uuid
     |  |  |  +---w include-node*                -> /tapi-common:context/tapi-topology:topology/node/uuid
-    |  |  |  +---w exclude-node*                 -> /tapi-common:context/tapi-topology:topology/node/uuid
+    |  |  |  +---w exclude-node*                -> /tapi-common:context/tapi-topology:topology/node/uuid
     |  |  |  +---w preferred-transport-layer*   tapi-common:layer-protocol-name
     |  |  |  +---w local-id?                    string
     |  |  |  +---w name* [value-name]
@@ -556,6 +543,7 @@ module: tapi-connectivity
     |     +--ro service
     |        +--ro end-point* [local-id]
     |        |  +--ro service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro connection-end-point*      -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/tapi-connectivity:connection-end-point/uuid
     |        |  +--ro layer-protocol* [local-id]
     |        |  |  +--ro layer-protocol-name?     layer-protocol-name
     |        |  |  +--ro termination-direction?   termination-direction
@@ -642,7 +630,7 @@ module: tapi-connectivity
     |        |  +--ro include-link*                -> /tapi-common:context/tapi-topology:topology/link/uuid
     |        |  +--ro exclude-link*                -> /tapi-common:context/tapi-topology:topology/link/uuid
     |        |  +--ro include-node*                -> /tapi-common:context/tapi-topology:topology/node/uuid
-    |        |  +--ro exclude-node*                 -> /tapi-common:context/tapi-topology:topology/node/uuid
+    |        |  +--ro exclude-node*                -> /tapi-common:context/tapi-topology:topology/node/uuid
     |        |  +--ro preferred-transport-layer*   tapi-common:layer-protocol-name
     |        |  +--ro local-id?                    string
     |        |  +--ro name* [value-name]
@@ -663,6 +651,7 @@ module: tapi-connectivity
     |  |  +---w service-id-or-name?   string
     |  |  +---w end-point
     |  |  |  +---w service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
+    |  |  |  +---w connection-end-point*      -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/tapi-connectivity:connection-end-point/uuid
     |  |  |  +---w layer-protocol* [local-id]
     |  |  |  |  +---w layer-protocol-name?     layer-protocol-name
     |  |  |  |  +---w termination-direction?   termination-direction
@@ -748,7 +737,7 @@ module: tapi-connectivity
     |  |  |  +---w include-link*                -> /tapi-common:context/tapi-topology:topology/link/uuid
     |  |  |  +---w exclude-link*                -> /tapi-common:context/tapi-topology:topology/link/uuid
     |  |  |  +---w include-node*                -> /tapi-common:context/tapi-topology:topology/node/uuid
-    |  |  |  +---w exclude-node*                 -> /tapi-common:context/tapi-topology:topology/node/uuid
+    |  |  |  +---w exclude-node*                -> /tapi-common:context/tapi-topology:topology/node/uuid
     |  |  |  +---w preferred-transport-layer*   tapi-common:layer-protocol-name
     |  |  |  +---w local-id?                    string
     |  |  |  +---w name* [value-name]
@@ -759,6 +748,7 @@ module: tapi-connectivity
     |     +--ro service
     |        +--ro end-point* [local-id]
     |        |  +--ro service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro connection-end-point*      -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/tapi-connectivity:connection-end-point/uuid
     |        |  +--ro layer-protocol* [local-id]
     |        |  |  +--ro layer-protocol-name?     layer-protocol-name
     |        |  |  +--ro termination-direction?   termination-direction
@@ -845,7 +835,7 @@ module: tapi-connectivity
     |        |  +--ro include-link*                -> /tapi-common:context/tapi-topology:topology/link/uuid
     |        |  +--ro exclude-link*                -> /tapi-common:context/tapi-topology:topology/link/uuid
     |        |  +--ro include-node*                -> /tapi-common:context/tapi-topology:topology/node/uuid
-    |        |  +--ro exclude-node*                 -> /tapi-common:context/tapi-topology:topology/node/uuid
+    |        |  +--ro exclude-node*                -> /tapi-common:context/tapi-topology:topology/node/uuid
     |        |  +--ro preferred-transport-layer*   tapi-common:layer-protocol-name
     |        |  +--ro local-id?                    string
     |        |  +--ro name* [value-name]
@@ -868,6 +858,7 @@ module: tapi-connectivity
           +--ro service
              +--ro end-point* [local-id]
              |  +--ro service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
+             |  +--ro connection-end-point*      -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/tapi-connectivity:connection-end-point/uuid
              |  +--ro layer-protocol* [local-id]
              |  |  +--ro layer-protocol-name?     layer-protocol-name
              |  |  +--ro termination-direction?   termination-direction
@@ -954,7 +945,7 @@ module: tapi-connectivity
              |  +--ro include-link*                -> /tapi-common:context/tapi-topology:topology/link/uuid
              |  +--ro exclude-link*                -> /tapi-common:context/tapi-topology:topology/link/uuid
              |  +--ro include-node*                -> /tapi-common:context/tapi-topology:topology/node/uuid
-             |  +--ro exclude-node*                 -> /tapi-common:context/tapi-topology:topology/node/uuid
+             |  +--ro exclude-node*                -> /tapi-common:context/tapi-topology:topology/node/uuid
              |  +--ro preferred-transport-layer*   tapi-common:layer-protocol-name
              |  +--ro local-id?                    string
              |  +--ro name* [value-name]
