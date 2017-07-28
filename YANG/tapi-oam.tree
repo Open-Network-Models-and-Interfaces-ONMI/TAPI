@@ -1,20 +1,22 @@
 module: tapi-oam
   augment /tapi-common:context:
     +--rw oam-service* [uuid]
-    |  +--ro meg*         -> /tapi-common:context/tapi-oam:meg/uuid
+    |  +--ro meg?         -> /tapi-common:context/tapi-oam:meg/uuid
     |  +--rw end-point* [local-id]
     |  |  +--rw service-interface-point?          -> /tapi-common:context/service-interface-point/uuid
     |  |  +--rw connectivity-service-end-point?   -> /tapi-common:context/tapi-connectivity:connectivity-service/end-point/local-id
-    |  |  +--rw layer-protocol* [local-id]
-    |  |  |  +--rw layer-protocol-name?     layer-protocol-name
-    |  |  |  +--rw termination-direction?   termination-direction
-    |  |  |  +--rw termination-state?       termination-state
-    |  |  |  +--rw local-id                 string
+    |  |  +--rw pro-active-measurement-job* [local-id]
+    |  |  |  +--rw local-id    string
     |  |  |  +--rw name* [value-name]
     |  |  |     +--rw value-name    string
     |  |  |     +--rw value?        string
+    |  |  +--rw on-demand-measurement-job* [local-id]
+    |  |  |  +--rw local-id    string
+    |  |  |  +--rw name* [value-name]
+    |  |  |     +--rw value-name    string
+    |  |  |     +--rw value?        string
+    |  |  +--ro associated-mep?                   -> /tapi-common:context/tapi-oam:meg/me/mep/local-id
     |  |  +--ro direction?                        tapi-common:port-direction
-    |  |  +--ro role?                             tapi-common:port-role
     |  |  +--rw local-id                          string
     |  |  +--rw name* [value-name]
     |  |     +--rw value-name    string
@@ -31,10 +33,9 @@ module: tapi-oam
        |  |  |  +--ro peer-mep-ref-list*   string
        |  |  +--ro mep-source
        |  |  |  +--ro mep-identifier?   string
-       |  |  +--ro on-demand-measurement-job*
-       |  |  +--ro pro-active-measurement-job*
+       |  |  +--ro on-demand-measurement-job*    -> /tapi-common:context/tapi-oam:oam-service/end-point/on-demand-measurement-job/local-id
+       |  |  +--ro pro-active-measurement-job*   -> /tapi-common:context/tapi-oam:oam-service/end-point/pro-active-measurement-job/local-id
        |  |  +--ro meg-identifier?               string
-       |  |  +--ro admin-state?                  tapi-common:administrative-state
        |  |  +--ro local-id                      string
        |  |  +--ro name* [value-name]
        |  |     +--ro value-name    string
@@ -53,10 +54,10 @@ module: tapi-oam
        +--ro name* [value-name]
           +--ro value-name    string
           +--ro value?        string
-  augment /tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-topology:layer-protocol:
+  augment /tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point:
     +--ro mip*   -> /tapi-common:context/tapi-oam:meg/me/mip/local-id
     +--ro mep*   -> /tapi-common:context/tapi-oam:meg/me/mep/local-id
-  augment /tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:connection-end-point/tapi-connectivity:layer-protocol:
+  augment /tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:connection-end-point:
     +--ro mip*   -> /tapi-common:context/tapi-oam:meg/me/mip/local-id
     +--ro mep*   -> /tapi-common:context/tapi-oam:meg/me/mep/local-id
 
@@ -65,9 +66,6 @@ module: tapi-oam
     +---x disable-pro-active-measurement-job
     +---x enable-pro-active-measurement-job
     +---x establish-measurement-job
-    +---x get-all-contained-measurement-jobs
+    +---x get-contained-measurement-jobs
     +---x terminate-measurement-job
-    +---x create-meg
-    +---x delete-meg
-    +---x get-all-contained-megs
-    +---x modify-meg
+    +---x get-all-contained-meg
