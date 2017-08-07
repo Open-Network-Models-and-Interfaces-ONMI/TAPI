@@ -25,15 +25,20 @@ module tapi-connectivity {
         uses connectivity-context;
         description "Augments the base TAPI Context with ConnectivityService information";
     }
+    augment "/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point" {
+        uses cep-list;
+        description "none";
+    }
     /***********************
     * package object-classes
     **********************/ 
         grouping connection {
-            list connection-end-point {
-                key 'uuid';
+            leaf-list connection-end-point {
+                type leafref {
+                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:connection-end-point/tapi-connectivity:uuid';
+                }
                 config false;
                 min-elements 2;
-                uses connection-end-point;
                 description "none";
             }
             leaf-list lower-connection {
@@ -113,9 +118,15 @@ module tapi-connectivity {
             }
             leaf peer-connection-end-point {
                 type leafref {
-                    path '/tapi-common:context/tapi-connectivity:connection/tapi-connectivity:connection-end-point/tapi-connectivity:uuid';
+                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:connection-end-point/tapi-connectivity:uuid';
                 }
                 config false;
+                description "none";
+            }
+            leaf-list route {
+                type leafref {
+                    path '/tapi-common:context/tapi-connectivity:connection/tapi-connectivity:route/tapi-connectivity:local-id';
+                }
                 description "none";
             }
             container state {
@@ -231,6 +242,13 @@ module tapi-connectivity {
                 }
                 description "none";
             }
+            leaf-list connection-end-point {
+                type leafref {
+                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:connection-end-point/tapi-connectivity:uuid';
+                }
+                config false;
+                description "none";
+            }
             list layer-protocol {
                 key 'local-id';
                 min-elements 1;
@@ -265,7 +283,7 @@ module tapi-connectivity {
         grouping route {
             leaf-list connection-end-point {
                 type leafref {
-                    path '/tapi-common:context/tapi-connectivity:connection/tapi-connectivity:connection-end-point/tapi-connectivity:uuid';
+                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:connection-end-point/tapi-connectivity:uuid';
                 }
                 config false;
                 min-elements 1;
@@ -293,7 +311,7 @@ module tapi-connectivity {
         grouping switch {
             leaf-list selected-connection-end-point {
                 type leafref {
-                    path '/tapi-common:context/tapi-connectivity:connection/tapi-connectivity:connection-end-point/tapi-connectivity:uuid';
+                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:connection-end-point/tapi-connectivity:uuid';
                 }
                 min-elements 1;
                 description "none";
@@ -438,7 +456,7 @@ module tapi-connectivity {
                 config false;
                 description "This is a loose constraint - that is it is unordered and could be a partial list";
             }
-            leaf-list exlude-node {
+            leaf-list exclude-node {
                 type leafref {
                     path '/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:uuid';
                 }
@@ -453,6 +471,14 @@ module tapi-connectivity {
             uses tapi-common:local-class;
             description "none";
         }
+        grouping cep-list {
+            list connection-end-point {
+                key 'uuid';
+                uses connection-end-point;
+                description "none";
+            }
+            description "none";
+        }
 
     /***********************
     * package type-definitions
@@ -462,7 +488,7 @@ module tapi-connectivity {
                 enum point-to-point-connectivity {
                     description "none";
                 }
-                enum point-to-multipoint-connectivty {
+                enum point-to-multipoint-connectivity {
                     description "none";
                 }
                 enum multipoint-connectivity {

@@ -25,12 +25,12 @@ module tapi-oam {
         uses oam-context;
         description "Augments the base TAPI Context with OamService information";
     }
-    augment "/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-topology:layer-protocol" {
-        uses oam-spec;
+    augment "/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point" {
+        uses mep-mip-list;
         description "none";
     }
-    augment "/tapi-common:context/tapi-connectivity:connection/tapi-connectivity:connection-end-point/tapi-connectivity:layer-protocol" {
-        uses oam-spec;
+    augment "/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:connection-end-point" {
+        uses mep-mip-list;
         description "none";
     }
     /***********************
@@ -52,24 +52,22 @@ module tapi-oam {
                 uses mep-source-pac;
                 description "none";
             }
-            list on-demand-measurement-job {
+            leaf-list on-demand-measurement-job {
+                type leafref {
+                    path '/tapi-common:context/tapi-oam:oam-service/tapi-oam:end-point/tapi-oam:on-demand-measurement-job/tapi-oam:local-id';
+                }
                 config false;
-                uses on-demand-measurement-job;
                 description "none";
             }
-            list pro-active-measurement-job {
+            leaf-list pro-active-measurement-job {
+                type leafref {
+                    path '/tapi-common:context/tapi-oam:oam-service/tapi-oam:end-point/tapi-oam:pro-active-measurement-job/tapi-oam:local-id';
+                }
                 config false;
-                uses pro-active-measurement-job;
                 description "none";
             }
             leaf meg-identifier {
                 type string;
-                default "true";
-                config false;
-                description "none";
-            }
-            leaf admin-state {
-                type tapi-common:administrative-state;
                 config false;
                 description "none";
             }
@@ -79,7 +77,6 @@ module tapi-oam {
         grouping mep-source-pac {
             leaf mep-identifier {
                 type string;
-                default "true";
                 description "none";
             }
             description "none";
@@ -96,9 +93,11 @@ module tapi-oam {
             description "none";
         }
         grouping on-demand-measurement-job {
+            uses tapi-common:local-class;
             description "none";
         }
         grouping pro-active-measurement-job {
+            uses tapi-common:local-class;
             description "none";
         }
         grouping meg {
@@ -123,13 +122,15 @@ module tapi-oam {
                 config false;
                 max-elements 2;
                 uses mep;
-                description "none";
+                description "1. ME may have 0 MEPs (case of transit domains where at least 1 MIP is present)
+                    2. ME may have 1 MEP (case of edge domaind, where the peer MEP is ouside the managed domain)
+                    3. ME may have 2 MEPs";
             }
             list mip {
                 key 'local-id';
                 config false;
                 uses mip;
-                description "none";
+                description "ME may 0, 1, or more MIPs";
             }
             uses tapi-common:local-class;
             description "none";
@@ -139,7 +140,7 @@ module tapi-oam {
             description "none";
         }
         grouping oam-service {
-            leaf-list meg {
+            leaf meg {
                 type leafref {
                     path '/tapi-common:context/tapi-oam:meg/tapi-oam:uuid';
                 }
@@ -182,10 +183,21 @@ module tapi-oam {
                 }
                 description "none";
             }
-            list layer-protocol {
+            list pro-active-measurement-job {
                 key 'local-id';
-                min-elements 1;
-                uses tapi-common:layer-protocol;
+                uses pro-active-measurement-job;
+                description "none";
+            }
+            list on-demand-measurement-job {
+                key 'local-id';
+                uses on-demand-measurement-job;
+                description "none";
+            }
+            leaf associated-mep {
+                type leafref {
+                    path '/tapi-common:context/tapi-oam:meg/tapi-oam:me/tapi-oam:mep/tapi-oam:local-id';
+                }
+                config false;
                 description "none";
             }
             leaf direction {
@@ -193,15 +205,10 @@ module tapi-oam {
                 config false;
                 description "none";
             }
-            leaf role {
-                type tapi-common:port-role;
-                config false;
-                description "none";
-            }
             uses tapi-common:local-class;
             description "none";
         }
-        grouping oam-spec {
+        grouping mep-mip-list {
             leaf-list mip {
                 type leafref {
                     path '/tapi-common:context/tapi-oam:meg/tapi-oam:me/tapi-oam:mip/tapi-oam:local-id';
@@ -232,22 +239,13 @@ module tapi-oam {
         rpc establish-measurement-job {
             description "none";
         }
-        rpc get-all-contained-measurement-jobs {
+        rpc get-contained-measurement-jobs {
             description "none";
         }
         rpc terminate-measurement-job {
             description "none";
         }
-        rpc create-meg {
-            description "none";
-        }
-        rpc delete-meg {
-            description "none";
-        }
-        rpc get-all-contained-megs {
-            description "none";
-        }
-        rpc modify-meg {
+        rpc get-all-contained-meg {
             description "none";
         }
 
