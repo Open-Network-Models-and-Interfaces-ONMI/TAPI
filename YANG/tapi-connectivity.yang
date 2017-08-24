@@ -123,7 +123,7 @@ module tapi-connectivity {
                 config false;
                 description "none";
             }
-            leaf-list route {
+            leaf-list associated-route {
                 type leafref {
                     path '/tapi-common:context/tapi-connectivity:connection/tapi-connectivity:route/tapi-connectivity:local-id';
                 }
@@ -159,9 +159,18 @@ module tapi-connectivity {
                 config false;
                 description "An abstract value the meaning of which is mutually agreed – typically represents metrics such as - Class of service, priority, resiliency, availability";
             }
+            leaf is-exclusive {
+                type boolean;
+                default "true";
+                description "To distinguish if the resources are exclusive to the service  - for example between EPL(isExclusive=true) and EVPL (isExclusive=false), or between EPLAN (isExclusive=true) and EVPLAN (isExclusive=false)";
+            }
             container requested-capacity {
                 config false;
                 uses tapi-common:capacity;
+                description "none";
+            }
+            container schedule {
+                uses tapi-common:time-range;
                 description "none";
             }
             list cost-characteristic {
@@ -176,6 +185,10 @@ module tapi-connectivity {
                 uses tapi-topology:latency-characteristic;
                 description "The effect on the latency of a queuing process. This only has significant effect for packet based systems and has a complex characteristic.";
             }
+            container route-compute-policy {
+                uses route-compute-policy;
+                description "none";
+            }
             leaf coroute-inclusion {
                 type leafref {
                     path '/tapi-common:context/tapi-connectivity:connectivity-service/tapi-connectivity:uuid';
@@ -188,10 +201,6 @@ module tapi-connectivity {
                     path '/tapi-common:context/tapi-connectivity:connectivity-service/tapi-connectivity:uuid';
                 }
                 config false;
-                description "none";
-            }
-            container schedule {
-                uses tapi-common:time-range;
                 description "none";
             }
             uses tapi-common:local-class;
@@ -229,6 +238,11 @@ module tapi-connectivity {
             }
             leaf layer-protocol-name {
                 type tapi-common:layer-protocol-name;
+                description "none";
+            }
+            list resilience-constraint {
+                key 'local-id';
+                uses resilience-constraint;
                 description "none";
             }
             uses tapi-common:service-spec;
@@ -271,6 +285,10 @@ module tapi-connectivity {
                 type tapi-common:port-role;
                 description "Each EP of the FC has a role (e.g., working, protection, protected, symmetric, hub, spoke, leaf, root)  in the context of the FC with respect to the FC function. ";
             }
+            leaf protection-role {
+                type protection-role;
+                description "To specify the protection role of this Port when create or update ConnectivityService.";
+            }
             uses tapi-common:local-class;
             description "The association of the FC to LTPs is made via EndPoints.
                 The EndPoint (EP) object class models the access to the FC function. 
@@ -286,7 +304,7 @@ module tapi-connectivity {
                     path '/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:connection-end-point/tapi-connectivity:uuid';
                 }
                 config false;
-                min-elements 1;
+                min-elements 2;
                 description "none";
             }
             uses tapi-common:local-class;
@@ -363,16 +381,24 @@ module tapi-connectivity {
                 description "none";
             }
             container control-parameters {
-                uses control-parameters-pac;
+                uses resilience-constraint;
                 description "none";
             }
             uses tapi-common:local-class;
             description "Represents the capability to control and coordinate switches, to add/delete/modify FCs and to add/delete/modify LTPs/LPs so as to realize a protection scheme.";
         }
-        grouping control-parameters-pac {
-            leaf switch-type {
-                type switch-type;
-                description "Indicates the protection scheme that is used for the ProtectionGroup.";
+        grouping resilience-constraint {
+            container resilience-type {
+                uses tapi-topology:resilience-type;
+                description "none";
+            }
+            leaf restoration-coordinate-type {
+                type coordinate-type;
+                description " The coordination mechanism between multi-layers.";
+            }
+            leaf restore-priority {
+                type uint64;
+                description "none";
             }
             leaf reversion-mode {
                 type reversion-mode;
@@ -404,6 +430,15 @@ module tapi-connectivity {
                 type boolean;
                 description "Is operating such that switching at both ends of each flow acorss the FC is coordinated at both ingress and egress ends.";
             }
+            leaf max-switch-times {
+                type uint64;
+                description "Used to limit the maximum swtich times. When work fault disappears , and traffic return to the original work path, switch counter reset.";
+            }
+            leaf layer-protocol {
+                type tapi-common:layer-protocol-name;
+                description "Indicate which layer this resilience parameters package configured for.";
+            }
+            uses tapi-common:local-class;
             description "A list of control parameters to apply to a switch.";
         }
         grouping topology-constraint {
@@ -475,6 +510,17 @@ module tapi-connectivity {
             list connection-end-point {
                 key 'uuid';
                 uses connection-end-point;
+                description "none";
+            }
+            description "none";
+        }
+        grouping route-compute-policy {
+            leaf route-objective-function {
+                type route-objective-function;
+                description "none";
+            }
+            leaf diversity-policy {
+                type diversity-policy;
                 description "none";
             }
             description "none";
@@ -557,12 +603,84 @@ module tapi-connectivity {
             }
             description "The cause of the current route selection.";
         }
-        typedef switch-type {
+        typedef coordinate-type {
             type enumeration {
-                enum linear-1-plus-1 {
+                enum no-coordinate {
                     description "none";
                 }
-                enum linear-1-for-1 {
+                enum hold-off-time {
+                    description "none";
+                }
+                enum wait-for-notification {
+                    description "none";
+                }
+            }
+            description "none";
+        }
+        typedef route-objective-function {
+            type enumeration {
+                enum min-work-route-hop {
+                    description "none";
+                }
+                enum min-work-route-cost {
+                    description "none";
+                }
+                enum min-work-route-latency {
+                    description "none";
+                }
+                enum min-sum-of-work-and-protection-route-hop {
+                    description "none";
+                }
+                enum min-sum-of-work-and-protection-route-cost {
+                    description "none";
+                }
+                enum min-sum-of-work-and-protection-route-latency {
+                    description "none";
+                }
+                enum load-balance-max-unused-capacity {
+                    description "none";
+                }
+            }
+            description "none";
+        }
+        typedef diversity-policy {
+            type enumeration {
+                enum srlg {
+                    description "none";
+                }
+                enum srng {
+                    description "none";
+                }
+                enum sng {
+                    description "none";
+                }
+                enum node {
+                    description "none";
+                }
+                enum link {
+                    description "none";
+                }
+            }
+            description "none";
+        }
+        typedef protection-role {
+            type enumeration {
+                enum work {
+                    description "none";
+                }
+                enum protect {
+                    description "none";
+                }
+                enum protected {
+                    description "none";
+                }
+                enum na {
+                    description "none";
+                }
+                enum work-restore {
+                    description "none";
+                }
+                enum protect-restore {
                     description "none";
                 }
             }
@@ -631,6 +749,10 @@ module tapi-connectivity {
                     uses topology-constraint;
                     description "none";
                 }
+                list resilience-constraint {
+                    uses resilience-constraint;
+                    description "none";
+                }
                 leaf state {
                     type string;
                     description "none";
@@ -660,6 +782,10 @@ module tapi-connectivity {
                 }
                 container topo-constraint {
                     uses topology-constraint;
+                    description "none";
+                }
+                list resilience-constraint {
+                    uses resilience-constraint;
                     description "none";
                 }
                 leaf state {
