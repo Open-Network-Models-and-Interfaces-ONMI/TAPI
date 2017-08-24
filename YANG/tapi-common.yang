@@ -184,25 +184,6 @@ module tapi-common {
             base layer-protocol-name;
             description "none";
         }
-        identity capacity-unit {
-            description "none";
-        }
-        identity gbps {
-            base capacity-unit;
-            description "none";
-        }
-        identity kbps {
-            base capacity-unit;
-            description "none";
-        }
-        identity mbps {
-            base capacity-unit;
-            description "none";
-        }
-        identity not-applicable {
-            base capacity-unit;
-            description "none";
-        }
         typedef administrative-state {
             type enumeration {
                 enum locked {
@@ -418,8 +399,8 @@ module tapi-common {
         }
         grouping capacity {
             container total-size {
-                uses fixed-capacity-value;
-                description "Total capacity of the TopologicalEntity in MB/s";
+                uses capacity-value;
+                description "Total capacity of the TopologicalEntity in MB/s. In case of bandwidthProfile, this is expected to same as the committedInformationRate.";
             }
             container bandwidth-profile {
                 uses bandwidth-profile;
@@ -432,20 +413,20 @@ module tapi-common {
                 type bandwidth-profile-type;
                 description "none";
             }
-            leaf committed-information-rate {
-                type uint64;
+            container committed-information-rate {
+                uses capacity-value;
                 description "none";
             }
-            leaf committed-burst-size {
-                type uint64;
+            container committed-burst-size {
+                uses capacity-value;
                 description "none";
             }
-            leaf peak-information-rate {
-                type uint64;
+            container peak-information-rate {
+                uses capacity-value;
                 description "none";
             }
-            leaf peak-burst-size {
-                type uint64;
+            container peak-burst-size {
+                uses capacity-value;
                 description "none";
             }
             leaf color-aware {
@@ -458,7 +439,7 @@ module tapi-common {
             }
             description "none";
         }
-        grouping fixed-capacity-value {
+        grouping capacity-value {
             leaf value {
                 type uint64;
                 description "none";
@@ -470,16 +451,21 @@ module tapi-common {
             description "The Capacity (Bandwidth) values that are applicable for digital layers.";
         }
         typedef capacity-unit {
-            type identityref {
-                base capacity-unit;
+            type enumeration {
+                enum gbps {
+                    description "Indicates that the integer CapacityValue is in Gigabit-per-second";
+                }
+                enum mbps {
+                    description "Indicates that the integer CapacityValue is in Megabit-per-second";
+                }
+                enum kbps {
+                    description "Indicates that the integer CapacityValue is in Kilobit-per-second";
+                }
             }
             description "none";
         }
         typedef bandwidth-profile-type {
             type enumeration {
-                enum not-applicable {
-                    description "none";
-                }
                 enum mef-10.x {
                     description "none";
                 }
