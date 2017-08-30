@@ -10,6 +10,9 @@ module tapi-odu {
     import tapi-topology {
         prefix tapi-topology;
     }
+    import tapi-oam {
+        prefix tapi-oam;
+    }
     organization "Open Networking Foundation (ONF) / Open Transport Working Group(OTWG) / Transport API (TAPI) Project";
     contact "
         WG Web: TAPI SDK Project <http://opensourcesdn.org/projects/project-snowmass/>
@@ -22,11 +25,15 @@ module tapi-odu {
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 6020 and RFC 6087";
     }
     augment "/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-topology:layer-protocol" {
-        uses odu-node-edge-point-lp-spec;
+        uses odu-node-edge-point-spec;
         description "Augments the base LayerProtocol information in NodeEdgePoint with ODU-specific information";
     }
     augment "/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:connection-end-point/tapi-connectivity:layer-protocol" {
-        uses odu-connection-end-point-lp-spec;
+        uses odu-connection-end-point-spec;
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-oam:meg/tapi-oam:mep" {
+        uses odu-mep-spec;
         description "none";
     }
     /***********************
@@ -66,7 +73,7 @@ module tapi-odu {
             description "This Pac contains the attributes associated with the termination function of the TTP
                 It is present only if the CEP contains a TTP";
         }
-        grouping odu-connection-end-point-lp-spec {
+        grouping odu-connection-end-point-spec {
             leaf odu-type {
                 type odu-type;
                 config false;
@@ -87,21 +94,21 @@ module tapi-odu {
                     Valid values are real value in the unit of ppm. 
                     Standardized values are defined in Table 7-2/G.709.";
             }
-            container ctp-pac {
-                uses odu-ctp-pac;
-                description "none";
-            }
-            container termination-pac {
+            container odu-termination {
                 uses odu-termination-pac;
                 description "none";
             }
-            container adapter-pac {
+            container odu-adapter {
                 uses odu-client-adaptation-pac;
+                description "none";
+            }
+            container odu-ctp {
+                uses odu-ctp-pac;
                 description "none";
             }
             description "none";
         }
-        grouping odu-pool-property-pac {
+        grouping odu-pool-pac {
             leaf client-capacity {
                 type uint64;
                 description "none";
@@ -118,9 +125,9 @@ module tapi-odu {
             }
             description "none";
         }
-        grouping odu-node-edge-point-lp-spec {
-            container odu-pool-property-spec {
-                uses odu-pool-property-pac;
+        grouping odu-node-edge-point-spec {
+            container odu-pool {
+                uses odu-pool-pac;
                 description "none";
             }
             description "none";
@@ -191,9 +198,17 @@ module tapi-odu {
                 description "The Trail Trace Identifier (TTI) information, provisioned by the managing system at the termination source, to be placed in the TTI overhead position of the source of a trail for transmission.
                     ";
             }
+            container odu-tcm {
+                uses odu-tcm-pac;
+                description "none";
+            }
+            container odu-ncm {
+                uses odu-ncm-pac;
+                description "none";
+            }
             description "none";
         }
-        grouping protection-spec {
+        grouping odu-protection-pac {
             leaf aps-enable {
                 type boolean;
                 default "true";
@@ -203,6 +218,12 @@ module tapi-odu {
                 type uint64;
                 description "This attribute is for configuring the automatic protection switching (APS) level that should operate at the transport adaptation function that is represented by the ODU_ConnectionTerminationPoint object class. It triggers the MI_APS_LVL signal to the transport adaptation function. The value 0 means path and the values 1 through 6 mean TCM level 1 through 6 respectively.";
             }
+            description "none";
+        }
+        grouping odu-ncm-pac {
+            description "none";
+        }
+        grouping odu-tcm-pac {
             description "none";
         }
 
