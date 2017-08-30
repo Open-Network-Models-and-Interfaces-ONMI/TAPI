@@ -1,514 +1,501 @@
 module: tapi-notification
-augment /tapi-common:context:
-   +--rw notif-subscription* [uuid]
-   |  +--ro notification* [uuid]
-   |  |  +--ro notification-type?          notification-type
-   |  |  +--ro target-object-type?         object-type
-   |  |  +--ro target-object-identifier?   tapi-common:universal-id
-   |  |  +--ro target-object-name* [value-name]
-   |  |  |  +--ro value-name    string
-   |  |  |  +--ro value?        string
-   |  |  +--ro event-time-stamp?           tapi-common:date-and-time
-   |  |  +--ro sequence-number?            uint64
-   |  |  +--ro source-indicator?           source-indicator
-   |  |  +--ro layer-protocol-name?        tapi-common:layer-protocol-name
-   |  |  +--ro changed-attributes* [value-name]
-   |  |  |  +--ro value-name    string
-   |  |  |  +--ro old-value?    string
-   |  |  |  +--ro new-value?    string
-   |  |  +--ro additional-info* [value-name]
-   |  |  |  +--ro value-name    string
-   |  |  |  +--ro value?        string
-   |  |  +--ro additional-text?            string
-   |  |  +--ro uuid                        universal-id
-   |  |  +--ro name* [value-name]
-   |  |  |  +--ro value-name    string
-   |  |  |  +--ro value?        string
-   |  |  +--ro label* [value-name]
-   |  |     +--ro value-name    string
-   |  |     +--ro value?        string
-   |  +--rw notification-channel
-   |  |  +--ro stream-address?     string
-   |  |  +--ro next-sequence-no?   uint64
-   |  |  +--ro local-id?           string
-   |  |  +--rw name* [value-name]
-   |  |     +--rw value-name    string
-   |  |     +--rw value?        string
-   |  +--rw subscription-filter
-   |  |  +--ro requested-notification-types*   notification-type
-   |  |  +--ro requested-object-types*         object-type
-   |  |  +--ro requested-layer-protocols*      tapi-common:layer-protocol-name
-   |  |  +--ro requested-object-identifier*    tapi-common:universal-id
-   |  |  +--ro include-content?                boolean
-   |  |  +--ro local-id?                       string
-   |  |  +--rw name* [value-name]
-   |  |     +--rw value-name    string
-   |  |     +--rw value?        string
-   |  +--rw subscription-state?             subscription-state
-   |  +--ro supported-notification-types*   notification-type
-   |  +--ro supported-object-types*         object-type
-   |  +--ro uuid                            universal-id
-   |  +--rw name* [value-name]
-   |  |  +--rw value-name    string
-   |  |  +--rw value?        string
-   |  +--rw label* [value-name]
-   |     +--rw value-name    string
-   |     +--rw value?        string
-   +--ro notification* [uuid]
-      +--ro notification-type?          notification-type
-      +--ro target-object-type?         object-type
-      +--ro target-object-identifier?   tapi-common:universal-id
-      +--ro target-object-name* [value-name]
-      |  +--ro value-name    string
-      |  +--ro value?        string
-      +--ro event-time-stamp?           tapi-common:date-and-time
-      +--ro sequence-number?            uint64
-      +--ro source-indicator?           source-indicator
-      +--ro layer-protocol-name?        tapi-common:layer-protocol-name
-      +--ro changed-attributes* [value-name]
-      |  +--ro value-name    string
-      |  +--ro old-value?    string
-      |  +--ro new-value?    string
-      +--ro additional-info* [value-name]
-      |  +--ro value-name    string
-      |  +--ro value?        string
-      +--ro additional-text?            string
-      +--ro uuid                        universal-id
-      +--ro name* [value-name]
-      |  +--ro value-name    string
-      |  +--ro value?        string
-      +--ro label* [value-name]
-         +--ro value-name    string
-         +--ro value?        string
-rpcs:
-   +---x get-supported-notification-types
-   |  +--ro output
-   |     +--ro supported-notification-types*   notification-type
-   |     +--ro supported-object-types*         object-type
-   +---x create-notification-subscription-service
-   |  +---w input
-   |  |  +---w subscription-filter
-   |  |  |  +---w requested-notification-types*   notification-type
-   |  |  |  +---w requested-object-types*         object-type
-   |  |  |  +---w requested-layer-protocols*      tapi-common:layer-protocol-name
-   |  |  |  +---w requested-object-identifier*    tapi-common:universal-id
-   |  |  |  +---w include-content?                boolean
-   |  |  |  +---w local-id?                       string
-   |  |  |  +---w name* [value-name]
-   |  |  |     +---w value-name    string
-   |  |  |     +---w value?        string
-   |  |  +---w subscription-state?    subscription-state
-   |  +--ro output
-   |     +--ro subscription-service
-   |        +--ro notification* [uuid]
-   |        |  +--ro notification-type?          notification-type
-   |        |  +--ro target-object-type?         object-type
-   |        |  +--ro target-object-identifier?   tapi-common:universal-id
-   |        |  +--ro target-object-name* [value-name]
-   |        |  |  +--ro value-name    string
-   |        |  |  +--ro value?        string
-   |        |  +--ro event-time-stamp?           tapi-common:date-and-time
-   |        |  +--ro sequence-number?            uint64
-   |        |  +--ro source-indicator?           source-indicator
-   |        |  +--ro layer-protocol-name?        tapi-common:layer-protocol-name
-   |        |  +--ro changed-attributes* [value-name]
-   |        |  |  +--ro value-name    string
-   |        |  |  +--ro old-value?    string
-   |        |  |  +--ro new-value?    string
-   |        |  +--ro additional-info* [value-name]
-   |        |  |  +--ro value-name    string
-   |        |  |  +--ro value?        string
-   |        |  +--ro additional-text?            string
-   |        |  +--ro uuid                        universal-id
-   |        |  +--ro name* [value-name]
-   |        |  |  +--ro value-name    string
-   |        |  |  +--ro value?        string
-   |        |  +--ro label* [value-name]
-   |        |     +--ro value-name    string
-   |        |     +--ro value?        string
-   |        +--ro notification-channel
-   |        |  +--ro stream-address?     string
-   |        |  +--ro next-sequence-no?   uint64
-   |        |  +--ro local-id?           string
-   |        |  +--ro name* [value-name]
-   |        |     +--ro value-name    string
-   |        |     +--ro value?        string
-   |        +--ro subscription-filter
-   |        |  +--ro requested-notification-types*   notification-type
-   |        |  +--ro requested-object-types*         object-type
-   |        |  +--ro requested-layer-protocols*      tapi-common:layer-protocol-name
-   |        |  +--ro requested-object-identifier*    tapi-common:universal-id
-   |        |  +--ro include-content?                boolean
-   |        |  +--ro local-id?                       string
-   |        |  +--ro name* [value-name]
-   |        |     +--ro value-name    string
-   |        |     +--ro value?        string
-   |        +--ro subscription-state?             subscription-state
-   |        +--ro supported-notification-types*   notification-type
-   |        +--ro supported-object-types*         object-type
-   |        +--ro uuid?                           universal-id
-   |        +--ro name* [value-name]
-   |        |  +--ro value-name    string
-   |        |  +--ro value?        string
-   |        +--ro label* [value-name]
-   |           +--ro value-name    string
-   |           +--ro value?        string
-   +---x update-notification-subscription-service
-   |  +---w input
-   |  |  +---w subscription-id-or-name?   string
-   |  |  +---w subscription-filter
-   |  |  |  +---w requested-notification-types*   notification-type
-   |  |  |  +---w requested-object-types*         object-type
-   |  |  |  +---w requested-layer-protocols*      tapi-common:layer-protocol-name
-   |  |  |  +---w requested-object-identifier*    tapi-common:universal-id
-   |  |  |  +---w include-content?                boolean
-   |  |  |  +---w local-id?                       string
-   |  |  |  +---w name* [value-name]
-   |  |  |     +---w value-name    string
-   |  |  |     +---w value?        string
-   |  |  +---w subscription-state?        subscription-state
-   |  +--ro output
-   |     +--ro subscription-service
-   |        +--ro notification* [uuid]
-   |        |  +--ro notification-type?          notification-type
-   |        |  +--ro target-object-type?         object-type
-   |        |  +--ro target-object-identifier?   tapi-common:universal-id
-   |        |  +--ro target-object-name* [value-name]
-   |        |  |  +--ro value-name    string
-   |        |  |  +--ro value?        string
-   |        |  +--ro event-time-stamp?           tapi-common:date-and-time
-   |        |  +--ro sequence-number?            uint64
-   |        |  +--ro source-indicator?           source-indicator
-   |        |  +--ro layer-protocol-name?        tapi-common:layer-protocol-name
-   |        |  +--ro changed-attributes* [value-name]
-   |        |  |  +--ro value-name    string
-   |        |  |  +--ro old-value?    string
-   |        |  |  +--ro new-value?    string
-   |        |  +--ro additional-info* [value-name]
-   |        |  |  +--ro value-name    string
-   |        |  |  +--ro value?        string
-   |        |  +--ro additional-text?            string
-   |        |  +--ro uuid                        universal-id
-   |        |  +--ro name* [value-name]
-   |        |  |  +--ro value-name    string
-   |        |  |  +--ro value?        string
-   |        |  +--ro label* [value-name]
-   |        |     +--ro value-name    string
-   |        |     +--ro value?        string
-   |        +--ro notification-channel
-   |        |  +--ro stream-address?     string
-   |        |  +--ro next-sequence-no?   uint64
-   |        |  +--ro local-id?           string
-   |        |  +--ro name* [value-name]
-   |        |     +--ro value-name    string
-   |        |     +--ro value?        string
-   |        +--ro subscription-filter
-   |        |  +--ro requested-notification-types*   notification-type
-   |        |  +--ro requested-object-types*         object-type
-   |        |  +--ro requested-layer-protocols*      tapi-common:layer-protocol-name
-   |        |  +--ro requested-object-identifier*    tapi-common:universal-id
-   |        |  +--ro include-content?                boolean
-   |        |  +--ro local-id?                       string
-   |        |  +--ro name* [value-name]
-   |        |     +--ro value-name    string
-   |        |     +--ro value?        string
-   |        +--ro subscription-state?             subscription-state
-   |        +--ro supported-notification-types*   notification-type
-   |        +--ro supported-object-types*         object-type
-   |        +--ro uuid?                           universal-id
-   |        +--ro name* [value-name]
-   |        |  +--ro value-name    string
-   |        |  +--ro value?        string
-   |        +--ro label* [value-name]
-   |           +--ro value-name    string
-   |           +--ro value?        string
-   +---x delete-notification-subscription-service
-   |  +---w input
-   |  |  +---w subscription-id-or-name?   string
-   |  +--ro output
-   |     +--ro subscription-service
-   |        +--ro notification* [uuid]
-   |        |  +--ro notification-type?          notification-type
-   |        |  +--ro target-object-type?         object-type
-   |        |  +--ro target-object-identifier?   tapi-common:universal-id
-   |        |  +--ro target-object-name* [value-name]
-   |        |  |  +--ro value-name    string
-   |        |  |  +--ro value?        string
-   |        |  +--ro event-time-stamp?           tapi-common:date-and-time
-   |        |  +--ro sequence-number?            uint64
-   |        |  +--ro source-indicator?           source-indicator
-   |        |  +--ro layer-protocol-name?        tapi-common:layer-protocol-name
-   |        |  +--ro changed-attributes* [value-name]
-   |        |  |  +--ro value-name    string
-   |        |  |  +--ro old-value?    string
-   |        |  |  +--ro new-value?    string
-   |        |  +--ro additional-info* [value-name]
-   |        |  |  +--ro value-name    string
-   |        |  |  +--ro value?        string
-   |        |  +--ro additional-text?            string
-   |        |  +--ro uuid                        universal-id
-   |        |  +--ro name* [value-name]
-   |        |  |  +--ro value-name    string
-   |        |  |  +--ro value?        string
-   |        |  +--ro label* [value-name]
-   |        |     +--ro value-name    string
-   |        |     +--ro value?        string
-   |        +--ro notification-channel
-   |        |  +--ro stream-address?     string
-   |        |  +--ro next-sequence-no?   uint64
-   |        |  +--ro local-id?           string
-   |        |  +--ro name* [value-name]
-   |        |     +--ro value-name    string
-   |        |     +--ro value?        string
-   |        +--ro subscription-filter
-   |        |  +--ro requested-notification-types*   notification-type
-   |        |  +--ro requested-object-types*         object-type
-   |        |  +--ro requested-layer-protocols*      tapi-common:layer-protocol-name
-   |        |  +--ro requested-object-identifier*    tapi-common:universal-id
-   |        |  +--ro include-content?                boolean
-   |        |  +--ro local-id?                       string
-   |        |  +--ro name* [value-name]
-   |        |     +--ro value-name    string
-   |        |     +--ro value?        string
-   |        +--ro subscription-state?             subscription-state
-   |        +--ro supported-notification-types*   notification-type
-   |        +--ro supported-object-types*         object-type
-   |        +--ro uuid?                           universal-id
-   |        +--ro name* [value-name]
-   |        |  +--ro value-name    string
-   |        |  +--ro value?        string
-   |        +--ro label* [value-name]
-   |           +--ro value-name    string
-   |           +--ro value?        string
-   +---x get-notification-subscription-service-details
-   |  +---w input
-   |  |  +---w subscription-id-or-name?   string
-   |  +--ro output
-   |     +--ro subscription-service
-   |        +--ro notification* [uuid]
-   |        |  +--ro notification-type?          notification-type
-   |        |  +--ro target-object-type?         object-type
-   |        |  +--ro target-object-identifier?   tapi-common:universal-id
-   |        |  +--ro target-object-name* [value-name]
-   |        |  |  +--ro value-name    string
-   |        |  |  +--ro value?        string
-   |        |  +--ro event-time-stamp?           tapi-common:date-and-time
-   |        |  +--ro sequence-number?            uint64
-   |        |  +--ro source-indicator?           source-indicator
-   |        |  +--ro layer-protocol-name?        tapi-common:layer-protocol-name
-   |        |  +--ro changed-attributes* [value-name]
-   |        |  |  +--ro value-name    string
-   |        |  |  +--ro old-value?    string
-   |        |  |  +--ro new-value?    string
-   |        |  +--ro additional-info* [value-name]
-   |        |  |  +--ro value-name    string
-   |        |  |  +--ro value?        string
-   |        |  +--ro additional-text?            string
-   |        |  +--ro uuid                        universal-id
-   |        |  +--ro name* [value-name]
-   |        |  |  +--ro value-name    string
-   |        |  |  +--ro value?        string
-   |        |  +--ro label* [value-name]
-   |        |     +--ro value-name    string
-   |        |     +--ro value?        string
-   |        +--ro notification-channel
-   |        |  +--ro stream-address?     string
-   |        |  +--ro next-sequence-no?   uint64
-   |        |  +--ro local-id?           string
-   |        |  +--ro name* [value-name]
-   |        |     +--ro value-name    string
-   |        |     +--ro value?        string
-   |        +--ro subscription-filter
-   |        |  +--ro requested-notification-types*   notification-type
-   |        |  +--ro requested-object-types*         object-type
-   |        |  +--ro requested-layer-protocols*      tapi-common:layer-protocol-name
-   |        |  +--ro requested-object-identifier*    tapi-common:universal-id
-   |        |  +--ro include-content?                boolean
-   |        |  +--ro local-id?                       string
-   |        |  +--ro name* [value-name]
-   |        |     +--ro value-name    string
-   |        |     +--ro value?        string
-   |        +--ro subscription-state?             subscription-state
-   |        +--ro supported-notification-types*   notification-type
-   |        +--ro supported-object-types*         object-type
-   |        +--ro uuid?                           universal-id
-   |        +--ro name* [value-name]
-   |        |  +--ro value-name    string
-   |        |  +--ro value?        string
-   |        +--ro label* [value-name]
-   |           +--ro value-name    string
-   |           +--ro value?        string
-   +---x get-notification-subscription-service-list
-   |  +--ro output
-   |     +--ro subscription-service*
-   |        +--ro notification* [uuid]
-   |        |  +--ro notification-type?          notification-type
-   |        |  +--ro target-object-type?         object-type
-   |        |  +--ro target-object-identifier?   tapi-common:universal-id
-   |        |  +--ro target-object-name* [value-name]
-   |        |  |  +--ro value-name    string
-   |        |  |  +--ro value?        string
-   |        |  +--ro event-time-stamp?           tapi-common:date-and-time
-   |        |  +--ro sequence-number?            uint64
-   |        |  +--ro source-indicator?           source-indicator
-   |        |  +--ro layer-protocol-name?        tapi-common:layer-protocol-name
-   |        |  +--ro changed-attributes* [value-name]
-   |        |  |  +--ro value-name    string
-   |        |  |  +--ro old-value?    string
-   |        |  |  +--ro new-value?    string
-   |        |  +--ro additional-info* [value-name]
-   |        |  |  +--ro value-name    string
-   |        |  |  +--ro value?        string
-   |        |  +--ro additional-text?            string
-   |        |  +--ro uuid                        universal-id
-   |        |  +--ro name* [value-name]
-   |        |  |  +--ro value-name    string
-   |        |  |  +--ro value?        string
-   |        |  +--ro label* [value-name]
-   |        |     +--ro value-name    string
-   |        |     +--ro value?        string
-   |        +--ro notification-channel
-   |        |  +--ro stream-address?     string
-   |        |  +--ro next-sequence-no?   uint64
-   |        |  +--ro local-id?           string
-   |        |  +--ro name* [value-name]
-   |        |     +--ro value-name    string
-   |        |     +--ro value?        string
-   |        +--ro subscription-filter
-   |        |  +--ro requested-notification-types*   notification-type
-   |        |  +--ro requested-object-types*         object-type
-   |        |  +--ro requested-layer-protocols*      tapi-common:layer-protocol-name
-   |        |  +--ro requested-object-identifier*    tapi-common:universal-id
-   |        |  +--ro include-content?                boolean
-   |        |  +--ro local-id?                       string
-   |        |  +--ro name* [value-name]
-   |        |     +--ro value-name    string
-   |        |     +--ro value?        string
-   |        +--ro subscription-state?             subscription-state
-   |        +--ro supported-notification-types*   notification-type
-   |        +--ro supported-object-types*         object-type
-   |        +--ro uuid?                           universal-id
-   |        +--ro name* [value-name]
-   |        |  +--ro value-name    string
-   |        |  +--ro value?        string
-   |        +--ro label* [value-name]
-   |           +--ro value-name    string
-   |           +--ro value?        string
-   +---x get-notification-list
-      +---w input
-      |  +---w subscription-id-or-name?   string
-      |  +---w time-period?               string
-      +--ro output
-         +--ro notification*
-            +--ro notification-type?          notification-type
-            +--ro target-object-type?         object-type
-            +--ro target-object-identifier?   tapi-common:universal-id
-            +--ro target-object-name* [value-name]
-            |  +--ro value-name    string
-            |  +--ro value?        string
-            +--ro event-time-stamp?           tapi-common:date-and-time
-            +--ro sequence-number?            uint64
-            +--ro source-indicator?           source-indicator
-            +--ro layer-protocol-name?        tapi-common:layer-protocol-name
-            +--ro changed-attributes* [value-name]
-            |  +--ro value-name    string
-            |  +--ro old-value?    string
-            |  +--ro new-value?    string
-            +--ro additional-info* [value-name]
-            |  +--ro value-name    string
-            |  +--ro value?        string
-            +--ro additional-text?            string
-            +--ro uuid?                       universal-id
-            +--ro name* [value-name]
-            |  +--ro value-name    string
-            |  +--ro value?        string
-            +--ro label* [value-name]
-               +--ro value-name    string
-               +--ro value?        string
-notifications:
-   +---n notification
-   |  +--ro notification-type?          notification-type
-   |  +--ro target-object-type?         object-type
-   |  +--ro target-object-identifier?   tapi-common:universal-id
-   |  +--ro target-object-name* [value-name]
-   |  |  +--ro value-name    string
-   |  |  +--ro value?        string
-   |  +--ro event-time-stamp?           tapi-common:date-and-time
-   |  +--ro sequence-number?            uint64
-   |  +--ro source-indicator?           source-indicator
-   |  +--ro layer-protocol-name?        tapi-common:layer-protocol-name
-   |  +--ro changed-attributes* [value-name]
-   |  |  +--ro value-name    string
-   |  |  +--ro old-value?    string
-   |  |  +--ro new-value?    string
-   |  +--ro additional-info* [value-name]
-   |  |  +--ro value-name    string
-   |  |  +--ro value?        string
-   |  +--ro additional-text?            string
-   |  +--ro uuid?                       universal-id
-   |  +--ro name* [value-name]
-   |  |  +--ro value-name    string
-   |  |  +--ro value?        string
-   |  +--ro label* [value-name]
-   |     +--ro value-name    string
-   |     +--ro value?        string
-   +---n alarm
-   |  +--ro probable-cause?             string
-   |  +--ro pervceived-severity?        perceived-serverity-type
-   |  +--ro service-affecting?          service-affecting
-   |  +--ro is-transient?               boolean
-   |  +--ro notification-type?          notification-type
-   |  +--ro target-object-type?         object-type
-   |  +--ro target-object-identifier?   tapi-common:universal-id
-   |  +--ro target-object-name* [value-name]
-   |  |  +--ro value-name    string
-   |  |  +--ro value?        string
-   |  +--ro event-time-stamp?           tapi-common:date-and-time
-   |  +--ro sequence-number?            uint64
-   |  +--ro source-indicator?           source-indicator
-   |  +--ro layer-protocol-name?        tapi-common:layer-protocol-name
-   |  +--ro changed-attributes* [value-name]
-   |  |  +--ro value-name    string
-   |  |  +--ro old-value?    string
-   |  |  +--ro new-value?    string
-   |  +--ro additional-info* [value-name]
-   |  |  +--ro value-name    string
-   |  |  +--ro value?        string
-   |  +--ro additional-text?            string
-   |  +--ro uuid?                       universal-id
-   |  +--ro name* [value-name]
-   |  |  +--ro value-name    string
-   |  |  +--ro value?        string
-   |  +--ro label* [value-name]
-   |     +--ro value-name    string
-   |     +--ro value?        string
-   +---n threshold-crossing-alert
-      +--ro threshold-parameter?        string
-      +--ro threshold-value?            uint64
-      +--ro threshold-crossing?         threshold-crossing-type
-      +--ro is-transient?               boolean
-      +--ro notification-type?          notification-type
-      +--ro target-object-type?         object-type
-      +--ro target-object-identifier?   tapi-common:universal-id
-      +--ro target-object-name* [value-name]
-      |  +--ro value-name    string
-      |  +--ro value?        string
-      +--ro event-time-stamp?           tapi-common:date-and-time
-      +--ro sequence-number?            uint64
-      +--ro source-indicator?           source-indicator
-      +--ro layer-protocol-name?        tapi-common:layer-protocol-name
-      +--ro changed-attributes* [value-name]
-      |  +--ro value-name    string
-      |  +--ro old-value?    string
-      |  +--ro new-value?    string
-      +--ro additional-info* [value-name]
-      |  +--ro value-name    string
-      |  +--ro value?        string
-      +--ro additional-text?            string
-      +--ro uuid?                       universal-id
-      +--ro name* [value-name]
-      |  +--ro value-name    string
-      |  +--ro value?        string
-      +--ro label* [value-name]
-         +--ro value-name    string
-         +--ro value?        string
+  augment /tapi-common:context:
+    +--rw notif-subscription* [uuid]
+    |  +--ro notification* [uuid]
+    |  |  +--ro notification-type?          notification-type
+    |  |  +--ro target-object-type?         object-type
+    |  |  +--ro target-object-identifier?   tapi-common:uuid
+    |  |  +--ro target-object-name* [value-name]
+    |  |  |  +--ro value-name    string
+    |  |  |  +--ro value?        string
+    |  |  +--ro event-time-stamp?           tapi-common:date-and-time
+    |  |  +--ro sequence-number?            uint64
+    |  |  +--ro source-indicator?           source-indicator
+    |  |  +--ro layer-protocol-name?        tapi-common:layer-protocol-name
+    |  |  +--ro changed-attributes* [value-name]
+    |  |  |  +--ro value-name    string
+    |  |  |  +--ro old-value?    string
+    |  |  |  +--ro new-value?    string
+    |  |  +--ro additional-info* [value-name]
+    |  |  |  +--ro value-name    string
+    |  |  |  +--ro value?        string
+    |  |  +--ro additional-text?            string
+    |  |  +--ro tca-info
+    |  |  |  +--ro is-transient?          boolean
+    |  |  |  +--ro threshold-crossing?    threshold-crossing-type
+    |  |  |  +--ro threshold-parameter?   string
+    |  |  |  +--ro threshold-value?       uint64
+    |  |  +--ro alarm-info
+    |  |  |  +--ro is-transient?          boolean
+    |  |  |  +--ro pervceived-severity?   perceived-serverity-type
+    |  |  |  +--ro probable-cause?        string
+    |  |  |  +--ro service-affecting?     service-affecting
+    |  |  +--ro uuid                        uuid
+    |  |  +--ro name* [value-name]
+    |  |     +--ro value-name    string
+    |  |     +--ro value?        string
+    |  +--rw notification-channel
+    |  |  +--ro stream-address?     string
+    |  |  +--ro next-sequence-no?   uint64
+    |  |  +--rw local-id?           string
+    |  |  +--rw name* [value-name]
+    |  |     +--rw value-name    string
+    |  |     +--rw value?        string
+    |  +--rw subscription-filter
+    |  |  +--ro requested-notification-types*   notification-type
+    |  |  +--ro requested-object-types*         object-type
+    |  |  +--ro requested-layer-protocols*      tapi-common:layer-protocol-name
+    |  |  +--ro requested-object-identifier*    tapi-common:uuid
+    |  |  +--ro include-content?                boolean
+    |  |  +--rw local-id?                       string
+    |  |  +--rw name* [value-name]
+    |  |     +--rw value-name    string
+    |  |     +--rw value?        string
+    |  +--rw subscription-state?             subscription-state
+    |  +--ro supported-notification-types*   notification-type
+    |  +--ro supported-object-types*         object-type
+    |  +--rw uuid                            uuid
+    |  +--rw name* [value-name]
+    |     +--rw value-name    string
+    |     +--rw value?        string
+    +--ro notification* [uuid]
+       +--ro notification-type?          notification-type
+       +--ro target-object-type?         object-type
+       +--ro target-object-identifier?   tapi-common:uuid
+       +--ro target-object-name* [value-name]
+       |  +--ro value-name    string
+       |  +--ro value?        string
+       +--ro event-time-stamp?           tapi-common:date-and-time
+       +--ro sequence-number?            uint64
+       +--ro source-indicator?           source-indicator
+       +--ro layer-protocol-name?        tapi-common:layer-protocol-name
+       +--ro changed-attributes* [value-name]
+       |  +--ro value-name    string
+       |  +--ro old-value?    string
+       |  +--ro new-value?    string
+       +--ro additional-info* [value-name]
+       |  +--ro value-name    string
+       |  +--ro value?        string
+       +--ro additional-text?            string
+       +--ro tca-info
+       |  +--ro is-transient?          boolean
+       |  +--ro threshold-crossing?    threshold-crossing-type
+       |  +--ro threshold-parameter?   string
+       |  +--ro threshold-value?       uint64
+       +--ro alarm-info
+       |  +--ro is-transient?          boolean
+       |  +--ro pervceived-severity?   perceived-serverity-type
+       |  +--ro probable-cause?        string
+       |  +--ro service-affecting?     service-affecting
+       +--ro uuid                        uuid
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+
+  rpcs:
+    +---x get-supported-notification-types
+    |  +--ro output
+    |     +--ro supported-notification-types*   notification-type
+    |     +--ro supported-object-types*         object-type
+    +---x create-notification-subscription-service
+    |  +---w input
+    |  |  +---w subscription-filter
+    |  |  |  +---w requested-notification-types*   notification-type
+    |  |  |  +---w requested-object-types*         object-type
+    |  |  |  +---w requested-layer-protocols*      tapi-common:layer-protocol-name
+    |  |  |  +---w requested-object-identifier*    tapi-common:uuid
+    |  |  |  +---w include-content?                boolean
+    |  |  |  +---w local-id?                       string
+    |  |  |  +---w name* [value-name]
+    |  |  |     +---w value-name    string
+    |  |  |     +---w value?        string
+    |  |  +---w subscription-state?    subscription-state
+    |  +--ro output
+    |     +--ro subscription-service
+    |        +--ro notification* [uuid]
+    |        |  +--ro notification-type?          notification-type
+    |        |  +--ro target-object-type?         object-type
+    |        |  +--ro target-object-identifier?   tapi-common:uuid
+    |        |  +--ro target-object-name* [value-name]
+    |        |  |  +--ro value-name    string
+    |        |  |  +--ro value?        string
+    |        |  +--ro event-time-stamp?           tapi-common:date-and-time
+    |        |  +--ro sequence-number?            uint64
+    |        |  +--ro source-indicator?           source-indicator
+    |        |  +--ro layer-protocol-name?        tapi-common:layer-protocol-name
+    |        |  +--ro changed-attributes* [value-name]
+    |        |  |  +--ro value-name    string
+    |        |  |  +--ro old-value?    string
+    |        |  |  +--ro new-value?    string
+    |        |  +--ro additional-info* [value-name]
+    |        |  |  +--ro value-name    string
+    |        |  |  +--ro value?        string
+    |        |  +--ro additional-text?            string
+    |        |  +--ro tca-info
+    |        |  |  +--ro is-transient?          boolean
+    |        |  |  +--ro threshold-crossing?    threshold-crossing-type
+    |        |  |  +--ro threshold-parameter?   string
+    |        |  |  +--ro threshold-value?       uint64
+    |        |  +--ro alarm-info
+    |        |  |  +--ro is-transient?          boolean
+    |        |  |  +--ro pervceived-severity?   perceived-serverity-type
+    |        |  |  +--ro probable-cause?        string
+    |        |  |  +--ro service-affecting?     service-affecting
+    |        |  +--ro uuid                        uuid
+    |        |  +--ro name* [value-name]
+    |        |     +--ro value-name    string
+    |        |     +--ro value?        string
+    |        +--ro notification-channel
+    |        |  +--ro stream-address?     string
+    |        |  +--ro next-sequence-no?   uint64
+    |        |  +--ro local-id?           string
+    |        |  +--ro name* [value-name]
+    |        |     +--ro value-name    string
+    |        |     +--ro value?        string
+    |        +--ro subscription-filter
+    |        |  +--ro requested-notification-types*   notification-type
+    |        |  +--ro requested-object-types*         object-type
+    |        |  +--ro requested-layer-protocols*      tapi-common:layer-protocol-name
+    |        |  +--ro requested-object-identifier*    tapi-common:uuid
+    |        |  +--ro include-content?                boolean
+    |        |  +--ro local-id?                       string
+    |        |  +--ro name* [value-name]
+    |        |     +--ro value-name    string
+    |        |     +--ro value?        string
+    |        +--ro subscription-state?             subscription-state
+    |        +--ro supported-notification-types*   notification-type
+    |        +--ro supported-object-types*         object-type
+    |        +--ro uuid?                           uuid
+    |        +--ro name* [value-name]
+    |           +--ro value-name    string
+    |           +--ro value?        string
+    +---x update-notification-subscription-service
+    |  +---w input
+    |  |  +---w subscription-id-or-name?   string
+    |  |  +---w subscription-filter
+    |  |  |  +---w requested-notification-types*   notification-type
+    |  |  |  +---w requested-object-types*         object-type
+    |  |  |  +---w requested-layer-protocols*      tapi-common:layer-protocol-name
+    |  |  |  +---w requested-object-identifier*    tapi-common:uuid
+    |  |  |  +---w include-content?                boolean
+    |  |  |  +---w local-id?                       string
+    |  |  |  +---w name* [value-name]
+    |  |  |     +---w value-name    string
+    |  |  |     +---w value?        string
+    |  |  +---w subscription-state?        subscription-state
+    |  +--ro output
+    |     +--ro subscription-service
+    |        +--ro notification* [uuid]
+    |        |  +--ro notification-type?          notification-type
+    |        |  +--ro target-object-type?         object-type
+    |        |  +--ro target-object-identifier?   tapi-common:uuid
+    |        |  +--ro target-object-name* [value-name]
+    |        |  |  +--ro value-name    string
+    |        |  |  +--ro value?        string
+    |        |  +--ro event-time-stamp?           tapi-common:date-and-time
+    |        |  +--ro sequence-number?            uint64
+    |        |  +--ro source-indicator?           source-indicator
+    |        |  +--ro layer-protocol-name?        tapi-common:layer-protocol-name
+    |        |  +--ro changed-attributes* [value-name]
+    |        |  |  +--ro value-name    string
+    |        |  |  +--ro old-value?    string
+    |        |  |  +--ro new-value?    string
+    |        |  +--ro additional-info* [value-name]
+    |        |  |  +--ro value-name    string
+    |        |  |  +--ro value?        string
+    |        |  +--ro additional-text?            string
+    |        |  +--ro tca-info
+    |        |  |  +--ro is-transient?          boolean
+    |        |  |  +--ro threshold-crossing?    threshold-crossing-type
+    |        |  |  +--ro threshold-parameter?   string
+    |        |  |  +--ro threshold-value?       uint64
+    |        |  +--ro alarm-info
+    |        |  |  +--ro is-transient?          boolean
+    |        |  |  +--ro pervceived-severity?   perceived-serverity-type
+    |        |  |  +--ro probable-cause?        string
+    |        |  |  +--ro service-affecting?     service-affecting
+    |        |  +--ro uuid                        uuid
+    |        |  +--ro name* [value-name]
+    |        |     +--ro value-name    string
+    |        |     +--ro value?        string
+    |        +--ro notification-channel
+    |        |  +--ro stream-address?     string
+    |        |  +--ro next-sequence-no?   uint64
+    |        |  +--ro local-id?           string
+    |        |  +--ro name* [value-name]
+    |        |     +--ro value-name    string
+    |        |     +--ro value?        string
+    |        +--ro subscription-filter
+    |        |  +--ro requested-notification-types*   notification-type
+    |        |  +--ro requested-object-types*         object-type
+    |        |  +--ro requested-layer-protocols*      tapi-common:layer-protocol-name
+    |        |  +--ro requested-object-identifier*    tapi-common:uuid
+    |        |  +--ro include-content?                boolean
+    |        |  +--ro local-id?                       string
+    |        |  +--ro name* [value-name]
+    |        |     +--ro value-name    string
+    |        |     +--ro value?        string
+    |        +--ro subscription-state?             subscription-state
+    |        +--ro supported-notification-types*   notification-type
+    |        +--ro supported-object-types*         object-type
+    |        +--ro uuid?                           uuid
+    |        +--ro name* [value-name]
+    |           +--ro value-name    string
+    |           +--ro value?        string
+    +---x delete-notification-subscription-service
+    |  +---w input
+    |  |  +---w subscription-id-or-name?   string
+    |  +--ro output
+    |     +--ro subscription-service
+    |        +--ro notification* [uuid]
+    |        |  +--ro notification-type?          notification-type
+    |        |  +--ro target-object-type?         object-type
+    |        |  +--ro target-object-identifier?   tapi-common:uuid
+    |        |  +--ro target-object-name* [value-name]
+    |        |  |  +--ro value-name    string
+    |        |  |  +--ro value?        string
+    |        |  +--ro event-time-stamp?           tapi-common:date-and-time
+    |        |  +--ro sequence-number?            uint64
+    |        |  +--ro source-indicator?           source-indicator
+    |        |  +--ro layer-protocol-name?        tapi-common:layer-protocol-name
+    |        |  +--ro changed-attributes* [value-name]
+    |        |  |  +--ro value-name    string
+    |        |  |  +--ro old-value?    string
+    |        |  |  +--ro new-value?    string
+    |        |  +--ro additional-info* [value-name]
+    |        |  |  +--ro value-name    string
+    |        |  |  +--ro value?        string
+    |        |  +--ro additional-text?            string
+    |        |  +--ro tca-info
+    |        |  |  +--ro is-transient?          boolean
+    |        |  |  +--ro threshold-crossing?    threshold-crossing-type
+    |        |  |  +--ro threshold-parameter?   string
+    |        |  |  +--ro threshold-value?       uint64
+    |        |  +--ro alarm-info
+    |        |  |  +--ro is-transient?          boolean
+    |        |  |  +--ro pervceived-severity?   perceived-serverity-type
+    |        |  |  +--ro probable-cause?        string
+    |        |  |  +--ro service-affecting?     service-affecting
+    |        |  +--ro uuid                        uuid
+    |        |  +--ro name* [value-name]
+    |        |     +--ro value-name    string
+    |        |     +--ro value?        string
+    |        +--ro notification-channel
+    |        |  +--ro stream-address?     string
+    |        |  +--ro next-sequence-no?   uint64
+    |        |  +--ro local-id?           string
+    |        |  +--ro name* [value-name]
+    |        |     +--ro value-name    string
+    |        |     +--ro value?        string
+    |        +--ro subscription-filter
+    |        |  +--ro requested-notification-types*   notification-type
+    |        |  +--ro requested-object-types*         object-type
+    |        |  +--ro requested-layer-protocols*      tapi-common:layer-protocol-name
+    |        |  +--ro requested-object-identifier*    tapi-common:uuid
+    |        |  +--ro include-content?                boolean
+    |        |  +--ro local-id?                       string
+    |        |  +--ro name* [value-name]
+    |        |     +--ro value-name    string
+    |        |     +--ro value?        string
+    |        +--ro subscription-state?             subscription-state
+    |        +--ro supported-notification-types*   notification-type
+    |        +--ro supported-object-types*         object-type
+    |        +--ro uuid?                           uuid
+    |        +--ro name* [value-name]
+    |           +--ro value-name    string
+    |           +--ro value?        string
+    +---x get-notification-subscription-service-details
+    |  +---w input
+    |  |  +---w subscription-id-or-name?   string
+    |  +--ro output
+    |     +--ro subscription-service
+    |        +--ro notification* [uuid]
+    |        |  +--ro notification-type?          notification-type
+    |        |  +--ro target-object-type?         object-type
+    |        |  +--ro target-object-identifier?   tapi-common:uuid
+    |        |  +--ro target-object-name* [value-name]
+    |        |  |  +--ro value-name    string
+    |        |  |  +--ro value?        string
+    |        |  +--ro event-time-stamp?           tapi-common:date-and-time
+    |        |  +--ro sequence-number?            uint64
+    |        |  +--ro source-indicator?           source-indicator
+    |        |  +--ro layer-protocol-name?        tapi-common:layer-protocol-name
+    |        |  +--ro changed-attributes* [value-name]
+    |        |  |  +--ro value-name    string
+    |        |  |  +--ro old-value?    string
+    |        |  |  +--ro new-value?    string
+    |        |  +--ro additional-info* [value-name]
+    |        |  |  +--ro value-name    string
+    |        |  |  +--ro value?        string
+    |        |  +--ro additional-text?            string
+    |        |  +--ro tca-info
+    |        |  |  +--ro is-transient?          boolean
+    |        |  |  +--ro threshold-crossing?    threshold-crossing-type
+    |        |  |  +--ro threshold-parameter?   string
+    |        |  |  +--ro threshold-value?       uint64
+    |        |  +--ro alarm-info
+    |        |  |  +--ro is-transient?          boolean
+    |        |  |  +--ro pervceived-severity?   perceived-serverity-type
+    |        |  |  +--ro probable-cause?        string
+    |        |  |  +--ro service-affecting?     service-affecting
+    |        |  +--ro uuid                        uuid
+    |        |  +--ro name* [value-name]
+    |        |     +--ro value-name    string
+    |        |     +--ro value?        string
+    |        +--ro notification-channel
+    |        |  +--ro stream-address?     string
+    |        |  +--ro next-sequence-no?   uint64
+    |        |  +--ro local-id?           string
+    |        |  +--ro name* [value-name]
+    |        |     +--ro value-name    string
+    |        |     +--ro value?        string
+    |        +--ro subscription-filter
+    |        |  +--ro requested-notification-types*   notification-type
+    |        |  +--ro requested-object-types*         object-type
+    |        |  +--ro requested-layer-protocols*      tapi-common:layer-protocol-name
+    |        |  +--ro requested-object-identifier*    tapi-common:uuid
+    |        |  +--ro include-content?                boolean
+    |        |  +--ro local-id?                       string
+    |        |  +--ro name* [value-name]
+    |        |     +--ro value-name    string
+    |        |     +--ro value?        string
+    |        +--ro subscription-state?             subscription-state
+    |        +--ro supported-notification-types*   notification-type
+    |        +--ro supported-object-types*         object-type
+    |        +--ro uuid?                           uuid
+    |        +--ro name* [value-name]
+    |           +--ro value-name    string
+    |           +--ro value?        string
+    +---x get-notification-subscription-service-list
+    |  +--ro output
+    |     +--ro subscription-service*
+    |        +--ro notification* [uuid]
+    |        |  +--ro notification-type?          notification-type
+    |        |  +--ro target-object-type?         object-type
+    |        |  +--ro target-object-identifier?   tapi-common:uuid
+    |        |  +--ro target-object-name* [value-name]
+    |        |  |  +--ro value-name    string
+    |        |  |  +--ro value?        string
+    |        |  +--ro event-time-stamp?           tapi-common:date-and-time
+    |        |  +--ro sequence-number?            uint64
+    |        |  +--ro source-indicator?           source-indicator
+    |        |  +--ro layer-protocol-name?        tapi-common:layer-protocol-name
+    |        |  +--ro changed-attributes* [value-name]
+    |        |  |  +--ro value-name    string
+    |        |  |  +--ro old-value?    string
+    |        |  |  +--ro new-value?    string
+    |        |  +--ro additional-info* [value-name]
+    |        |  |  +--ro value-name    string
+    |        |  |  +--ro value?        string
+    |        |  +--ro additional-text?            string
+    |        |  +--ro tca-info
+    |        |  |  +--ro is-transient?          boolean
+    |        |  |  +--ro threshold-crossing?    threshold-crossing-type
+    |        |  |  +--ro threshold-parameter?   string
+    |        |  |  +--ro threshold-value?       uint64
+    |        |  +--ro alarm-info
+    |        |  |  +--ro is-transient?          boolean
+    |        |  |  +--ro pervceived-severity?   perceived-serverity-type
+    |        |  |  +--ro probable-cause?        string
+    |        |  |  +--ro service-affecting?     service-affecting
+    |        |  +--ro uuid                        uuid
+    |        |  +--ro name* [value-name]
+    |        |     +--ro value-name    string
+    |        |     +--ro value?        string
+    |        +--ro notification-channel
+    |        |  +--ro stream-address?     string
+    |        |  +--ro next-sequence-no?   uint64
+    |        |  +--ro local-id?           string
+    |        |  +--ro name* [value-name]
+    |        |     +--ro value-name    string
+    |        |     +--ro value?        string
+    |        +--ro subscription-filter
+    |        |  +--ro requested-notification-types*   notification-type
+    |        |  +--ro requested-object-types*         object-type
+    |        |  +--ro requested-layer-protocols*      tapi-common:layer-protocol-name
+    |        |  +--ro requested-object-identifier*    tapi-common:uuid
+    |        |  +--ro include-content?                boolean
+    |        |  +--ro local-id?                       string
+    |        |  +--ro name* [value-name]
+    |        |     +--ro value-name    string
+    |        |     +--ro value?        string
+    |        +--ro subscription-state?             subscription-state
+    |        +--ro supported-notification-types*   notification-type
+    |        +--ro supported-object-types*         object-type
+    |        +--ro uuid?                           uuid
+    |        +--ro name* [value-name]
+    |           +--ro value-name    string
+    |           +--ro value?        string
+    +---x get-notification-list
+       +---w input
+       |  +---w subscription-id-or-name?   string
+       |  +---w time-period?               string
+       +--ro output
+          +--ro notification*
+             +--ro notification-type?          notification-type
+             +--ro target-object-type?         object-type
+             +--ro target-object-identifier?   tapi-common:uuid
+             +--ro target-object-name* [value-name]
+             |  +--ro value-name    string
+             |  +--ro value?        string
+             +--ro event-time-stamp?           tapi-common:date-and-time
+             +--ro sequence-number?            uint64
+             +--ro source-indicator?           source-indicator
+             +--ro layer-protocol-name?        tapi-common:layer-protocol-name
+             +--ro changed-attributes* [value-name]
+             |  +--ro value-name    string
+             |  +--ro old-value?    string
+             |  +--ro new-value?    string
+             +--ro additional-info* [value-name]
+             |  +--ro value-name    string
+             |  +--ro value?        string
+             +--ro additional-text?            string
+             +--ro tca-info
+             |  +--ro is-transient?          boolean
+             |  +--ro threshold-crossing?    threshold-crossing-type
+             |  +--ro threshold-parameter?   string
+             |  +--ro threshold-value?       uint64
+             +--ro alarm-info
+             |  +--ro is-transient?          boolean
+             |  +--ro pervceived-severity?   perceived-serverity-type
+             |  +--ro probable-cause?        string
+             |  +--ro service-affecting?     service-affecting
+             +--ro uuid?                       uuid
+             +--ro name* [value-name]
+                +--ro value-name    string
+                +--ro value?        string
+
+  notifications:
+    +---n notification
+       +--ro notification-type?          notification-type
+       +--ro target-object-type?         object-type
+       +--ro target-object-identifier?   tapi-common:uuid
+       +--ro target-object-name* [value-name]
+       |  +--ro value-name    string
+       |  +--ro value?        string
+       +--ro event-time-stamp?           tapi-common:date-and-time
+       +--ro sequence-number?            uint64
+       +--ro source-indicator?           source-indicator
+       +--ro layer-protocol-name?        tapi-common:layer-protocol-name
+       +--ro changed-attributes* [value-name]
+       |  +--ro value-name    string
+       |  +--ro old-value?    string
+       |  +--ro new-value?    string
+       +--ro additional-info* [value-name]
+       |  +--ro value-name    string
+       |  +--ro value?        string
+       +--ro additional-text?            string
+       +--ro tca-info
+       |  +--ro is-transient?          boolean
+       |  +--ro threshold-crossing?    threshold-crossing-type
+       |  +--ro threshold-parameter?   string
+       |  +--ro threshold-value?       uint64
+       +--ro alarm-info
+       |  +--ro is-transient?          boolean
+       |  +--ro pervceived-severity?   perceived-serverity-type
+       |  +--ro probable-cause?        string
+       |  +--ro service-affecting?     service-affecting
+       +--ro uuid?                       uuid
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string

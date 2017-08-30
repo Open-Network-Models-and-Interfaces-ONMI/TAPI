@@ -1,5 +1,5 @@
 module tapi-notification {
-    namespace "urn:onf:params:xml:ns:yang:TapiNotification";
+    namespace "urn:onf:params:xml:ns:yang:tapi-notification";
     prefix tapi-notification;
     import tapi-common {
         prefix tapi-common;
@@ -11,13 +11,13 @@ module tapi-notification {
         WG Chair: Karthik Sethuraman <mailto:karthik.sethuraman@necam.com>,
         Editor: Ricard Vilalta <mailto:ricard.vilalta@cttc.es>";
     description "none";
-    revision 2016-12-15 {
-        description "TAPI SDK 1.1.alpha";
+    revision 2017-05-31 {
+        description "TAPI SDK 2.0-alpha";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 6020 and RFC 6087";
     }
     augment "/tapi-common:context" {
         uses notification-context;
-        description "none";
+        description "Augments the base TAPI Context with NotificationService information";
     }
     /***********************
     * package object-classes
@@ -73,7 +73,7 @@ module tapi-notification {
                 description "none";
             }
             leaf-list requested-object-identifier {
-                type tapi-common:universal-id;
+                type tapi-common:uuid;
                 config false;
                 description "none";
             }
@@ -99,7 +99,7 @@ module tapi-notification {
                 description "none";
             }
             leaf target-object-identifier {
-                type tapi-common:universal-id;
+                type tapi-common:uuid;
                 description "none";
             }
             list target-object-name {
@@ -140,6 +140,14 @@ module tapi-notification {
                 type string;
                 description "none";
             }
+            container tca-info {
+                uses tca-info;
+                description "none";
+            }
+            container alarm-info {
+                uses alarm-info;
+                description "none";
+            }
             uses tapi-common:resource-spec;
             description "none";
         }
@@ -172,13 +180,9 @@ module tapi-notification {
             }
             description "none";
         }
-        notification alarm {
-            uses alarm;
-            description "none";
-        }
-        grouping alarm {
-            leaf probable-cause {
-                type string;
+        grouping alarm-info {
+            leaf is-transient {
+                type boolean;
                 config false;
                 description "none";
             }
@@ -187,23 +191,27 @@ module tapi-notification {
                 config false;
                 description "none";
             }
+            leaf probable-cause {
+                type string;
+                config false;
+                description "none";
+            }
             leaf service-affecting {
                 type service-affecting;
                 description "none";
             }
+            description "none";
+        }
+        grouping tca-info {
             leaf is-transient {
                 type boolean;
                 config false;
                 description "none";
             }
-            uses notification;
-            description "none";
-        }
-        notification threshold-crossing-alert {
-            uses threshold-crossing-alert;
-            description "none";
-        }
-        grouping threshold-crossing-alert {
+            leaf threshold-crossing {
+                type threshold-crossing-type;
+                description "none";
+            }
             leaf threshold-parameter {
                 type string;
                 config false;
@@ -214,16 +222,6 @@ module tapi-notification {
                 config false;
                 description "none";
             }
-            leaf threshold-crossing {
-                type threshold-crossing-type;
-                description "none";
-            }
-            leaf is-transient {
-                type boolean;
-                config false;
-                description "none";
-            }
-            uses notification;
             description "none";
         }
 
@@ -294,7 +292,7 @@ module tapi-notification {
                 enum node-edge-point {
                     description "none";
                 }
-                enum service-end-point {
+                enum service-interface-point {
                     description "none";
                 }
                 enum connection-end-point {

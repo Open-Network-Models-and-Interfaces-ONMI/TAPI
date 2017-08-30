@@ -1,330 +1,372 @@
 module: tapi-virtual-network
-augment /tapi-common:context:
-   +--rw virtual-nw-service* [uuid]
-      +--ro topology?              -> /tapi-common:context/tapi-topology:topology/uuid
-      +--rw service-port* [local-id]
-      |  +--ro service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
-      |  +--ro role?                      tapi-common:port-role
-      |  +--ro direction?                 tapi-common:port-direction
-      |  +--ro service-layer?             tapi-common:layer-protocol-name
-      |  +--ro local-id                   string
-      |  +--rw name* [value-name]
-      |     +--rw value-name    string
-      |     +--rw value?        string
-      +--rw vnw-constraint* [local-id]
-      |  +--ro src-service-end-point?    -> /tapi-common:context/service-interface-point/uuid
-      |  +--ro sink-service-end-point?   -> /tapi-common:context/service-interface-point/uuid
-      |  +--ro diversity-exclusion*      -> /tapi-common:context/tapi-virtual-network:virtual-nw-service/vnw-constraint/local-id
-      |  +--rw requested-capacity
-      |  |  +--rw total-size?                   fixed-capacity-value
-      |  |  +--rw packet-bw-profile-type?       bandwidth-profile-type
-      |  |  +--rw committed-information-rate?   uint64
-      |  |  +--rw committed-burst-size?         uint64
-      |  |  +--rw peak-information-rate?        uint64
-      |  |  +--rw peak-burst-size?              uint64
-      |  |  +--rw color-aware?                  boolean
-      |  |  +--rw coupling-flag?                boolean
-      |  +--rw service-level?            string
-      |  +--rw service-layer*            tapi-common:layer-protocol-name
-      |  +--rw cost-characteristic* [cost-name cost-value cost-algorithm]
-      |  |  +--rw cost-name         string
-      |  |  +--rw cost-value        string
-      |  |  +--rw cost-algorithm    string
-      |  +--rw latency-characteristic* [traffic-property-name traffic-property-queing-latency]
-      |  |  +--ro fixed-latency-characteristic?      string
-      |  |  +--ro jitter-characteristic?             string
-      |  |  +--ro wander-characteristic?             string
-      |  |  +--rw traffic-property-name              string
-      |  |  +--rw traffic-property-queing-latency    string
-      |  +--ro local-id                  string
-      |  +--rw name* [value-name]
-      |     +--rw value-name    string
-      |     +--rw value?        string
-      +--rw schedule
-      |  +--rw end-time?     date-and-time
-      |  +--rw start-time?   date-and-time
-      +--rw state
-      |  +--rw administrative-state?   administrative-state
-      |  +--rw operational-state?      operational-state
-      |  +--rw lifecycle-state?        lifecycle-state
-      +--rw layer-protocol-name*   tapi-common:layer-protocol-name
-      +--ro uuid                   universal-id
-      +--rw name* [value-name]
-      |  +--rw value-name    string
-      |  +--rw value?        string
-      +--rw label* [value-name]
-         +--rw value-name    string
-         +--rw value?        string
-rpcs:
-   +---x create-virtual-network-service
-   |  +---w input
-   |  |  +---w sep*
-   |  |  |  +---w service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
-   |  |  |  +---w role?                      tapi-common:port-role
-   |  |  |  +---w direction?                 tapi-common:port-direction
-   |  |  |  +---w service-layer?             tapi-common:layer-protocol-name
-   |  |  |  +---w local-id?                  string
-   |  |  |  +---w name* [value-name]
-   |  |  |     +---w value-name    string
-   |  |  |     +---w value?        string
-   |  |  +---w vnw-constraint
-   |  |  |  +---w src-service-end-point?    -> /tapi-common:context/service-interface-point/uuid
-   |  |  |  +---w sink-service-end-point?   -> /tapi-common:context/service-interface-point/uuid
-   |  |  |  +---w diversity-exclusion*      -> /tapi-common:context/tapi-virtual-network:virtual-nw-service/vnw-constraint/local-id
-   |  |  |  +---w requested-capacity
-   |  |  |  |  +---w total-size?                   fixed-capacity-value
-   |  |  |  |  +---w packet-bw-profile-type?       bandwidth-profile-type
-   |  |  |  |  +---w committed-information-rate?   uint64
-   |  |  |  |  +---w committed-burst-size?         uint64
-   |  |  |  |  +---w peak-information-rate?        uint64
-   |  |  |  |  +---w peak-burst-size?              uint64
-   |  |  |  |  +---w color-aware?                  boolean
-   |  |  |  |  +---w coupling-flag?                boolean
-   |  |  |  +---w service-level?            string
-   |  |  |  +---w service-layer*            tapi-common:layer-protocol-name
-   |  |  |  +---w cost-characteristic* [cost-name cost-value cost-algorithm]
-   |  |  |  |  +---w cost-name         string
-   |  |  |  |  +---w cost-value        string
-   |  |  |  |  +---w cost-algorithm    string
-   |  |  |  +---w latency-characteristic* [traffic-property-name traffic-property-queing-latency]
-   |  |  |  |  +---w fixed-latency-characteristic?      string
-   |  |  |  |  +---w jitter-characteristic?             string
-   |  |  |  |  +---w wander-characteristic?             string
-   |  |  |  |  +---w traffic-property-name              string
-   |  |  |  |  +---w traffic-property-queing-latency    string
-   |  |  |  +---w local-id?                 string
-   |  |  |  +---w name* [value-name]
-   |  |  |     +---w value-name    string
-   |  |  |     +---w value?        string
-   |  |  +---w conn-schedule?    string
-   |  +--ro output
-   |     +--ro service
-   |        +--ro topology?              -> /tapi-common:context/tapi-topology:topology/uuid
-   |        +--ro service-port* [local-id]
-   |        |  +--ro service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
-   |        |  +--ro role?                      tapi-common:port-role
-   |        |  +--ro direction?                 tapi-common:port-direction
-   |        |  +--ro service-layer?             tapi-common:layer-protocol-name
-   |        |  +--ro local-id                   string
-   |        |  +--ro name* [value-name]
-   |        |     +--ro value-name    string
-   |        |     +--ro value?        string
-   |        +--ro vnw-constraint* [local-id]
-   |        |  +--ro src-service-end-point?    -> /tapi-common:context/service-interface-point/uuid
-   |        |  +--ro sink-service-end-point?   -> /tapi-common:context/service-interface-point/uuid
-   |        |  +--ro diversity-exclusion*      -> /tapi-common:context/tapi-virtual-network:virtual-nw-service/vnw-constraint/local-id
-   |        |  +--ro requested-capacity
-   |        |  |  +--ro total-size?                   fixed-capacity-value
-   |        |  |  +--ro packet-bw-profile-type?       bandwidth-profile-type
-   |        |  |  +--ro committed-information-rate?   uint64
-   |        |  |  +--ro committed-burst-size?         uint64
-   |        |  |  +--ro peak-information-rate?        uint64
-   |        |  |  +--ro peak-burst-size?              uint64
-   |        |  |  +--ro color-aware?                  boolean
-   |        |  |  +--ro coupling-flag?                boolean
-   |        |  +--ro service-level?            string
-   |        |  +--ro service-layer*            tapi-common:layer-protocol-name
-   |        |  +--ro cost-characteristic* [cost-name cost-value cost-algorithm]
-   |        |  |  +--ro cost-name         string
-   |        |  |  +--ro cost-value        string
-   |        |  |  +--ro cost-algorithm    string
-   |        |  +--ro latency-characteristic* [traffic-property-name traffic-property-queing-latency]
-   |        |  |  +--ro fixed-latency-characteristic?      string
-   |        |  |  +--ro jitter-characteristic?             string
-   |        |  |  +--ro wander-characteristic?             string
-   |        |  |  +--ro traffic-property-name              string
-   |        |  |  +--ro traffic-property-queing-latency    string
-   |        |  +--ro local-id                  string
-   |        |  +--ro name* [value-name]
-   |        |     +--ro value-name    string
-   |        |     +--ro value?        string
-   |        +--ro schedule
-   |        |  +--ro end-time?     date-and-time
-   |        |  +--ro start-time?   date-and-time
-   |        +--ro state
-   |        |  +--ro administrative-state?   administrative-state
-   |        |  +--ro operational-state?      operational-state
-   |        |  +--ro lifecycle-state?        lifecycle-state
-   |        +--ro layer-protocol-name*   tapi-common:layer-protocol-name
-   |        +--ro uuid?                  universal-id
-   |        +--ro name* [value-name]
-   |        |  +--ro value-name    string
-   |        |  +--ro value?        string
-   |        +--ro label* [value-name]
-   |           +--ro value-name    string
-   |           +--ro value?        string
-   +---x delete-virtual-network-service
-   |  +---w input
-   |  |  +---w service-id-or-name?   string
-   |  +--ro output
-   |     +--ro service
-   |        +--ro topology?              -> /tapi-common:context/tapi-topology:topology/uuid
-   |        +--ro service-port* [local-id]
-   |        |  +--ro service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
-   |        |  +--ro role?                      tapi-common:port-role
-   |        |  +--ro direction?                 tapi-common:port-direction
-   |        |  +--ro service-layer?             tapi-common:layer-protocol-name
-   |        |  +--ro local-id                   string
-   |        |  +--ro name* [value-name]
-   |        |     +--ro value-name    string
-   |        |     +--ro value?        string
-   |        +--ro vnw-constraint* [local-id]
-   |        |  +--ro src-service-end-point?    -> /tapi-common:context/service-interface-point/uuid
-   |        |  +--ro sink-service-end-point?   -> /tapi-common:context/service-interface-point/uuid
-   |        |  +--ro diversity-exclusion*      -> /tapi-common:context/tapi-virtual-network:virtual-nw-service/vnw-constraint/local-id
-   |        |  +--ro requested-capacity
-   |        |  |  +--ro total-size?                   fixed-capacity-value
-   |        |  |  +--ro packet-bw-profile-type?       bandwidth-profile-type
-   |        |  |  +--ro committed-information-rate?   uint64
-   |        |  |  +--ro committed-burst-size?         uint64
-   |        |  |  +--ro peak-information-rate?        uint64
-   |        |  |  +--ro peak-burst-size?              uint64
-   |        |  |  +--ro color-aware?                  boolean
-   |        |  |  +--ro coupling-flag?                boolean
-   |        |  +--ro service-level?            string
-   |        |  +--ro service-layer*            tapi-common:layer-protocol-name
-   |        |  +--ro cost-characteristic* [cost-name cost-value cost-algorithm]
-   |        |  |  +--ro cost-name         string
-   |        |  |  +--ro cost-value        string
-   |        |  |  +--ro cost-algorithm    string
-   |        |  +--ro latency-characteristic* [traffic-property-name traffic-property-queing-latency]
-   |        |  |  +--ro fixed-latency-characteristic?      string
-   |        |  |  +--ro jitter-characteristic?             string
-   |        |  |  +--ro wander-characteristic?             string
-   |        |  |  +--ro traffic-property-name              string
-   |        |  |  +--ro traffic-property-queing-latency    string
-   |        |  +--ro local-id                  string
-   |        |  +--ro name* [value-name]
-   |        |     +--ro value-name    string
-   |        |     +--ro value?        string
-   |        +--ro schedule
-   |        |  +--ro end-time?     date-and-time
-   |        |  +--ro start-time?   date-and-time
-   |        +--ro state
-   |        |  +--ro administrative-state?   administrative-state
-   |        |  +--ro operational-state?      operational-state
-   |        |  +--ro lifecycle-state?        lifecycle-state
-   |        +--ro layer-protocol-name*   tapi-common:layer-protocol-name
-   |        +--ro uuid?                  universal-id
-   |        +--ro name* [value-name]
-   |        |  +--ro value-name    string
-   |        |  +--ro value?        string
-   |        +--ro label* [value-name]
-   |           +--ro value-name    string
-   |           +--ro value?        string
-   +---x get-virtual-network-service-details
-   |  +---w input
-   |  |  +---w service-id-or-name?   string
-   |  +--ro output
-   |     +--ro service
-   |        +--ro topology?              -> /tapi-common:context/tapi-topology:topology/uuid
-   |        +--ro service-port* [local-id]
-   |        |  +--ro service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
-   |        |  +--ro role?                      tapi-common:port-role
-   |        |  +--ro direction?                 tapi-common:port-direction
-   |        |  +--ro service-layer?             tapi-common:layer-protocol-name
-   |        |  +--ro local-id                   string
-   |        |  +--ro name* [value-name]
-   |        |     +--ro value-name    string
-   |        |     +--ro value?        string
-   |        +--ro vnw-constraint* [local-id]
-   |        |  +--ro src-service-end-point?    -> /tapi-common:context/service-interface-point/uuid
-   |        |  +--ro sink-service-end-point?   -> /tapi-common:context/service-interface-point/uuid
-   |        |  +--ro diversity-exclusion*      -> /tapi-common:context/tapi-virtual-network:virtual-nw-service/vnw-constraint/local-id
-   |        |  +--ro requested-capacity
-   |        |  |  +--ro total-size?                   fixed-capacity-value
-   |        |  |  +--ro packet-bw-profile-type?       bandwidth-profile-type
-   |        |  |  +--ro committed-information-rate?   uint64
-   |        |  |  +--ro committed-burst-size?         uint64
-   |        |  |  +--ro peak-information-rate?        uint64
-   |        |  |  +--ro peak-burst-size?              uint64
-   |        |  |  +--ro color-aware?                  boolean
-   |        |  |  +--ro coupling-flag?                boolean
-   |        |  +--ro service-level?            string
-   |        |  +--ro service-layer*            tapi-common:layer-protocol-name
-   |        |  +--ro cost-characteristic* [cost-name cost-value cost-algorithm]
-   |        |  |  +--ro cost-name         string
-   |        |  |  +--ro cost-value        string
-   |        |  |  +--ro cost-algorithm    string
-   |        |  +--ro latency-characteristic* [traffic-property-name traffic-property-queing-latency]
-   |        |  |  +--ro fixed-latency-characteristic?      string
-   |        |  |  +--ro jitter-characteristic?             string
-   |        |  |  +--ro wander-characteristic?             string
-   |        |  |  +--ro traffic-property-name              string
-   |        |  |  +--ro traffic-property-queing-latency    string
-   |        |  +--ro local-id                  string
-   |        |  +--ro name* [value-name]
-   |        |     +--ro value-name    string
-   |        |     +--ro value?        string
-   |        +--ro schedule
-   |        |  +--ro end-time?     date-and-time
-   |        |  +--ro start-time?   date-and-time
-   |        +--ro state
-   |        |  +--ro administrative-state?   administrative-state
-   |        |  +--ro operational-state?      operational-state
-   |        |  +--ro lifecycle-state?        lifecycle-state
-   |        +--ro layer-protocol-name*   tapi-common:layer-protocol-name
-   |        +--ro uuid?                  universal-id
-   |        +--ro name* [value-name]
-   |        |  +--ro value-name    string
-   |        |  +--ro value?        string
-   |        +--ro label* [value-name]
-   |           +--ro value-name    string
-   |           +--ro value?        string
-   +---x get-virtual-network-service-list
-      +--ro output
-         +--ro service*
-            +--ro topology?              -> /tapi-common:context/tapi-topology:topology/uuid
-            +--ro service-port* [local-id]
-            |  +--ro service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
-            |  +--ro role?                      tapi-common:port-role
-            |  +--ro direction?                 tapi-common:port-direction
-            |  +--ro service-layer?             tapi-common:layer-protocol-name
-            |  +--ro local-id                   string
-            |  +--ro name* [value-name]
-            |     +--ro value-name    string
-            |     +--ro value?        string
-            +--ro vnw-constraint* [local-id]
-            |  +--ro src-service-end-point?    -> /tapi-common:context/service-interface-point/uuid
-            |  +--ro sink-service-end-point?   -> /tapi-common:context/service-interface-point/uuid
-            |  +--ro diversity-exclusion*      -> /tapi-common:context/tapi-virtual-network:virtual-nw-service/vnw-constraint/local-id
-            |  +--ro requested-capacity
-            |  |  +--ro total-size?                   fixed-capacity-value
-            |  |  +--ro packet-bw-profile-type?       bandwidth-profile-type
-            |  |  +--ro committed-information-rate?   uint64
-            |  |  +--ro committed-burst-size?         uint64
-            |  |  +--ro peak-information-rate?        uint64
-            |  |  +--ro peak-burst-size?              uint64
-            |  |  +--ro color-aware?                  boolean
-            |  |  +--ro coupling-flag?                boolean
-            |  +--ro service-level?            string
-            |  +--ro service-layer*            tapi-common:layer-protocol-name
-            |  +--ro cost-characteristic* [cost-name cost-value cost-algorithm]
-            |  |  +--ro cost-name         string
-            |  |  +--ro cost-value        string
-            |  |  +--ro cost-algorithm    string
-            |  +--ro latency-characteristic* [traffic-property-name traffic-property-queing-latency]
-            |  |  +--ro fixed-latency-characteristic?      string
-            |  |  +--ro jitter-characteristic?             string
-            |  |  +--ro wander-characteristic?             string
-            |  |  +--ro traffic-property-name              string
-            |  |  +--ro traffic-property-queing-latency    string
-            |  +--ro local-id                  string
-            |  +--ro name* [value-name]
-            |     +--ro value-name    string
-            |     +--ro value?        string
-            +--ro schedule
-            |  +--ro end-time?     date-and-time
-            |  +--ro start-time?   date-and-time
-            +--ro state
-            |  +--ro administrative-state?   administrative-state
-            |  +--ro operational-state?      operational-state
-            |  +--ro lifecycle-state?        lifecycle-state
-            +--ro layer-protocol-name*   tapi-common:layer-protocol-name
-            +--ro uuid?                  universal-id
-            +--ro name* [value-name]
-            |  +--ro value-name    string
-            |  +--ro value?        string
-            +--ro label* [value-name]
-               +--ro value-name    string
-               +--ro value?        string
+  augment /tapi-common:context:
+    +--rw virtual-nw-service* [uuid]
+       +--ro topology?              -> /tapi-common:context/tapi-topology:topology/uuid
+       +--rw end-point* [local-id]
+       |  +--ro service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
+       |  +--ro role?                      tapi-common:port-role
+       |  +--ro direction?                 tapi-common:port-direction
+       |  +--ro service-layer?             tapi-common:layer-protocol-name
+       |  +--rw local-id                   string
+       |  +--rw name* [value-name]
+       |     +--rw value-name    string
+       |     +--rw value?        string
+       +--rw vnw-constraint* [local-id]
+       |  +--ro src-service-end-point?    -> /tapi-common:context/service-interface-point/uuid
+       |  +--ro sink-service-end-point?   -> /tapi-common:context/service-interface-point/uuid
+       |  +--ro diversity-exclusion*      -> /tapi-common:context/tapi-virtual-network:virtual-nw-service/vnw-constraint/local-id
+       |  +--rw requested-capacity
+       |  |  +--rw total-size
+       |  |  |  +--rw value?   uint64
+       |  |  |  +--rw unit?    capacity-unit
+       |  |  +--rw bandwidth-profile
+       |  |     +--rw bw-profile-type?              bandwidth-profile-type
+       |  |     +--rw committed-information-rate
+       |  |     |  +--rw value?   uint64
+       |  |     |  +--rw unit?    capacity-unit
+       |  |     +--rw committed-burst-size
+       |  |     |  +--rw value?   uint64
+       |  |     |  +--rw unit?    capacity-unit
+       |  |     +--rw peak-information-rate
+       |  |     |  +--rw value?   uint64
+       |  |     |  +--rw unit?    capacity-unit
+       |  |     +--rw peak-burst-size
+       |  |     |  +--rw value?   uint64
+       |  |     |  +--rw unit?    capacity-unit
+       |  |     +--rw color-aware?                  boolean
+       |  |     +--rw coupling-flag?                boolean
+       |  +--rw service-level?            string
+       |  +--rw service-layer*            tapi-common:layer-protocol-name
+       |  +--rw cost-characteristic* [cost-name]
+       |  |  +--rw cost-name         string
+       |  |  +--rw cost-value?       string
+       |  |  +--rw cost-algorithm?   string
+       |  +--rw latency-characteristic* [traffic-property-name]
+       |  |  +--rw traffic-property-name            string
+       |  |  +--ro fixed-latency-characteristic?    string
+       |  |  +--rw queing-latency-characteristic?   string
+       |  |  +--ro jitter-characteristic?           string
+       |  |  +--ro wander-characteristic?           string
+       |  +--rw local-id                  string
+       |  +--rw name* [value-name]
+       |     +--rw value-name    string
+       |     +--rw value?        string
+       +--rw schedule?              string
+       +--rw state
+       |  +--rw administrative-state?   administrative-state
+       |  +--ro operational-state?      operational-state
+       |  +--ro lifecycle-state?        lifecycle-state
+       +--rw layer-protocol-name*   tapi-common:layer-protocol-name
+       +--rw uuid                   uuid
+       +--rw name* [value-name]
+          +--rw value-name    string
+          +--rw value?        string
+
+  rpcs:
+    +---x create-virtual-network-service
+    |  +---w input
+    |  |  +---w sep*
+    |  |  |  +---w service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
+    |  |  |  +---w role?                      tapi-common:port-role
+    |  |  |  +---w direction?                 tapi-common:port-direction
+    |  |  |  +---w service-layer?             tapi-common:layer-protocol-name
+    |  |  |  +---w local-id?                  string
+    |  |  |  +---w name* [value-name]
+    |  |  |     +---w value-name    string
+    |  |  |     +---w value?        string
+    |  |  +---w vnw-constraint
+    |  |  |  +---w src-service-end-point?    -> /tapi-common:context/service-interface-point/uuid
+    |  |  |  +---w sink-service-end-point?   -> /tapi-common:context/service-interface-point/uuid
+    |  |  |  +---w diversity-exclusion*      -> /tapi-common:context/tapi-virtual-network:virtual-nw-service/vnw-constraint/local-id
+    |  |  |  +---w requested-capacity
+    |  |  |  |  +---w total-size
+    |  |  |  |  |  +---w value?   uint64
+    |  |  |  |  |  +---w unit?    capacity-unit
+    |  |  |  |  +---w bandwidth-profile
+    |  |  |  |     +---w bw-profile-type?              bandwidth-profile-type
+    |  |  |  |     +---w committed-information-rate
+    |  |  |  |     |  +---w value?   uint64
+    |  |  |  |     |  +---w unit?    capacity-unit
+    |  |  |  |     +---w committed-burst-size
+    |  |  |  |     |  +---w value?   uint64
+    |  |  |  |     |  +---w unit?    capacity-unit
+    |  |  |  |     +---w peak-information-rate
+    |  |  |  |     |  +---w value?   uint64
+    |  |  |  |     |  +---w unit?    capacity-unit
+    |  |  |  |     +---w peak-burst-size
+    |  |  |  |     |  +---w value?   uint64
+    |  |  |  |     |  +---w unit?    capacity-unit
+    |  |  |  |     +---w color-aware?                  boolean
+    |  |  |  |     +---w coupling-flag?                boolean
+    |  |  |  +---w service-level?            string
+    |  |  |  +---w service-layer*            tapi-common:layer-protocol-name
+    |  |  |  +---w cost-characteristic* [cost-name]
+    |  |  |  |  +---w cost-name         string
+    |  |  |  |  +---w cost-value?       string
+    |  |  |  |  +---w cost-algorithm?   string
+    |  |  |  +---w latency-characteristic* [traffic-property-name]
+    |  |  |  |  +---w traffic-property-name            string
+    |  |  |  |  +---w fixed-latency-characteristic?    string
+    |  |  |  |  +---w queing-latency-characteristic?   string
+    |  |  |  |  +---w jitter-characteristic?           string
+    |  |  |  |  +---w wander-characteristic?           string
+    |  |  |  +---w local-id?                 string
+    |  |  |  +---w name* [value-name]
+    |  |  |     +---w value-name    string
+    |  |  |     +---w value?        string
+    |  |  +---w conn-schedule?    string
+    |  +--ro output
+    |     +--ro service
+    |        +--ro topology?              -> /tapi-common:context/tapi-topology:topology/uuid
+    |        +--ro end-point* [local-id]
+    |        |  +--ro service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro role?                      tapi-common:port-role
+    |        |  +--ro direction?                 tapi-common:port-direction
+    |        |  +--ro service-layer?             tapi-common:layer-protocol-name
+    |        |  +--ro local-id                   string
+    |        |  +--ro name* [value-name]
+    |        |     +--ro value-name    string
+    |        |     +--ro value?        string
+    |        +--ro vnw-constraint* [local-id]
+    |        |  +--ro src-service-end-point?    -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro sink-service-end-point?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro diversity-exclusion*      -> /tapi-common:context/tapi-virtual-network:virtual-nw-service/vnw-constraint/local-id
+    |        |  +--ro requested-capacity
+    |        |  |  +--ro total-size
+    |        |  |  |  +--ro value?   uint64
+    |        |  |  |  +--ro unit?    capacity-unit
+    |        |  |  +--ro bandwidth-profile
+    |        |  |     +--ro bw-profile-type?              bandwidth-profile-type
+    |        |  |     +--ro committed-information-rate
+    |        |  |     |  +--ro value?   uint64
+    |        |  |     |  +--ro unit?    capacity-unit
+    |        |  |     +--ro committed-burst-size
+    |        |  |     |  +--ro value?   uint64
+    |        |  |     |  +--ro unit?    capacity-unit
+    |        |  |     +--ro peak-information-rate
+    |        |  |     |  +--ro value?   uint64
+    |        |  |     |  +--ro unit?    capacity-unit
+    |        |  |     +--ro peak-burst-size
+    |        |  |     |  +--ro value?   uint64
+    |        |  |     |  +--ro unit?    capacity-unit
+    |        |  |     +--ro color-aware?                  boolean
+    |        |  |     +--ro coupling-flag?                boolean
+    |        |  +--ro service-level?            string
+    |        |  +--ro service-layer*            tapi-common:layer-protocol-name
+    |        |  +--ro cost-characteristic* [cost-name]
+    |        |  |  +--ro cost-name         string
+    |        |  |  +--ro cost-value?       string
+    |        |  |  +--ro cost-algorithm?   string
+    |        |  +--ro latency-characteristic* [traffic-property-name]
+    |        |  |  +--ro traffic-property-name            string
+    |        |  |  +--ro fixed-latency-characteristic?    string
+    |        |  |  +--ro queing-latency-characteristic?   string
+    |        |  |  +--ro jitter-characteristic?           string
+    |        |  |  +--ro wander-characteristic?           string
+    |        |  +--ro local-id                  string
+    |        |  +--ro name* [value-name]
+    |        |     +--ro value-name    string
+    |        |     +--ro value?        string
+    |        +--ro schedule?              string
+    |        +--ro state
+    |        |  +--ro administrative-state?   administrative-state
+    |        |  +--ro operational-state?      operational-state
+    |        |  +--ro lifecycle-state?        lifecycle-state
+    |        +--ro layer-protocol-name*   tapi-common:layer-protocol-name
+    |        +--ro uuid?                  uuid
+    |        +--ro name* [value-name]
+    |           +--ro value-name    string
+    |           +--ro value?        string
+    +---x delete-virtual-network-service
+    |  +---w input
+    |  |  +---w service-id-or-name?   string
+    |  +--ro output
+    |     +--ro service
+    |        +--ro topology?              -> /tapi-common:context/tapi-topology:topology/uuid
+    |        +--ro end-point* [local-id]
+    |        |  +--ro service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro role?                      tapi-common:port-role
+    |        |  +--ro direction?                 tapi-common:port-direction
+    |        |  +--ro service-layer?             tapi-common:layer-protocol-name
+    |        |  +--ro local-id                   string
+    |        |  +--ro name* [value-name]
+    |        |     +--ro value-name    string
+    |        |     +--ro value?        string
+    |        +--ro vnw-constraint* [local-id]
+    |        |  +--ro src-service-end-point?    -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro sink-service-end-point?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro diversity-exclusion*      -> /tapi-common:context/tapi-virtual-network:virtual-nw-service/vnw-constraint/local-id
+    |        |  +--ro requested-capacity
+    |        |  |  +--ro total-size
+    |        |  |  |  +--ro value?   uint64
+    |        |  |  |  +--ro unit?    capacity-unit
+    |        |  |  +--ro bandwidth-profile
+    |        |  |     +--ro bw-profile-type?              bandwidth-profile-type
+    |        |  |     +--ro committed-information-rate
+    |        |  |     |  +--ro value?   uint64
+    |        |  |     |  +--ro unit?    capacity-unit
+    |        |  |     +--ro committed-burst-size
+    |        |  |     |  +--ro value?   uint64
+    |        |  |     |  +--ro unit?    capacity-unit
+    |        |  |     +--ro peak-information-rate
+    |        |  |     |  +--ro value?   uint64
+    |        |  |     |  +--ro unit?    capacity-unit
+    |        |  |     +--ro peak-burst-size
+    |        |  |     |  +--ro value?   uint64
+    |        |  |     |  +--ro unit?    capacity-unit
+    |        |  |     +--ro color-aware?                  boolean
+    |        |  |     +--ro coupling-flag?                boolean
+    |        |  +--ro service-level?            string
+    |        |  +--ro service-layer*            tapi-common:layer-protocol-name
+    |        |  +--ro cost-characteristic* [cost-name]
+    |        |  |  +--ro cost-name         string
+    |        |  |  +--ro cost-value?       string
+    |        |  |  +--ro cost-algorithm?   string
+    |        |  +--ro latency-characteristic* [traffic-property-name]
+    |        |  |  +--ro traffic-property-name            string
+    |        |  |  +--ro fixed-latency-characteristic?    string
+    |        |  |  +--ro queing-latency-characteristic?   string
+    |        |  |  +--ro jitter-characteristic?           string
+    |        |  |  +--ro wander-characteristic?           string
+    |        |  +--ro local-id                  string
+    |        |  +--ro name* [value-name]
+    |        |     +--ro value-name    string
+    |        |     +--ro value?        string
+    |        +--ro schedule?              string
+    |        +--ro state
+    |        |  +--ro administrative-state?   administrative-state
+    |        |  +--ro operational-state?      operational-state
+    |        |  +--ro lifecycle-state?        lifecycle-state
+    |        +--ro layer-protocol-name*   tapi-common:layer-protocol-name
+    |        +--ro uuid?                  uuid
+    |        +--ro name* [value-name]
+    |           +--ro value-name    string
+    |           +--ro value?        string
+    +---x get-virtual-network-service-details
+    |  +---w input
+    |  |  +---w service-id-or-name?   string
+    |  +--ro output
+    |     +--ro service
+    |        +--ro topology?              -> /tapi-common:context/tapi-topology:topology/uuid
+    |        +--ro end-point* [local-id]
+    |        |  +--ro service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro role?                      tapi-common:port-role
+    |        |  +--ro direction?                 tapi-common:port-direction
+    |        |  +--ro service-layer?             tapi-common:layer-protocol-name
+    |        |  +--ro local-id                   string
+    |        |  +--ro name* [value-name]
+    |        |     +--ro value-name    string
+    |        |     +--ro value?        string
+    |        +--ro vnw-constraint* [local-id]
+    |        |  +--ro src-service-end-point?    -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro sink-service-end-point?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro diversity-exclusion*      -> /tapi-common:context/tapi-virtual-network:virtual-nw-service/vnw-constraint/local-id
+    |        |  +--ro requested-capacity
+    |        |  |  +--ro total-size
+    |        |  |  |  +--ro value?   uint64
+    |        |  |  |  +--ro unit?    capacity-unit
+    |        |  |  +--ro bandwidth-profile
+    |        |  |     +--ro bw-profile-type?              bandwidth-profile-type
+    |        |  |     +--ro committed-information-rate
+    |        |  |     |  +--ro value?   uint64
+    |        |  |     |  +--ro unit?    capacity-unit
+    |        |  |     +--ro committed-burst-size
+    |        |  |     |  +--ro value?   uint64
+    |        |  |     |  +--ro unit?    capacity-unit
+    |        |  |     +--ro peak-information-rate
+    |        |  |     |  +--ro value?   uint64
+    |        |  |     |  +--ro unit?    capacity-unit
+    |        |  |     +--ro peak-burst-size
+    |        |  |     |  +--ro value?   uint64
+    |        |  |     |  +--ro unit?    capacity-unit
+    |        |  |     +--ro color-aware?                  boolean
+    |        |  |     +--ro coupling-flag?                boolean
+    |        |  +--ro service-level?            string
+    |        |  +--ro service-layer*            tapi-common:layer-protocol-name
+    |        |  +--ro cost-characteristic* [cost-name]
+    |        |  |  +--ro cost-name         string
+    |        |  |  +--ro cost-value?       string
+    |        |  |  +--ro cost-algorithm?   string
+    |        |  +--ro latency-characteristic* [traffic-property-name]
+    |        |  |  +--ro traffic-property-name            string
+    |        |  |  +--ro fixed-latency-characteristic?    string
+    |        |  |  +--ro queing-latency-characteristic?   string
+    |        |  |  +--ro jitter-characteristic?           string
+    |        |  |  +--ro wander-characteristic?           string
+    |        |  +--ro local-id                  string
+    |        |  +--ro name* [value-name]
+    |        |     +--ro value-name    string
+    |        |     +--ro value?        string
+    |        +--ro schedule?              string
+    |        +--ro state
+    |        |  +--ro administrative-state?   administrative-state
+    |        |  +--ro operational-state?      operational-state
+    |        |  +--ro lifecycle-state?        lifecycle-state
+    |        +--ro layer-protocol-name*   tapi-common:layer-protocol-name
+    |        +--ro uuid?                  uuid
+    |        +--ro name* [value-name]
+    |           +--ro value-name    string
+    |           +--ro value?        string
+    +---x get-virtual-network-service-list
+       +--ro output
+          +--ro service*
+             +--ro topology?              -> /tapi-common:context/tapi-topology:topology/uuid
+             +--ro end-point* [local-id]
+             |  +--ro service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
+             |  +--ro role?                      tapi-common:port-role
+             |  +--ro direction?                 tapi-common:port-direction
+             |  +--ro service-layer?             tapi-common:layer-protocol-name
+             |  +--ro local-id                   string
+             |  +--ro name* [value-name]
+             |     +--ro value-name    string
+             |     +--ro value?        string
+             +--ro vnw-constraint* [local-id]
+             |  +--ro src-service-end-point?    -> /tapi-common:context/service-interface-point/uuid
+             |  +--ro sink-service-end-point?   -> /tapi-common:context/service-interface-point/uuid
+             |  +--ro diversity-exclusion*      -> /tapi-common:context/tapi-virtual-network:virtual-nw-service/vnw-constraint/local-id
+             |  +--ro requested-capacity
+             |  |  +--ro total-size
+             |  |  |  +--ro value?   uint64
+             |  |  |  +--ro unit?    capacity-unit
+             |  |  +--ro bandwidth-profile
+             |  |     +--ro bw-profile-type?              bandwidth-profile-type
+             |  |     +--ro committed-information-rate
+             |  |     |  +--ro value?   uint64
+             |  |     |  +--ro unit?    capacity-unit
+             |  |     +--ro committed-burst-size
+             |  |     |  +--ro value?   uint64
+             |  |     |  +--ro unit?    capacity-unit
+             |  |     +--ro peak-information-rate
+             |  |     |  +--ro value?   uint64
+             |  |     |  +--ro unit?    capacity-unit
+             |  |     +--ro peak-burst-size
+             |  |     |  +--ro value?   uint64
+             |  |     |  +--ro unit?    capacity-unit
+             |  |     +--ro color-aware?                  boolean
+             |  |     +--ro coupling-flag?                boolean
+             |  +--ro service-level?            string
+             |  +--ro service-layer*            tapi-common:layer-protocol-name
+             |  +--ro cost-characteristic* [cost-name]
+             |  |  +--ro cost-name         string
+             |  |  +--ro cost-value?       string
+             |  |  +--ro cost-algorithm?   string
+             |  +--ro latency-characteristic* [traffic-property-name]
+             |  |  +--ro traffic-property-name            string
+             |  |  +--ro fixed-latency-characteristic?    string
+             |  |  +--ro queing-latency-characteristic?   string
+             |  |  +--ro jitter-characteristic?           string
+             |  |  +--ro wander-characteristic?           string
+             |  +--ro local-id                  string
+             |  +--ro name* [value-name]
+             |     +--ro value-name    string
+             |     +--ro value?        string
+             +--ro schedule?              string
+             +--ro state
+             |  +--ro administrative-state?   administrative-state
+             |  +--ro operational-state?      operational-state
+             |  +--ro lifecycle-state?        lifecycle-state
+             +--ro layer-protocol-name*   tapi-common:layer-protocol-name
+             +--ro uuid?                  uuid
+             +--ro name* [value-name]
+                +--ro value-name    string
+                +--ro value?        string

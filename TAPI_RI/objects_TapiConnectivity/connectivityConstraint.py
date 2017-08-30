@@ -25,7 +25,7 @@ class ConnectivityConstraint(LocalClass):
         super(ConnectivityConstraint, self).__init__(json_struct)
 
 class Servicetype(EnumType):
-    possible_values = ['POINT_TO_POINT_CONNECTIVITY', 'POINT_TO_MULTIPOINT_CONNECTIVTY', 'MULTIPOINT_CONNECTIVITY']
+    possible_values = ['POINT_TO_POINT_CONNECTIVITY', 'POINT_TO_MULTIPOINT_CONNECTIVITY', 'MULTIPOINT_CONNECTIVITY']
     range_end = 3
 
     def __init__(self, initial_value):

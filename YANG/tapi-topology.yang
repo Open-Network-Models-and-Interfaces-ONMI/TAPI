@@ -1,5 +1,5 @@
 module tapi-topology {
-    namespace "urn:onf:params:xml:ns:yang:TapiTopology";
+    namespace "urn:onf:params:xml:ns:yang:tapi-topology";
     prefix tapi-topology;
     import tapi-common {
         prefix tapi-common;
@@ -11,13 +11,13 @@ module tapi-topology {
         WG Chair: Karthik Sethuraman <mailto:karthik.sethuraman@necam.com>,
         Editor: Ricard Vilalta <mailto:ricard.vilalta@cttc.es>";
     description "none";
-    revision 2016-12-15 {
-        description "TAPI SDK 1.1.alpha";
+    revision 2017-05-31 {
+        description "TAPI SDK 2.0-alpha";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 6020 and RFC 6087";
     }
     augment "/tapi-common:context" {
         uses topology-context;
-        description "none";
+        description "Augments the base TAPI Context with TopologyService information";
     }
     /***********************
     * package object-classes
@@ -46,7 +46,7 @@ module tapi-topology {
             }
             container transfer-capacity {
                 config false;
-                uses transfer-capacity-pac;
+                uses tapi-common:capacity-pac;
                 description "none";
             }
             container transfer-cost {
@@ -92,6 +92,10 @@ module tapi-topology {
                     Is applicable to simple Links where all LinkEnds are BIDIRECTIONAL (the Link will be BIDIRECTIONAL) or UNIDIRECTIONAL (the Link will be UNIDIRECTIONAL). 
                     Is not present in more complex cases.";
             }
+            container resilience-type {
+                uses resilience-type;
+                description "none";
+            }
             uses tapi-common:resource-spec;
             description "The Link object class models effective adjacency between two or more ForwardingDomains (FD). ";
         }
@@ -109,6 +113,11 @@ module tapi-topology {
                 config false;
                 description "none";
             }
+            list node-rule-group {
+                key 'uuid';
+                uses node-rule-group;
+                description "none";
+            }
             leaf encap-topology {
                 type leafref {
                     path '/tapi-common:context/tapi-topology:topology/tapi-topology:uuid';
@@ -123,7 +132,7 @@ module tapi-topology {
             }
             container transfer-capacity {
                 config false;
-                uses transfer-capacity-pac;
+                uses tapi-common:capacity-pac;
                 description "none";
             }
             container transfer-cost {
@@ -205,16 +214,11 @@ module tapi-topology {
                 type leafref {
                     path '/tapi-common:context/tapi-common:service-interface-point/tapi-common:uuid';
                 }
-                description "none";
+                description "NodeEdgePoint mapped to more than ServiceInterfacePoint (slicing/virtualizing) or a ServiceInterfacePoint mapped to more than one NodeEdgePoint (load balancing/Resilience) should be considered experimental";
             }
             container state {
                 config false;
                 uses tapi-common:admin-state-pac;
-                description "none";
-            }
-            leaf termination-direction {
-                type tapi-common:termination-direction;
-                config false;
                 description "none";
             }
             leaf link-port-direction {
@@ -252,38 +256,9 @@ module tapi-topology {
                 Shared risk between two TopologicalEntities compromises the integrity of any solution that use one of those TopologicalEntity as a backup for the other.
                 Where two TopologicalEntities have a common risk characteristic they have an elevated probability of failing simultaneously compared to two TopologicalEntities that do not share risk characteristics.";
         }
-        grouping transfer-capacity-pac {
-            container total-potential-capacity {
-                config false;
-                uses capacity;
-                description "An optimistic view of the capacity of the TopologicalEntity assuming that any shared capacity is available to be taken.";
-            }
-            container available-capacity {
-                config false;
-                uses capacity;
-                description "Capacity available to be assigned.";
-            }
-            list capacity-assigned-to-user-view {
-                key 'total-size';
-                config false;
-                uses capacity;
-                description "Capacity already assigned";
-            }
-            leaf capacity-interaction-algorithm {
-                type string;
-                config false;
-                description "A reference to an algorithm that describes how various chunks of allocated capacity interact (e.g. when shared)";
-            }
-            description "The TopologicalEntity derives capacity from the underlying realization. 
-                A TopologicalEntity may be an abstraction and virtualization of a subset of the underlying capability offered in a view or may be directly reflecting the underlying realization.
-                A TopologicalEntity may be directly used in the view or may be assigned to another view for use.
-                The clients supported by a multi-layer TopologicalEntity may interact such that the resources used by one client may impact those available to another. This is derived from the LTP spec details.
-                Represents the capacity available to user (client) along with client interaction and usage. 
-                A TopologicalEntity may reflect one or more client protocols and one or more members for each profile.";
-        }
         grouping transfer-cost-pac {
             list cost-characteristic {
-                key 'cost-name cost-value cost-algorithm';
+                key 'cost-name';
                 config false;
                 min-elements 1;
                 uses cost-characteristic;
@@ -335,7 +310,7 @@ module tapi-topology {
         }
         grouping transfer-timing-pac {
             list latency-characteristic {
-                key 'traffic-property-name traffic-property-queing-latency';
+                key 'traffic-property-name';
                 config false;
                 min-elements 1;
                 uses latency-characteristic;
@@ -345,7 +320,7 @@ module tapi-topology {
         }
         grouping validation-pac {
             list validation-mechanism {
-                key 'validation-mechanism layer-protocol-adjacency-validated validation-robustness';
+                key 'validation-mechanism';
                 config false;
                 min-elements 1;
                 uses validation-mechanism;
@@ -378,45 +353,103 @@ module tapi-topology {
             }
             description "none";
         }
+        grouping inter-rule-group {
+            list rule {
+                key 'local-id';
+                min-elements 1;
+                uses rule;
+                description "none";
+            }
+            leaf-list associated-node-rule-group {
+                type leafref {
+                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:node-rule-group/tapi-topology:uuid';
+                }
+                min-elements 2;
+                description "none";
+            }
+            container transfer-capacity {
+                uses tapi-common:capacity-pac;
+                description "none";
+            }
+            container transfer-cost {
+                uses transfer-cost-pac;
+                description "none";
+            }
+            container transfer-timing {
+                uses transfer-timing-pac;
+                description "none";
+            }
+            container risk-parameter {
+                uses risk-parameter-pac;
+                description "none";
+            }
+            uses tapi-common:resource-spec;
+            description "none";
+        }
+        grouping node-rule-group {
+            list rule {
+                key 'local-id';
+                min-elements 1;
+                uses rule;
+                description "none";
+            }
+            leaf-list node-edge-point {
+                type leafref {
+                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-topology:uuid';
+                }
+                min-elements 1;
+                description "none";
+            }
+            leaf-list node-rule-group {
+                type leafref {
+                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:node-rule-group/tapi-topology:uuid';
+                }
+                description "none";
+            }
+            list inter-rule-group {
+                key 'uuid';
+                uses inter-rule-group;
+                description "none";
+            }
+            container transfer-capacity {
+                uses tapi-common:capacity-pac;
+                description "none";
+            }
+            container transfer-cost {
+                uses transfer-cost-pac;
+                description "none";
+            }
+            container transfer-timing {
+                uses transfer-timing-pac;
+                description "none";
+            }
+            container risk-parameter {
+                uses risk-parameter-pac;
+                description "none";
+            }
+            uses tapi-common:resource-spec;
+            description "none";
+        }
+        grouping rule {
+            leaf rule-type {
+                type rule-type;
+                description "none";
+            }
+            leaf forwarding-rule {
+                type forwarding-rule;
+                description "none";
+            }
+            leaf override-priority {
+                type uint64;
+                description "none";
+            }
+            uses tapi-common:local-class;
+            description "none";
+        }
 
     /***********************
     * package type-definitions
     **********************/ 
-        grouping capacity {
-            leaf total-size {
-                type fixed-capacity-value;
-                description "Total capacity of the TopologicalEntity in MB/s";
-            }
-            leaf packet-bw-profile-type {
-                type bandwidth-profile-type;
-                description "none";
-            }
-            leaf committed-information-rate {
-                type uint64;
-                description "none";
-            }
-            leaf committed-burst-size {
-                type uint64;
-                description "none";
-            }
-            leaf peak-information-rate {
-                type uint64;
-                description "none";
-            }
-            leaf peak-burst-size {
-                type uint64;
-                description "none";
-            }
-            leaf color-aware {
-                type boolean;
-                description "none";
-            }
-            leaf coupling-flag {
-                type boolean;
-                description "none";
-            }
-            description "Information on capacity of a particular TopologicalEntity.";
-        }
         grouping cost-characteristic {
             leaf cost-name {
                 type string;
@@ -432,46 +465,19 @@ module tapi-topology {
             }
             description "The information for a particular cost characteristic.";
         }
-        typedef fixed-capacity-value {
-            type enumeration {
-                enum not-applicable {
-                    description "none";
-                }
-                enum 10mbps {
-                    description "none";
-                }
-                enum 100mbps {
-                    description "none";
-                }
-                enum 1gbps {
-                    description "none";
-                }
-                enum 2.4gbps {
-                    description "none";
-                }
-                enum 10gbps {
-                    description "none";
-                }
-                enum 40gbps {
-                    description "none";
-                }
-                enum 100gbps {
-                    description "none";
-                }
-                enum 200gbps {
-                    description "none";
-                }
-                enum 400gbps {
-                    description "none";
-                }
-            }
-            description "The Capacity (Bandwidth) values that are applicable for digital layers. ";
-        }
         grouping latency-characteristic {
+            leaf traffic-property-name {
+                type string;
+                description "The identifier of the specific traffic property to which the queuing latency applies.";
+            }
             leaf fixed-latency-characteristic {
                 type string;
                 config false;
                 description "A TopologicalEntity suffers delay caused by the realization of the servers (e.g. distance related; FEC encoding etc.) along with some client specific processing. This is the total average latency effect of the TopologicalEntity";
+            }
+            leaf queing-latency-characteristic {
+                type string;
+                description "The specific queuing latency for the traffic property.";
             }
             leaf jitter-characteristic {
                 type string;
@@ -484,14 +490,6 @@ module tapi-topology {
                 config false;
                 description "Low frequency deviation from true periodicity of a signal and therefore a small low rate of change of transfer latency.
                     Applies to TDM systems (and not packet).";
-            }
-            leaf traffic-property-name {
-                type string;
-                description "The identifier of the specific traffic property to which the queuing latency applies.";
-            }
-            leaf traffic-property-queing-latency {
-                type string;
-                description "The specific queuing latency for the traffic property.";
             }
             description "Provides information on latency characteristic for a particular stated trafficProperty.";
         }
@@ -524,21 +522,92 @@ module tapi-topology {
             }
             description "Identifies the validation mechanism and describes the characteristics of that mechanism";
         }
-        typedef bandwidth-profile-type {
+        typedef forwarding-rule {
             type enumeration {
-                enum not-applicable {
+                enum may-forward-across-group {
                     description "none";
                 }
-                enum mef-10.x {
+                enum must-forward-across-group {
                     description "none";
                 }
-                enum rfc-2697 {
+                enum cannot-forward-across-group {
                     description "none";
                 }
-                enum rfc-2698 {
+                enum no-statement-on-forwarding {
                     description "none";
                 }
-                enum rfc-4115 {
+            }
+            description "none";
+        }
+        typedef rule-type {
+            type enumeration {
+                enum forwarding {
+                    description "none";
+                }
+                enum capacity {
+                    description "none";
+                }
+                enum cost {
+                    description "none";
+                }
+                enum timing {
+                    description "none";
+                }
+                enum risk {
+                    description "none";
+                }
+                enum grouping {
+                    description "none";
+                }
+            }
+            description "none";
+        }
+        grouping resilience-type {
+            leaf restoration-policy {
+                type restoration-policy;
+                description "none";
+            }
+            leaf protection-type {
+                type protection-type;
+                description "none";
+            }
+            description "none";
+        }
+        typedef restoration-policy {
+            type enumeration {
+                enum per-domain-restoration {
+                    description "none";
+                }
+                enum end-to-end-restoration {
+                    description "none";
+                }
+                enum na {
+                    description "none";
+                }
+            }
+            description "none";
+        }
+        typedef protection-type {
+            type enumeration {
+                enum no-protecton {
+                    description "none";
+                }
+                enum one-plus-one-protection {
+                    description "none";
+                }
+                enum one-plus-one-protection-with-dynamic-restoration {
+                    description "none";
+                }
+                enum permanent-one-plus-one-protection {
+                    description "none";
+                }
+                enum one-for-one-protection {
+                    description "none";
+                }
+                enum dynamic-restoration {
+                    description "none";
+                }
+                enum pre-computed-restoration {
                     description "none";
                 }
             }
