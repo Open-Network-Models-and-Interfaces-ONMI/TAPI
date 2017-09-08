@@ -3697,8 +3697,8 @@
             "description": "Information on capacity of a particular TopologicalEntity.",
             "properties": {
                 "total-size": {
-                    "description": "Total capacity of the TopologicalEntity in MB/s",
-                    "$ref": "#/definitions/fixed-capacity-value"
+                    "description": "Total capacity of the TopologicalEntity in MB/s. In case of bandwidthProfile, this is expected to same as the committedInformationRate.",
+                    "$ref": "#/definitions/capacity-value"
                 },
                 "bandwidth-profile": {
                     "$ref": "#/definitions/bandwidth-profile"
@@ -3710,7 +3710,6 @@
                 "bw-profile-type": {
                     "type": "string",
                     "enum": [
-                        "not-applicable",
                         "mef-10.x",
                         "rfc-2697",
                         "rfc-2698",
@@ -3718,16 +3717,16 @@
                     ]
                 },
                 "committed-information-rate": {
-                    "type": "string"
+                    "$ref": "#/definitions/capacity-value"
                 },
                 "committed-burst-size": {
-                    "type": "string"
+                    "$ref": "#/definitions/capacity-value"
                 },
                 "peak-information-rate": {
-                    "type": "string"
+                    "$ref": "#/definitions/capacity-value"
                 },
                 "peak-burst-size": {
-                    "type": "string"
+                    "$ref": "#/definitions/capacity-value"
                 },
                 "color-aware": {
                     "type": "boolean"
@@ -3737,14 +3736,19 @@
                 }
             }
         },
-        "fixed-capacity-value": {
+        "capacity-value": {
             "description": "The Capacity (Bandwidth) values that are applicable for digital layers.",
             "properties": {
                 "value": {
                     "type": "string"
                 },
                 "unit": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "gbps",
+                        "mbps",
+                        "kbps"
+                    ]
                 }
             }
         },
@@ -3881,6 +3885,9 @@
                                 "undefined-or-unknown"
                             ],
                             "description": "The directionality of the Link. \nIs applicable to simple Links where all LinkEnds are BIDIRECTIONAL (the Link will be BIDIRECTIONAL) or UNIDIRECTIONAL (the Link will be UNIDIRECTIONAL). \nIs not present in more complex cases."
+                        },
+                        "resilience-type": {
+                            "$ref": "#/definitions/resilience-type"
                         }
                     }
                 }
@@ -4069,7 +4076,7 @@
                     "items": {
                         "$ref": "#/definitions/cost-characteristic"
                     },
-                    "x-key": "cost-name cost-value cost-algorithm"
+                    "x-key": "cost-name"
                 }
             }
         },
@@ -4111,7 +4118,7 @@
                     "items": {
                         "$ref": "#/definitions/latency-characteristic"
                     },
-                    "x-key": "traffic-property-name traffic-property-queing-latency"
+                    "x-key": "traffic-property-name"
                 }
             }
         },
@@ -4124,7 +4131,7 @@
                     "items": {
                         "$ref": "#/definitions/validation-mechanism"
                     },
-                    "x-key": "validation-mechanism layer-protocol-adjacency-validated validation-robustness"
+                    "x-key": "validation-mechanism"
                 }
             }
         },
@@ -4302,9 +4309,17 @@
         "latency-characteristic": {
             "description": "Provides information on latency characteristic for a particular stated trafficProperty.",
             "properties": {
+                "traffic-property-name": {
+                    "type": "string",
+                    "description": "The identifier of the specific traffic property to which the queuing latency applies."
+                },
                 "fixed-latency-characteristic": {
                     "type": "string",
                     "description": "A TopologicalEntity suffers delay caused by the realization of the servers (e.g. distance related; FEC encoding etc.) along with some client specific processing. This is the total average latency effect of the TopologicalEntity"
+                },
+                "queing-latency-characteristic": {
+                    "type": "string",
+                    "description": "The specific queuing latency for the traffic property."
                 },
                 "jitter-characteristic": {
                     "type": "string",
@@ -4313,14 +4328,6 @@
                 "wander-characteristic": {
                     "type": "string",
                     "description": "Low frequency deviation from true periodicity of a signal and therefore a small low rate of change of transfer latency.\nApplies to TDM systems (and not packet)."
-                },
-                "traffic-property-name": {
-                    "type": "string",
-                    "description": "The identifier of the specific traffic property to which the queuing latency applies."
-                },
-                "traffic-property-queing-latency": {
-                    "type": "string",
-                    "description": "The specific queuing latency for the traffic property."
                 }
             }
         },
@@ -4354,6 +4361,30 @@
                 "validation-robustness": {
                     "type": "string",
                     "description": "Quality of validation (i.e. how likely is the stated validation to be invalid)"
+                }
+            }
+        },
+        "resilience-type": {
+            "properties": {
+                "restoration-policy": {
+                    "type": "string",
+                    "enum": [
+                        "per-domain-restoration",
+                        "end-to-end-restoration",
+                        "na"
+                    ]
+                },
+                "protection-type": {
+                    "type": "string",
+                    "enum": [
+                        "no-protecton",
+                        "one-plus-one-protection",
+                        "one-plus-one-protection-with-dynamic-restoration",
+                        "permanent-one-plus-one-protection",
+                        "one-for-one-protection",
+                        "dynamic-restoration",
+                        "pre-computed-restoration"
+                    ]
                 }
             }
         },
@@ -4478,7 +4509,7 @@
                             "type": "string",
                             "x-path": "/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:connection-end-point/tapi-connectivity:uuid"
                         },
-                        "route": {
+                        "associated-route": {
                             "type": "array",
                             "items": {
                                 "type": "string",
@@ -4534,8 +4565,15 @@
                             "type": "string",
                             "description": "An abstract value the meaning of which is mutually agreed \u2013 typically represents metrics such as - Class of service, priority, resiliency, availability"
                         },
+                        "is-exclusive": {
+                            "type": "boolean",
+                            "description": "To distinguish if the resources are exclusive to the service  - for example between EPL(isExclusive=true) and EVPL (isExclusive=false), or between EPLAN (isExclusive=true) and EVPLAN (isExclusive=false)"
+                        },
                         "requested-capacity": {
                             "$ref": "#/definitions/capacity"
+                        },
+                        "schedule": {
+                            "$ref": "#/definitions/time-range"
                         },
                         "cost-characteristic": {
                             "description": "The list of costs where each cost relates to some aspect of the TopologicalEntity.",
@@ -4543,7 +4581,7 @@
                             "items": {
                                 "$ref": "#/definitions/cost-characteristic"
                             },
-                            "x-key": "cost-name cost-value cost-algorithm"
+                            "x-key": "cost-name"
                         },
                         "latency-characteristic": {
                             "description": "The effect on the latency of a queuing process. This only has significant effect for packet based systems and has a complex characteristic.",
@@ -4551,7 +4589,10 @@
                             "items": {
                                 "$ref": "#/definitions/latency-characteristic"
                             },
-                            "x-key": "traffic-property-name traffic-property-queing-latency"
+                            "x-key": "traffic-property-name"
+                        },
+                        "route-compute-policy": {
+                            "$ref": "#/definitions/route-compute-policy"
                         },
                         "coroute-inclusion": {
                             "type": "string",
@@ -4563,9 +4604,6 @@
                                 "type": "string",
                                 "x-path": "/tapi-common:context/tapi-connectivity:connectivity-service/tapi-connectivity:uuid"
                             }
-                        },
-                        "schedule": {
-                            "$ref": "#/definitions/time-range"
                         }
                     }
                 }
@@ -4611,6 +4649,13 @@
                         },
                         "layer-protocol-name": {
                             "type": "string"
+                        },
+                        "resilience-constraint": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/resilience-constraint"
+                            },
+                            "x-key": "local-id"
                         }
                     }
                 }
@@ -4668,6 +4713,18 @@
                                 "unknown"
                             ],
                             "description": "Each EP of the FC has a role (e.g., working, protection, protected, symmetric, hub, spoke, leaf, root)  in the context of the FC with respect to the FC function. "
+                        },
+                        "protection-role": {
+                            "type": "string",
+                            "enum": [
+                                "work",
+                                "protect",
+                                "protected",
+                                "na",
+                                "work-restore",
+                                "protect-restore"
+                            ],
+                            "description": "To specify the protection role of this Port when create or update ConnectivityService."
                         }
                     }
                 }
@@ -4792,53 +4849,75 @@
                             "x-key": "local-id"
                         },
                         "control-parameters": {
-                            "$ref": "#/definitions/control-parameters-pac"
+                            "$ref": "#/definitions/resilience-constraint"
                         }
                     }
                 }
             ],
             "description": "Represents the capability to control and coordinate switches, to add/delete/modify FCs and to add/delete/modify LTPs/LPs so as to realize a protection scheme."
         },
-        "control-parameters-pac": {
-            "description": "A list of control parameters to apply to a switch.",
-            "properties": {
-                "switch-type": {
-                    "type": "string",
-                    "enum": [
-                        "linear-1-plus-1",
-                        "linear-1-for-1"
-                    ],
-                    "description": "Indicates the protection scheme that is used for the ProtectionGroup."
+        "resilience-constraint": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/local-class"
                 },
-                "reversion-mode": {
-                    "type": "string",
-                    "enum": [
-                        "revertive",
-                        "non-revertive"
-                    ],
-                    "description": "Indcates whether the protection scheme is revertive or non-revertive."
-                },
-                "wait-to-revert-time": {
-                    "type": "string",
-                    "description": "If the protection system is revertive, this attribute specifies the time, in minutes, to wait after a fault clears on a higher priority (preferred) resource before reverting to the preferred resource."
-                },
-                "hold-off-time": {
-                    "type": "string",
-                    "description": "This attribute indicates the time, in milliseconds, between declaration of signal degrade or signal fail, and the initialization of the protection switching algorithm."
-                },
-                "is-lock-out": {
-                    "type": "boolean",
-                    "description": "The resource is configured to temporarily not be available for use in the protection scheme(s) it is part of.\nThis overrides all other protection control states including forced.\nIf the item is locked out then it cannot be used under any circumstances.\nNote: Only relevant when part of a protection scheme."
-                },
-                "is-frozen": {
-                    "type": "boolean",
-                    "description": "Temporarily prevents any switch action to be taken and, as such, freezes the current state. \nUntil the freeze is cleared, additional near-end external commands are rejected and fault condition changes and received APS messages are ignored.\nAll administrative controls of any aspect of protection are rejected."
-                },
-                "is-coordinated-switching-both-ends": {
-                    "type": "boolean",
-                    "description": "Is operating such that switching at both ends of each flow acorss the FC is coordinated at both ingress and egress ends."
+                {
+                    "properties": {
+                        "resilience-type": {
+                            "$ref": "#/definitions/resilience-type"
+                        },
+                        "restoration-coordinate-type": {
+                            "type": "string",
+                            "enum": [
+                                "no-coordinate",
+                                "hold-off-time",
+                                "wait-for-notification"
+                            ],
+                            "description": " The coordination mechanism between multi-layers."
+                        },
+                        "restore-priority": {
+                            "type": "string"
+                        },
+                        "reversion-mode": {
+                            "type": "string",
+                            "enum": [
+                                "revertive",
+                                "non-revertive"
+                            ],
+                            "description": "Indcates whether the protection scheme is revertive or non-revertive."
+                        },
+                        "wait-to-revert-time": {
+                            "type": "string",
+                            "description": "If the protection system is revertive, this attribute specifies the time, in minutes, to wait after a fault clears on a higher priority (preferred) resource before reverting to the preferred resource."
+                        },
+                        "hold-off-time": {
+                            "type": "string",
+                            "description": "This attribute indicates the time, in milliseconds, between declaration of signal degrade or signal fail, and the initialization of the protection switching algorithm."
+                        },
+                        "is-lock-out": {
+                            "type": "boolean",
+                            "description": "The resource is configured to temporarily not be available for use in the protection scheme(s) it is part of.\nThis overrides all other protection control states including forced.\nIf the item is locked out then it cannot be used under any circumstances.\nNote: Only relevant when part of a protection scheme."
+                        },
+                        "is-frozen": {
+                            "type": "boolean",
+                            "description": "Temporarily prevents any switch action to be taken and, as such, freezes the current state. \nUntil the freeze is cleared, additional near-end external commands are rejected and fault condition changes and received APS messages are ignored.\nAll administrative controls of any aspect of protection are rejected."
+                        },
+                        "is-coordinated-switching-both-ends": {
+                            "type": "boolean",
+                            "description": "Is operating such that switching at both ends of each flow acorss the FC is coordinated at both ingress and egress ends."
+                        },
+                        "max-switch-times": {
+                            "type": "string",
+                            "description": "Used to limit the maximum swtich times. When work fault disappears , and traffic return to the original work path, switch counter reset."
+                        },
+                        "layer-protocol": {
+                            "type": "string",
+                            "description": "Indicate which layer this resilience parameters package configured for."
+                        }
+                    }
                 }
-            }
+            ],
+            "description": "A list of control parameters to apply to a switch."
         },
         "topology-constraint": {
             "allOf": [
@@ -4927,6 +5006,32 @@
                 }
             }
         },
+        "route-compute-policy": {
+            "properties": {
+                "route-objective-function": {
+                    "type": "string",
+                    "enum": [
+                        "min-work-route-hop",
+                        "min-work-route-cost",
+                        "min-work-route-latency",
+                        "min-sum-of-work-and-protection-route-hop",
+                        "min-sum-of-work-and-protection-route-cost",
+                        "min-sum-of-work-and-protection-route-latency",
+                        "load-balance-max-unused-capacity"
+                    ]
+                },
+                "diversity-policy": {
+                    "type": "string",
+                    "enum": [
+                        "srlg",
+                        "srng",
+                        "sng",
+                        "node",
+                        "link"
+                    ]
+                }
+            }
+        },
         "get-connection-detailsRPC_input_schema": {
             "properties": {
                 "service-id-or-name": {
@@ -4982,6 +5087,12 @@
                 "topo-constraint": {
                     "$ref": "#/definitions/topology-constraint"
                 },
+                "resilience-constraint": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/resilience-constraint"
+                    }
+                },
                 "state": {
                     "type": "string"
                 }
@@ -5007,6 +5118,12 @@
                 },
                 "topo-constraint": {
                     "$ref": "#/definitions/topology-constraint"
+                },
+                "resilience-constraint": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/resilience-constraint"
+                    }
                 },
                 "state": {
                     "type": "string"
