@@ -151,13 +151,13 @@ module tapi-odu {
                 It is present only if the CEP contains a CTP";
         }
         grouping odu-mep-spec {
-            container odu-monitor {
-                config false;
-                uses odu-monitor-pac;
-                description "none";
-            }
             container odu-mep {
                 uses odu-mep-pac;
+                description "none";
+            }
+            container odu-ncm {
+                config false;
+                uses odu-ncm-pac;
                 description "none";
             }
             container odu-tcm {
@@ -165,9 +165,12 @@ module tapi-odu {
                 uses odu-tcm-mep-pac;
                 description "none";
             }
-            container odu-ncm {
-                config false;
-                uses odu-ncm-mep-pac;
+            container odu-defect {
+                uses odu-defect-pac;
+                description "none";
+            }
+            container odu-pm {
+                uses odu-pm-pac;
                 description "none";
             }
             description "none";
@@ -184,7 +187,7 @@ module tapi-odu {
             }
             description "none";
         }
-        grouping odu-ncm-mep-pac {
+        grouping odu-ncm-pac {
             leaf-list tcm-fields-in-use {
                 type uint64;
                 config false;
@@ -193,11 +196,6 @@ module tapi-odu {
             description "none";
         }
         grouping odu-tcm-mep-pac {
-            leaf tcm-field {
-                type uint64;
-                config false;
-                description "This attribute indicates the tandem connection monitoring field of the ODU OH.";
-            }
             leaf tcm-extension {
                 type tcm-extension;
                 description "none";
@@ -229,17 +227,18 @@ module tapi-odu {
                 type tapi-common:administrative-state;
                 description "This attribute provides the capability to provision the LOCK signal at the sink, which is one of the ODU maintenance signals. When a Tandem Connection endpoint is set to admin state locked, it will insert the ODU-LCK signal in the downstream direction.";
             }
+            uses odu-tcm-mip-pac;
             description "none";
         }
         grouping odu-mip-spec {
-            container odu-monitor {
+            container odu-mip {
                 config false;
-                uses odu-monitor-pac;
+                uses odu-mip-pac;
                 description "none";
             }
             container odu-ncm {
                 config false;
-                uses odu-ncm-mip-pac;
+                uses odu-ncm-pac;
                 description "none";
             }
             container odu-tcm {
@@ -247,9 +246,17 @@ module tapi-odu {
                 uses odu-tcm-mip-pac;
                 description "none";
             }
+            container odu-pm {
+                uses odu-pm-pac;
+                description "none";
+            }
+            container odu-defect {
+                uses odu-defect-pac;
+                description "none";
+            }
             description "none";
         }
-        grouping odu-monitor-pac {
+        grouping odu-mip-pac {
             leaf acti {
                 type string;
                 config false;
@@ -283,14 +290,6 @@ module tapi-odu {
             }
             description "none";
         }
-        grouping odu-ncm-mip-pac {
-            leaf-list tcm-fields-in-use {
-                type uint64;
-                config false;
-                description "This attribute indicates the used TCM fields of the ODU OH.";
-            }
-            description "none";
-        }
         grouping odu-tcm-mip-pac {
             leaf tcm-field {
                 type uint64;
@@ -300,11 +299,6 @@ module tapi-odu {
             description "none";
         }
         grouping odu-mep-pac {
-            leaf txti {
-                type string;
-                description "The Trail Trace Identifier (TTI) information, provisioned by the managing system at the termination source, to be placed in the TTI overhead position of the source of a trail for transmission.
-                    ";
-            }
             leaf dm-source {
                 type boolean;
                 description "This attribute is for configuring the delay measurement process at the trail termination function represented by the subject TTP object class. It models the MI_DM_Source MI signal. If MI_DM_Source is false, then the value of the DMp bit is determined by the RI_DM. If MI_DM_Source is true, then the value of the DMp bit is set to MI_DMValue.";
@@ -313,6 +307,12 @@ module tapi-odu {
                 type boolean;
                 description "This attribute is for setting the DMp and DMti bits of the delay measurement process. The value of 'true' sets the DMp and DMti bits to 0 and the value of 'false' to 1.";
             }
+            leaf txti {
+                type string;
+                description "The Trail Trace Identifier (TTI) information, provisioned by the managing system at the termination source, to be placed in the TTI overhead position of the source of a trail for transmission.
+                    ";
+            }
+            uses odu-mip-pac;
             description "none";
         }
         grouping odu-common-pac {
@@ -337,6 +337,64 @@ module tapi-odu {
                     Standardized values are defined in Table 7-2/G.709.";
             }
             description "none";
+        }
+        grouping odu-pm-pac {
+            leaf n-bbe {
+                type uint64;
+                description "Near-end Background Block Error";
+            }
+            leaf f-bbe {
+                type uint64;
+                config false;
+                description "Far-end Background Block Error";
+            }
+            leaf n-ses {
+                type uint64;
+                description "Near-end Severely Errored Second";
+            }
+            leaf f-ses {
+                type uint64;
+                description "Far-end Severely Errored Second";
+            }
+            container uas {
+                uses uas-choice;
+                description "UnAvailable Second";
+            }
+            description "Instance of this object class contains the ODUP layer-specific Current Data. This object class is a subclass of the OTN_CurrentData object class.
+                PM data attributes: fBbe, fSes, nBbe, nSes. uas";
+        }
+        grouping odu-defect-pac {
+            leaf bdi {
+                type boolean;
+                config false;
+                description "Backward Defect Indication";
+            }
+            leaf deg {
+                type boolean;
+                config false;
+                description "Signal Degraded";
+            }
+            leaf lck {
+                type boolean;
+                config false;
+                description "Locked";
+            }
+            leaf oci {
+                type boolean;
+                config false;
+                description "Open Connection Indicator";
+            }
+            leaf ssf {
+                type boolean;
+                config false;
+                description "Server Signal Failure";
+            }
+            leaf tim {
+                type boolean;
+                config false;
+                description "Trail Trace Identifier Mismatch";
+            }
+            description "The valid list of defects raised on the entity. If the value of any attribute is true, then the corresponding defect is raised.";
         }
         feature odu {
             description "none";
@@ -609,6 +667,26 @@ module tapi-odu {
                 base percentage-granularity;
             }
             description "none";
+        }
+        grouping uas-choice {
+            leaf bidirectional {
+                type boolean;
+                default "true";
+                description "none";
+            }
+            leaf uas {
+                type uint64;
+                description "none";
+            }
+            leaf nuas {
+                type uint64;
+                description "none";
+            }
+            leaf fuas {
+                type uint64;
+                description "none";
+            }
+            description "If bidirectional is TRUE then use the uas attribute, if bidirectional is FALSE use the nuas, and fuas attributes";
         }
 
 }
