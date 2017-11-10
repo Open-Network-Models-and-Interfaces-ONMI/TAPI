@@ -47,27 +47,6 @@ module tapi-common {
             }
             description "The TAPI GlobalComponent serves as the super class for all TAPI entities that can be directly retrieved by their ID. As such, these are first class entities and their ID is expected to be globally unique. ";
         }
-        grouping layer-protocol {
-            leaf layer-protocol-name {
-                type layer-protocol-name;
-                description "Indicate the specific layer-protocol described by the LayerProtocol entity.";
-            }
-            leaf termination-direction {
-                type termination-direction;
-                description "The overall directionality of the LP. 
-                    - A BIDIRECTIONAL LP will have some SINK and/or SOURCE flowss.
-                    - A SINK LP can only contain elements with SINK flows or CONTRA_DIRECTION_SOURCE flows
-                    - A SOURCE LP can only contain SOURCE flows or CONTRA_DIRECTION_SINK flows";
-            }
-            leaf termination-state {
-                type termination-state;
-                description "Indicates whether the layer is terminated and if so how.";
-            }
-            uses local-class;
-            description "Each transport layer is represented by a LayerProtocol (LP) instance. The LayerProtocol instances it can be used for controlling termination and monitoring functionality. 
-                It can also be used for controlling the adaptation (i.e. encapsulation and/or multiplexing of client signal), tandem connection monitoring, traffic conditioning and/or shaping functionality at an intermediate point along a connection. 
-                Where the client – server relationship is fixed 1:1 and immutable, the layers can be encapsulated in a single LTP instance. Where the is a n:1 relationship between client and server, the layers must be split over two separate instances of LTP. ";
-        }
         grouping lifecycle-state-pac {
             leaf lifecycle-state {
                 type lifecycle-state;
@@ -125,11 +104,11 @@ module tapi-common {
             description "none";
         }
         grouping service-interface-point {
-            list layer-protocol {
-                key 'local-id';
+            leaf-list layer-protocol-name {
+                type layer-protocol-name;
+                config false;
                 min-elements 1;
-                uses layer-protocol;
-                description "Usage of layerProtocol [>1]  in the ServiceInterfacePoint should be considered experimental";
+                description "Usage of layerProtocolName [>1]  in the ServiceInterfacePoint should be considered experimental";
             }
             container state {
                 uses admin-state-pac;
@@ -160,6 +139,24 @@ module tapi-common {
                 The clients supported by a multi-layer TopologicalEntity may interact such that the resources used by one client may impact those available to another. This is derived from the LTP spec details.
                 Represents the capacity available to user (client) along with client interaction and usage. 
                 A TopologicalEntity may reflect one or more client protocols and one or more members for each profile.";
+        }
+        grouping termination-pac {
+            leaf termination-direction {
+                type termination-direction;
+                config false;
+                description "The overall directionality of the LP. 
+                    - A BIDIRECTIONAL LP will have some SINK and/or SOURCE flowss.
+                    - A SINK LP can only contain elements with SINK flows or CONTRA_DIRECTION_SOURCE flows
+                    - A SOURCE LP can only contain SOURCE flows or CONTRA_DIRECTION_SINK flows";
+            }
+            leaf termination-state {
+                type termination-state;
+                config false;
+                description "Indicates whether the layer is terminated and if so how.";
+            }
+            description "Each transport layer is represented by a LayerProtocol (LP) instance. The LayerProtocol instances it can be used for controlling termination and monitoring functionality. 
+                It can also be used for controlling the adaptation (i.e. encapsulation and/or multiplexing of client signal), tandem connection monitoring, traffic conditioning and/or shaping functionality at an intermediate point along a connection. 
+                Where the client – server relationship is fixed 1:1 and immutable, the layers can be encapsulated in a single LTP instance. Where the is a n:1 relationship between client and server, the layers must be split over two separate instances of LTP. ";
         }
 
     /***********************
