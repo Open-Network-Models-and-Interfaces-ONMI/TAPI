@@ -75,11 +75,6 @@ module tapi-connectivity {
                 uses switch-control;
                 description "none";
             }
-            container state {
-                config false;
-                uses tapi-common:operational-state-pac;
-                description "none";
-            }
             leaf direction {
                 type tapi-common:forwarding-direction;
                 config false;
@@ -91,6 +86,7 @@ module tapi-connectivity {
                 description "none";
             }
             uses tapi-common:resource-spec;
+            uses tapi-common:operational-state-pac;
             description "The ForwardingConstruct (FC) object class models enabled potential for forwarding between two or more LTPs and like the LTP supports any transport protocol including all circuit and packet forms.
                 At the lowest level of recursion, a FC represents a cross-connection within an NE.";
         }
@@ -127,15 +123,6 @@ module tapi-connectivity {
                 }
                 description "none";
             }
-            container state {
-                config false;
-                uses tapi-common:operational-state-pac;
-                description "none";
-            }
-            container termination {
-                uses tapi-common:termination-pac;
-                description "none";
-            }
             leaf connection-port-direction {
                 type tapi-common:port-direction;
                 config false;
@@ -147,6 +134,8 @@ module tapi-connectivity {
                 description "Each EP of the FC has a role (e.g., working, protection, protected, symmetric, hub, spoke, leaf, root)  in the context of the FC with respect to the FC function. ";
             }
             uses tapi-common:resource-spec;
+            uses tapi-common:operational-state-pac;
+            uses tapi-common:termination-pac;
             description "The LogicalTerminationPoint (LTP) object class encapsulates the termination and adaptation functions of one or more transport layers. 
                 The structure of LTP supports all transport protocols including circuit and packet forms.";
         }
@@ -187,10 +176,6 @@ module tapi-connectivity {
                 uses tapi-topology:latency-characteristic;
                 description "The effect on the latency of a queuing process. This only has significant effect for packet based systems and has a complex characteristic.";
             }
-            container route-compute-policy {
-                uses route-compute-policy;
-                description "none";
-            }
             leaf coroute-inclusion {
                 type leafref {
                     path '/tapi-common:context/tapi-connectivity:connectivity-service/tapi-connectivity:uuid';
@@ -205,7 +190,7 @@ module tapi-connectivity {
                 config false;
                 description "none";
             }
-            uses tapi-common:local-class;
+            uses tapi-connectivity:route-compute-policy;
             description "none";
         }
         grouping connectivity-service {
@@ -222,18 +207,6 @@ module tapi-connectivity {
                 config false;
                 description "none";
             }
-            container conn-constraint {
-                uses connectivity-constraint;
-                description "none";
-            }
-            container topo-constraint {
-                uses topology-constraint;
-                description "none";
-            }
-            container state {
-                uses tapi-common:admin-state-pac;
-                description "none";
-            }
             leaf direction {
                 type tapi-common:forwarding-direction;
                 description "none";
@@ -242,12 +215,11 @@ module tapi-connectivity {
                 type tapi-common:layer-protocol-name;
                 description "none";
             }
-            list resilience-constraint {
-                key 'local-id';
-                uses resilience-constraint;
-                description "none";
-            }
             uses tapi-common:service-spec;
+            uses tapi-connectivity:connectivity-constraint;
+            uses tapi-connectivity:topology-constraint;
+            uses tapi-common:admin-state-pac;
+            uses tapi-connectivity:resilience-constraint;
             description "The ForwardingConstruct (FC) object class models enabled potential for forwarding between two or more LTPs and like the LTP supports any transport protocol including all circuit and packet forms.
                 At the lowest level of recursion, a FC represents a cross-connection within an NE.";
         }
@@ -269,10 +241,6 @@ module tapi-connectivity {
                 type tapi-common:layer-protocol-name;
                 description "none";
             }
-            container state {
-                uses tapi-common:admin-state-pac;
-                description "none";
-            }
             container capacity {
                 uses tapi-common:capacity-pac;
                 description "none";
@@ -290,6 +258,7 @@ module tapi-connectivity {
                 description "To specify the protection role of this Port when create or update ConnectivityService.";
             }
             uses tapi-common:local-class;
+            uses tapi-common:admin-state-pac;
             description "The association of the FC to LTPs is made via EndPoints.
                 The EndPoint (EP) object class models the access to the FC function. 
                 The traffic forwarding between the associated EPs of the FC depends upon the type of FC and may be associated with FcSwitch object instances.  
@@ -380,11 +349,8 @@ module tapi-connectivity {
                 uses switch;
                 description "none";
             }
-            container control-parameters {
-                uses resilience-constraint;
-                description "none";
-            }
             uses tapi-common:local-class;
+            uses tapi-connectivity:resilience-constraint;
             description "Represents the capability to control and coordinate switches, to add/delete/modify FCs and to add/delete/modify LTPs/LPs so as to realize a protection scheme.";
         }
         grouping resilience-constraint {
@@ -438,7 +404,6 @@ module tapi-connectivity {
                 type tapi-common:layer-protocol-name;
                 description "Indicate which layer this resilience parameters package configured for.";
             }
-            uses tapi-common:local-class;
             description "A list of control parameters to apply to a switch.";
         }
         grouping topology-constraint {
@@ -503,7 +468,6 @@ module tapi-connectivity {
                 config false;
                 description "soft constraint requested by client to indicate the layer(s) of transport connection that it prefers to carry the service. This could be same as the service layer or one of the supported server layers";
             }
-            uses tapi-common:local-class;
             description "none";
         }
         grouping cep-list {
