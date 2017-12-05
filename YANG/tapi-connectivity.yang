@@ -50,19 +50,6 @@ module tapi-connectivity {
                     Connection aggregation reflects Node/Topology aggregation. 
                     The FC represents a Cross-Connection in an NE. The Cross-Connection in an NE is not necessarily the lowest level of FC partitioning.";
             }
-            leaf-list supported-link {
-                type leafref {
-                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:link/tapi-topology:uuid';
-                }
-                description "An Connection that spans between CEPs that terminate the LayerProtocol usually supports one or more links in the client layer.";
-            }
-            leaf container-node {
-                type leafref {
-                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:uuid';
-                }
-                config false;
-                description "none";
-            }
             list route {
                 key 'local-id';
                 config false;
@@ -96,31 +83,25 @@ module tapi-connectivity {
                 config false;
                 description "none";
             }
+            leaf connectivity-service-end-point {
+                type leafref {
+                    path '/tapi-common:context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point/tapi-connectivity:local-id';
+                }
+                description "none";
+            }
+            leaf-list parent-node-edge-point {
+                type leafref {
+                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-topology:uuid';
+                }
+                config false;
+                min-elements 1;
+                description "none";
+            }
             leaf-list client-node-edge-point {
                 type leafref {
                     path '/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-topology:uuid';
                 }
                 config false;
-                description "none";
-            }
-            leaf server-node-edge-point {
-                type leafref {
-                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-topology:uuid';
-                }
-                config false;
-                description "none";
-            }
-            leaf peer-connection-end-point {
-                type leafref {
-                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:connection-end-point/tapi-connectivity:uuid';
-                }
-                config false;
-                description "none";
-            }
-            leaf-list associated-route {
-                type leafref {
-                    path '/tapi-common:context/tapi-connectivity:connection/tapi-connectivity:route/tapi-connectivity:local-id';
-                }
                 description "none";
             }
             leaf connection-port-direction {
@@ -224,21 +205,14 @@ module tapi-connectivity {
                 At the lowest level of recursion, a FC represents a cross-connection within an NE.";
         }
         grouping connectivity-service-end-point {
+            leaf layer-protocol-name {
+                type tapi-common:layer-protocol-name;
+                description "none";
+            }
             leaf service-interface-point {
                 type leafref {
                     path '/tapi-common:context/tapi-common:service-interface-point/tapi-common:uuid';
                 }
-                description "none";
-            }
-            leaf-list connection-end-point {
-                type leafref {
-                    path '/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:connection-end-point/tapi-connectivity:uuid';
-                }
-                config false;
-                description "none";
-            }
-            leaf layer-protocol-name {
-                type tapi-common:layer-protocol-name;
                 description "none";
             }
             container capacity {
