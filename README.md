@@ -1,7 +1,7 @@
 # ONF Open Transport (SNOWMASS)
 This is a repository for the ONF Transport API SDK. This SDK is being released under the Apache 2.0 license.
 
-The ONF Transport API (TAPI) project charted under the [ONF Open Transport Configuration & Control](https://www.opennetworking.org/projects/open-transport/) (OTCC) is responsible for the development of this SDK as an Open Source project [SNOWMASS](http://opensourcesdn.org/projects/project-snowmass/). The TAPI SDK supports interfaces to the following functional modules:
+The ONF Transport API (TAPI) project charted under the [ONF Open Transport Configuration & Control](https://www.opennetworking.org/projects/open-transport/) (OTCC) is responsible for the development of this SDK as an Open Source project [SNOWMASS](https://www.opennetworking.org/projects/snowmass/). The TAPI SDK supports interfaces to the following functional modules:
 - Topology Service
 - Connectivity Service
 - OAM Service
