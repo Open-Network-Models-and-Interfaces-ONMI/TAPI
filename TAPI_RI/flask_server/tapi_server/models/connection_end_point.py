@@ -277,7 +277,7 @@ class ConnectionEndPoint(Model):
         :param layer_protocol_name: The layer_protocol_name of this ConnectionEndPoint.
         :type layer_protocol_name: str
         """
-        allowed_values = ["OTSiA", "OCH", "OTU", "ODU", "ETH", "ETY"]  # noqa: E501
+        allowed_values = ["OTSiA", "OCH", "OTU", "ODU", "ETH", "ETY", "DSR"]  # noqa: E501
         if layer_protocol_name not in allowed_values:
             raise ValueError(
                 "Invalid value for `layer_protocol_name` ({0}), must be one of {1}"

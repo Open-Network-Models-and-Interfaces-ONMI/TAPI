@@ -3,13 +3,11 @@ import six
 
 from tapi_server.models.bandwidth_profile import BandwidthProfile  # noqa: E501
 from tapi_server.models.capacity import Capacity  # noqa: E501
-from tapi_server.models.capacity_pac import CapacityPac  # noqa: E501
 from tapi_server.models.capacity_value import CapacityValue  # noqa: E501
 from tapi_server.models.connection import Connection  # noqa: E501
 from tapi_server.models.connection_end_point import ConnectionEndPoint  # noqa: E501
 from tapi_server.models.connectivity_service import ConnectivityService  # noqa: E501
 from tapi_server.models.connectivity_service_end_point import ConnectivityServiceEndPoint  # noqa: E501
-from tapi_server.models.context_schema import ContextSchema  # noqa: E501
 from tapi_server.models.cost_characteristic import CostCharacteristic  # noqa: E501
 from tapi_server.models.create_connectivity_service_rpc_input_schema import CreateConnectivityServiceRPCInputSchema  # noqa: E501
 from tapi_server.models.create_connectivity_service_rpc_output_schema import CreateConnectivityServiceRPCOutputSchema  # noqa: E501
@@ -20,14 +18,26 @@ from tapi_server.models.get_connection_details_rpc_output_schema import GetConne
 from tapi_server.models.get_connectivity_service_details_rpc_input_schema import GetConnectivityServiceDetailsRPCInputSchema  # noqa: E501
 from tapi_server.models.get_connectivity_service_details_rpc_output_schema import GetConnectivityServiceDetailsRPCOutputSchema  # noqa: E501
 from tapi_server.models.get_connectivity_service_list_rpc_output_schema import GetConnectivityServiceListRPCOutputSchema  # noqa: E501
+from tapi_server.models.get_link_details_rpc_input_schema import GetLinkDetailsRPCInputSchema  # noqa: E501
+from tapi_server.models.get_link_details_rpc_output_schema import GetLinkDetailsRPCOutputSchema  # noqa: E501
+from tapi_server.models.get_node_details_rpc_input_schema import GetNodeDetailsRPCInputSchema  # noqa: E501
+from tapi_server.models.get_node_details_rpc_output_schema import GetNodeDetailsRPCOutputSchema  # noqa: E501
+from tapi_server.models.get_node_edge_point_details_rpc_input_schema import GetNodeEdgePointDetailsRPCInputSchema  # noqa: E501
+from tapi_server.models.get_node_edge_point_details_rpc_output_schema import GetNodeEdgePointDetailsRPCOutputSchema  # noqa: E501
+from tapi_server.models.get_service_interface_point_details_rpc_input_schema import GetServiceInterfacePointDetailsRPCInputSchema  # noqa: E501
+from tapi_server.models.get_service_interface_point_details_rpc_output_schema import GetServiceInterfacePointDetailsRPCOutputSchema  # noqa: E501
+from tapi_server.models.get_service_interface_point_list_rpc_output_schema import GetServiceInterfacePointListRPCOutputSchema  # noqa: E501
+from tapi_server.models.get_topology_details_rpc_input_schema import GetTopologyDetailsRPCInputSchema  # noqa: E501
+from tapi_server.models.get_topology_details_rpc_output_schema import GetTopologyDetailsRPCOutputSchema  # noqa: E501
+from tapi_server.models.get_topology_list_rpc_output_schema import GetTopologyListRPCOutputSchema  # noqa: E501
 from tapi_server.models.inter_rule_group import InterRuleGroup  # noqa: E501
 from tapi_server.models.latency_characteristic import LatencyCharacteristic  # noqa: E501
 from tapi_server.models.link import Link  # noqa: E501
 from tapi_server.models.name_and_value import NameAndValue  # noqa: E501
 from tapi_server.models.network_topology_service import NetworkTopologyService  # noqa: E501
 from tapi_server.models.node import Node  # noqa: E501
+from tapi_server.models.node_edge_point import NodeEdgePoint  # noqa: E501
 from tapi_server.models.node_rule_group import NodeRuleGroup  # noqa: E501
-from tapi_server.models.owned_node_edge_point_schema import OwnedNodeEdgePointSchema  # noqa: E501
 from tapi_server.models.path import Path  # noqa: E501
 from tapi_server.models.path_computation_service import PathComputationService  # noqa: E501
 from tapi_server.models.path_objective_function import PathObjectiveFunction  # noqa: E501
@@ -41,13 +51,16 @@ from tapi_server.models.rule import Rule  # noqa: E501
 from tapi_server.models.service_interface_point import ServiceInterfacePoint  # noqa: E501
 from tapi_server.models.switch import Switch  # noqa: E501
 from tapi_server.models.switch_control import SwitchControl  # noqa: E501
+from tapi_server.models.tapi_context import TapiContext  # noqa: E501
 from tapi_server.models.time_range import TimeRange  # noqa: E501
 from tapi_server.models.topology import Topology  # noqa: E501
 from tapi_server.models.update_connectivity_service_rpc_input_schema import UpdateConnectivityServiceRPCInputSchema  # noqa: E501
 from tapi_server.models.update_connectivity_service_rpc_output_schema import UpdateConnectivityServiceRPCOutputSchema  # noqa: E501
+from tapi_server.models.update_service_interface_point_rpc_input_schema import UpdateServiceInterfacePointRPCInputSchema  # noqa: E501
 from tapi_server.models.validation_mechanism import ValidationMechanism  # noqa: E501
 from tapi_server import util
 from tapi_server.database import database
+
 
 def create_context_by_id(context):  # noqa: E501
     """Create context by ID
@@ -64,7 +77,7 @@ def create_context_by_id(context):  # noqa: E501
     
     logging.info("create_context_by_id %s", context)
     if connexion.request.is_json:
-        database.context = ContextSchema.from_dict(connexion.request.get_json())  # noqa: E501
+        database.context = TapiContext.from_dict(connexion.request.get_json())  # noqa: E501
     return database.context
 
 
@@ -85,6 +98,120 @@ def create_context_connectivity_service_connectivity_service_by_id(uuid, connect
     return 'do some magic!'
 
 
+def create_context_connectivity_service_cost_characteristic_cost_characteristic_by_id(uuid, cost_name, cost_characteristic):  # noqa: E501
+    """Create cost-characteristic by ID
+
+    Create operation of resource: cost-characteristic # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param cost_name: ID of cost_name
+    :type cost_name: str
+    :param cost_characteristic: cost-characteristicbody object
+    :type cost_characteristic: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        cost_characteristic = CostCharacteristic.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
+def create_context_connectivity_service_end_point_capacity_bandwidth_profile_bandwidth_profile_by_id(uuid, local_id, bandwidth_profile):  # noqa: E501
+    """Create bandwidth-profile by ID
+
+    Create operation of resource: bandwidth-profile # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param local_id: ID of local_id
+    :type local_id: str
+    :param bandwidth_profile: bandwidth-profilebody object
+    :type bandwidth_profile: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        bandwidth_profile = BandwidthProfile.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
+def create_context_connectivity_service_end_point_capacity_bandwidth_profile_committed_burst_size_committed_burst_size_by_id(uuid, local_id, committed_burst_size):  # noqa: E501
+    """Create committed-burst-size by ID
+
+    Create operation of resource: committed-burst-size # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param local_id: ID of local_id
+    :type local_id: str
+    :param committed_burst_size: committed-burst-sizebody object
+    :type committed_burst_size: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        committed_burst_size = CapacityValue.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
+def create_context_connectivity_service_end_point_capacity_bandwidth_profile_committed_information_rate_committed_information_rate_by_id(uuid, local_id, committed_information_rate):  # noqa: E501
+    """Create committed-information-rate by ID
+
+    Create operation of resource: committed-information-rate # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param local_id: ID of local_id
+    :type local_id: str
+    :param committed_information_rate: committed-information-ratebody object
+    :type committed_information_rate: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        committed_information_rate = CapacityValue.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
+def create_context_connectivity_service_end_point_capacity_bandwidth_profile_peak_burst_size_peak_burst_size_by_id(uuid, local_id, peak_burst_size):  # noqa: E501
+    """Create peak-burst-size by ID
+
+    Create operation of resource: peak-burst-size # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param local_id: ID of local_id
+    :type local_id: str
+    :param peak_burst_size: peak-burst-sizebody object
+    :type peak_burst_size: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        peak_burst_size = CapacityValue.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
+def create_context_connectivity_service_end_point_capacity_bandwidth_profile_peak_information_rate_peak_information_rate_by_id(uuid, local_id, peak_information_rate):  # noqa: E501
+    """Create peak-information-rate by ID
+
+    Create operation of resource: peak-information-rate # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param local_id: ID of local_id
+    :type local_id: str
+    :param peak_information_rate: peak-information-ratebody object
+    :type peak_information_rate: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        peak_information_rate = CapacityValue.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
 def create_context_connectivity_service_end_point_capacity_capacity_by_id(uuid, local_id, capacity):  # noqa: E501
     """Create capacity by ID
 
@@ -100,7 +227,26 @@ def create_context_connectivity_service_end_point_capacity_capacity_by_id(uuid, 
     :rtype: None
     """
     if connexion.request.is_json:
-        capacity = CapacityPac.from_dict(connexion.request.get_json())  # noqa: E501
+        capacity = Capacity.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
+def create_context_connectivity_service_end_point_capacity_total_size_total_size_by_id(uuid, local_id, total_size):  # noqa: E501
+    """Create total-size by ID
+
+    Create operation of resource: total-size # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param local_id: ID of local_id
+    :type local_id: str
+    :param total_size: total-sizebody object
+    :type total_size: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        total_size = CapacityValue.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
@@ -144,6 +290,25 @@ def create_context_connectivity_service_end_point_name_name_by_id(uuid, local_id
     return 'do some magic!'
 
 
+def create_context_connectivity_service_latency_characteristic_latency_characteristic_by_id(uuid, traffic_property_name, latency_characteristic):  # noqa: E501
+    """Create latency-characteristic by ID
+
+    Create operation of resource: latency-characteristic # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param traffic_property_name: ID of traffic_property_name
+    :type traffic_property_name: str
+    :param latency_characteristic: latency-characteristicbody object
+    :type latency_characteristic: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        latency_characteristic = LatencyCharacteristic.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
 def create_context_connectivity_service_name_name_by_id(uuid, value_name, name):  # noqa: E501
     """Create name by ID
 
@@ -160,6 +325,125 @@ def create_context_connectivity_service_name_name_by_id(uuid, value_name, name):
     """
     if connexion.request.is_json:
         name = NameAndValue.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
+def create_context_connectivity_service_requested_capacity_bandwidth_profile_bandwidth_profile_by_id(uuid, bandwidth_profile):  # noqa: E501
+    """Create bandwidth-profile by ID
+
+    Create operation of resource: bandwidth-profile # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param bandwidth_profile: bandwidth-profilebody object
+    :type bandwidth_profile: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        bandwidth_profile = BandwidthProfile.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
+def create_context_connectivity_service_requested_capacity_bandwidth_profile_committed_burst_size_committed_burst_size_by_id(uuid, committed_burst_size):  # noqa: E501
+    """Create committed-burst-size by ID
+
+    Create operation of resource: committed-burst-size # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param committed_burst_size: committed-burst-sizebody object
+    :type committed_burst_size: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        committed_burst_size = CapacityValue.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
+def create_context_connectivity_service_requested_capacity_bandwidth_profile_committed_information_rate_committed_information_rate_by_id(uuid, committed_information_rate):  # noqa: E501
+    """Create committed-information-rate by ID
+
+    Create operation of resource: committed-information-rate # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param committed_information_rate: committed-information-ratebody object
+    :type committed_information_rate: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        committed_information_rate = CapacityValue.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
+def create_context_connectivity_service_requested_capacity_bandwidth_profile_peak_burst_size_peak_burst_size_by_id(uuid, peak_burst_size):  # noqa: E501
+    """Create peak-burst-size by ID
+
+    Create operation of resource: peak-burst-size # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param peak_burst_size: peak-burst-sizebody object
+    :type peak_burst_size: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        peak_burst_size = CapacityValue.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
+def create_context_connectivity_service_requested_capacity_bandwidth_profile_peak_information_rate_peak_information_rate_by_id(uuid, peak_information_rate):  # noqa: E501
+    """Create peak-information-rate by ID
+
+    Create operation of resource: peak-information-rate # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param peak_information_rate: peak-information-ratebody object
+    :type peak_information_rate: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        peak_information_rate = CapacityValue.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
+def create_context_connectivity_service_requested_capacity_requested_capacity_by_id(uuid, requested_capacity):  # noqa: E501
+    """Create requested-capacity by ID
+
+    Create operation of resource: requested-capacity # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param requested_capacity: requested-capacitybody object
+    :type requested_capacity: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        requested_capacity = Capacity.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
+def create_context_connectivity_service_requested_capacity_total_size_total_size_by_id(uuid, total_size):  # noqa: E501
+    """Create total-size by ID
+
+    Create operation of resource: total-size # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param total_size: total-sizebody object
+    :type total_size: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        total_size = CapacityValue.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
@@ -505,6 +789,103 @@ def create_get_connectivity_service_list_by_id():  # noqa: E501
     return 'do some magic!'
 
 
+def create_get_link_details_by_id(get_link_details):  # noqa: E501
+    """Create get-link-details by ID
+
+    Create operation of resource: get-link-details # noqa: E501
+
+    :param get_link_details: get-link-detailsbody object
+    :type get_link_details: dict | bytes
+
+    :rtype: GetLinkDetailsRPCOutputSchema
+    """
+    if connexion.request.is_json:
+        get_link_details = GetLinkDetailsRPCInputSchema.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
+def create_get_node_details_by_id(get_node_details):  # noqa: E501
+    """Create get-node-details by ID
+
+    Create operation of resource: get-node-details # noqa: E501
+
+    :param get_node_details: get-node-detailsbody object
+    :type get_node_details: dict | bytes
+
+    :rtype: GetNodeDetailsRPCOutputSchema
+    """
+    if connexion.request.is_json:
+        get_node_details = GetNodeDetailsRPCInputSchema.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
+def create_get_node_edge_point_details_by_id(get_node_edge_point_details):  # noqa: E501
+    """Create get-node-edge-point-details by ID
+
+    Create operation of resource: get-node-edge-point-details # noqa: E501
+
+    :param get_node_edge_point_details: get-node-edge-point-detailsbody object
+    :type get_node_edge_point_details: dict | bytes
+
+    :rtype: GetNodeEdgePointDetailsRPCOutputSchema
+    """
+    if connexion.request.is_json:
+        get_node_edge_point_details = GetNodeEdgePointDetailsRPCInputSchema.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
+def create_get_service_interface_point_details_by_id(get_service_interface_point_details):  # noqa: E501
+    """Create get-service-interface-point-details by ID
+
+    Create operation of resource: get-service-interface-point-details # noqa: E501
+
+    :param get_service_interface_point_details: get-service-interface-point-detailsbody object
+    :type get_service_interface_point_details: dict | bytes
+
+    :rtype: GetServiceInterfacePointDetailsRPCOutputSchema
+    """
+    if connexion.request.is_json:
+        get_service_interface_point_details = GetServiceInterfacePointDetailsRPCInputSchema.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
+def create_get_service_interface_point_list_by_id():  # noqa: E501
+    """Create get-service-interface-point-list by ID
+
+    Create operation of resource: get-service-interface-point-list # noqa: E501
+
+
+    :rtype: GetServiceInterfacePointListRPCOutputSchema
+    """
+    return 'do some magic!'
+
+
+def create_get_topology_details_by_id(get_topology_details):  # noqa: E501
+    """Create get-topology-details by ID
+
+    Create operation of resource: get-topology-details # noqa: E501
+
+    :param get_topology_details: get-topology-detailsbody object
+    :type get_topology_details: dict | bytes
+
+    :rtype: GetTopologyDetailsRPCOutputSchema
+    """
+    if connexion.request.is_json:
+        get_topology_details = GetTopologyDetailsRPCInputSchema.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
+def create_get_topology_list_by_id():  # noqa: E501
+    """Create get-topology-list by ID
+
+    Create operation of resource: get-topology-list # noqa: E501
+
+
+    :rtype: GetTopologyListRPCOutputSchema
+    """
+    return 'do some magic!'
+
+
 def create_update_connectivity_service_by_id(update_connectivity_service):  # noqa: E501
     """Create update-connectivity-service by ID
 
@@ -517,6 +898,21 @@ def create_update_connectivity_service_by_id(update_connectivity_service):  # no
     """
     if connexion.request.is_json:
         update_connectivity_service = UpdateConnectivityServiceRPCInputSchema.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
+def create_update_service_interface_point_by_id(update_service_interface_point):  # noqa: E501
+    """Create update-service-interface-point by ID
+
+    Create operation of resource: update-service-interface-point # noqa: E501
+
+    :param update_service_interface_point: update-service-interface-pointbody object
+    :type update_service_interface_point: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        update_service_interface_point = UpdateServiceInterfacePointRPCInputSchema.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
@@ -544,10 +940,115 @@ def delete_context_connectivity_service_connectivity_service_by_id(uuid):  # noq
     return 'do some magic!'
 
 
+def delete_context_connectivity_service_cost_characteristic_cost_characteristic_by_id(uuid, cost_name):  # noqa: E501
+    """Delete cost-characteristic by ID
+
+    Delete operation of resource: cost-characteristic # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param cost_name: ID of cost_name
+    :type cost_name: str
+
+    :rtype: None
+    """
+    return 'do some magic!'
+
+
+def delete_context_connectivity_service_end_point_capacity_bandwidth_profile_bandwidth_profile_by_id(uuid, local_id):  # noqa: E501
+    """Delete bandwidth-profile by ID
+
+    Delete operation of resource: bandwidth-profile # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param local_id: ID of local_id
+    :type local_id: str
+
+    :rtype: None
+    """
+    return 'do some magic!'
+
+
+def delete_context_connectivity_service_end_point_capacity_bandwidth_profile_committed_burst_size_committed_burst_size_by_id(uuid, local_id):  # noqa: E501
+    """Delete committed-burst-size by ID
+
+    Delete operation of resource: committed-burst-size # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param local_id: ID of local_id
+    :type local_id: str
+
+    :rtype: None
+    """
+    return 'do some magic!'
+
+
+def delete_context_connectivity_service_end_point_capacity_bandwidth_profile_committed_information_rate_committed_information_rate_by_id(uuid, local_id):  # noqa: E501
+    """Delete committed-information-rate by ID
+
+    Delete operation of resource: committed-information-rate # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param local_id: ID of local_id
+    :type local_id: str
+
+    :rtype: None
+    """
+    return 'do some magic!'
+
+
+def delete_context_connectivity_service_end_point_capacity_bandwidth_profile_peak_burst_size_peak_burst_size_by_id(uuid, local_id):  # noqa: E501
+    """Delete peak-burst-size by ID
+
+    Delete operation of resource: peak-burst-size # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param local_id: ID of local_id
+    :type local_id: str
+
+    :rtype: None
+    """
+    return 'do some magic!'
+
+
+def delete_context_connectivity_service_end_point_capacity_bandwidth_profile_peak_information_rate_peak_information_rate_by_id(uuid, local_id):  # noqa: E501
+    """Delete peak-information-rate by ID
+
+    Delete operation of resource: peak-information-rate # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param local_id: ID of local_id
+    :type local_id: str
+
+    :rtype: None
+    """
+    return 'do some magic!'
+
+
 def delete_context_connectivity_service_end_point_capacity_capacity_by_id(uuid, local_id):  # noqa: E501
     """Delete capacity by ID
 
     Delete operation of resource: capacity # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param local_id: ID of local_id
+    :type local_id: str
+
+    :rtype: None
+    """
+    return 'do some magic!'
+
+
+def delete_context_connectivity_service_end_point_capacity_total_size_total_size_by_id(uuid, local_id):  # noqa: E501
+    """Delete total-size by ID
+
+    Delete operation of resource: total-size # noqa: E501
 
     :param uuid: ID of uuid
     :type uuid: str
@@ -591,6 +1092,21 @@ def delete_context_connectivity_service_end_point_name_name_by_id(uuid, local_id
     return 'do some magic!'
 
 
+def delete_context_connectivity_service_latency_characteristic_latency_characteristic_by_id(uuid, traffic_property_name):  # noqa: E501
+    """Delete latency-characteristic by ID
+
+    Delete operation of resource: latency-characteristic # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param traffic_property_name: ID of traffic_property_name
+    :type traffic_property_name: str
+
+    :rtype: None
+    """
+    return 'do some magic!'
+
+
 def delete_context_connectivity_service_name_name_by_id(uuid, value_name):  # noqa: E501
     """Delete name by ID
 
@@ -600,6 +1116,97 @@ def delete_context_connectivity_service_name_name_by_id(uuid, value_name):  # no
     :type uuid: str
     :param value_name: ID of value_name
     :type value_name: str
+
+    :rtype: None
+    """
+    return 'do some magic!'
+
+
+def delete_context_connectivity_service_requested_capacity_bandwidth_profile_bandwidth_profile_by_id(uuid):  # noqa: E501
+    """Delete bandwidth-profile by ID
+
+    Delete operation of resource: bandwidth-profile # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+
+    :rtype: None
+    """
+    return 'do some magic!'
+
+
+def delete_context_connectivity_service_requested_capacity_bandwidth_profile_committed_burst_size_committed_burst_size_by_id(uuid):  # noqa: E501
+    """Delete committed-burst-size by ID
+
+    Delete operation of resource: committed-burst-size # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+
+    :rtype: None
+    """
+    return 'do some magic!'
+
+
+def delete_context_connectivity_service_requested_capacity_bandwidth_profile_committed_information_rate_committed_information_rate_by_id(uuid):  # noqa: E501
+    """Delete committed-information-rate by ID
+
+    Delete operation of resource: committed-information-rate # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+
+    :rtype: None
+    """
+    return 'do some magic!'
+
+
+def delete_context_connectivity_service_requested_capacity_bandwidth_profile_peak_burst_size_peak_burst_size_by_id(uuid):  # noqa: E501
+    """Delete peak-burst-size by ID
+
+    Delete operation of resource: peak-burst-size # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+
+    :rtype: None
+    """
+    return 'do some magic!'
+
+
+def delete_context_connectivity_service_requested_capacity_bandwidth_profile_peak_information_rate_peak_information_rate_by_id(uuid):  # noqa: E501
+    """Delete peak-information-rate by ID
+
+    Delete operation of resource: peak-information-rate # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+
+    :rtype: None
+    """
+    return 'do some magic!'
+
+
+def delete_context_connectivity_service_requested_capacity_requested_capacity_by_id(uuid):  # noqa: E501
+    """Delete requested-capacity by ID
+
+    Delete operation of resource: requested-capacity # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+
+    :rtype: None
+    """
+    return 'do some magic!'
+
+
+def delete_context_connectivity_service_requested_capacity_total_size_total_size_by_id(uuid):  # noqa: E501
+    """Delete total-size by ID
+
+    Delete operation of resource: total-size # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
 
     :rtype: None
     """
@@ -823,7 +1430,7 @@ def retrieve_context():  # noqa: E501
     Retrieve operation of resource: context # noqa: E501
 
 
-    :rtype: ContextSchema
+    :rtype: TapiContext
     """
     return database.context
 
@@ -940,30 +1547,30 @@ def retrieve_context_connection_route_route_by_id(uuid, local_id):  # noqa: E501
     return 'do some magic!'
 
 
-def retrieve_context_connection_switch_control_name_name(uuid, local_id):  # noqa: E501
+def retrieve_context_connection_switch_control_name_name(uuid, switch_control_uuid):  # noqa: E501
     """Retrieve name
 
     Retrieve operation of resource: name # noqa: E501
 
     :param uuid: ID of uuid
     :type uuid: str
-    :param local_id: ID of local_id
-    :type local_id: str
+    :param switch_control_uuid: ID of switch_control_uuid
+    :type switch_control_uuid: str
 
     :rtype: List[str]
     """
     return 'do some magic!'
 
 
-def retrieve_context_connection_switch_control_name_name_by_id(uuid, local_id, value_name):  # noqa: E501
+def retrieve_context_connection_switch_control_name_name_by_id(uuid, switch_control_uuid, value_name):  # noqa: E501
     """Retrieve name by ID
 
     Retrieve operation of resource: name # noqa: E501
 
     :param uuid: ID of uuid
     :type uuid: str
-    :param local_id: ID of local_id
-    :type local_id: str
+    :param switch_control_uuid: ID of switch_control_uuid
+    :type switch_control_uuid: str
     :param value_name: ID of value_name
     :type value_name: str
 
@@ -972,15 +1579,15 @@ def retrieve_context_connection_switch_control_name_name_by_id(uuid, local_id, v
     return 'do some magic!'
 
 
-def retrieve_context_connection_switch_control_resilience_type_resilience_type(uuid, local_id):  # noqa: E501
+def retrieve_context_connection_switch_control_resilience_type_resilience_type(uuid, switch_control_uuid):  # noqa: E501
     """Retrieve resilience-type
 
     Retrieve operation of resource: resilience-type # noqa: E501
 
     :param uuid: ID of uuid
     :type uuid: str
-    :param local_id: ID of local_id
-    :type local_id: str
+    :param switch_control_uuid: ID of switch_control_uuid
+    :type switch_control_uuid: str
 
     :rtype: ResilienceType
     """
@@ -1000,49 +1607,49 @@ def retrieve_context_connection_switch_control_switch_control(uuid):  # noqa: E5
     return 'do some magic!'
 
 
-def retrieve_context_connection_switch_control_switch_control_by_id(uuid, local_id):  # noqa: E501
+def retrieve_context_connection_switch_control_switch_control_by_id(uuid, switch_control_uuid):  # noqa: E501
     """Retrieve switch-control by ID
 
     Retrieve operation of resource: switch-control # noqa: E501
 
     :param uuid: ID of uuid
     :type uuid: str
-    :param local_id: ID of local_id
-    :type local_id: str
+    :param switch_control_uuid: ID of switch_control_uuid
+    :type switch_control_uuid: str
 
     :rtype: SwitchControl
     """
     return 'do some magic!'
 
 
-def retrieve_context_connection_switch_control_switch_name_name(uuid, local_id, local2_id):  # noqa: E501
+def retrieve_context_connection_switch_control_switch_name_name(uuid, switch_control_uuid, local_id):  # noqa: E501
     """Retrieve name
 
     Retrieve operation of resource: name # noqa: E501
 
     :param uuid: ID of uuid
     :type uuid: str
+    :param switch_control_uuid: ID of switch_control_uuid
+    :type switch_control_uuid: str
     :param local_id: ID of local_id
     :type local_id: str
-    :param local2_id: ID of local_id
-    :type local2_id: str
 
     :rtype: List[str]
     """
     return 'do some magic!'
 
 
-def retrieve_context_connection_switch_control_switch_name_name_by_id(uuid, local_id, local2_id, value_name):  # noqa: E501
+def retrieve_context_connection_switch_control_switch_name_name_by_id(uuid, switch_control_uuid, local_id, value_name):  # noqa: E501
     """Retrieve name by ID
 
     Retrieve operation of resource: name # noqa: E501
 
     :param uuid: ID of uuid
     :type uuid: str
+    :param switch_control_uuid: ID of switch_control_uuid
+    :type switch_control_uuid: str
     :param local_id: ID of local_id
     :type local_id: str
-    :param local2_id: ID of local_id
-    :type local2_id: str
     :param value_name: ID of value_name
     :type value_name: str
 
@@ -1051,32 +1658,32 @@ def retrieve_context_connection_switch_control_switch_name_name_by_id(uuid, loca
     return 'do some magic!'
 
 
-def retrieve_context_connection_switch_control_switch_switch(uuid, local_id):  # noqa: E501
+def retrieve_context_connection_switch_control_switch_switch(uuid, switch_control_uuid):  # noqa: E501
     """Retrieve switch
 
     Retrieve operation of resource: switch # noqa: E501
 
     :param uuid: ID of uuid
     :type uuid: str
-    :param local_id: ID of local_id
-    :type local_id: str
+    :param switch_control_uuid: ID of switch_control_uuid
+    :type switch_control_uuid: str
 
     :rtype: List[str]
     """
     return 'do some magic!'
 
 
-def retrieve_context_connection_switch_control_switch_switch_by_id(uuid, local_id, local2_id):  # noqa: E501
+def retrieve_context_connection_switch_control_switch_switch_by_id(uuid, switch_control_uuid, local_id):  # noqa: E501
     """Retrieve switch by ID
 
     Retrieve operation of resource: switch # noqa: E501
 
     :param uuid: ID of uuid
     :type uuid: str
+    :param switch_control_uuid: ID of switch_control_uuid
+    :type switch_control_uuid: str
     :param local_id: ID of local_id
     :type local_id: str
-    :param local2_id: ID of local_id
-    :type local2_id: str
 
     :rtype: Switch
     """
@@ -1135,22 +1742,7 @@ def retrieve_context_connectivity_service_cost_characteristic_cost_characteristi
     return 'do some magic!'
 
 
-def retrieve_context_connectivity_service_end_point_capacity_available_capacity_available_capacity(uuid, local_id):  # noqa: E501
-    """Retrieve available-capacity
-
-    Retrieve operation of resource: available-capacity # noqa: E501
-
-    :param uuid: ID of uuid
-    :type uuid: str
-    :param local_id: ID of local_id
-    :type local_id: str
-
-    :rtype: Capacity
-    """
-    return 'do some magic!'
-
-
-def retrieve_context_connectivity_service_end_point_capacity_available_capacity_bandwidth_profile_bandwidth_profile(uuid, local_id):  # noqa: E501
+def retrieve_context_connectivity_service_end_point_capacity_bandwidth_profile_bandwidth_profile(uuid, local_id):  # noqa: E501
     """Retrieve bandwidth-profile
 
     Retrieve operation of resource: bandwidth-profile # noqa: E501
@@ -1165,7 +1757,7 @@ def retrieve_context_connectivity_service_end_point_capacity_available_capacity_
     return 'do some magic!'
 
 
-def retrieve_context_connectivity_service_end_point_capacity_available_capacity_bandwidth_profile_committed_burst_size_committed_burst_size(uuid, local_id):  # noqa: E501
+def retrieve_context_connectivity_service_end_point_capacity_bandwidth_profile_committed_burst_size_committed_burst_size(uuid, local_id):  # noqa: E501
     """Retrieve committed-burst-size
 
     Retrieve operation of resource: committed-burst-size # noqa: E501
@@ -1180,7 +1772,7 @@ def retrieve_context_connectivity_service_end_point_capacity_available_capacity_
     return 'do some magic!'
 
 
-def retrieve_context_connectivity_service_end_point_capacity_available_capacity_bandwidth_profile_committed_information_rate_committed_information_rate(uuid, local_id):  # noqa: E501
+def retrieve_context_connectivity_service_end_point_capacity_bandwidth_profile_committed_information_rate_committed_information_rate(uuid, local_id):  # noqa: E501
     """Retrieve committed-information-rate
 
     Retrieve operation of resource: committed-information-rate # noqa: E501
@@ -1195,7 +1787,7 @@ def retrieve_context_connectivity_service_end_point_capacity_available_capacity_
     return 'do some magic!'
 
 
-def retrieve_context_connectivity_service_end_point_capacity_available_capacity_bandwidth_profile_peak_burst_size_peak_burst_size(uuid, local_id):  # noqa: E501
+def retrieve_context_connectivity_service_end_point_capacity_bandwidth_profile_peak_burst_size_peak_burst_size(uuid, local_id):  # noqa: E501
     """Retrieve peak-burst-size
 
     Retrieve operation of resource: peak-burst-size # noqa: E501
@@ -1210,25 +1802,10 @@ def retrieve_context_connectivity_service_end_point_capacity_available_capacity_
     return 'do some magic!'
 
 
-def retrieve_context_connectivity_service_end_point_capacity_available_capacity_bandwidth_profile_peak_information_rate_peak_information_rate(uuid, local_id):  # noqa: E501
+def retrieve_context_connectivity_service_end_point_capacity_bandwidth_profile_peak_information_rate_peak_information_rate(uuid, local_id):  # noqa: E501
     """Retrieve peak-information-rate
 
     Retrieve operation of resource: peak-information-rate # noqa: E501
-
-    :param uuid: ID of uuid
-    :type uuid: str
-    :param local_id: ID of local_id
-    :type local_id: str
-
-    :rtype: CapacityValue
-    """
-    return 'do some magic!'
-
-
-def retrieve_context_connectivity_service_end_point_capacity_available_capacity_total_size_total_size(uuid, local_id):  # noqa: E501
-    """Retrieve total-size
-
-    Retrieve operation of resource: total-size # noqa: E501
 
     :param uuid: ID of uuid
     :type uuid: str
@@ -1250,102 +1827,12 @@ def retrieve_context_connectivity_service_end_point_capacity_capacity(uuid, loca
     :param local_id: ID of local_id
     :type local_id: str
 
-    :rtype: CapacityPac
-    """
-    return 'do some magic!'
-
-
-def retrieve_context_connectivity_service_end_point_capacity_total_potential_capacity_bandwidth_profile_bandwidth_profile(uuid, local_id):  # noqa: E501
-    """Retrieve bandwidth-profile
-
-    Retrieve operation of resource: bandwidth-profile # noqa: E501
-
-    :param uuid: ID of uuid
-    :type uuid: str
-    :param local_id: ID of local_id
-    :type local_id: str
-
-    :rtype: BandwidthProfile
-    """
-    return 'do some magic!'
-
-
-def retrieve_context_connectivity_service_end_point_capacity_total_potential_capacity_bandwidth_profile_committed_burst_size_committed_burst_size(uuid, local_id):  # noqa: E501
-    """Retrieve committed-burst-size
-
-    Retrieve operation of resource: committed-burst-size # noqa: E501
-
-    :param uuid: ID of uuid
-    :type uuid: str
-    :param local_id: ID of local_id
-    :type local_id: str
-
-    :rtype: CapacityValue
-    """
-    return 'do some magic!'
-
-
-def retrieve_context_connectivity_service_end_point_capacity_total_potential_capacity_bandwidth_profile_committed_information_rate_committed_information_rate(uuid, local_id):  # noqa: E501
-    """Retrieve committed-information-rate
-
-    Retrieve operation of resource: committed-information-rate # noqa: E501
-
-    :param uuid: ID of uuid
-    :type uuid: str
-    :param local_id: ID of local_id
-    :type local_id: str
-
-    :rtype: CapacityValue
-    """
-    return 'do some magic!'
-
-
-def retrieve_context_connectivity_service_end_point_capacity_total_potential_capacity_bandwidth_profile_peak_burst_size_peak_burst_size(uuid, local_id):  # noqa: E501
-    """Retrieve peak-burst-size
-
-    Retrieve operation of resource: peak-burst-size # noqa: E501
-
-    :param uuid: ID of uuid
-    :type uuid: str
-    :param local_id: ID of local_id
-    :type local_id: str
-
-    :rtype: CapacityValue
-    """
-    return 'do some magic!'
-
-
-def retrieve_context_connectivity_service_end_point_capacity_total_potential_capacity_bandwidth_profile_peak_information_rate_peak_information_rate(uuid, local_id):  # noqa: E501
-    """Retrieve peak-information-rate
-
-    Retrieve operation of resource: peak-information-rate # noqa: E501
-
-    :param uuid: ID of uuid
-    :type uuid: str
-    :param local_id: ID of local_id
-    :type local_id: str
-
-    :rtype: CapacityValue
-    """
-    return 'do some magic!'
-
-
-def retrieve_context_connectivity_service_end_point_capacity_total_potential_capacity_total_potential_capacity(uuid, local_id):  # noqa: E501
-    """Retrieve total-potential-capacity
-
-    Retrieve operation of resource: total-potential-capacity # noqa: E501
-
-    :param uuid: ID of uuid
-    :type uuid: str
-    :param local_id: ID of local_id
-    :type local_id: str
-
     :rtype: Capacity
     """
     return 'do some magic!'
 
 
-def retrieve_context_connectivity_service_end_point_capacity_total_potential_capacity_total_size_total_size(uuid, local_id):  # noqa: E501
+def retrieve_context_connectivity_service_end_point_capacity_total_size_total_size(uuid, local_id):  # noqa: E501
     """Retrieve total-size
 
     Retrieve operation of resource: total-size # noqa: E501
@@ -4240,6 +4727,125 @@ def retrieve_context_topology_node_node_rule_group_total_potential_capacity_tota
     return 'do some magic!'
 
 
+def retrieve_context_topology_node_owned_node_edge_point_available_capacity_available_capacity(uuid, node_uuid, owned_node_edge_point_uuid):  # noqa: E501
+    """Retrieve available-capacity
+
+    Retrieve operation of resource: available-capacity # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param node_uuid: ID of node_uuid
+    :type node_uuid: str
+    :param owned_node_edge_point_uuid: ID of owned_node_edge_point_uuid
+    :type owned_node_edge_point_uuid: str
+
+    :rtype: Capacity
+    """
+    return 'do some magic!'
+
+
+def retrieve_context_topology_node_owned_node_edge_point_available_capacity_bandwidth_profile_bandwidth_profile(uuid, node_uuid, owned_node_edge_point_uuid):  # noqa: E501
+    """Retrieve bandwidth-profile
+
+    Retrieve operation of resource: bandwidth-profile # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param node_uuid: ID of node_uuid
+    :type node_uuid: str
+    :param owned_node_edge_point_uuid: ID of owned_node_edge_point_uuid
+    :type owned_node_edge_point_uuid: str
+
+    :rtype: BandwidthProfile
+    """
+    return 'do some magic!'
+
+
+def retrieve_context_topology_node_owned_node_edge_point_available_capacity_bandwidth_profile_committed_burst_size_committed_burst_size(uuid, node_uuid, owned_node_edge_point_uuid):  # noqa: E501
+    """Retrieve committed-burst-size
+
+    Retrieve operation of resource: committed-burst-size # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param node_uuid: ID of node_uuid
+    :type node_uuid: str
+    :param owned_node_edge_point_uuid: ID of owned_node_edge_point_uuid
+    :type owned_node_edge_point_uuid: str
+
+    :rtype: CapacityValue
+    """
+    return 'do some magic!'
+
+
+def retrieve_context_topology_node_owned_node_edge_point_available_capacity_bandwidth_profile_committed_information_rate_committed_information_rate(uuid, node_uuid, owned_node_edge_point_uuid):  # noqa: E501
+    """Retrieve committed-information-rate
+
+    Retrieve operation of resource: committed-information-rate # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param node_uuid: ID of node_uuid
+    :type node_uuid: str
+    :param owned_node_edge_point_uuid: ID of owned_node_edge_point_uuid
+    :type owned_node_edge_point_uuid: str
+
+    :rtype: CapacityValue
+    """
+    return 'do some magic!'
+
+
+def retrieve_context_topology_node_owned_node_edge_point_available_capacity_bandwidth_profile_peak_burst_size_peak_burst_size(uuid, node_uuid, owned_node_edge_point_uuid):  # noqa: E501
+    """Retrieve peak-burst-size
+
+    Retrieve operation of resource: peak-burst-size # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param node_uuid: ID of node_uuid
+    :type node_uuid: str
+    :param owned_node_edge_point_uuid: ID of owned_node_edge_point_uuid
+    :type owned_node_edge_point_uuid: str
+
+    :rtype: CapacityValue
+    """
+    return 'do some magic!'
+
+
+def retrieve_context_topology_node_owned_node_edge_point_available_capacity_bandwidth_profile_peak_information_rate_peak_information_rate(uuid, node_uuid, owned_node_edge_point_uuid):  # noqa: E501
+    """Retrieve peak-information-rate
+
+    Retrieve operation of resource: peak-information-rate # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param node_uuid: ID of node_uuid
+    :type node_uuid: str
+    :param owned_node_edge_point_uuid: ID of owned_node_edge_point_uuid
+    :type owned_node_edge_point_uuid: str
+
+    :rtype: CapacityValue
+    """
+    return 'do some magic!'
+
+
+def retrieve_context_topology_node_owned_node_edge_point_available_capacity_total_size_total_size(uuid, node_uuid, owned_node_edge_point_uuid):  # noqa: E501
+    """Retrieve total-size
+
+    Retrieve operation of resource: total-size # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param node_uuid: ID of node_uuid
+    :type node_uuid: str
+    :param owned_node_edge_point_uuid: ID of owned_node_edge_point_uuid
+    :type owned_node_edge_point_uuid: str
+
+    :rtype: CapacityValue
+    """
+    return 'do some magic!'
+
+
 def retrieve_context_topology_node_owned_node_edge_point_connection_end_point_connection_end_point(uuid, node_uuid, owned_node_edge_point_uuid):  # noqa: E501
     """Retrieve connection-end-point
 
@@ -4387,7 +4993,7 @@ def retrieve_context_topology_node_owned_node_edge_point_owned_node_edge_point_b
     :param owned_node_edge_point_uuid: ID of owned_node_edge_point_uuid
     :type owned_node_edge_point_uuid: str
 
-    :rtype: OwnedNodeEdgePointSchema
+    :rtype: NodeEdgePoint
     """
     for topo in database.context.topology:
         if topo.uuid == uuid:
@@ -4396,6 +5002,125 @@ def retrieve_context_topology_node_owned_node_edge_point_owned_node_edge_point_b
                     for nep in node.owned_node_edge_point:
                         if nep.uuid == owned_node_edge_point_uuid:
                             return nep
+
+
+def retrieve_context_topology_node_owned_node_edge_point_total_potential_capacity_bandwidth_profile_bandwidth_profile(uuid, node_uuid, owned_node_edge_point_uuid):  # noqa: E501
+    """Retrieve bandwidth-profile
+
+    Retrieve operation of resource: bandwidth-profile # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param node_uuid: ID of node_uuid
+    :type node_uuid: str
+    :param owned_node_edge_point_uuid: ID of owned_node_edge_point_uuid
+    :type owned_node_edge_point_uuid: str
+
+    :rtype: BandwidthProfile
+    """
+    return 'do some magic!'
+
+
+def retrieve_context_topology_node_owned_node_edge_point_total_potential_capacity_bandwidth_profile_committed_burst_size_committed_burst_size(uuid, node_uuid, owned_node_edge_point_uuid):  # noqa: E501
+    """Retrieve committed-burst-size
+
+    Retrieve operation of resource: committed-burst-size # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param node_uuid: ID of node_uuid
+    :type node_uuid: str
+    :param owned_node_edge_point_uuid: ID of owned_node_edge_point_uuid
+    :type owned_node_edge_point_uuid: str
+
+    :rtype: CapacityValue
+    """
+    return 'do some magic!'
+
+
+def retrieve_context_topology_node_owned_node_edge_point_total_potential_capacity_bandwidth_profile_committed_information_rate_committed_information_rate(uuid, node_uuid, owned_node_edge_point_uuid):  # noqa: E501
+    """Retrieve committed-information-rate
+
+    Retrieve operation of resource: committed-information-rate # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param node_uuid: ID of node_uuid
+    :type node_uuid: str
+    :param owned_node_edge_point_uuid: ID of owned_node_edge_point_uuid
+    :type owned_node_edge_point_uuid: str
+
+    :rtype: CapacityValue
+    """
+    return 'do some magic!'
+
+
+def retrieve_context_topology_node_owned_node_edge_point_total_potential_capacity_bandwidth_profile_peak_burst_size_peak_burst_size(uuid, node_uuid, owned_node_edge_point_uuid):  # noqa: E501
+    """Retrieve peak-burst-size
+
+    Retrieve operation of resource: peak-burst-size # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param node_uuid: ID of node_uuid
+    :type node_uuid: str
+    :param owned_node_edge_point_uuid: ID of owned_node_edge_point_uuid
+    :type owned_node_edge_point_uuid: str
+
+    :rtype: CapacityValue
+    """
+    return 'do some magic!'
+
+
+def retrieve_context_topology_node_owned_node_edge_point_total_potential_capacity_bandwidth_profile_peak_information_rate_peak_information_rate(uuid, node_uuid, owned_node_edge_point_uuid):  # noqa: E501
+    """Retrieve peak-information-rate
+
+    Retrieve operation of resource: peak-information-rate # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param node_uuid: ID of node_uuid
+    :type node_uuid: str
+    :param owned_node_edge_point_uuid: ID of owned_node_edge_point_uuid
+    :type owned_node_edge_point_uuid: str
+
+    :rtype: CapacityValue
+    """
+    return 'do some magic!'
+
+
+def retrieve_context_topology_node_owned_node_edge_point_total_potential_capacity_total_potential_capacity(uuid, node_uuid, owned_node_edge_point_uuid):  # noqa: E501
+    """Retrieve total-potential-capacity
+
+    Retrieve operation of resource: total-potential-capacity # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param node_uuid: ID of node_uuid
+    :type node_uuid: str
+    :param owned_node_edge_point_uuid: ID of owned_node_edge_point_uuid
+    :type owned_node_edge_point_uuid: str
+
+    :rtype: Capacity
+    """
+    return 'do some magic!'
+
+
+def retrieve_context_topology_node_owned_node_edge_point_total_potential_capacity_total_size_total_size(uuid, node_uuid, owned_node_edge_point_uuid):  # noqa: E501
+    """Retrieve total-size
+
+    Retrieve operation of resource: total-size # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param node_uuid: ID of node_uuid
+    :type node_uuid: str
+    :param owned_node_edge_point_uuid: ID of owned_node_edge_point_uuid
+    :type owned_node_edge_point_uuid: str
+
+    :rtype: CapacityValue
+    """
+    return 'do some magic!'
 
 
 def retrieve_context_topology_node_total_potential_capacity_bandwidth_profile_bandwidth_profile(uuid, node_uuid):  # noqa: E501
@@ -4544,7 +5269,7 @@ def update_context_by_id(context):  # noqa: E501
     :rtype: None
     """
     if connexion.request.is_json:
-        context = ContextSchema.from_dict(connexion.request.get_json())  # noqa: E501
+        context = TapiContext.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
@@ -4565,6 +5290,120 @@ def update_context_connectivity_service_connectivity_service_by_id(uuid, connect
     return 'do some magic!'
 
 
+def update_context_connectivity_service_cost_characteristic_cost_characteristic_by_id(uuid, cost_name, cost_characteristic):  # noqa: E501
+    """Update cost-characteristic by ID
+
+    Update operation of resource: cost-characteristic # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param cost_name: ID of cost_name
+    :type cost_name: str
+    :param cost_characteristic: cost-characteristicbody object
+    :type cost_characteristic: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        cost_characteristic = CostCharacteristic.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
+def update_context_connectivity_service_end_point_capacity_bandwidth_profile_bandwidth_profile_by_id(uuid, local_id, bandwidth_profile):  # noqa: E501
+    """Update bandwidth-profile by ID
+
+    Update operation of resource: bandwidth-profile # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param local_id: ID of local_id
+    :type local_id: str
+    :param bandwidth_profile: bandwidth-profilebody object
+    :type bandwidth_profile: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        bandwidth_profile = BandwidthProfile.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
+def update_context_connectivity_service_end_point_capacity_bandwidth_profile_committed_burst_size_committed_burst_size_by_id(uuid, local_id, committed_burst_size):  # noqa: E501
+    """Update committed-burst-size by ID
+
+    Update operation of resource: committed-burst-size # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param local_id: ID of local_id
+    :type local_id: str
+    :param committed_burst_size: committed-burst-sizebody object
+    :type committed_burst_size: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        committed_burst_size = CapacityValue.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
+def update_context_connectivity_service_end_point_capacity_bandwidth_profile_committed_information_rate_committed_information_rate_by_id(uuid, local_id, committed_information_rate):  # noqa: E501
+    """Update committed-information-rate by ID
+
+    Update operation of resource: committed-information-rate # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param local_id: ID of local_id
+    :type local_id: str
+    :param committed_information_rate: committed-information-ratebody object
+    :type committed_information_rate: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        committed_information_rate = CapacityValue.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
+def update_context_connectivity_service_end_point_capacity_bandwidth_profile_peak_burst_size_peak_burst_size_by_id(uuid, local_id, peak_burst_size):  # noqa: E501
+    """Update peak-burst-size by ID
+
+    Update operation of resource: peak-burst-size # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param local_id: ID of local_id
+    :type local_id: str
+    :param peak_burst_size: peak-burst-sizebody object
+    :type peak_burst_size: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        peak_burst_size = CapacityValue.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
+def update_context_connectivity_service_end_point_capacity_bandwidth_profile_peak_information_rate_peak_information_rate_by_id(uuid, local_id, peak_information_rate):  # noqa: E501
+    """Update peak-information-rate by ID
+
+    Update operation of resource: peak-information-rate # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param local_id: ID of local_id
+    :type local_id: str
+    :param peak_information_rate: peak-information-ratebody object
+    :type peak_information_rate: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        peak_information_rate = CapacityValue.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
 def update_context_connectivity_service_end_point_capacity_capacity_by_id(uuid, local_id, capacity):  # noqa: E501
     """Update capacity by ID
 
@@ -4580,7 +5419,26 @@ def update_context_connectivity_service_end_point_capacity_capacity_by_id(uuid, 
     :rtype: None
     """
     if connexion.request.is_json:
-        capacity = CapacityPac.from_dict(connexion.request.get_json())  # noqa: E501
+        capacity = Capacity.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
+def update_context_connectivity_service_end_point_capacity_total_size_total_size_by_id(uuid, local_id, total_size):  # noqa: E501
+    """Update total-size by ID
+
+    Update operation of resource: total-size # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param local_id: ID of local_id
+    :type local_id: str
+    :param total_size: total-sizebody object
+    :type total_size: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        total_size = CapacityValue.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
@@ -4624,6 +5482,25 @@ def update_context_connectivity_service_end_point_name_name_by_id(uuid, local_id
     return 'do some magic!'
 
 
+def update_context_connectivity_service_latency_characteristic_latency_characteristic_by_id(uuid, traffic_property_name, latency_characteristic):  # noqa: E501
+    """Update latency-characteristic by ID
+
+    Update operation of resource: latency-characteristic # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param traffic_property_name: ID of traffic_property_name
+    :type traffic_property_name: str
+    :param latency_characteristic: latency-characteristicbody object
+    :type latency_characteristic: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        latency_characteristic = LatencyCharacteristic.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
 def update_context_connectivity_service_name_name_by_id(uuid, value_name, name):  # noqa: E501
     """Update name by ID
 
@@ -4640,6 +5517,125 @@ def update_context_connectivity_service_name_name_by_id(uuid, value_name, name):
     """
     if connexion.request.is_json:
         name = NameAndValue.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
+def update_context_connectivity_service_requested_capacity_bandwidth_profile_bandwidth_profile_by_id(uuid, bandwidth_profile):  # noqa: E501
+    """Update bandwidth-profile by ID
+
+    Update operation of resource: bandwidth-profile # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param bandwidth_profile: bandwidth-profilebody object
+    :type bandwidth_profile: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        bandwidth_profile = BandwidthProfile.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
+def update_context_connectivity_service_requested_capacity_bandwidth_profile_committed_burst_size_committed_burst_size_by_id(uuid, committed_burst_size):  # noqa: E501
+    """Update committed-burst-size by ID
+
+    Update operation of resource: committed-burst-size # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param committed_burst_size: committed-burst-sizebody object
+    :type committed_burst_size: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        committed_burst_size = CapacityValue.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
+def update_context_connectivity_service_requested_capacity_bandwidth_profile_committed_information_rate_committed_information_rate_by_id(uuid, committed_information_rate):  # noqa: E501
+    """Update committed-information-rate by ID
+
+    Update operation of resource: committed-information-rate # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param committed_information_rate: committed-information-ratebody object
+    :type committed_information_rate: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        committed_information_rate = CapacityValue.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
+def update_context_connectivity_service_requested_capacity_bandwidth_profile_peak_burst_size_peak_burst_size_by_id(uuid, peak_burst_size):  # noqa: E501
+    """Update peak-burst-size by ID
+
+    Update operation of resource: peak-burst-size # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param peak_burst_size: peak-burst-sizebody object
+    :type peak_burst_size: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        peak_burst_size = CapacityValue.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
+def update_context_connectivity_service_requested_capacity_bandwidth_profile_peak_information_rate_peak_information_rate_by_id(uuid, peak_information_rate):  # noqa: E501
+    """Update peak-information-rate by ID
+
+    Update operation of resource: peak-information-rate # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param peak_information_rate: peak-information-ratebody object
+    :type peak_information_rate: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        peak_information_rate = CapacityValue.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
+def update_context_connectivity_service_requested_capacity_requested_capacity_by_id(uuid, requested_capacity):  # noqa: E501
+    """Update requested-capacity by ID
+
+    Update operation of resource: requested-capacity # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param requested_capacity: requested-capacitybody object
+    :type requested_capacity: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        requested_capacity = Capacity.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'do some magic!'
+
+
+def update_context_connectivity_service_requested_capacity_total_size_total_size_by_id(uuid, total_size):  # noqa: E501
+    """Update total-size by ID
+
+    Update operation of resource: total-size # noqa: E501
+
+    :param uuid: ID of uuid
+    :type uuid: str
+    :param total_size: total-sizebody object
+    :type total_size: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        total_size = CapacityValue.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 

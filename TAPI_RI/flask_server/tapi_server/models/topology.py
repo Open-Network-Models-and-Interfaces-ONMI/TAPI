@@ -172,7 +172,7 @@ class Topology(Model):
         :param layer_protocol_name: The layer_protocol_name of this Topology.
         :type layer_protocol_name: List[str]
         """
-        allowed_values = ["OTSiA", "OCH", "OTU", "ODU", "ETH", "ETY"]  # noqa: E501
+        allowed_values = ["OTSiA", "OCH", "OTU", "ODU", "ETH", "ETY", "DSR"]  # noqa: E501
         if not set(layer_protocol_name).issubset(set(allowed_values)):
             raise ValueError(
                 "Invalid values for `layer_protocol_name` [{0}], must be a subset of [{1}]"  # noqa: E501

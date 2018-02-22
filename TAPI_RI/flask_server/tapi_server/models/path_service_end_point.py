@@ -210,7 +210,7 @@ class PathServiceEndPoint(Model):
         :param service_layer: The service_layer of this PathServiceEndPoint.
         :type service_layer: str
         """
-        allowed_values = ["OTSiA", "OCH", "OTU", "ODU", "ETH", "ETY"]  # noqa: E501
+        allowed_values = ["OTSiA", "OCH", "OTU", "ODU", "ETH", "ETY", "DSR"]  # noqa: E501
         if service_layer not in allowed_values:
             raise ValueError(
                 "Invalid value for `service_layer` ({0}), must be one of {1}"

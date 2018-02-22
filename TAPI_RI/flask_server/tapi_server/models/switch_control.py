@@ -6,10 +6,10 @@ from datetime import date, datetime  # noqa: F401
 from typing import List, Dict  # noqa: F401
 
 from tapi_server.models.base_model_ import Model
-from tapi_server.models.local_class import LocalClass  # noqa: F401,E501
 from tapi_server.models.name_and_value import NameAndValue  # noqa: F401,E501
 from tapi_server.models.resilience_constraint import ResilienceConstraint  # noqa: F401,E501
 from tapi_server.models.resilience_type import ResilienceType  # noqa: F401,E501
+from tapi_server.models.resource_spec import ResourceSpec  # noqa: F401,E501
 from tapi_server.models.switch import Switch  # noqa: F401,E501
 from tapi_server import util
 
@@ -20,11 +20,11 @@ class SwitchControl(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, local_id: str=None, name: List[NameAndValue]=None, resilience_type: ResilienceType=None, restoration_coordinate_type: str=None, restore_priority: str=None, reversion_mode: str=None, wait_to_revert_time: str=None, hold_off_time: str=None, is_lock_out: bool=None, is_frozen: bool=None, is_coordinated_switching_both_ends: bool=None, max_switch_times: str=None, layer_protocol: str=None, sub_switch_control: List[str]=None, switch: List[Switch]=None):  # noqa: E501
+    def __init__(self, uuid: str=None, name: List[NameAndValue]=None, resilience_type: ResilienceType=None, restoration_coordinate_type: str=None, restore_priority: str=None, reversion_mode: str=None, wait_to_revert_time: str=None, hold_off_time: str=None, is_lock_out: bool=None, is_frozen: bool=None, is_coordinated_switching_both_ends: bool=None, max_switch_times: str=None, layer_protocol: str=None, sub_switch_control: List[str]=None, switch: List[Switch]=None):  # noqa: E501
         """SwitchControl - a model defined in Swagger
 
-        :param local_id: The local_id of this SwitchControl.  # noqa: E501
-        :type local_id: str
+        :param uuid: The uuid of this SwitchControl.  # noqa: E501
+        :type uuid: str
         :param name: The name of this SwitchControl.  # noqa: E501
         :type name: List[NameAndValue]
         :param resilience_type: The resilience_type of this SwitchControl.  # noqa: E501
@@ -55,7 +55,7 @@ class SwitchControl(Model):
         :type switch: List[Switch]
         """
         self.swagger_types = {
-            'local_id': str,
+            'uuid': str,
             'name': List[NameAndValue],
             'resilience_type': ResilienceType,
             'restoration_coordinate_type': str,
@@ -73,7 +73,7 @@ class SwitchControl(Model):
         }
 
         self.attribute_map = {
-            'local_id': 'local-id',
+            'uuid': 'uuid',
             'name': 'name',
             'resilience_type': 'resilience-type',
             'restoration_coordinate_type': 'restoration-coordinate-type',
@@ -90,7 +90,7 @@ class SwitchControl(Model):
             'switch': 'switch'
         }
 
-        self._local_id = local_id
+        self._uuid = uuid
         self._name = name
         self._resilience_type = resilience_type
         self._restoration_coordinate_type = restoration_coordinate_type
@@ -118,25 +118,27 @@ class SwitchControl(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def local_id(self) -> str:
-        """Gets the local_id of this SwitchControl.
+    def uuid(self) -> str:
+        """Gets the uuid of this SwitchControl.
 
+        UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable. An UUID carries no semantics with respect to the purpose or state of the entity. UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters. Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12}  Example of a UUID in string representation: f81d4fae-7dec-11d0-a765-00a0c91e6bf6  # noqa: E501
 
-        :return: The local_id of this SwitchControl.
+        :return: The uuid of this SwitchControl.
         :rtype: str
         """
-        return self._local_id
+        return self._uuid
 
-    @local_id.setter
-    def local_id(self, local_id: str):
-        """Sets the local_id of this SwitchControl.
+    @uuid.setter
+    def uuid(self, uuid: str):
+        """Sets the uuid of this SwitchControl.
 
+        UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable. An UUID carries no semantics with respect to the purpose or state of the entity. UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters. Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12}  Example of a UUID in string representation: f81d4fae-7dec-11d0-a765-00a0c91e6bf6  # noqa: E501
 
-        :param local_id: The local_id of this SwitchControl.
-        :type local_id: str
+        :param uuid: The uuid of this SwitchControl.
+        :type uuid: str
         """
 
-        self._local_id = local_id
+        self._uuid = uuid
 
     @property
     def name(self) -> List[NameAndValue]:
@@ -419,7 +421,7 @@ class SwitchControl(Model):
         :param layer_protocol: The layer_protocol of this SwitchControl.
         :type layer_protocol: str
         """
-        allowed_values = ["OTSiA", "OCH", "OTU", "ODU", "ETH", "ETY"]  # noqa: E501
+        allowed_values = ["OTSiA", "OCH", "OTU", "ODU", "ETH", "ETY", "DSR"]  # noqa: E501
         if layer_protocol not in allowed_values:
             raise ValueError(
                 "Invalid value for `layer_protocol` ({0}), must be one of {1}"

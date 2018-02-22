@@ -268,7 +268,7 @@ class TopologyConstraint(Model):
         :param preferred_transport_layer: The preferred_transport_layer of this TopologyConstraint.
         :type preferred_transport_layer: List[str]
         """
-        allowed_values = ["OTSiA", "OCH", "OTU", "ODU", "ETH", "ETY"]  # noqa: E501
+        allowed_values = ["OTSiA", "OCH", "OTU", "ODU", "ETH", "ETY", "DSR"]  # noqa: E501
         if not set(preferred_transport_layer).issubset(set(allowed_values)):
             raise ValueError(
                 "Invalid values for `preferred_transport_layer` [{0}], must be a subset of [{1}]"  # noqa: E501
