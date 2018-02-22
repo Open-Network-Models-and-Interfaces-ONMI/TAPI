@@ -738,7 +738,7 @@ class ConnectivityService(Model):
         :param preferred_transport_layer: The preferred_transport_layer of this ConnectivityService.
         :type preferred_transport_layer: List[str]
         """
-        allowed_values = ["OTSiA", "OCH", "OTU", "ODU", "ETH", "ETY"]  # noqa: E501
+        allowed_values = ["OTSiA", "OCH", "OTU", "ODU", "ETH", "ETY", "DSR"]  # noqa: E501
         if not set(preferred_transport_layer).issubset(set(allowed_values)):
             raise ValueError(
                 "Invalid values for `preferred_transport_layer` [{0}], must be a subset of [{1}]"  # noqa: E501
@@ -1087,7 +1087,7 @@ class ConnectivityService(Model):
         :param layer_protocol: The layer_protocol of this ConnectivityService.
         :type layer_protocol: str
         """
-        allowed_values = ["OTSiA", "OCH", "OTU", "ODU", "ETH", "ETY"]  # noqa: E501
+        allowed_values = ["OTSiA", "OCH", "OTU", "ODU", "ETH", "ETY", "DSR"]  # noqa: E501
         if layer_protocol not in allowed_values:
             raise ValueError(
                 "Invalid value for `layer_protocol` ({0}), must be one of {1}"
@@ -1183,7 +1183,7 @@ class ConnectivityService(Model):
         :param layer_protocol_name: The layer_protocol_name of this ConnectivityService.
         :type layer_protocol_name: str
         """
-        allowed_values = ["OTSiA", "OCH", "OTU", "ODU", "ETH", "ETY"]  # noqa: E501
+        allowed_values = ["OTSiA", "OCH", "OTU", "ODU", "ETH", "ETY", "DSR"]  # noqa: E501
         if layer_protocol_name not in allowed_values:
             raise ValueError(
                 "Invalid value for `layer_protocol_name` ({0}), must be one of {1}"

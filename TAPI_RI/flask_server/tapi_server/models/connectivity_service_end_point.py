@@ -7,7 +7,7 @@ from typing import List, Dict  # noqa: F401
 
 from tapi_server.models.base_model_ import Model
 from tapi_server.models.admin_state_pac import AdminStatePac  # noqa: F401,E501
-from tapi_server.models.capacity_pac import CapacityPac  # noqa: F401,E501
+from tapi_server.models.capacity import Capacity  # noqa: F401,E501
 from tapi_server.models.local_class import LocalClass  # noqa: F401,E501
 from tapi_server.models.name_and_value import NameAndValue  # noqa: F401,E501
 from tapi_server import util
@@ -19,7 +19,7 @@ class ConnectivityServiceEndPoint(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, local_id: str=None, name: List[NameAndValue]=None, administrative_state: str=None, operational_state: str=None, lifecycle_state: str=None, layer_protocol_name: str=None, service_interface_point: str=None, capacity: CapacityPac=None, direction: str=None, role: str=None, protection_role: str=None):  # noqa: E501
+    def __init__(self, local_id: str=None, name: List[NameAndValue]=None, administrative_state: str=None, operational_state: str=None, lifecycle_state: str=None, layer_protocol_name: str=None, service_interface_point: str=None, capacity: Capacity=None, direction: str=None, role: str=None, protection_role: str=None):  # noqa: E501
         """ConnectivityServiceEndPoint - a model defined in Swagger
 
         :param local_id: The local_id of this ConnectivityServiceEndPoint.  # noqa: E501
@@ -37,7 +37,7 @@ class ConnectivityServiceEndPoint(Model):
         :param service_interface_point: The service_interface_point of this ConnectivityServiceEndPoint.  # noqa: E501
         :type service_interface_point: str
         :param capacity: The capacity of this ConnectivityServiceEndPoint.  # noqa: E501
-        :type capacity: CapacityPac
+        :type capacity: Capacity
         :param direction: The direction of this ConnectivityServiceEndPoint.  # noqa: E501
         :type direction: str
         :param role: The role of this ConnectivityServiceEndPoint.  # noqa: E501
@@ -53,7 +53,7 @@ class ConnectivityServiceEndPoint(Model):
             'lifecycle_state': str,
             'layer_protocol_name': str,
             'service_interface_point': str,
-            'capacity': CapacityPac,
+            'capacity': Capacity,
             'direction': str,
             'role': str,
             'protection_role': str
@@ -239,7 +239,7 @@ class ConnectivityServiceEndPoint(Model):
         :param layer_protocol_name: The layer_protocol_name of this ConnectivityServiceEndPoint.
         :type layer_protocol_name: str
         """
-        allowed_values = ["OTSiA", "OCH", "OTU", "ODU", "ETH", "ETY"]  # noqa: E501
+        allowed_values = ["OTSiA", "OCH", "OTU", "ODU", "ETH", "ETY", "DSR"]  # noqa: E501
         if layer_protocol_name not in allowed_values:
             raise ValueError(
                 "Invalid value for `layer_protocol_name` ({0}), must be one of {1}"
@@ -270,22 +270,22 @@ class ConnectivityServiceEndPoint(Model):
         self._service_interface_point = service_interface_point
 
     @property
-    def capacity(self) -> CapacityPac:
+    def capacity(self) -> Capacity:
         """Gets the capacity of this ConnectivityServiceEndPoint.
 
 
         :return: The capacity of this ConnectivityServiceEndPoint.
-        :rtype: CapacityPac
+        :rtype: Capacity
         """
         return self._capacity
 
     @capacity.setter
-    def capacity(self, capacity: CapacityPac):
+    def capacity(self, capacity: Capacity):
         """Sets the capacity of this ConnectivityServiceEndPoint.
 
 
         :param capacity: The capacity of this ConnectivityServiceEndPoint.
-        :type capacity: CapacityPac
+        :type capacity: Capacity
         """
 
         self._capacity = capacity

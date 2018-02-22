@@ -7,6 +7,10 @@ from typing import List, Dict  # noqa: F401
 
 from tapi_server.models.base_model_ import Model
 from tapi_server.models.admin_state_pac import AdminStatePac  # noqa: F401,E501
+from tapi_server.models.capacity import Capacity  # noqa: F401,E501
+from tapi_server.models.capacity_pac import CapacityPac  # noqa: F401,E501
+from tapi_server.models.cep_list import CepList  # noqa: F401,E501
+from tapi_server.models.connection_end_point import ConnectionEndPoint  # noqa: F401,E501
 from tapi_server.models.name_and_value import NameAndValue  # noqa: F401,E501
 from tapi_server.models.resource_spec import ResourceSpec  # noqa: F401,E501
 from tapi_server.models.termination_pac import TerminationPac  # noqa: F401,E501
@@ -19,7 +23,7 @@ class NodeEdgePoint(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, uuid: str=None, name: List[NameAndValue]=None, administrative_state: str=None, operational_state: str=None, lifecycle_state: str=None, termination_direction: str=None, termination_state: str=None, layer_protocol_name: str=None, aggregated_node_edge_point: List[str]=None, mapped_service_interface_point: List[str]=None, link_port_direction: str=None, link_port_role: str=None):  # noqa: E501
+    def __init__(self, uuid: str=None, name: List[NameAndValue]=None, administrative_state: str=None, operational_state: str=None, lifecycle_state: str=None, termination_direction: str=None, termination_state: str=None, total_potential_capacity: Capacity=None, available_capacity: Capacity=None, connection_end_point: List[ConnectionEndPoint]=None, layer_protocol_name: str=None, aggregated_node_edge_point: List[str]=None, mapped_service_interface_point: List[str]=None, link_port_direction: str=None, link_port_role: str=None):  # noqa: E501
         """NodeEdgePoint - a model defined in Swagger
 
         :param uuid: The uuid of this NodeEdgePoint.  # noqa: E501
@@ -36,6 +40,12 @@ class NodeEdgePoint(Model):
         :type termination_direction: str
         :param termination_state: The termination_state of this NodeEdgePoint.  # noqa: E501
         :type termination_state: str
+        :param total_potential_capacity: The total_potential_capacity of this NodeEdgePoint.  # noqa: E501
+        :type total_potential_capacity: Capacity
+        :param available_capacity: The available_capacity of this NodeEdgePoint.  # noqa: E501
+        :type available_capacity: Capacity
+        :param connection_end_point: The connection_end_point of this NodeEdgePoint.  # noqa: E501
+        :type connection_end_point: List[ConnectionEndPoint]
         :param layer_protocol_name: The layer_protocol_name of this NodeEdgePoint.  # noqa: E501
         :type layer_protocol_name: str
         :param aggregated_node_edge_point: The aggregated_node_edge_point of this NodeEdgePoint.  # noqa: E501
@@ -55,6 +65,9 @@ class NodeEdgePoint(Model):
             'lifecycle_state': str,
             'termination_direction': str,
             'termination_state': str,
+            'total_potential_capacity': Capacity,
+            'available_capacity': Capacity,
+            'connection_end_point': List[ConnectionEndPoint],
             'layer_protocol_name': str,
             'aggregated_node_edge_point': List[str],
             'mapped_service_interface_point': List[str],
@@ -70,6 +83,9 @@ class NodeEdgePoint(Model):
             'lifecycle_state': 'lifecycle-state',
             'termination_direction': 'termination-direction',
             'termination_state': 'termination-state',
+            'total_potential_capacity': 'total-potential-capacity',
+            'available_capacity': 'available-capacity',
+            'connection_end_point': 'connection-end-point',
             'layer_protocol_name': 'layer-protocol-name',
             'aggregated_node_edge_point': 'aggregated-node-edge-point',
             'mapped_service_interface_point': 'mapped-service-interface-point',
@@ -84,6 +100,9 @@ class NodeEdgePoint(Model):
         self._lifecycle_state = lifecycle_state
         self._termination_direction = termination_direction
         self._termination_state = termination_state
+        self._total_potential_capacity = total_potential_capacity
+        self._available_capacity = available_capacity
+        self._connection_end_point = connection_end_point
         self._layer_protocol_name = layer_protocol_name
         self._aggregated_node_edge_point = aggregated_node_edge_point
         self._mapped_service_interface_point = mapped_service_interface_point
@@ -287,6 +306,73 @@ class NodeEdgePoint(Model):
         self._termination_state = termination_state
 
     @property
+    def total_potential_capacity(self) -> Capacity:
+        """Gets the total_potential_capacity of this NodeEdgePoint.
+
+        An optimistic view of the capacity of the TopologicalEntity assuming that any shared capacity is available to be taken.  # noqa: E501
+
+        :return: The total_potential_capacity of this NodeEdgePoint.
+        :rtype: Capacity
+        """
+        return self._total_potential_capacity
+
+    @total_potential_capacity.setter
+    def total_potential_capacity(self, total_potential_capacity: Capacity):
+        """Sets the total_potential_capacity of this NodeEdgePoint.
+
+        An optimistic view of the capacity of the TopologicalEntity assuming that any shared capacity is available to be taken.  # noqa: E501
+
+        :param total_potential_capacity: The total_potential_capacity of this NodeEdgePoint.
+        :type total_potential_capacity: Capacity
+        """
+
+        self._total_potential_capacity = total_potential_capacity
+
+    @property
+    def available_capacity(self) -> Capacity:
+        """Gets the available_capacity of this NodeEdgePoint.
+
+        Capacity available to be assigned.  # noqa: E501
+
+        :return: The available_capacity of this NodeEdgePoint.
+        :rtype: Capacity
+        """
+        return self._available_capacity
+
+    @available_capacity.setter
+    def available_capacity(self, available_capacity: Capacity):
+        """Sets the available_capacity of this NodeEdgePoint.
+
+        Capacity available to be assigned.  # noqa: E501
+
+        :param available_capacity: The available_capacity of this NodeEdgePoint.
+        :type available_capacity: Capacity
+        """
+
+        self._available_capacity = available_capacity
+
+    @property
+    def connection_end_point(self) -> List[ConnectionEndPoint]:
+        """Gets the connection_end_point of this NodeEdgePoint.
+
+
+        :return: The connection_end_point of this NodeEdgePoint.
+        :rtype: List[ConnectionEndPoint]
+        """
+        return self._connection_end_point
+
+    @connection_end_point.setter
+    def connection_end_point(self, connection_end_point: List[ConnectionEndPoint]):
+        """Sets the connection_end_point of this NodeEdgePoint.
+
+
+        :param connection_end_point: The connection_end_point of this NodeEdgePoint.
+        :type connection_end_point: List[ConnectionEndPoint]
+        """
+
+        self._connection_end_point = connection_end_point
+
+    @property
     def layer_protocol_name(self) -> str:
         """Gets the layer_protocol_name of this NodeEdgePoint.
 
@@ -304,7 +390,7 @@ class NodeEdgePoint(Model):
         :param layer_protocol_name: The layer_protocol_name of this NodeEdgePoint.
         :type layer_protocol_name: str
         """
-        allowed_values = ["OTSiA", "OCH", "OTU", "ODU", "ETH", "ETY"]  # noqa: E501
+        allowed_values = ["OTSiA", "OCH", "OTU", "ODU", "ETH", "ETY", "DSR"]  # noqa: E501
         if layer_protocol_name not in allowed_values:
             raise ValueError(
                 "Invalid value for `layer_protocol_name` ({0}), must be one of {1}"

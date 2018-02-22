@@ -351,7 +351,7 @@ class ResilienceConstraint(Model):
         :param layer_protocol: The layer_protocol of this ResilienceConstraint.
         :type layer_protocol: str
         """
-        allowed_values = ["OTSiA", "OCH", "OTU", "ODU", "ETH", "ETY"]  # noqa: E501
+        allowed_values = ["OTSiA", "OCH", "OTU", "ODU", "ETH", "ETY", "DSR"]  # noqa: E501
         if layer_protocol not in allowed_values:
             raise ValueError(
                 "Invalid value for `layer_protocol` ({0}), must be one of {1}"

@@ -193,7 +193,7 @@ class RoutingConstraint(Model):
         :param path_layer: The path_layer of this RoutingConstraint.
         :type path_layer: List[str]
         """
-        allowed_values = ["OTSiA", "OCH", "OTU", "ODU", "ETH", "ETY"]  # noqa: E501
+        allowed_values = ["OTSiA", "OCH", "OTU", "ODU", "ETH", "ETY", "DSR"]  # noqa: E501
         if not set(path_layer).issubset(set(allowed_values)):
             raise ValueError(
                 "Invalid values for `path_layer` [{0}], must be a subset of [{1}]"  # noqa: E501
