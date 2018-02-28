@@ -2,7 +2,7 @@
 
 ## Overview
 
-The following TAPI YANG models are generated from the TAPI [UML models](https://github.com/OpenNetworkingFoundation/Snowmass-ONFOpenTransport/tree/develop/UML) using the IISOMI-Eagle [xmi2yang](https://github.com/OpenNetworkingFoundation/EAGLE-Open-Model-Profile-and-Tools/tree/ToolChain/UmlYangTools/xmi2yang) mapping tool:
+The following TAPI YANG models are generated from the TAPI [UML models](https://github.com/OpenNetworkingFoundation/TAPI/tree/develop/UML) using the IISOMI-Eagle [xmi2yang](https://github.com/OpenNetworkingFoundation/EAGLE-Open-Model-Profile-and-Tools/tree/ToolChain/UmlYangTools/xmi2yang) mapping tool:
 
 - [tapi-common.yang](tapi-common.yang)
 - [tapi-topology.yang](tapi-topology.yang)
