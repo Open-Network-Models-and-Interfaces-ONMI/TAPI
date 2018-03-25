@@ -1,9 +1,11 @@
 module: tapi-virtual-network
   augment /tapi-common:context:
     +--rw virtual-nw-service* [uuid]
-       +--ro topology?              -> /tapi-common:context/tapi-topology:topology/uuid
+       +--ro topology
+       |  +--ro topology-id?   -> /tapi-common:context/tapi-topology:topology/uuid
        +--rw end-point* [local-id]
-       |  +--ro service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
+       |  +--ro service-interface-point
+       |  |  +--ro service-interface-point-id?   -> /tapi-common:context/service-interface-point/uuid
        |  +--ro role?                      tapi-common:port-role
        |  +--ro direction?                 tapi-common:port-direction
        |  +--ro service-layer?             tapi-common:layer-protocol-name
@@ -12,9 +14,12 @@ module: tapi-virtual-network
        |     +--rw value-name    string
        |     +--rw value?        string
        +--rw vnw-constraint* [local-id]
-       |  +--ro src-service-end-point?    -> /tapi-common:context/service-interface-point/uuid
-       |  +--ro sink-service-end-point?   -> /tapi-common:context/service-interface-point/uuid
-       |  +--ro diversity-exclusion*      -> /tapi-common:context/tapi-virtual-network:virtual-nw-service/vnw-constraint/local-id
+       |  +--ro src-service-end-point
+       |  |  +--ro service-interface-point-id?   -> /tapi-common:context/service-interface-point/uuid
+       |  +--ro sink-service-end-point
+       |  |  +--ro service-interface-point-id?   -> /tapi-common:context/service-interface-point/uuid
+       |  +--ro diversity-exclusion* [virtual-nw-service-id]
+       |  |  +--ro virtual-nw-service-id    -> /tapi-common:context/tapi-virtual-network:virtual-nw-service/uuid
        |  +--rw requested-capacity
        |  |  +--rw total-size
        |  |  |  +--rw value?   uint64
@@ -66,7 +71,8 @@ module: tapi-virtual-network
     +---x create-virtual-network-service
     |  +---w input
     |  |  +---w sep*
-    |  |  |  +---w service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
+    |  |  |  +---w service-interface-point
+    |  |  |  |  +---w service-interface-point-id?   -> /tapi-common:context/service-interface-point/uuid
     |  |  |  +---w role?                      tapi-common:port-role
     |  |  |  +---w direction?                 tapi-common:port-direction
     |  |  |  +---w service-layer?             tapi-common:layer-protocol-name
@@ -75,9 +81,12 @@ module: tapi-virtual-network
     |  |  |     +---w value-name    string
     |  |  |     +---w value?        string
     |  |  +---w vnw-constraint
-    |  |  |  +---w src-service-end-point?    -> /tapi-common:context/service-interface-point/uuid
-    |  |  |  +---w sink-service-end-point?   -> /tapi-common:context/service-interface-point/uuid
-    |  |  |  +---w diversity-exclusion*      -> /tapi-common:context/tapi-virtual-network:virtual-nw-service/vnw-constraint/local-id
+    |  |  |  +---w src-service-end-point
+    |  |  |  |  +---w service-interface-point-id?   -> /tapi-common:context/service-interface-point/uuid
+    |  |  |  +---w sink-service-end-point
+    |  |  |  |  +---w service-interface-point-id?   -> /tapi-common:context/service-interface-point/uuid
+    |  |  |  +---w diversity-exclusion* [virtual-nw-service-id]
+    |  |  |  |  +---w virtual-nw-service-id    -> /tapi-common:context/tapi-virtual-network:virtual-nw-service/uuid
     |  |  |  +---w requested-capacity
     |  |  |  |  +---w total-size
     |  |  |  |  |  +---w value?   uint64
@@ -117,9 +126,11 @@ module: tapi-virtual-network
     |  |  +---w conn-schedule?    string
     |  +--ro output
     |     +--ro service
-    |        +--ro topology?              -> /tapi-common:context/tapi-topology:topology/uuid
+    |        +--ro topology
+    |        |  +--ro topology-id?   -> /tapi-common:context/tapi-topology:topology/uuid
     |        +--ro end-point* [local-id]
-    |        |  +--ro service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro service-interface-point
+    |        |  |  +--ro service-interface-point-id?   -> /tapi-common:context/service-interface-point/uuid
     |        |  +--ro role?                      tapi-common:port-role
     |        |  +--ro direction?                 tapi-common:port-direction
     |        |  +--ro service-layer?             tapi-common:layer-protocol-name
@@ -128,9 +139,12 @@ module: tapi-virtual-network
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
     |        +--ro vnw-constraint* [local-id]
-    |        |  +--ro src-service-end-point?    -> /tapi-common:context/service-interface-point/uuid
-    |        |  +--ro sink-service-end-point?   -> /tapi-common:context/service-interface-point/uuid
-    |        |  +--ro diversity-exclusion*      -> /tapi-common:context/tapi-virtual-network:virtual-nw-service/vnw-constraint/local-id
+    |        |  +--ro src-service-end-point
+    |        |  |  +--ro service-interface-point-id?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro sink-service-end-point
+    |        |  |  +--ro service-interface-point-id?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro diversity-exclusion* [virtual-nw-service-id]
+    |        |  |  +--ro virtual-nw-service-id    -> /tapi-common:context/tapi-virtual-network:virtual-nw-service/uuid
     |        |  +--ro requested-capacity
     |        |  |  +--ro total-size
     |        |  |  |  +--ro value?   uint64
@@ -182,9 +196,11 @@ module: tapi-virtual-network
     |  |  +---w service-id-or-name?   string
     |  +--ro output
     |     +--ro service
-    |        +--ro topology?              -> /tapi-common:context/tapi-topology:topology/uuid
+    |        +--ro topology
+    |        |  +--ro topology-id?   -> /tapi-common:context/tapi-topology:topology/uuid
     |        +--ro end-point* [local-id]
-    |        |  +--ro service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro service-interface-point
+    |        |  |  +--ro service-interface-point-id?   -> /tapi-common:context/service-interface-point/uuid
     |        |  +--ro role?                      tapi-common:port-role
     |        |  +--ro direction?                 tapi-common:port-direction
     |        |  +--ro service-layer?             tapi-common:layer-protocol-name
@@ -193,9 +209,12 @@ module: tapi-virtual-network
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
     |        +--ro vnw-constraint* [local-id]
-    |        |  +--ro src-service-end-point?    -> /tapi-common:context/service-interface-point/uuid
-    |        |  +--ro sink-service-end-point?   -> /tapi-common:context/service-interface-point/uuid
-    |        |  +--ro diversity-exclusion*      -> /tapi-common:context/tapi-virtual-network:virtual-nw-service/vnw-constraint/local-id
+    |        |  +--ro src-service-end-point
+    |        |  |  +--ro service-interface-point-id?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro sink-service-end-point
+    |        |  |  +--ro service-interface-point-id?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro diversity-exclusion* [virtual-nw-service-id]
+    |        |  |  +--ro virtual-nw-service-id    -> /tapi-common:context/tapi-virtual-network:virtual-nw-service/uuid
     |        |  +--ro requested-capacity
     |        |  |  +--ro total-size
     |        |  |  |  +--ro value?   uint64
@@ -247,9 +266,11 @@ module: tapi-virtual-network
     |  |  +---w service-id-or-name?   string
     |  +--ro output
     |     +--ro service
-    |        +--ro topology?              -> /tapi-common:context/tapi-topology:topology/uuid
+    |        +--ro topology
+    |        |  +--ro topology-id?   -> /tapi-common:context/tapi-topology:topology/uuid
     |        +--ro end-point* [local-id]
-    |        |  +--ro service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro service-interface-point
+    |        |  |  +--ro service-interface-point-id?   -> /tapi-common:context/service-interface-point/uuid
     |        |  +--ro role?                      tapi-common:port-role
     |        |  +--ro direction?                 tapi-common:port-direction
     |        |  +--ro service-layer?             tapi-common:layer-protocol-name
@@ -258,9 +279,12 @@ module: tapi-virtual-network
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
     |        +--ro vnw-constraint* [local-id]
-    |        |  +--ro src-service-end-point?    -> /tapi-common:context/service-interface-point/uuid
-    |        |  +--ro sink-service-end-point?   -> /tapi-common:context/service-interface-point/uuid
-    |        |  +--ro diversity-exclusion*      -> /tapi-common:context/tapi-virtual-network:virtual-nw-service/vnw-constraint/local-id
+    |        |  +--ro src-service-end-point
+    |        |  |  +--ro service-interface-point-id?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro sink-service-end-point
+    |        |  |  +--ro service-interface-point-id?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro diversity-exclusion* [virtual-nw-service-id]
+    |        |  |  +--ro virtual-nw-service-id    -> /tapi-common:context/tapi-virtual-network:virtual-nw-service/uuid
     |        |  +--ro requested-capacity
     |        |  |  +--ro total-size
     |        |  |  |  +--ro value?   uint64
@@ -310,9 +334,11 @@ module: tapi-virtual-network
     +---x get-virtual-network-service-list
        +--ro output
           +--ro service*
-             +--ro topology?              -> /tapi-common:context/tapi-topology:topology/uuid
+             +--ro topology
+             |  +--ro topology-id?   -> /tapi-common:context/tapi-topology:topology/uuid
              +--ro end-point* [local-id]
-             |  +--ro service-interface-point?   -> /tapi-common:context/service-interface-point/uuid
+             |  +--ro service-interface-point
+             |  |  +--ro service-interface-point-id?   -> /tapi-common:context/service-interface-point/uuid
              |  +--ro role?                      tapi-common:port-role
              |  +--ro direction?                 tapi-common:port-direction
              |  +--ro service-layer?             tapi-common:layer-protocol-name
@@ -321,9 +347,12 @@ module: tapi-virtual-network
              |     +--ro value-name    string
              |     +--ro value?        string
              +--ro vnw-constraint* [local-id]
-             |  +--ro src-service-end-point?    -> /tapi-common:context/service-interface-point/uuid
-             |  +--ro sink-service-end-point?   -> /tapi-common:context/service-interface-point/uuid
-             |  +--ro diversity-exclusion*      -> /tapi-common:context/tapi-virtual-network:virtual-nw-service/vnw-constraint/local-id
+             |  +--ro src-service-end-point
+             |  |  +--ro service-interface-point-id?   -> /tapi-common:context/service-interface-point/uuid
+             |  +--ro sink-service-end-point
+             |  |  +--ro service-interface-point-id?   -> /tapi-common:context/service-interface-point/uuid
+             |  +--ro diversity-exclusion* [virtual-nw-service-id]
+             |  |  +--ro virtual-nw-service-id    -> /tapi-common:context/tapi-virtual-network:virtual-nw-service/uuid
              |  +--ro requested-capacity
              |  |  +--ro total-size
              |  |  |  +--ro value?   uint64
