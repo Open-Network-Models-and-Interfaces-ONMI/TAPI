@@ -1,10 +1,14 @@
 module: tapi-oam
   augment /tapi-common:context:
     +--rw oam-service* [uuid]
-    |  +--ro meg?         -> /tapi-common:context/tapi-oam:meg/uuid
+    |  +--ro meg
+    |  |  +--ro meg-id?   -> /tapi-common:context/tapi-oam:meg/uuid
     |  +--rw end-point* [local-id]
-    |  |  +--rw service-interface-point?          -> /tapi-common:context/service-interface-point/uuid
-    |  |  +--rw connectivity-service-end-point?   -> /tapi-common:context/tapi-connectivity:connectivity-service/end-point/local-id
+    |  |  +--rw service-interface-point
+    |  |  |  +--rw service-interface-point-id?   -> /tapi-common:context/service-interface-point/uuid
+    |  |  +--rw connectivity-service-end-point
+    |  |  |  +--rw connectivity-service-id?             -> /tapi-common:context/tapi-connectivity:connectivity-service/uuid
+    |  |  |  +--rw connectivity-service-end-point-id?   -> /tapi-common:context/tapi-connectivity:connectivity-service/end-point/local-id
     |  |  +--rw pro-active-measurement-job* [local-id]
     |  |  |  +--rw local-id                string
     |  |  |  +--rw name* [value-name]
@@ -21,7 +25,9 @@ module: tapi-oam
     |  |  |  +--rw administrative-state?   administrative-state
     |  |  |  +--ro operational-state?      operational-state
     |  |  |  +--ro lifecycle-state?        lifecycle-state
-    |  |  +--ro associated-mep?                   -> /tapi-common:context/tapi-oam:meg/mep/local-id
+    |  |  +--ro associated-mep
+    |  |  |  +--ro meg-id?   -> /tapi-common:context/tapi-oam:meg/uuid
+    |  |  |  +--ro mep-id?   -> /tapi-common:context/tapi-oam:meg/mep/local-id
     |  |  +--ro direction?                        tapi-common:port-direction
     |  |  +--rw local-id                          string
     |  |  +--rw name* [value-name]
@@ -33,9 +39,15 @@ module: tapi-oam
     |     +--rw value?        string
     +--ro meg* [uuid]
        +--ro me* [local-id]
-       |  +--ro mep*                -> /tapi-common:context/tapi-oam:meg/mep/local-id
-       |  +--ro mip*                -> /tapi-common:context/tapi-oam:meg/mip/local-id
-       |  +--ro connection-route?   -> /tapi-common:context/tapi-connectivity:connection/route/local-id
+       |  +--ro mep* [meg-id mep-id]
+       |  |  +--ro meg-id    -> /tapi-common:context/tapi-oam:meg/uuid
+       |  |  +--ro mep-id    -> /tapi-common:context/tapi-oam:meg/mep/local-id
+       |  +--ro mip* [meg-id mip-id]
+       |  |  +--ro meg-id    -> /tapi-common:context/tapi-oam:meg/uuid
+       |  |  +--ro mip-id    -> /tapi-common:context/tapi-oam:meg/mip/local-id
+       |  +--ro connection-route
+       |  |  +--ro connection-id?   -> /tapi-common:context/tapi-connectivity:connection/uuid
+       |  |  +--ro route-id?        -> /tapi-common:context/tapi-connectivity:connection/route/local-id
        |  +--ro local-id            string
        |  +--ro name* [value-name]
        |     +--ro value-name    string
@@ -64,11 +76,19 @@ module: tapi-oam
           +--ro value-name    string
           +--ro value?        string
   augment /tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point:
-    +--ro mip*   -> /tapi-common:context/tapi-oam:meg/mip/local-id
-    +--ro mep*   -> /tapi-common:context/tapi-oam:meg/mep/local-id
+    +--ro mip* [meg-id mip-id]
+    |  +--ro meg-id    -> /tapi-common:context/tapi-oam:meg/uuid
+    |  +--ro mip-id    -> /tapi-common:context/tapi-oam:meg/mip/local-id
+    +--ro mep* [meg-id mep-id]
+       +--ro meg-id    -> /tapi-common:context/tapi-oam:meg/uuid
+       +--ro mep-id    -> /tapi-common:context/tapi-oam:meg/mep/local-id
   augment /tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:connection-end-point:
-    +--ro mip*   -> /tapi-common:context/tapi-oam:meg/mip/local-id
-    +--ro mep*   -> /tapi-common:context/tapi-oam:meg/mep/local-id
+    +--ro mip* [meg-id mip-id]
+    |  +--ro meg-id    -> /tapi-common:context/tapi-oam:meg/uuid
+    |  +--ro mip-id    -> /tapi-common:context/tapi-oam:meg/mip/local-id
+    +--ro mep* [meg-id mep-id]
+       +--ro meg-id    -> /tapi-common:context/tapi-oam:meg/uuid
+       +--ro mep-id    -> /tapi-common:context/tapi-oam:meg/mep/local-id
 
   rpcs:
     +---x abort-measurement-job
