@@ -14,6 +14,6 @@ It is automatically generated from [T-API YANG](https://github.com/OpenNetworkin
 
 
 ## SWAGGER REST specification
-The swagger specification will be obtained with [OpenSourceSDN.org EAGLE](https://github.com/OpenNetworkingFoundation/EAGLE-Open-Model-Profile-and-Tools/tree/YangJsonTools) (YangJsonTools branch). 
+The swagger specification will be obtained with [OpenSourceSDN.org EAGLE](https://github.com/OpenNetworkingFoundation/EAGLE-Open-Model-Profile-and-Tools/tree/ToolChain/YangJsonTools). 
 It is a fork of the [STRAUSS COP swagger plugin](https://github.com/ict-strauss/COP).
 These swagger specifications can be edited with [Swagger editor](http://editor.swagger.io).
