@@ -21,6 +21,13 @@ module tapi-connectivity {
         Source: TapiConnectivity.uml
         Copyright (c) 2018 Open Networking Foundation (ONF). All rights reserved.
         License: This module is distributed under the Apache License 2.0";
+    revision 2018-08-31 {
+        description "ONF Transport API version 2.1.0
+        This YANG module has been generated from the TAPI UML Model using the IISOMI-Eagle xmi2yang mapping tool.
+        Changes in this revision: <https://github.com/OpenNetworkingFoundation/TAPI/blob/develop/CHANGE_LOG/change-log.2.1.0.md>";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 6020, RFC 6087 and ONF TAPI UML model
+                  <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.1.0/UML>";
+    }
     revision 2018-03-07 {
         description "ONF Transport API version 2.0.2
         This YANG module has been generated from the TAPI UML Model using the IISOMI-Eagle xmi2yang mapping tool.
@@ -55,7 +62,7 @@ module tapi-connectivity {
     * definitions of references
     *************************/
     grouping connectivity-service-ref {
-        leaf connectivity-service-id {
+        leaf connectivity-service-uuid {
             type leafref {
                 path '/tapi-common:context/tapi-connectivity:connectivity-service/tapi-connectivity:uuid';
             }
@@ -66,7 +73,7 @@ module tapi-connectivity {
 
     grouping connectivity-service-end-point-ref {
     	uses connectivity-service-ref;
-    	leaf connectivity-service-end-point-id {
+    	leaf connectivity-service-end-point-local-id {
 	    	type leafref {
 	            path '/tapi-common:context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point/tapi-connectivity:local-id';
 	        }
@@ -75,8 +82,8 @@ module tapi-connectivity {
     	description "none";
     }
     grouping connection-end-point-ref {
-        uses tapi-topology:owned-node-edge-point-ref;
-        leaf connection-end-point-id {
+        uses tapi-topology:node-edge-point-ref;
+        leaf connection-end-point-uuid {
             type leafref {
                 path '/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:connection-end-point/tapi-connectivity:uuid';
             }
@@ -86,7 +93,7 @@ module tapi-connectivity {
     }
 
     grouping connection-ref {
-        leaf connection-id {
+        leaf connection-uuid {
             type leafref {
                 path '/tapi-common:context/tapi-connectivity:connection/tapi-connectivity:uuid';
             }
@@ -97,7 +104,7 @@ module tapi-connectivity {
 
     grouping switch-control-ref {
         uses connection-ref;
-        leaf switch-control-id {
+        leaf switch-control-uuid {
             type leafref {
                 path '/tapi-common:context/tapi-connectivity:connection/tapi-connectivity:switch-control/tapi-connectivity:uuid';
             }
@@ -108,7 +115,7 @@ module tapi-connectivity {
     
     grouping route-ref {
     	uses connection-ref;
-        leaf route-id {
+        leaf route-local-id {
             type leafref {
                 path '/tapi-common:context/tapi-connectivity:connection/tapi-connectivity:route/tapi-connectivity:local-id';
             }
@@ -123,14 +130,14 @@ module tapi-connectivity {
         grouping connection {
             list connection-end-point {
                 uses connection-end-point-ref;
-                key 'topology-id node-id owned-node-edge-point-id connection-end-point-id';
+                key 'topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid';
                 config false;
                 min-elements 2;
                 description "none";
             }
             list lower-connection {
                 uses connection-ref;
-                key 'connection-id';
+                key 'connection-uuid';
                 description "An Connection object supports a recursive aggregation relationship such that the internal construction of an Connection can be exposed as multiple lower level Connection objects (partitioning).
                     Aggregation is used as for the Node/Topology  to allow changes in hierarchy. 
                     Connection aggregation reflects Node/Topology aggregation. 
@@ -169,20 +176,22 @@ module tapi-connectivity {
                 config false;
                 description "none";
             }
+            leaf layer-protocol-qualifier {
+                type tapi-common:layer-protocol-qualifier;
+                description "none";
+            }
             container connectivity-service-end-point {
                 uses connectivity-service-end-point-ref;
                 description "none";
             }
-            list parent-node-edge-point {
-                uses tapi-topology:owned-node-edge-point-ref;
-                key 'topology-id node-id owned-node-edge-point-id';
+            container parent-node-edge-point {
+            	uses tapi-topology:node-edge-point-ref;
                 config false;
-                min-elements 1;
                 description "none";
             }
             list client-node-edge-point {
-                uses tapi-topology:owned-node-edge-point-ref;
-                key 'topology-id node-id owned-node-edge-point-id';
+                uses tapi-topology:node-edge-point-ref;
+                key 'topology-uuid node-uuid node-edge-point-uuid';
                 config false;
                 description "none";
             }
@@ -234,13 +243,18 @@ module tapi-connectivity {
                 uses tapi-topology:latency-characteristic;
                 description "The effect on the latency of a queuing process. This only has significant effect for packet based systems and has a complex characteristic.";
             }
+            list shared-risk-characteristic {
+                key 'risk-characteristic-name';
+                uses tapi-topology:risk-characteristic;
+                description "none";
+            }
             container coroute-inclusion {
-                uses connectivity-service-ref;
+            	uses connectivity-service-ref;
                 description "none";
             }
             list diversity-exclusion {
-                uses connectivity-service-ref;
-                key 'connectivity-service-id';
+            	uses connectivity-service-ref;
+                key 'connectivity-service-uuid';
                 description "none";
             }
             uses route-compute-policy;
@@ -255,7 +269,7 @@ module tapi-connectivity {
             }
             list connection {
                 uses connection-ref;
-                key 'connection-id';
+                key 'connection-uuid';
                 config false;
                 description "none";
             }
@@ -278,6 +292,10 @@ module tapi-connectivity {
         grouping connectivity-service-end-point {
             leaf layer-protocol-name {
                 type tapi-common:layer-protocol-name;
+                description "none";
+            }
+            leaf layer-protocol-qualifier {
+                type tapi-common:layer-protocol-qualifier;
                 description "none";
             }
             container service-interface-point {
@@ -313,7 +331,7 @@ module tapi-connectivity {
         grouping route {
             list connection-end-point {
                 uses connection-end-point-ref;
-                key 'topology-id node-id owned-node-edge-point-id connection-end-point-id';
+                key 'topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid';
                 config false;
                 min-elements 2;
                 description "none";
@@ -340,13 +358,13 @@ module tapi-connectivity {
         grouping switch {
             list selected-connection-end-point {
                 uses connection-end-point-ref;
-                key 'topology-id node-id owned-node-edge-point-id connection-end-point-id';
+                key 'topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid';
                 min-elements 1;
                 description "none";
             }
             list selected-route {
                 uses route-ref;
-                key 'connection-id route-id';
+                key 'connection-uuid route-local-id';
                 min-elements 1;
                 description "none";
             }
@@ -380,7 +398,7 @@ module tapi-connectivity {
         grouping switch-control {
             list sub-switch-control {
                 uses switch-control-ref;
-                key 'connection-id switch-control-id';
+                key 'connection-uuid switch-control-uuid';
                 description "none";
             }
             list switch {
@@ -439,7 +457,7 @@ module tapi-connectivity {
                 type uint64;
                 description "Used to limit the maximum swtich times. When work fault disappears , and traffic return to the original work path, switch counter reset.";
             }
-            leaf layer-protocol {
+            leaf-list preferred-restoration-layer {
                 type tapi-common:layer-protocol-name;
                 description "Indicate which layer this resilience parameters package configured for.";
             }
@@ -448,49 +466,49 @@ module tapi-connectivity {
         grouping topology-constraint {
             list include-topology {
                 uses tapi-topology:topology-ref;
-                key 'topology-id';
+                key 'topology-uuid';
                 config false;
                 description "none";
             }
             list avoid-topology {
                 uses tapi-topology:topology-ref;
-                key 'topology-id';
+                key 'topology-uuid';
                 config false;
                 description "none";
             }
             list include-path {
                 uses tapi-path-computation:path-ref;
-                key 'path-id';
+                key 'path-uuid';
                 config false;
                 description "none";
             }
             list exclude-path {
                 uses tapi-path-computation:path-ref;
-                key 'path-id';
+                key 'path-uuid';
                 config false;
                 description "none";
             }
             list include-link {
                 uses tapi-topology:link-ref;
-                key 'topology-id link-id';
+                key 'topology-uuid link-uuid';
                 config false;
                 description "This is a loose constraint - that is it is unordered and could be a partial list ";
             }
             list exclude-link {
                 uses tapi-topology:link-ref;
-                key 'topology-id link-id';
+                key 'topology-uuid link-uuid';
                 config false;
                 description "none";
             }
             list include-node {
                 uses tapi-topology:node-ref;
-                key 'topology-id node-id';
+                key 'topology-uuid node-uuid';
                 config false;
                 description "This is a loose constraint - that is it is unordered and could be a partial list";
             }
             list exclude-node {
                 uses tapi-topology:node-ref;
-                key 'topology-id node-id';
+                key 'topology-uuid node-uuid';
                 config false;
                 description "none";
             }
