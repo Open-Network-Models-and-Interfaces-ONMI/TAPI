@@ -6,6 +6,11 @@ module: tapi-connectivity
     |  |  +--rw layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
     |  |  +--rw service-interface-point
     |  |  |  +--rw service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+    |  |  +--ro connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
+    |  |  |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology/uuid
+    |  |  |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology/node/uuid
+    |  |  |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/uuid
+    |  |  |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/tapi-connectivity:connection-end-point/uuid
     |  |  +--rw capacity
     |  |  |  +--rw total-size
     |  |  |  |  +--rw value?   uint64
@@ -134,6 +139,9 @@ module: tapi-connectivity
        |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/tapi-connectivity:connection-end-point/uuid
        +--ro lower-connection* [connection-uuid]
        |  +--ro connection-uuid    -> /tapi-common:context/tapi-connectivity:connection/uuid
+       +--ro supported-client-link* [topology-uuid link-uuid]
+       |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology/uuid
+       |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology/link/uuid
        +--ro route* [local-id]
        |  +--ro connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
        |  |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology/uuid
@@ -181,21 +189,18 @@ module: tapi-connectivity
        |  +--ro is-coordinated-switching-both-ends?   boolean
        |  +--ro max-switch-times?                     uint64
        |  +--ro preferred-restoration-layer*          tapi-common:layer-protocol-name
-       +--ro direction?              tapi-common:forwarding-direction
-       +--ro layer-protocol-name?    tapi-common:layer-protocol-name
-       +--ro uuid                    uuid
+       +--ro direction?               tapi-common:forwarding-direction
+       +--ro layer-protocol-name?     tapi-common:layer-protocol-name
+       +--ro uuid                     uuid
        +--ro name* [value-name]
        |  +--ro value-name    string
        |  +--ro value?        string
-       +--ro operational-state?      operational-state
-       +--ro lifecycle-state?        lifecycle-state
+       +--ro operational-state?       operational-state
+       +--ro lifecycle-state?         lifecycle-state
   augment /tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point:
     +--ro connection-end-point* [uuid]
-       +--ro layer-protocol-name?              tapi-common:layer-protocol-name
-       +--ro layer-protocol-qualifier?         tapi-common:layer-protocol-qualifier
-       +--ro connectivity-service-end-point
-       |  +--ro connectivity-service-uuid?                 -> /tapi-common:context/tapi-connectivity:connectivity-service/uuid
-       |  +--ro connectivity-service-end-point-local-id?   -> /tapi-common:context/tapi-connectivity:connectivity-service/end-point/local-id
+       +--ro layer-protocol-name?               tapi-common:layer-protocol-name
+       +--ro layer-protocol-qualifier?          tapi-common:layer-protocol-qualifier
        +--ro parent-node-edge-point
        |  +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology/uuid
        |  +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology/node/uuid
@@ -204,16 +209,21 @@ module: tapi-connectivity
        |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology/uuid
        |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology/node/uuid
        |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/uuid
-       +--ro connection-port-direction?        tapi-common:port-direction
-       +--ro connection-port-role?             tapi-common:port-role
-       +--ro uuid                              uuid
+       +--ro aggregated-connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
+       |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology/uuid
+       |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology/node/uuid
+       |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/uuid
+       |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/tapi-connectivity:connection-end-point/uuid
+       +--ro connection-port-direction?         tapi-common:port-direction
+       +--ro connection-port-role?              tapi-common:port-role
+       +--ro uuid                               uuid
        +--ro name* [value-name]
        |  +--ro value-name    string
        |  +--ro value?        string
-       +--ro operational-state?                operational-state
-       +--ro lifecycle-state?                  lifecycle-state
-       +--ro termination-direction?            termination-direction
-       +--ro termination-state?                termination-state
+       +--ro operational-state?                 operational-state
+       +--ro lifecycle-state?                   lifecycle-state
+       +--ro termination-direction?             termination-direction
+       +--ro termination-state?                 termination-state
 
   rpcs:
     +---x get-connection-details
@@ -229,6 +239,9 @@ module: tapi-connectivity
     |        |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/tapi-connectivity:connection-end-point/uuid
     |        +--ro lower-connection* [connection-uuid]
     |        |  +--ro connection-uuid    -> /tapi-common:context/tapi-connectivity:connection/uuid
+    |        +--ro supported-client-link* [topology-uuid link-uuid]
+    |        |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology/uuid
+    |        |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology/link/uuid
     |        +--ro route* [local-id]
     |        |  +--ro connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
     |        |  |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology/uuid
@@ -276,14 +289,14 @@ module: tapi-connectivity
     |        |  +--ro is-coordinated-switching-both-ends?   boolean
     |        |  +--ro max-switch-times?                     uint64
     |        |  +--ro preferred-restoration-layer*          tapi-common:layer-protocol-name
-    |        +--ro direction?              tapi-common:forwarding-direction
-    |        +--ro layer-protocol-name?    tapi-common:layer-protocol-name
-    |        +--ro uuid?                   uuid
+    |        +--ro direction?               tapi-common:forwarding-direction
+    |        +--ro layer-protocol-name?     tapi-common:layer-protocol-name
+    |        +--ro uuid?                    uuid
     |        +--ro name* [value-name]
     |        |  +--ro value-name    string
     |        |  +--ro value?        string
-    |        +--ro operational-state?      operational-state
-    |        +--ro lifecycle-state?        lifecycle-state
+    |        +--ro operational-state?       operational-state
+    |        +--ro lifecycle-state?         lifecycle-state
     +---x get-connectivity-service-list
     |  +--ro output
     |     +--ro service*
@@ -292,6 +305,11 @@ module: tapi-connectivity
     |        |  +--ro layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
     |        |  +--ro service-interface-point
     |        |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
+    |        |  |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology/uuid
+    |        |  |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology/node/uuid
+    |        |  |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/uuid
+    |        |  |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/tapi-connectivity:connection-end-point/uuid
     |        |  +--ro capacity
     |        |  |  +--ro total-size
     |        |  |  |  +--ro value?   uint64
@@ -422,6 +440,11 @@ module: tapi-connectivity
     |        |  +--ro layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
     |        |  +--ro service-interface-point
     |        |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
+    |        |  |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology/uuid
+    |        |  |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology/node/uuid
+    |        |  |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/uuid
+    |        |  |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/tapi-connectivity:connection-end-point/uuid
     |        |  +--ro capacity
     |        |  |  +--ro total-size
     |        |  |  |  +--ro value?   uint64
@@ -549,6 +572,11 @@ module: tapi-connectivity
     |  |  |  +---w layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
     |  |  |  +---w service-interface-point
     |  |  |  |  +---w service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+    |  |  |  +---w connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
+    |  |  |  |  +---w topology-uuid                -> /tapi-common:context/tapi-topology:topology/uuid
+    |  |  |  |  +---w node-uuid                    -> /tapi-common:context/tapi-topology:topology/node/uuid
+    |  |  |  |  +---w node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/uuid
+    |  |  |  |  +---w connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/tapi-connectivity:connection-end-point/uuid
     |  |  |  +---w capacity
     |  |  |  |  +---w total-size
     |  |  |  |  |  +---w value?   uint64
@@ -669,6 +697,11 @@ module: tapi-connectivity
     |        |  +--ro layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
     |        |  +--ro service-interface-point
     |        |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
+    |        |  |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology/uuid
+    |        |  |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology/node/uuid
+    |        |  |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/uuid
+    |        |  |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/tapi-connectivity:connection-end-point/uuid
     |        |  +--ro capacity
     |        |  |  +--ro total-size
     |        |  |  |  +--ro value?   uint64
@@ -797,6 +830,11 @@ module: tapi-connectivity
     |  |  |  +---w layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
     |  |  |  +---w service-interface-point
     |  |  |  |  +---w service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+    |  |  |  +---w connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
+    |  |  |  |  +---w topology-uuid                -> /tapi-common:context/tapi-topology:topology/uuid
+    |  |  |  |  +---w node-uuid                    -> /tapi-common:context/tapi-topology:topology/node/uuid
+    |  |  |  |  +---w node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/uuid
+    |  |  |  |  +---w connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/tapi-connectivity:connection-end-point/uuid
     |  |  |  +---w capacity
     |  |  |  |  +---w total-size
     |  |  |  |  |  +---w value?   uint64
@@ -917,6 +955,11 @@ module: tapi-connectivity
     |        |  +--ro layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
     |        |  +--ro service-interface-point
     |        |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
+    |        |  |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology/uuid
+    |        |  |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology/node/uuid
+    |        |  |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/uuid
+    |        |  |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/tapi-connectivity:connection-end-point/uuid
     |        |  +--ro capacity
     |        |  |  +--ro total-size
     |        |  |  |  +--ro value?   uint64
@@ -1047,6 +1090,11 @@ module: tapi-connectivity
              |  +--ro layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
              |  +--ro service-interface-point
              |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+             |  +--ro connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
+             |  |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology/uuid
+             |  |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology/node/uuid
+             |  |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/uuid
+             |  |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology/node/owned-node-edge-point/tapi-connectivity:connection-end-point/uuid
              |  +--ro capacity
              |  |  +--ro total-size
              |  |  |  +--ro value?   uint64
