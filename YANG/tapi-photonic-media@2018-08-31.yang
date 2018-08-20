@@ -58,7 +58,7 @@ module tapi-photonic-media {
         description "Augments the base LayerProtocol information in NodeEdgePoint with OCH-specific information";
     }
     augment "/tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:connection-end-point" {
-        uses otsi-gconnection-end-point-spec;
+        uses otsi-assembly-connection-end-point-spec;
         description "none";
     }
     augment "/tapi-common:context/tapi-common:service-interface-point" {
@@ -100,14 +100,14 @@ module tapi-photonic-media {
             description "none";
         }
         grouping otsi-connection-end-point-spec {
-            container otsi-ttp {
+            container otsi-termination {
                 config false;
                 uses otsi-termination-pac;
                 description "none";
             }
-            container otsi-ctp {
+            container otsi-media-channel {
                 config false;
-                uses media-channel-ctp-pac;
+                uses media-channel-properties-pac;
                 description "none";
             }
             description "none";
@@ -159,7 +159,7 @@ module tapi-photonic-media {
             }
             description "none";
         }
-        grouping media-channel-ctp-pac {
+        grouping media-channel-properties-pac {
             container occupied-spectrum {
                 uses spectrum;
                 description "none";
@@ -167,7 +167,7 @@ module tapi-photonic-media {
             uses power-properties-pac;
             description "none";
         }
-        grouping otsi-gconnection-end-point-spec {
+        grouping otsi-assembly-connection-end-point-spec {
             container otsi-adapter {
                 config false;
                 uses otsi-gserver-adaptation-pac;
@@ -208,28 +208,28 @@ module tapi-photonic-media {
             description "none";
         }
         grouping otsi-connectivity-service-end-point-spec {
-            container ttp-config {
-                uses otsi-config-pac;
+            container otsi-config {
+                uses otsi-termination-config-pac;
                 description "none";
             }
-            container ctp-config {
+            container mc-config {
                 uses media-channel-config-pac;
                 description "none";
             }
             description "none";
         }
-        grouping otsi-config-pac {
+        grouping otsi-termination-config-pac {
             container selected-central-frequency {
                 uses central-frequency-or-wavelength;
-                description "none";
-            }
-            leaf selected-modulation {
-                type modulation-technique;
                 description "none";
             }
             container selected-application-identifier {
                 uses application-identifier;
                 description "This attribute indicates the selected Application Identifier that is used by the OCh trail termination function. The syntax of ApplicationIdentifier is a pair {ApplicationIdentifierType, PrintableString}. The value of ApplicationIdentifierType is either STANDARD or PROPRIETARY. The value of PrintableString represents the standard application code as defined in the ITU-T Recommendations or a vendor-specific proprietary code. If the ApplicationIdentifierType is STANDARD the value of PrintableString represents a standard application code as defined in the ITU-T Recommendations. If the ApplicationIdentifierType is PROPRIETARY, the first six characters of the PrintableString must contain the Hexadecimal representation of an OUI assigned to the vendor whose implementation generated the Application Identifier; the remaining octets of the PrintableString are unspecified. The value of this attribute of an object instance has to be one of the values identified in the attribute SupportableApplicationIdentifierList of the same object instance. The values and value ranges of the optical interface parameters of a standard application code must be consistent with those values specified in the ITU-T Recommendation for that application code.";
+            }
+            leaf selected-modulation {
+                type modulation-technique;
+                description "none";
             }
             uses power-properties-pac;
             description "none";
@@ -288,17 +288,17 @@ module tapi-photonic-media {
             description "none";
         }
         grouping media-channel-connection-end-point-spec {
-            container oms-ctp {
+            container media-channel {
                 config false;
-                uses media-channel-ctp-pac;
+                uses media-channel-properties-pac;
                 description "none";
             }
             description "none";
         }
         grouping ots-connection-end-point-spec {
-            container ots-ctp {
+            container ots-media-channel {
                 config false;
-                uses media-channel-ctp-pac;
+                uses media-channel-properties-pac;
                 description "none";
             }
             description "none";
@@ -306,7 +306,7 @@ module tapi-photonic-media {
         grouping media-channel-assembly-spec {
             list mc-pool {
                 config false;
-                uses media-channel-ctp-pac;
+                uses media-channel-properties-pac;
                 description "none";
             }
             description "none";
@@ -517,6 +517,9 @@ module tapi-photonic-media {
                 enum G_6_25GHZ {
                     description "0.00625 THz";
                 }
+                enum G_3_125 {
+                    description "none";
+                }
                 enum UNCONSTRAINED {
                     description "none";
                 }
@@ -544,6 +547,15 @@ module tapi-photonic-media {
         }
         typedef modulation-technique {
             type enumeration {
+                enum RZ {
+                    description "none";
+                }
+                enum NRZ {
+                    description "none";
+                }
+                enum BPSK {
+                    description "none";
+                }
                 enum DPSK {
                     description "none";
                 }
