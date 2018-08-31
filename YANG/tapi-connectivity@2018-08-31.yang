@@ -222,6 +222,10 @@ module tapi-connectivity {
                 The structure of LTP supports all transport protocols including circuit and packet forms.";
         }
         grouping connectivity-constraint {
+            leaf service-layer {
+                type tapi-common:layer-protocol-name;
+                description "none";
+            }
             leaf service-type {
                 type service-type;
                 description "none";
@@ -230,32 +234,16 @@ module tapi-connectivity {
                 type string;
                 description "An abstract value the meaning of which is mutually agreed – typically represents metrics such as - Class of service, priority, resiliency, availability";
             }
-            leaf is-exclusive {
-                type boolean;
-                default "true";
-                description "To distinguish if the resources are exclusive to the service  - for example between EPL(isExclusive=true) and EVPL (isExclusive=false), or between EPLAN (isExclusive=true) and EVPLAN (isExclusive=false)";
-            }
             container requested-capacity {
                 uses tapi-common:capacity;
                 description "none";
             }
-            container schedule {
-                uses tapi-common:time-range;
+            leaf connectivity-direction {
+                type tapi-common:forwarding-direction;
                 description "none";
             }
-            list cost-characteristic {
-                key 'cost-name';
-                uses tapi-topology:cost-characteristic;
-                description "The list of costs where each cost relates to some aspect of the TopologicalEntity.";
-            }
-            list latency-characteristic {
-                key 'traffic-property-name';
-                uses tapi-topology:latency-characteristic;
-                description "The effect on the latency of a queuing process. This only has significant effect for packet based systems and has a complex characteristic.";
-            }
-            list shared-risk-characteristic {
-                key 'risk-characteristic-name';
-                uses tapi-topology:risk-characteristic;
+            container schedule {
+                uses tapi-common:time-range;
                 description "none";
             }
             container coroute-inclusion {
@@ -267,7 +255,6 @@ module tapi-connectivity {
                 key 'connectivity-service-uuid';
                 description "none";
             }
-            uses route-compute-policy;
             description "none";
         }
         grouping connectivity-service {
@@ -283,19 +270,12 @@ module tapi-connectivity {
                 config false;
                 description "none";
             }
-            leaf direction {
-                type tapi-common:forwarding-direction;
-                description "none";
-            }
-            leaf layer-protocol-name {
-                type tapi-common:layer-protocol-name;
-                description "none";
-            }
             uses tapi-common:service-spec;
             uses connectivity-constraint;
-            uses topology-constraint;
-            uses tapi-common:admin-state-pac;
+            uses tapi-path-computation:routing-constraint;
+            uses tapi-path-computation:topology-constraint;
             uses resilience-constraint;
+            uses tapi-common:admin-state-pac;
             description "The ForwardingConstruct (FC) object class models enabled potential for forwarding between two or more LTPs and like the LTP supports any transport protocol including all circuit and packet forms.
                 At the lowest level of recursion, a FC represents a cross-connection within an NE.";
         }
@@ -479,77 +459,10 @@ module tapi-connectivity {
             }
             description "A list of control parameters to apply to a switch.";
         }
-        grouping topology-constraint {
-            list include-topology {
-                uses tapi-topology:topology-ref;
-                key 'topology-uuid';
-                config false;
-                description "none";
-            }
-            list avoid-topology {
-                uses tapi-topology:topology-ref;
-                key 'topology-uuid';
-                config false;
-                description "none";
-            }
-            list include-path {
-                uses tapi-path-computation:path-ref;
-                key 'path-uuid';
-                config false;
-                description "none";
-            }
-            list exclude-path {
-                uses tapi-path-computation:path-ref;
-                key 'path-uuid';
-                config false;
-                description "none";
-            }
-            list include-link {
-                uses tapi-topology:link-ref;
-                key 'topology-uuid link-uuid';
-                config false;
-                description "This is a loose constraint - that is it is unordered and could be a partial list ";
-            }
-            list exclude-link {
-                uses tapi-topology:link-ref;
-                key 'topology-uuid link-uuid';
-                config false;
-                description "none";
-            }
-            list include-node {
-                uses tapi-topology:node-ref;
-                key 'topology-uuid node-uuid';
-                config false;
-                description "This is a loose constraint - that is it is unordered and could be a partial list";
-            }
-            list exclude-node {
-                uses tapi-topology:node-ref;
-                key 'topology-uuid node-uuid';
-                config false;
-                description "none";
-            }
-            leaf-list preferred-transport-layer {
-                type tapi-common:layer-protocol-name;
-                config false;
-                description "soft constraint requested by client to indicate the layer(s) of transport connection that it prefers to carry the service. This could be same as the service layer or one of the supported server layers";
-            }
-            description "none";
-        }
         grouping cep-list {
             list connection-end-point {
                 key 'uuid';
                 uses connection-end-point;
-                description "none";
-            }
-            description "none";
-        }
-        grouping route-compute-policy {
-            leaf route-objective-function {
-                type route-objective-function;
-                description "none";
-            }
-            leaf diversity-policy {
-                type diversity-policy;
                 description "none";
             }
             description "none";
@@ -646,52 +559,6 @@ module tapi-connectivity {
             }
             description "none";
         }
-        typedef route-objective-function {
-            type enumeration {
-                enum MIN_WORK_ROUTE_HOP {
-                    description "none";
-                }
-                enum MIN_WORK_ROUTE_COST {
-                    description "none";
-                }
-                enum MIN_WORK_ROUTE_LATENCY {
-                    description "none";
-                }
-                enum MIN_SUM_OF_WORK_AND_PROTECTION_ROUTE_HOP {
-                    description "none";
-                }
-                enum MIN_SUM_OF_WORK_AND_PROTECTION_ROUTE_COST {
-                    description "none";
-                }
-                enum MIN_SUM_OF_WORK_AND_PROTECTION_ROUTE_LATENCY {
-                    description "none";
-                }
-                enum LOAD_BALANCE_MAX_UNUSED_CAPACITY {
-                    description "none";
-                }
-            }
-            description "none";
-        }
-        typedef diversity-policy {
-            type enumeration {
-                enum SRLG {
-                    description "none";
-                }
-                enum SRNG {
-                    description "none";
-                }
-                enum SNG {
-                    description "none";
-                }
-                enum NODE {
-                    description "none";
-                }
-                enum LINK {
-                    description "none";
-                }
-            }
-            description "none";
-        }
         typedef protection-role {
             type enumeration {
                 enum WORK {
@@ -771,12 +638,16 @@ module tapi-connectivity {
                     uses connectivity-service-end-point;
                     description "none";
                 }
-                container conn-constraint {
+                container connectivity-constraint {
                     uses connectivity-constraint;
                     description "none";
                 }
-                container topo-constraint {
-                    uses topology-constraint;
+                container routing-constraint {
+                    uses tapi-path-computation:routing-constraint;
+                    description "none";
+                }
+                container topology-constraint {
+                    uses tapi-path-computation:topology-constraint;
                     description "none";
                 }
                 list resilience-constraint {
@@ -806,12 +677,16 @@ module tapi-connectivity {
                     uses connectivity-service-end-point;
                     description "none";
                 }
-                container conn-constraint {
+                container connectivity-constraint {
                     uses connectivity-constraint;
                     description "none";
                 }
-                container topo-constraint {
-                    uses topology-constraint;
+                container routing-constraint {
+                    uses tapi-path-computation:routing-constraint;
+                    description "none";
+                }
+                container topology-constraint {
+                    uses tapi-path-computation:topology-constraint;
                     description "none";
                 }
                 list resilience-constraint {
@@ -835,12 +710,6 @@ module tapi-connectivity {
             input {
                 leaf service-id-or-name {
                     type string;
-                    description "none";
-                }
-            }
-            output {
-                container service {
-                    uses connectivity-service;
                     description "none";
                 }
             }
