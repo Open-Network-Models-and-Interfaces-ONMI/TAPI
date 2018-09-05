@@ -80,7 +80,7 @@ module tapi-eth {
         description "none";
     }
     augment "/tapi-common:context/tapi-oam:oam-job" {
-        uses eth-test-spec;
+        uses eth-test-job;
         description "none";
     }
     augment "/tapi-common:context/tapi-oam:oam-job" {
@@ -261,7 +261,7 @@ module tapi-eth {
             leaf actor-system-priority {
                 type uint64;
                 description "See 802.1AX:
-                    Indicating the priority associated with the Actorâ€™s System ID.
+                    Indicating the priority associated with the Actor’s System ID.
                     range of type : 2-octet";
             }
             leaf collector-max-delay {
@@ -280,7 +280,7 @@ module tapi-eth {
                 type uint64;
                 config false;
                 description "See 802.1AX:
-                    The current operational value of the Key for the Aggregatorâ€™s current protocol Partner. If the aggregation is manually configured, this Key value will be a value assigned by the local System.
+                    The current operational value of the Key for the Aggregator’s current protocol Partner. If the aggregation is manually configured, this Key value will be a value assigned by the local System.
                     range of type : 16-bit";
             }
             leaf partner-system-id {
@@ -293,7 +293,7 @@ module tapi-eth {
                 type uint64;
                 config false;
                 description "See 802.1AX:
-                    Indicates the priority associated with the Partnerâ€™s System ID. If the aggregation is manually configured, this System Priority value will be a value assigned by the local System.
+                    Indicates the priority associated with the Partner’s System ID. If the aggregation is manually configured, this System Priority value will be a value assigned by the local System.
                     range of type : 2-octet";
             }
             leaf csf-config {
@@ -471,36 +471,9 @@ module tapi-eth {
             description "none";
         }
         grouping eth-loopback-job {
-            leaf destination-address {
-                type mac-address;
-                description "G.8052: This parameter provides the destination address, i.e., the MAC Address of the target MEP or MIP.";
-            }
-            leaf priority {
-                type uint64;
-                default "7";
-                description "G.8052: This parameter provides the priority to be used in the LBM frame.";
-            }
-            leaf drop-eligibility {
-                type boolean;
-                description "G.8052: This parameter provides the eligibility of frames with unicast ETH-LB information to be discarded when congestion conditions are encountered.";
-            }
-            leaf data-tlv-length {
-                type uint64;
-                description "G.8052: This parameter provides the length (in number of octet) of the optional Data TLV to be included in the LBM frame.";
-            }
-            leaf period {
-                type oam-period;
-                description "G.8052: This parameter provides the periodicity of the LBM OAM messages used in the LB Series process.";
-            }
-            leaf test-pattern {
-                type uint64;
-                description "G.8052: This parameter provides the test pattern to be used in the optional Data TLV.
-                    Examples of test patterns include pseudo-random bit sequence (PRBS) (2^31)-1 as specified in clause 5.8 of [ITU-T O.150], all '0' pattern, etc.
-                    The following values of pattern types are defined:
-                    0: 'Null signal without CRC-32'
-                    1: 'Null signal with CRC-32'
-                    2: 'PRBS (2^31)-1 without CRC-32'
-                    3: 'PRBS (2^31)-1 with CRC-32'.";
+            container eth-lb-msg {
+                uses eth-oam-msg-common-pac;
+                description "none";
             }
             leaf number {
                 type uint64;
@@ -650,14 +623,9 @@ module tapi-eth {
                 It also provides the management of single-ended maintenance jobs, such as loopback test, loopback discover, loopback series, link trace, and dual-ended maintenance job, such as test.";
         }
         grouping eth-link-trace-job {
-            leaf destination-address {
-                type mac-address;
-                description "G.8052: This parameter provides the MAC address of the Target MEP or MIP of the MEG for which the LTM frame is intended.";
-            }
-            leaf priority {
-                type uint64;
-                default "7";
-                description "G.8052: This parameter provides the priority to be used for the LTM frame.";
+            container eth-lt-msg {
+                uses eth-oam-operation-common-pac;
+                description "none";
             }
             leaf time-to-live {
                 type uint64;
@@ -667,37 +635,10 @@ module tapi-eth {
             description "This class represents the Link Trace (LT) process for fault localization or for discovering the intermediate MIPs along the link from the MEP Source to a target MEP or MIP. An LTM frame will be sent from the MEP source to the target MEP/MIP.
                 The termination occurs at specified stop time (schedule attribute of OamJob).";
         }
-        grouping eth-test-spec {
-            leaf destination-address {
-                type mac-address;
-                description "G.8052: This parameter provides the destination address, i.e., the MAC Address of the target MEP or MIP.";
-            }
-            leaf drop-eligibility {
-                type boolean;
-                description "G.8052: This parameter provides the eligibility of frames with unicast ETH-TST information to be discarded when congestion conditions are encountered.";
-            }
-            leaf priority {
-                type uint64;
-                default "7";
-                description "G.8052: This parameter provides the priority to be used in the TST frame.";
-            }
-            leaf data-tlv-length {
-                type uint64;
-                description "G.8052: This parameter provides the length (in number of octet) of the optional Data TLV to be included in the TST frame.";
-            }
-            leaf period {
-                type oam-period;
-                description "G.8052: This parameter provides the periodicity of the TST OAM messages.";
-            }
-            leaf test-pattern {
-                type uint64;
-                description "G.8052: This parameter provides the test pattern to be used in the optional Data TLV.
-                    Examples of test patterns include pseudo-random bit sequence (PRBS) 2^31-1 as specified in clause 5.8 of [ITU-T O.150], all '0' pattern, etc.
-                    The following values of pattern types are defined:
-                    0: 'Null signal without CRC-32'
-                    1: 'Null signal with CRC-32'
-                    2: 'PRBS 2^31-1 without CRC-32'
-                    3: 'PRBS 2^31-1 with CRC-32'.";
+        grouping eth-test-job {
+            container eth-test-msg {
+                uses eth-oam-msg-common-pac;
+                description "none";
             }
             description "This class represents the 1-way on-demand in-service or out-of-service diagnostic test. The diagnostic test includes verifying bandwidth throughput, frame loss, bit errors, etc. TST frames are transmitted.
                 The termination occurs at specified stop time (schedule attribute of OamJob).";
@@ -798,7 +739,7 @@ module tapi-eth {
                 description "This attribute is used to distinguish each measurement session if multiple measurement sessions are simultaneously activated towards a peer MEP including concurrent on-demand and proactive tests. It must be unique at least within the context of any measurement type for the MEG and initiating MEP.
                     range of type : 0..(2^32) - 1";
             }
-            description "This object class allows the control of the proactive 1-way measurement. It is created as a part of an establishProActiveDualEndedMeasurementJobSink() operation. Lifecycle: A pre-condition of deleting the object is that the â€œEnableâ€� attribute should have the value â€œFALSEâ€�.";
+            description "This object class allows the control of the proactive 1-way measurement. It is created as a part of an establishProActiveDualEndedMeasurementJobSink() operation. Lifecycle: A pre-condition of deleting the object is that the “Enable” attribute should have the value “FALSE”.";
         }
         grouping eth-pro-active-measurement-job-control-source {
             leaf controller-mep-id {
@@ -819,7 +760,7 @@ module tapi-eth {
                     range "0..7";
                 }
                 default "7";
-                description "This attribute contains the priority value on which the MEP performs the measurement. When the measurement is enabled, the MEP should use this value to encode the priority of generated measurement frames. The EMF usese this value to assign the â€œPâ€� parameter of the measurement operation.";
+                description "This attribute contains the priority value on which the MEP performs the measurement. When the measurement is enabled, the MEP should use this value to encode the priority of generated measurement frames. The EMF usese this value to assign the “P” parameter of the measurement operation.";
             }
             leaf period {
                 type oam-period;
@@ -844,40 +785,40 @@ module tapi-eth {
             description "This object class represents a proactive measurement job controller source for 1way measurements. It is created as a part of an establishProactiveDualEndedMeasurementJobSource() operation.";
         }
         grouping eth-pro-active-1-dm-performance-data {
-            container near-end-dm-parameters {
+            container pro-active-near-end-1-dm-parameters {
                 uses statistical-dm-performance-parameters;
                 description "This attribute contains the statistical near end performnace parameters.";
             }
             description "This object class represents the PM current data collected in a pro-active delay measurement job (using 1DM).";
         }
         grouping eth-pro-active-1-lm-performance-data {
-            container near-end-lm-parameters {
+            container pro-active-near-end-1-lm-parameters {
                 uses statistical-lm-performance-parameters;
                 description "This attribute contains the statistical near end performnace parameters.";
             }
             description "This object class represents the PM current data collected in a pro-active loss measurement job (using 1SL).";
         }
         grouping eth-pro-active-dm-performance-data {
-            container bi-dir-dm-parameters {
+            container pro-active-bi-dir-dm-parameters {
                 uses statistical-dm-performance-parameters;
                 description "This attribute contains the statistical bidirectional performnace parameters.";
             }
-            container far-end-dm-parameters {
+            container pro-active-far-end-dm-parameters {
                 uses statistical-dm-performance-parameters;
                 description "This attribute contains the statistical far end performnace parameters.";
             }
-            container near-end-dm-parameters {
+            container pro-active-near-end-dm-parameters {
                 uses statistical-dm-performance-parameters;
                 description "This attribute contains the statistical near end performnace parameters.";
             }
             description "This object class represents the PM current data collected in a pro-active delay measurement job (using DMM/DMR).";
         }
         grouping eth-pro-active-lm-performance-data {
-            container far-end-lm-parameters {
+            container pro-active-far-end-lm-parameters {
                 uses statistical-lm-performance-parameters;
                 description "This attribute contains the statistical far end performnace parameters.";
             }
-            container near-end-lm-parameters {
+            container pro-active-near-end-lm-parameters {
                 uses statistical-lm-performance-parameters;
                 description "This attribute contains the statistical near end performnace parameters.";
             }
@@ -889,175 +830,175 @@ module tapi-eth {
             description "This object class represents the PM current data collected in a pro-active loss measurement job (using LMM/LMR or SLM/SLR).";
         }
         grouping eth-on-demand-1-dm-performance-data {
-            container near-end-dm-parameters {
+            container on-demand-near-end-1-dm-parameters {
                 uses on-demand-dm-performance-parameters;
                 description "This attribute contains the results of an on-demand frame delay measurement job in the ingress direction.";
             }
             description "none";
         }
         grouping eth-on-demand-1-lm-performance-data {
-            container near-end-lm-parameters {
+            container on-demand-near-end-1-lm-parameters {
                 uses on-demand-lm-performance-parameters;
                 description "This attribute contains the results of an on-demand synthetic loss measurement job in the ingress direction.";
             }
             description "none";
         }
         grouping eth-on-demand-dm-performance-data {
-            container far-end-dm-parameters {
+            container on-demand-far-end-dm-parameters {
                 uses on-demand-dm-performance-parameters;
                 description "This attribute contains the results of an on-demand frame delay measurement job in the ingress direction.";
             }
-            container near-end-dm-parameters {
+            container on-demand-near-end-dm-parameters {
                 uses on-demand-dm-performance-parameters;
                 description "This attribute contains the results of an on-demand frame delay measurement job in the ingress direction.";
             }
             description "none";
         }
         grouping eth-on-demand-lm-performance-data {
-            container far-end-lm-parameters {
+            container on-demand-far-end-lm-parameters {
                 uses on-demand-lm-performance-parameters;
                 description "This attribute contains the results of an on-demand synthetic loss measurement job in the egress direction.";
             }
-            container near-end-lm-parameters {
+            container on-demand-near-end-lm-parameters {
                 uses on-demand-lm-performance-parameters;
                 description "This attribute contains the results of an on-demand synthetic loss measurement job in the ingress direction.";
             }
             description "none";
         }
         grouping eth-pro-active-1way-measurement-job {
-            container job-control-source {
+            container pro-active-control-1way-source {
                 uses eth-pro-active-measurement-job-control-source;
                 description "none";
             }
-            container job-control-sink {
+            container pro-active-control-1way-sink {
                 uses eth-pro-active-measurement-job-control-sink;
                 description "none";
             }
             description "none";
         }
         grouping eth-pro-active-2way-measurement-job {
-            container job-control-source {
+            container pro-active-control-2way-source {
                 uses eth-pro-active-measurement-job-control-source;
                 description "none";
             }
             description "none";
         }
         grouping eth-on-demand-2way-measurement-job {
-            container job-control-source {
+            container on-demand-control-2way-source {
                 uses eth-on-demand-measurement-job-control-source;
                 description "none";
             }
             description "none";
         }
         grouping eth-on-demand-1way-measurement-job {
-            container job-control-source {
+            container on-demand-control-1way-source {
                 uses eth-on-demand-measurement-job-control-source;
                 description "none";
             }
-            container job-control-sink {
+            container on-demand-control-1way-sink {
                 uses eth-on-demand-measurement-job-control-sink;
                 description "none";
             }
             description "none";
         }
         grouping eth-1-dm-threshold-data {
-            container near-end-cross-threshold {
+            container near-end-1-dm-cross-threshold {
                 uses statistical-dm-performance-parameters;
                 description "This attribute contains the near end cross threshold values of the delay measurements.";
             }
-            container near-end-clear-threshold {
+            container near-end-1-dm-clear-threshold {
                 uses statistical-dm-performance-parameters;
                 description "This attribute contains the near end clear threshold values of the delay measurements.";
             }
             description "This data type contains the threshold values for frame delay related 1-way measurements.";
         }
         grouping eth-1-lm-threshold-data {
-            container near-end-cross-threshold {
+            container near-end-1-lm-cross-threshold {
                 uses statistical-lm-performance-parameters;
                 description "This attribute contains the near end cross threshold values of the loss measurements.";
             }
-            container near-end-clear-threshold {
+            container near-end-1-lm-clear-threshold {
                 uses statistical-lm-performance-parameters;
                 description "This attribute is only valid for frame loss ratio parameters and counter type parameters working in the 'standing condition method' (see G.7710, section 10.1.7.2: Threshold reporting) and contains the near end clear threshold values of the loss measurements.";
             }
             description "This data type contains the threshold values for frame loss related 1-way measurements.";
         }
         grouping eth-dm-threshold-data {
-            container near-end-cross-threshold {
+            container near-end-dm-cross-threshold {
                 uses statistical-dm-performance-parameters;
                 description "This attribute contains the near end cross threshold values of the delay measurements.";
             }
-            container near-end-clear-threshold {
+            container near-end-dm-clear-threshold {
                 uses statistical-dm-performance-parameters;
                 description "This attribute contains the near end clear threshold values of the delay measurements.";
             }
-            container far-end-cross-threshold {
+            container far-end-dm-cross-threshold {
                 uses statistical-dm-performance-parameters;
                 description "This attribute contains the far end cross threshold values of the delay measurements.";
             }
-            container far-end-clear-threshold {
+            container far-end-dm-clear-threshold {
                 uses statistical-dm-performance-parameters;
                 description "This attribute contains the far end clear threshold values of the delay measurements.";
             }
-            container bidirectional-cross-threshold {
+            container bi-dir-dm-cross-threshold {
                 uses statistical-dm-performance-parameters;
                 description "This attribute contains the bidirectional cross threshold values of the delay measurements.";
             }
-            container bidirectional-clear-threshold {
+            container bi-dir-dm-clear-threshold {
                 uses statistical-dm-performance-parameters;
                 description "This attribute contains the bidirectional clear threshold values of the delay measurements.";
             }
             description "This data type contains the threshold values for frame delay related 2-way measurements.";
         }
         grouping eth-lm-threshold-data {
-            container near-end-cross-threshold {
+            container near-end-lm-cross-threshold {
                 uses statistical-lm-performance-parameters;
                 description "This attribute contains the near end cross threshold values of the loss measurements.";
             }
-            container near-end-clear-threshold {
+            container near-end-lm-clear-threshold {
                 uses statistical-lm-performance-parameters;
                 description "This attribute is only valid for frame loss ratio parameters and counter type parameters working in the 'standing condition method' (see G.7710, section 10.1.7.2: Threshold reporting) and contains the near end clear threshold values of the loss measurements.";
             }
-            container far-end-cross-threshold {
+            container far-end-lm-cross-threshold {
                 uses statistical-lm-performance-parameters;
                 description "This attribute contains the far end cross threshold values of the loss measurements.";
             }
-            container far-end-clear-threshold {
+            container far-end-lm-clear-threshold {
                 uses statistical-lm-performance-parameters;
                 description "This attribute is only valid for frame loss ratio parameters and counter type parameters working in the 'standing condition method' (see G.7710, section 10.1.7.2: Threshold reporting) and contains the far end clear threshold values of the loss measurements.";
             }
-            leaf bidirectional-uas-cross-threshold {
+            leaf bi-dir-lm-uas-cross-threshold {
                 type uint64;
                 description "This attribute contains the bidirectional cross threshold value of the UAS loss measurement.";
             }
-            leaf bidirectional-uas-clear-threshold {
+            leaf bi-dir-lm-uas-clear-threshold {
                 type uint64;
                 description "This attribute is only valid for the UAS parameter working in the 'standing condition method' (see G.7710, section 10.1.7.2: Threshold reporting) and contains the bidirectional clear threshold value of the UAS loss measurement.";
             }
             description "This data type contains the threshold values for frame loss related 2-way measurements.";
         }
         grouping eth-loopback-result-data {
-            leaf rec {
+            leaf rec-lbr-frames {
                 type uint64;
                 config false;
                 description "G.8052: This parameter returns the total number of received LBR messages, including the out of order LBR frames.";
             }
-            leaf out-of-order {
+            leaf out-of-order-lbr-frames {
                 type uint64;
                 config false;
                 description "G.8052: This parameter returns the number of LBR traffic unites (messages) that were received out of order (OO).";
             }
-            leaf sent {
+            leaf sent-lbm-frames {
                 type uint64;
                 config false;
                 description "G.8052: This parameter returns the total number of sent LBM frames.";
             }
-            leaf crc {
+            leaf crc-lbr-frames {
                 type uint64;
                 config false;
                 description "G.8052: This parameter returns the number of LBR frames where the CRC in the pattern failed.";
             }
-            leaf ber {
+            leaf ber-lbr-frames {
                 type uint64;
                 config false;
                 description "G.8052: This parameter returns the number of LBR frames where there was a bit error in the pattern.";
@@ -1079,11 +1020,49 @@ module tapi-eth {
             description "none";
         }
         grouping eth-test-result-data {
-            leaf sent {
+            leaf sent-tst-frames {
                 type uint64;
                 config false;
                 description "G.8052: This parameter returns the total number of sent TST frames.";
             }
+            description "none";
+        }
+        grouping eth-oam-operation-common-pac {
+            leaf destination-address {
+                type mac-address;
+                description "G.8052: This parameter provides the destination address, i.e., the MAC Address of the target MEP or MIP.";
+            }
+            leaf priority {
+                type uint64;
+                default "7";
+                description "G.8052: This parameter provides the priority to be used in the LBM frame.";
+            }
+            description "none";
+        }
+        grouping eth-oam-msg-common-pac {
+            leaf period {
+                type oam-period;
+                description "G.8052: This parameter provides the periodicity of the TST OAM messages.";
+            }
+            leaf drop-eligibility {
+                type boolean;
+                description "G.8052: This parameter provides the eligibility of frames with unicast ETH-TST information to be discarded when congestion conditions are encountered.";
+            }
+            leaf data-tlv-length {
+                type uint64;
+                description "G.8052: This parameter provides the length (in number of octet) of the optional Data TLV to be included in the TST frame.";
+            }
+            leaf test-pattern {
+                type uint64;
+                description "G.8052: This parameter provides the test pattern to be used in the optional Data TLV.
+                    Examples of test patterns include pseudo-random bit sequence (PRBS) 2^31-1 as specified in clause 5.8 of [ITU-T O.150], all '0' pattern, etc.
+                    The following values of pattern types are defined:
+                    0: 'Null signal without CRC-32'
+                    1: 'Null signal with CRC-32'
+                    2: 'PRBS 2^31-1 without CRC-32'
+                    3: 'PRBS 2^31-1 with CRC-32'.";
+            }
+            uses eth-oam-operation-common-pac;
             description "none";
         }
 
