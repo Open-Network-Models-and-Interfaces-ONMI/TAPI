@@ -1,3 +1,4 @@
+
 module: tapi-eth
   augment /tapi-common:context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:connection-end-point:
     +--ro ety-term
@@ -73,20 +74,20 @@ module: tapi-eth
        +--ro partner-system-priority?                uint64
        +--ro csf-config?                             csf-config
        +--ro traffic-shaping
-       |  +--ro prio-config-list*
+       |  +--ro prio-config-list* []
        |  |  +--ro priority?   uint64
        |  |  +--ro queue-id?   uint64
-       |  +--ro queue-config-list*
+       |  +--ro queue-config-list* []
        |  |  +--ro queue-id?          uint64
        |  |  +--ro queue-depth?       uint64
        |  |  +--ro queue-threshold?   uint64
        |  +--ro sched-config?        scheduling-configuration
        |  +--ro codirectional?       boolean
        +--ro traffic-conditioning
-          +--ro prio-config-list*
+          +--ro prio-config-list* []
           |  +--ro priority?   uint64
           |  +--ro queue-id?   uint64
-          +--ro cond-config-list*
+          +--ro cond-config-list* []
           |  +--ro cir?             uint64
           |  +--ro cbs?             uint64
           |  +--ro eir?             uint64
@@ -96,13 +97,14 @@ module: tapi-eth
           |  +--ro queue-id?        uint64
           +--ro codirectional?      boolean
   augment /tapi-common:context/tapi-oam:oam-job:
-    +--rw destination-address?   mac-address
-    +--rw priority?              uint64
-    +--rw drop-eligibility?      boolean
-    +--rw data-tlv-length?       uint64
-    +--rw period?                oam-period
-    +--rw test-pattern?          uint64
-    +--rw number?                uint64
+    +--rw eth-lb-msg
+    |  +--rw period?                oam-period
+    |  +--rw drop-eligibility?      boolean
+    |  +--rw data-tlv-length?       uint64
+    |  +--rw test-pattern?          uint64
+    |  +--rw destination-address?   mac-address
+    |  +--rw priority?              uint64
+    +--rw number?       uint64
   augment /tapi-common:context/tapi-oam:meg:
     +--ro client-mel?   uint64
   augment /tapi-common:context/tapi-oam:meg/tapi-oam:mep:
@@ -135,7 +137,7 @@ module: tapi-eth
        +--ro lm-tf-min?                uint64
   augment /tapi-common:context/tapi-oam:meg/tapi-oam:mip:
   augment /tapi-common:context/tapi-oam:oam-job:
-    +--rw job-control-source
+    +--rw pro-active-control-2way-source
        +--rw controller-mep-id?     string
        +--rw is-enabled?            boolean
        +--rw destination-address?   mac-address
@@ -144,18 +146,20 @@ module: tapi-eth
        +--rw test-identifier?       uint64
        +--rw data-tlv-length?       uint64
   augment /tapi-common:context/tapi-oam:oam-job:
-    +--rw destination-address?   mac-address
-    +--rw priority?              uint64
-    +--rw time-to-live?          uint64
+    +--rw eth-lt-msg
+    |  +--rw destination-address?   mac-address
+    |  +--rw priority?              uint64
+    +--rw time-to-live?   uint64
   augment /tapi-common:context/tapi-oam:oam-job:
-    +--rw destination-address?   mac-address
-    +--rw drop-eligibility?      boolean
-    +--rw priority?              uint64
-    +--rw data-tlv-length?       uint64
-    +--rw period?                oam-period
-    +--rw test-pattern?          uint64
+    +--rw eth-test-msg
+       +--rw period?                oam-period
+       +--rw drop-eligibility?      boolean
+       +--rw data-tlv-length?       uint64
+       +--rw test-pattern?          uint64
+       +--rw destination-address?   mac-address
+       +--rw priority?              uint64
   augment /tapi-common:context/tapi-oam:oam-job:
-    +--rw job-control-source
+    +--rw pro-active-control-1way-source
     |  +--rw controller-mep-id?     string
     |  +--rw is-enabled?            boolean
     |  +--rw destination-address?   mac-address
@@ -163,27 +167,27 @@ module: tapi-eth
     |  +--rw period?                oam-period
     |  +--rw test-identifier?       uint64
     |  +--rw data-tlv-length?       uint64
-    +--rw job-control-sink
+    +--rw pro-active-control-1way-sink
        +--rw responder-mep-id?   string
        +--rw is-enabled?         boolean
        +--rw source-address?     mac-address
        +--rw test-identifier?    uint64
   augment /tapi-common:context/tapi-oam:oam-job/tapi-oam:pm-current-data:
-    +--ro bi-dir-dm-parameters
+    +--ro pro-active-bi-dir-dm-parameters
     |  +--ro minimum-frame-delay?             uint64
     |  +--ro average-frame-delay?             uint64
     |  +--ro maximum-frame-delay?             uint64
     |  +--ro minimum-frame-delay-variation?   uint64
     |  +--ro average-frame-delay-variation?   uint64
     |  +--ro maximum-frame-delay-variation?   uint64
-    +--ro far-end-dm-parameters
+    +--ro pro-active-far-end-dm-parameters
     |  +--ro minimum-frame-delay?             uint64
     |  +--ro average-frame-delay?             uint64
     |  +--ro maximum-frame-delay?             uint64
     |  +--ro minimum-frame-delay-variation?   uint64
     |  +--ro average-frame-delay-variation?   uint64
     |  +--ro maximum-frame-delay-variation?   uint64
-    +--ro near-end-dm-parameters
+    +--ro pro-active-near-end-dm-parameters
        +--ro minimum-frame-delay?             uint64
        +--ro average-frame-delay?             uint64
        +--ro maximum-frame-delay?             uint64
@@ -191,21 +195,21 @@ module: tapi-eth
        +--ro average-frame-delay-variation?   uint64
        +--ro maximum-frame-delay-variation?   uint64
   augment /tapi-common:context/tapi-oam:oam-job/tapi-oam:pm-current-data/tapi-oam:pm-history-data:
-    +--ro bi-dir-dm-parameters
+    +--ro pro-active-bi-dir-dm-parameters
     |  +--ro minimum-frame-delay?             uint64
     |  +--ro average-frame-delay?             uint64
     |  +--ro maximum-frame-delay?             uint64
     |  +--ro minimum-frame-delay-variation?   uint64
     |  +--ro average-frame-delay-variation?   uint64
     |  +--ro maximum-frame-delay-variation?   uint64
-    +--ro far-end-dm-parameters
+    +--ro pro-active-far-end-dm-parameters
     |  +--ro minimum-frame-delay?             uint64
     |  +--ro average-frame-delay?             uint64
     |  +--ro maximum-frame-delay?             uint64
     |  +--ro minimum-frame-delay-variation?   uint64
     |  +--ro average-frame-delay-variation?   uint64
     |  +--ro maximum-frame-delay-variation?   uint64
-    +--ro near-end-dm-parameters
+    +--ro pro-active-near-end-dm-parameters
        +--ro minimum-frame-delay?             uint64
        +--ro average-frame-delay?             uint64
        +--ro maximum-frame-delay?             uint64
@@ -213,84 +217,84 @@ module: tapi-eth
        +--ro average-frame-delay-variation?   uint64
        +--ro maximum-frame-delay-variation?   uint64
   augment /tapi-common:context/tapi-oam:oam-job/tapi-oam:pm-current-data:
-    +--ro far-end-lm-parameters
+    +--ro pro-active-far-end-lm-parameters
     |  +--ro minimum-frame-loss-ratio?   decimal64
     |  +--ro average-frame-loss-ratio?   decimal64
     |  +--ro maximum-frame-loss-ratio?   decimal64
     |  +--ro ses?                        uint64
     |  +--ro uas?                        uint64
-    +--ro near-end-lm-parameters
+    +--ro pro-active-near-end-lm-parameters
     |  +--ro minimum-frame-loss-ratio?   decimal64
     |  +--ro average-frame-loss-ratio?   decimal64
     |  +--ro maximum-frame-loss-ratio?   decimal64
     |  +--ro ses?                        uint64
     |  +--ro uas?                        uint64
-    +--ro bidirectional-uas?        uint64
+    +--ro bidirectional-uas?                   uint64
   augment /tapi-common:context/tapi-oam:oam-job/tapi-oam:pm-current-data/tapi-oam:pm-history-data:
-    +--ro far-end-lm-parameters
+    +--ro pro-active-far-end-lm-parameters
     |  +--ro minimum-frame-loss-ratio?   decimal64
     |  +--ro average-frame-loss-ratio?   decimal64
     |  +--ro maximum-frame-loss-ratio?   decimal64
     |  +--ro ses?                        uint64
     |  +--ro uas?                        uint64
-    +--ro near-end-lm-parameters
+    +--ro pro-active-near-end-lm-parameters
     |  +--ro minimum-frame-loss-ratio?   decimal64
     |  +--ro average-frame-loss-ratio?   decimal64
     |  +--ro maximum-frame-loss-ratio?   decimal64
     |  +--ro ses?                        uint64
     |  +--ro uas?                        uint64
-    +--ro bidirectional-uas?        uint64
+    +--ro bidirectional-uas?                   uint64
   augment /tapi-common:context/tapi-oam:oam-job/tapi-oam:pm-current-data:
-    +--rw far-end-dm-parameters
-    |  +--rw number-of-samples?            uint64
-    |  +--rw frame-delay-list*             uint64
-    |  +--rw frame-delay-variation-list*   uint64
-    +--rw near-end-dm-parameters
-       +--rw number-of-samples?            uint64
-       +--rw frame-delay-list*             uint64
-       +--rw frame-delay-variation-list*   uint64
+    +--ro on-demand-far-end-dm-parameters
+    |  +--ro number-of-samples?            uint64
+    |  +--ro frame-delay-list*             uint64
+    |  +--ro frame-delay-variation-list*   uint64
+    +--ro on-demand-near-end-dm-parameters
+       +--ro number-of-samples?            uint64
+       +--ro frame-delay-list*             uint64
+       +--ro frame-delay-variation-list*   uint64
   augment /tapi-common:context/tapi-oam:oam-job/tapi-oam:pm-current-data:
-    +--rw near-end-lm-parameters
-       +--rw total-transmitted-frames?   uint64
-       +--rw total-lost-frames?          uint64
-       +--rw total-frame-loss-ratio?     decimal64
+    +--ro on-demand-near-end-1-lm-parameters
+       +--ro total-transmitted-frames?   uint64
+       +--ro total-lost-frames?          uint64
+       +--ro total-frame-loss-ratio?     decimal64
   augment /tapi-common:context/tapi-oam:oam-job/tapi-oam:pm-current-data:
-    +--rw near-end-dm-parameters
-       +--rw number-of-samples?            uint64
-       +--rw frame-delay-list*             uint64
-       +--rw frame-delay-variation-list*   uint64
+    +--ro on-demand-near-end-1-dm-parameters
+       +--ro number-of-samples?            uint64
+       +--ro frame-delay-list*             uint64
+       +--ro frame-delay-variation-list*   uint64
   augment /tapi-common:context/tapi-oam:oam-job/tapi-oam:pm-current-data:
-    +--rw near-end-dm-parameters
-       +--rw minimum-frame-delay?             uint64
-       +--rw average-frame-delay?             uint64
-       +--rw maximum-frame-delay?             uint64
-       +--rw minimum-frame-delay-variation?   uint64
-       +--rw average-frame-delay-variation?   uint64
-       +--rw maximum-frame-delay-variation?   uint64
+    +--ro pro-active-near-end-1-dm-parameters
+       +--ro minimum-frame-delay?             uint64
+       +--ro average-frame-delay?             uint64
+       +--ro maximum-frame-delay?             uint64
+       +--ro minimum-frame-delay-variation?   uint64
+       +--ro average-frame-delay-variation?   uint64
+       +--ro maximum-frame-delay-variation?   uint64
   augment /tapi-common:context/tapi-oam:oam-job/tapi-oam:pm-current-data/tapi-oam:pm-history-data:
-    +--rw near-end-dm-parameters
-       +--rw minimum-frame-delay?             uint64
-       +--rw average-frame-delay?             uint64
-       +--rw maximum-frame-delay?             uint64
-       +--rw minimum-frame-delay-variation?   uint64
-       +--rw average-frame-delay-variation?   uint64
-       +--rw maximum-frame-delay-variation?   uint64
+    +--ro pro-active-near-end-1-dm-parameters
+       +--ro minimum-frame-delay?             uint64
+       +--ro average-frame-delay?             uint64
+       +--ro maximum-frame-delay?             uint64
+       +--ro minimum-frame-delay-variation?   uint64
+       +--ro average-frame-delay-variation?   uint64
+       +--ro maximum-frame-delay-variation?   uint64
   augment /tapi-common:context/tapi-oam:oam-job/tapi-oam:pm-current-data:
-    +--rw near-end-lm-parameters
-       +--rw minimum-frame-loss-ratio?   decimal64
-       +--rw average-frame-loss-ratio?   decimal64
-       +--rw maximum-frame-loss-ratio?   decimal64
-       +--rw ses?                        uint64
-       +--rw uas?                        uint64
+    +--ro pro-active-near-end-1-lm-parameters
+       +--ro minimum-frame-loss-ratio?   decimal64
+       +--ro average-frame-loss-ratio?   decimal64
+       +--ro maximum-frame-loss-ratio?   decimal64
+       +--ro ses?                        uint64
+       +--ro uas?                        uint64
   augment /tapi-common:context/tapi-oam:oam-job/tapi-oam:pm-current-data/tapi-oam:pm-history-data:
-    +--rw near-end-lm-parameters
-       +--rw minimum-frame-loss-ratio?   decimal64
-       +--rw average-frame-loss-ratio?   decimal64
-       +--rw maximum-frame-loss-ratio?   decimal64
-       +--rw ses?                        uint64
-       +--rw uas?                        uint64
+    +--ro pro-active-near-end-1-lm-parameters
+       +--ro minimum-frame-loss-ratio?   decimal64
+       +--ro average-frame-loss-ratio?   decimal64
+       +--ro maximum-frame-loss-ratio?   decimal64
+       +--ro ses?                        uint64
+       +--ro uas?                        uint64
   augment /tapi-common:context/tapi-oam:oam-job:
-    +--rw job-control-source
+    +--rw on-demand-control-1way-source
     |  +--rw controller-mep-id?         string
     |  +--rw oam-pdu-generation-type?   oam-pdu-generation-type
     |  +--rw destination-address?       mac-address
@@ -300,13 +304,13 @@ module: tapi-eth
     |  +--rw measurement-interval?      uint64
     |  +--rw test-identifier?           uint64
     |  +--rw data-tlv-length?           uint64
-    +--rw job-control-sink
+    +--rw on-demand-control-1way-sink
        +--rw responder-mep-id?   string
        +--rw source-address?     mac-address
        +--rw priority?           uint64
        +--rw test-identifier?    uint64
   augment /tapi-common:context/tapi-oam:oam-job:
-    +--rw job-control-source
+    +--rw on-demand-control-2way-source
        +--rw controller-mep-id?         string
        +--rw oam-pdu-generation-type?   oam-pdu-generation-type
        +--rw destination-address?       mac-address
@@ -317,51 +321,51 @@ module: tapi-eth
        +--rw test-identifier?           uint64
        +--rw data-tlv-length?           uint64
   augment /tapi-common:context/tapi-oam:oam-job/tapi-oam:pm-current-data/tapi-oam:pm-history-data:
-    +--rw near-end-dm-parameters
-       +--rw number-of-samples?            uint64
-       +--rw frame-delay-list*             uint64
-       +--rw frame-delay-variation-list*   uint64
+    +--ro on-demand-near-end-1-dm-parameters
+       +--ro number-of-samples?            uint64
+       +--ro frame-delay-list*             uint64
+       +--ro frame-delay-variation-list*   uint64
   augment /tapi-common:context/tapi-oam:oam-job/tapi-oam:pm-current-data/tapi-oam:pm-history-data:
-    +--rw near-end-lm-parameters
-       +--rw total-transmitted-frames?   uint64
-       +--rw total-lost-frames?          uint64
-       +--rw total-frame-loss-ratio?     decimal64
+    +--ro on-demand-near-end-1-lm-parameters
+       +--ro total-transmitted-frames?   uint64
+       +--ro total-lost-frames?          uint64
+       +--ro total-frame-loss-ratio?     decimal64
   augment /tapi-common:context/tapi-oam:oam-job/tapi-oam:pm-current-data/tapi-oam:pm-history-data:
-    +--rw far-end-dm-parameters
-    |  +--rw number-of-samples?            uint64
-    |  +--rw frame-delay-list*             uint64
-    |  +--rw frame-delay-variation-list*   uint64
-    +--rw near-end-dm-parameters
-       +--rw number-of-samples?            uint64
-       +--rw frame-delay-list*             uint64
-       +--rw frame-delay-variation-list*   uint64
+    +--ro on-demand-far-end-dm-parameters
+    |  +--ro number-of-samples?            uint64
+    |  +--ro frame-delay-list*             uint64
+    |  +--ro frame-delay-variation-list*   uint64
+    +--ro on-demand-near-end-dm-parameters
+       +--ro number-of-samples?            uint64
+       +--ro frame-delay-list*             uint64
+       +--ro frame-delay-variation-list*   uint64
   augment /tapi-common:context/tapi-oam:oam-job/tapi-oam:pm-current-data:
-    +--rw far-end-lm-parameters
-    |  +--rw total-transmitted-frames?   uint64
-    |  +--rw total-lost-frames?          uint64
-    |  +--rw total-frame-loss-ratio?     decimal64
-    +--rw near-end-lm-parameters
-       +--rw total-transmitted-frames?   uint64
-       +--rw total-lost-frames?          uint64
-       +--rw total-frame-loss-ratio?     decimal64
+    +--ro on-demand-far-end-lm-parameters
+    |  +--ro total-transmitted-frames?   uint64
+    |  +--ro total-lost-frames?          uint64
+    |  +--ro total-frame-loss-ratio?     decimal64
+    +--ro on-demand-near-end-lm-parameters
+       +--ro total-transmitted-frames?   uint64
+       +--ro total-lost-frames?          uint64
+       +--ro total-frame-loss-ratio?     decimal64
   augment /tapi-common:context/tapi-oam:oam-job/tapi-oam:pm-current-data/tapi-oam:pm-history-data:
-    +--rw far-end-lm-parameters
-    |  +--rw total-transmitted-frames?   uint64
-    |  +--rw total-lost-frames?          uint64
-    |  +--rw total-frame-loss-ratio?     decimal64
-    +--rw near-end-lm-parameters
-       +--rw total-transmitted-frames?   uint64
-       +--rw total-lost-frames?          uint64
-       +--rw total-frame-loss-ratio?     decimal64
+    +--ro on-demand-far-end-lm-parameters
+    |  +--ro total-transmitted-frames?   uint64
+    |  +--ro total-lost-frames?          uint64
+    |  +--ro total-frame-loss-ratio?     decimal64
+    +--ro on-demand-near-end-lm-parameters
+       +--ro total-transmitted-frames?   uint64
+       +--ro total-lost-frames?          uint64
+       +--ro total-frame-loss-ratio?     decimal64
   augment /tapi-common:context/tapi-oam:oam-profile/tapi-oam:pm-threshold-data:
-    +--rw near-end-cross-threshold
+    +--rw near-end-1-dm-cross-threshold
     |  +--rw minimum-frame-delay?             uint64
     |  +--rw average-frame-delay?             uint64
     |  +--rw maximum-frame-delay?             uint64
     |  +--rw minimum-frame-delay-variation?   uint64
     |  +--rw average-frame-delay-variation?   uint64
     |  +--rw maximum-frame-delay-variation?   uint64
-    +--rw near-end-clear-threshold
+    +--rw near-end-1-dm-clear-threshold
        +--rw minimum-frame-delay?             uint64
        +--rw average-frame-delay?             uint64
        +--rw maximum-frame-delay?             uint64
@@ -369,55 +373,55 @@ module: tapi-eth
        +--rw average-frame-delay-variation?   uint64
        +--rw maximum-frame-delay-variation?   uint64
   augment /tapi-common:context/tapi-oam:oam-profile/tapi-oam:pm-threshold-data:
-    +--rw near-end-cross-threshold
+    +--rw near-end-1-lm-cross-threshold
     |  +--rw minimum-frame-loss-ratio?   decimal64
     |  +--rw average-frame-loss-ratio?   decimal64
     |  +--rw maximum-frame-loss-ratio?   decimal64
     |  +--rw ses?                        uint64
     |  +--rw uas?                        uint64
-    +--rw near-end-clear-threshold
+    +--rw near-end-1-lm-clear-threshold
        +--rw minimum-frame-loss-ratio?   decimal64
        +--rw average-frame-loss-ratio?   decimal64
        +--rw maximum-frame-loss-ratio?   decimal64
        +--rw ses?                        uint64
        +--rw uas?                        uint64
   augment /tapi-common:context/tapi-oam:oam-profile/tapi-oam:pm-threshold-data:
-    +--rw near-end-cross-threshold
+    +--rw near-end-dm-cross-threshold
     |  +--rw minimum-frame-delay?             uint64
     |  +--rw average-frame-delay?             uint64
     |  +--rw maximum-frame-delay?             uint64
     |  +--rw minimum-frame-delay-variation?   uint64
     |  +--rw average-frame-delay-variation?   uint64
     |  +--rw maximum-frame-delay-variation?   uint64
-    +--rw near-end-clear-threshold
+    +--rw near-end-dm-clear-threshold
     |  +--rw minimum-frame-delay?             uint64
     |  +--rw average-frame-delay?             uint64
     |  +--rw maximum-frame-delay?             uint64
     |  +--rw minimum-frame-delay-variation?   uint64
     |  +--rw average-frame-delay-variation?   uint64
     |  +--rw maximum-frame-delay-variation?   uint64
-    +--rw far-end-cross-threshold
+    +--rw far-end-dm-cross-threshold
     |  +--rw minimum-frame-delay?             uint64
     |  +--rw average-frame-delay?             uint64
     |  +--rw maximum-frame-delay?             uint64
     |  +--rw minimum-frame-delay-variation?   uint64
     |  +--rw average-frame-delay-variation?   uint64
     |  +--rw maximum-frame-delay-variation?   uint64
-    +--rw far-end-clear-threshold
+    +--rw far-end-dm-clear-threshold
     |  +--rw minimum-frame-delay?             uint64
     |  +--rw average-frame-delay?             uint64
     |  +--rw maximum-frame-delay?             uint64
     |  +--rw minimum-frame-delay-variation?   uint64
     |  +--rw average-frame-delay-variation?   uint64
     |  +--rw maximum-frame-delay-variation?   uint64
-    +--rw bidirectional-cross-threshold
+    +--rw bi-dir-dm-cross-threshold
     |  +--rw minimum-frame-delay?             uint64
     |  +--rw average-frame-delay?             uint64
     |  +--rw maximum-frame-delay?             uint64
     |  +--rw minimum-frame-delay-variation?   uint64
     |  +--rw average-frame-delay-variation?   uint64
     |  +--rw maximum-frame-delay-variation?   uint64
-    +--rw bidirectional-clear-threshold
+    +--rw bi-dir-dm-clear-threshold
        +--rw minimum-frame-delay?             uint64
        +--rw average-frame-delay?             uint64
        +--rw maximum-frame-delay?             uint64
@@ -425,43 +429,43 @@ module: tapi-eth
        +--rw average-frame-delay-variation?   uint64
        +--rw maximum-frame-delay-variation?   uint64
   augment /tapi-common:context/tapi-oam:oam-profile/tapi-oam:pm-threshold-data:
-    +--rw near-end-cross-threshold
+    +--rw near-end-lm-cross-threshold
     |  +--rw minimum-frame-loss-ratio?   decimal64
     |  +--rw average-frame-loss-ratio?   decimal64
     |  +--rw maximum-frame-loss-ratio?   decimal64
     |  +--rw ses?                        uint64
     |  +--rw uas?                        uint64
-    +--rw near-end-clear-threshold
+    +--rw near-end-lm-clear-threshold
     |  +--rw minimum-frame-loss-ratio?   decimal64
     |  +--rw average-frame-loss-ratio?   decimal64
     |  +--rw maximum-frame-loss-ratio?   decimal64
     |  +--rw ses?                        uint64
     |  +--rw uas?                        uint64
-    +--rw far-end-cross-threshold
+    +--rw far-end-lm-cross-threshold
     |  +--rw minimum-frame-loss-ratio?   decimal64
     |  +--rw average-frame-loss-ratio?   decimal64
     |  +--rw maximum-frame-loss-ratio?   decimal64
     |  +--rw ses?                        uint64
     |  +--rw uas?                        uint64
-    +--rw far-end-clear-threshold
+    +--rw far-end-lm-clear-threshold
     |  +--rw minimum-frame-loss-ratio?   decimal64
     |  +--rw average-frame-loss-ratio?   decimal64
     |  +--rw maximum-frame-loss-ratio?   decimal64
     |  +--rw ses?                        uint64
     |  +--rw uas?                        uint64
-    +--rw bidirectional-uas-cross-threshold?   uint64
-    +--rw bidirectional-uas-clear-threshold?   uint64
+    +--rw bi-dir-lm-uas-cross-threshold?   uint64
+    +--rw bi-dir-lm-uas-clear-threshold?   uint64
   augment /tapi-common:context/tapi-oam:oam-job/tapi-oam:pm-current-data:
-    +--ro result-list*
+    +--ro result-list* []
        +--ro source-address?    mac-address
        +--ro time-to-live?      uint64
        +--ro data-tlv-length?   uint64
   augment /tapi-common:context/tapi-oam:oam-job/tapi-oam:pm-current-data:
-    +--ro sent?   uint64
+    +--ro sent-tst-frames?   uint64
   augment /tapi-common:context/tapi-oam:oam-job/tapi-oam:pm-current-data:
-    +--ro rec?                 uint64
-    +--ro out-of-order?        uint64
-    +--ro sent?                uint64
-    +--ro crc?                 uint64
-    +--ro ber?                 uint64
-    +--ro detected-peer-mep*   mac-address
+    +--ro rec-lbr-frames?            uint64
+    +--ro out-of-order-lbr-frames?   uint64
+    +--ro sent-lbm-frames?           uint64
+    +--ro crc-lbr-frames?            uint64
+    +--ro ber-lbr-frames?            uint64
+    +--ro detected-peer-mep*         mac-address
