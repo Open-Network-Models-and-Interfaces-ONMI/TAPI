@@ -4163,15 +4163,16 @@ definitions:
     - "G_25GHZ"
     - "G_12_5GHZ"
     - "G_6_25GHZ"
-    - "G_3_125"
+    - "G_3_125GHZ"
     - "UNCONSTRAINED"
   tapi.photonic.media.ApplicationIdentifier:
     type: "object"
     properties:
       application-identifier-type:
-        description: "none"
+        description: "The ITU-T recommendation which defines the application code\
+          \ format."
         $ref: "#/definitions/tapi.photonic.media.ApplicationIdentifierType"
-      application-identifier-value:
+      application-code:
         type: "string"
         description: "none"
   tapi.photonic.media.ApplicationIdentifierType:
@@ -4183,13 +4184,14 @@ definitions:
     - "ITUT_G698_2"
     - "ITUT_G696_1"
     - "ITUT_G695"
-    - "NO_IDENTIFIER"
   tapi.photonic.media.CentralFrequencyOrWavelength:
     type: "object"
     properties:
       central-frequency:
-        type: "string"
-        description: "none"
+        type: "integer"
+        format: "int32"
+        description: "The central frequency of the laser specified in MHz. It is the\
+          \ oscillation frequency of the corresponding electromagnetic wave. "
       channel-number:
         type: "integer"
         format: "int32"
@@ -4239,21 +4241,12 @@ definitions:
       namespace: "urn:onf:otcc:yang:tapi-photonic-media"
   tapi.photonic.media.ConnectionEndPointAugmentation5:
     type: "object"
-    properties:
-      mc-pool:
-        type: "array"
-        description: "none"
-        items:
-          $ref: "#/definitions/tapi.photonic.media.MediaChannelPropertiesPac"
     x-augmentation:
       prefix: "tapi-photonic-media"
       namespace: "urn:onf:otcc:yang:tapi-photonic-media"
   tapi.photonic.media.ConnectionEndPointAugmentation6:
     type: "object"
     properties:
-      otsi-media-channel:
-        description: "none"
-        $ref: "#/definitions/tapi.photonic.media.MediaChannelPropertiesPac"
       otsi-termination:
         description: "none"
         $ref: "#/definitions/tapi.photonic.media.OtsiTerminationPac"
@@ -4287,35 +4280,37 @@ definitions:
       uncorrectable-bytes:
         type: "integer"
         format: "int32"
-        description: "none"
+        description: "Bytes that could not be corrected by FEC"
       corrected-bits:
         type: "integer"
         format: "int32"
-        description: "none"
+        description: "Bits corrected between those that were received corrupted"
       pre-fec-ber:
-        type: "string"
-        description: "none"
+        type: "integer"
+        format: "int32"
+        description: "counter: bit error rate before correction by FEC"
       uncorrectable-bits:
         type: "integer"
         format: "int32"
-        description: "none"
+        description: "Bits that could not be corrected by FEC"
       corrected-bytes:
         type: "integer"
         format: "int32"
-        description: "none"
+        description: "Bytes corrected between those that were received corrupted"
       post-fec-ber:
-        type: "string"
-        description: "none"
+        type: "integer"
+        format: "int32"
+        description: "counter: bit error rate after correction by FEC"
   tapi.photonic.media.FrequencySlot:
     type: "object"
     properties:
       central-frequency:
         description: "none"
         $ref: "#/definitions/tapi.photonic.media.CentralFrequencyOrWavelength"
-      spectral-width-in-ghz:
+      spectral-width:
         type: "integer"
         format: "int32"
-        description: "none"
+        description: "Width of the media channel spectrum specified in MHz"
       slot-width-number:
         type: "integer"
         format: "int32"
@@ -4329,24 +4324,39 @@ definitions:
     - "DWDM"
     - "CWDM"
     - "FLEX"
-    - "UNSPECIFIED"
     - "GRIDLESS"
-    - "C_BAND"
-    - "L_BAND"
+    - "UNSPECIFIED"
+  tapi.photonic.media.LaserControlStatusType:
+    type: "string"
+    enum:
+    - "ON"
+    - "OFF"
+    - "PULSING"
+    - "UNDEFINED"
+  tapi.photonic.media.LaserControlType:
+    type: "string"
+    enum:
+    - "FORCED-ON"
+    - "FORCED-OFF"
+    - "AUTOMATIC-LASER-SHUTDOWN"
+    - "UNDEFINED"
   tapi.photonic.media.LaserPropertiesPac:
     type: "object"
     properties:
       laser-application-type:
-        description: "none"
+        description: "The type of laser, its operational wavelengths, and its applications.\
+          \ String size 255."
         $ref: "#/definitions/tapi.photonic.media.LaserType"
       laser-bias-current:
-        type: "integer"
-        format: "int32"
-        description: "none"
+        type: "string"
+        description: "The Bias current of the laser that is the medium polarization\
+          \ current of the laser."
       laser-temperature:
-        type: "integer"
-        format: "int32"
+        type: "string"
+        description: "The temperature of the laser"
+      laser-status:
         description: "none"
+        $ref: "#/definitions/tapi.photonic.media.LaserControlStatusType"
   tapi.photonic.media.LaserType:
     type: "string"
     enum:
@@ -4356,7 +4366,7 @@ definitions:
   tapi.photonic.media.MediaChannelConfigPac:
     type: "object"
     properties:
-      requested-spectrum:
+      spectrum:
         description: "none"
         $ref: "#/definitions/tapi.photonic.media.Spectrum"
   tapi.photonic.media.MediaChannelPoolCapabilityPac:
@@ -4378,14 +4388,17 @@ definitions:
         items:
           $ref: "#/definitions/tapi.photonic.media.Spectrum"
   tapi.photonic.media.MediaChannelPropertiesPac:
-    allOf:
-    - $ref: "#/definitions/tapi.photonic.media.PowerPropertiesPac"
-    - type: "object"
-      properties:
-        occupied-spectrum:
-          description: "none"
-          $ref: "#/definitions/tapi.photonic.media.Spectrum"
-      description: "none"
+    type: "object"
+    properties:
+      occupied-spectrum:
+        description: "none"
+        $ref: "#/definitions/tapi.photonic.media.Spectrum"
+      measured-power-egress:
+        description: "none"
+        $ref: "#/definitions/tapi.photonic.media.PowerPropertiesPac"
+      measured-power-ingress:
+        description: "none"
+        $ref: "#/definitions/tapi.photonic.media.PowerPropertiesPac"
   tapi.photonic.media.ModulationTechnique:
     type: "string"
     enum:
@@ -4396,27 +4409,31 @@ definitions:
     - "QPSK"
     - "8QAM"
     - "16QAM"
+    - "UNDEFINED"
   tapi.photonic.media.OtsiCapabilityPac:
     type: "object"
     properties:
       supportable-lower-central-frequency:
         type: "array"
-        description: "none"
+        description: "The lower frequency of the channel spectrum"
         items:
           $ref: "#/definitions/tapi.photonic.media.CentralFrequencyOrWavelength"
       supportable-application-identifier:
         type: "array"
-        description: "none"
+        description: "The list of supportable ApplicationIdentifiers."
         items:
           $ref: "#/definitions/tapi.photonic.media.ApplicationIdentifier"
       supportable-modulation:
         type: "array"
-        description: "none"
+        description: "This parameter defines the modulation used at the source"
         items:
           $ref: "#/definitions/tapi.photonic.media.ModulationTechnique"
+      total-power-warn-threshold:
+        description: "none"
+        $ref: "#/definitions/tapi.photonic.media.TotalPowerThresholdPac"
       supportable-upper-central-frequency:
         type: "array"
-        description: "none"
+        description: "The Upper frequency of the channel spectrum"
         items:
           $ref: "#/definitions/tapi.photonic.media.CentralFrequencyOrWavelength"
   tapi.photonic.media.OtsiGserverAdaptationPac:
@@ -4427,70 +4444,71 @@ definitions:
         format: "int32"
         description: "none"
   tapi.photonic.media.OtsiTerminationConfigPac:
-    allOf:
-    - $ref: "#/definitions/tapi.photonic.media.PowerPropertiesPac"
-    - type: "object"
-      properties:
-        selected-application-identifier:
-          description: "This attribute indicates the selected Application Identifier\
-            \ that is used by the OCh trail termination function. The syntax of ApplicationIdentifier\
-            \ is a pair {ApplicationIdentifierType, PrintableString}. The value of\
-            \ ApplicationIdentifierType is either STANDARD or PROPRIETARY. The value\
-            \ of PrintableString represents the standard application code as defined\
-            \ in the ITU-T Recommendations or a vendor-specific proprietary code.\
-            \ If the ApplicationIdentifierType is STANDARD the value of PrintableString\
-            \ represents a standard application code as defined in the ITU-T Recommendations.\
-            \ If the ApplicationIdentifierType is PROPRIETARY, the first six characters\
-            \ of the PrintableString must contain the Hexadecimal representation of\
-            \ an OUI assigned to the vendor whose implementation generated the Application\
-            \ Identifier; the remaining octets of the PrintableString are unspecified.\
-            \ The value of this attribute of an object instance has to be one of the\
-            \ values identified in the attribute SupportableApplicationIdentifierList\
-            \ of the same object instance. The values and value ranges of the optical\
-            \ interface parameters of a standard application code must be consistent\
-            \ with those values specified in the ITU-T Recommendation for that application\
-            \ code."
-          $ref: "#/definitions/tapi.photonic.media.ApplicationIdentifier"
-        selected-central-frequency:
-          description: "none"
-          $ref: "#/definitions/tapi.photonic.media.CentralFrequencyOrWavelength"
-        selected-modulation:
-          description: "none"
-          $ref: "#/definitions/tapi.photonic.media.ModulationTechnique"
-      description: "none"
+    type: "object"
+    properties:
+      application-identifier:
+        description: "This attribute indicates the selected Application Identifier."
+        $ref: "#/definitions/tapi.photonic.media.ApplicationIdentifier"
+      central-frequency:
+        description: "The central frequency of the laser. It is the oscillation frequency\
+          \ of the corresponding electromagnetic wave"
+        $ref: "#/definitions/tapi.photonic.media.CentralFrequencyOrWavelength"
+      modulation:
+        description: "The modulation techniqu selected at the source."
+        $ref: "#/definitions/tapi.photonic.media.ModulationTechnique"
+      laser-control:
+        description: "Laser control can be FORCED-ON, FORCED-OFF or LASER-SHUTDOWN"
+        $ref: "#/definitions/tapi.photonic.media.LaserControlType"
+      total-power-warn-threshold-lower:
+        type: "string"
+        description: "Configure  Max, Default and Min values for lower power threshold."
+      total-power-warn-threshold-upper:
+        type: "string"
+        description: "Configure the Max, Default and Min values for the Upper power\
+          \ threshold."
+      transmit-power:
+        description: "Transmit power as requested."
+        $ref: "#/definitions/tapi.photonic.media.PowerPropertiesPac"
   tapi.photonic.media.OtsiTerminationPac:
-    allOf:
-    - $ref: "#/definitions/tapi.photonic.media.LaserPropertiesPac"
-    - $ref: "#/definitions/tapi.photonic.media.PowerPropertiesPac"
-    - type: "object"
-      properties:
-        selected-application-identifier:
-          description: "This attribute indicates the selected Application Identifier\
-            \ that is used by the OCh trail termination function. The syntax of ApplicationIdentifier\
-            \ is a pair {ApplicationIdentifierType, PrintableString}. The value of\
-            \ ApplicationIdentifierType is either STANDARD or PROPRIETARY. The value\
-            \ of PrintableString represents the standard application code as defined\
-            \ in the ITU-T Recommendations or a vendor-specific proprietary code.\
-            \ If the ApplicationIdentifierType is STANDARD the value of PrintableString\
-            \ represents a standard application code as defined in the ITU-T Recommendations.\
-            \ If the ApplicationIdentifierType is PROPRIETARY, the first six characters\
-            \ of the PrintableString must contain the Hexadecimal representation of\
-            \ an OUI assigned to the vendor whose implementation generated the Application\
-            \ Identifier; the remaining octets of the PrintableString are unspecified.\
-            \ The value of this attribute of an object instance has to be one of the\
-            \ values identified in the attribute SupportableApplicationIdentifierList\
-            \ of the same object instance. The values and value ranges of the optical\
-            \ interface parameters of a standard application code must be consistent\
-            \ with those values specified in the ITU-T Recommendation for that application\
-            \ code."
-          $ref: "#/definitions/tapi.photonic.media.ApplicationIdentifier"
-        selected-central-frequency:
-          description: "none"
-          $ref: "#/definitions/tapi.photonic.media.CentralFrequencyOrWavelength"
-        selected-modulation:
-          description: "none"
-          $ref: "#/definitions/tapi.photonic.media.ModulationTechnique"
-      description: "none"
+    type: "object"
+    properties:
+      selected-application-identifier:
+        description: "This attribute indicates the selected Application Identifier\
+          \ that is used by the OCh trail termination function. The syntax of ApplicationIdentifier\
+          \ is a pair {ApplicationIdentifierType, PrintableString}. The value of ApplicationIdentifierType\
+          \ is either STANDARD or PROPRIETARY. The value of PrintableString represents\
+          \ the standard application code as defined in the ITU-T Recommendations\
+          \ or a vendor-specific proprietary code. If the ApplicationIdentifierType\
+          \ is STANDARD the value of PrintableString represents a standard application\
+          \ code as defined in the ITU-T Recommendations. If the ApplicationIdentifierType\
+          \ is PROPRIETARY, the first six characters of the PrintableString must contain\
+          \ the Hexadecimal representation of an OUI assigned to the vendor whose\
+          \ implementation generated the Application Identifier; the remaining octets\
+          \ of the PrintableString are unspecified. The value of this attribute of\
+          \ an object instance has to be one of the values identified in the attribute\
+          \ SupportableApplicationIdentifierList of the same object instance. The\
+          \ values and value ranges of the optical interface parameters of a standard\
+          \ application code must be consistent with those values specified in the\
+          \ ITU-T Recommendation for that application code."
+        $ref: "#/definitions/tapi.photonic.media.ApplicationIdentifier"
+      received-power:
+        description: "none"
+        $ref: "#/definitions/tapi.photonic.media.PowerPropertiesPac"
+      selected-central-frequency:
+        description: "none"
+        $ref: "#/definitions/tapi.photonic.media.CentralFrequencyOrWavelength"
+      transmited-power:
+        description: "Measured power at the Transmitter."
+        $ref: "#/definitions/tapi.photonic.media.PowerPropertiesPac"
+      selected-modulation:
+        description: "This parameter defines the modulation used at the source"
+        $ref: "#/definitions/tapi.photonic.media.SelectedModulation"
+      laser-properties:
+        description: "Laser properties."
+        $ref: "#/definitions/tapi.photonic.media.LaserPropertiesPac"
+      selected-spectrum:
+        description: "none"
+        $ref: "#/definitions/tapi.photonic.media.Spectrum"
   tapi.photonic.media.OwnedNodeEdgePointAugmentation1:
     type: "object"
     properties:
@@ -4503,14 +4521,25 @@ definitions:
   tapi.photonic.media.PowerPropertiesPac:
     type: "object"
     properties:
-      spectral-power-density:
-        type: "integer"
-        format: "int32"
-        description: "none"
+      power-spectral-density:
+        type: "string"
+        description: "This describes how power of a signal  is distributed over frequency\
+          \ specified in nW/MHz\r\n                    range of type : -2147483648..2147483648"
       total-power:
-        type: "integer"
-        format: "int32"
-        description: "none"
+        type: "string"
+        description: "The total power at any point in a channel specified in dBm.\r\
+          \n                    range of type : -99.000..99.000"
+  tapi.photonic.media.SelectedModulation:
+    type: "string"
+    enum:
+    - "RZ"
+    - "NRZ"
+    - "BPSK"
+    - "DPSK"
+    - "QPSK"
+    - "8QAM"
+    - "16QAM"
+    - "UNDEFINED"
   tapi.photonic.media.ServiceInterfacePointAugmentation1:
     type: "object"
     properties:
@@ -4536,11 +4565,36 @@ definitions:
         description: "none"
         $ref: "#/definitions/tapi.photonic.media.FrequencySlot"
       lower-frequency:
-        type: "string"
-        description: "none"
+        type: "integer"
+        format: "int32"
+        description: "The lower frequency bound of the media channel spectrum specified\
+          \ in MHz"
       upper-frequency:
+        type: "integer"
+        format: "int32"
+        description: "The upper frequency bound of the media channel spectrum specified\
+          \ in MHz"
+  tapi.photonic.media.TotalPowerThresholdPac:
+    type: "object"
+    properties:
+      total-power-upper-warn-threshold-default:
         type: "string"
-        description: "none"
+        description: "Can read the value of the default  threshold that was set"
+      total-power-lower-warn-threshold-min:
+        type: "string"
+        description: "Can read the value of the lower threshold that was set"
+      total-power-upper-warn-threshold-min:
+        type: "string"
+        description: "Can read the value of the lower threshold that was set"
+      total-power-upper-warn-threshold-max:
+        type: "string"
+        description: "Can  read the value of the upper threshold that was set"
+      total-power-lower-warn-threshold-max:
+        type: "string"
+        description: "Can  read the value of the upper threshold that was set"
+      total-power-lower-warn-threshold-default:
+        type: "string"
+        description: "Can read the value of the default  threshold that was set"
   tapi.topology.ContextAugmentation5:
     type: "object"
     properties:

@@ -95,6 +95,7 @@ module tapi-photonic-media {
         grouping otsi-gserver-adaptation-pac {
             leaf number-of-otsi {
                 type uint64;
+                config false;
                 description "none";
             }
             description "none";
@@ -105,40 +106,59 @@ module tapi-photonic-media {
                 uses otsi-termination-pac;
                 description "none";
             }
-            container otsi-media-channel {
-                config false;
-                uses media-channel-properties-pac;
-                description "none";
-            }
             description "none";
         }
         grouping otsi-termination-pac {
             container selected-central-frequency {
+                config false;
                 uses central-frequency-or-wavelength;
                 description "none";
             }
             container selected-application-identifier {
+                config false;
                 uses application-identifier;
                 description "This attribute indicates the selected Application Identifier that is used by the OCh trail termination function. The syntax of ApplicationIdentifier is a pair {ApplicationIdentifierType, PrintableString}. The value of ApplicationIdentifierType is either STANDARD or PROPRIETARY. The value of PrintableString represents the standard application code as defined in the ITU-T Recommendations or a vendor-specific proprietary code. If the ApplicationIdentifierType is STANDARD the value of PrintableString represents a standard application code as defined in the ITU-T Recommendations. If the ApplicationIdentifierType is PROPRIETARY, the first six characters of the PrintableString must contain the Hexadecimal representation of an OUI assigned to the vendor whose implementation generated the Application Identifier; the remaining octets of the PrintableString are unspecified. The value of this attribute of an object instance has to be one of the values identified in the attribute SupportableApplicationIdentifierList of the same object instance. The values and value ranges of the optical interface parameters of a standard application code must be consistent with those values specified in the ITU-T Recommendation for that application code.";
             }
             leaf selected-modulation {
                 type modulation-technique;
+                default "UNDEFINED";
+                config false;
+                description "This parameter defines the modulation used at the source";
+            }
+            container selected-spectrum {
+                config false;
+                uses spectrum;
                 description "none";
             }
-            uses power-properties-pac;
-            uses laser-properties-pac;
-            description "none";
+            container transmited-power {
+                config false;
+                uses power-properties-pac;
+                description "Measured power at the Transmitter.";
+            }
+            container received-power {
+                uses power-properties-pac;
+                description "none";
+            }
+            container laser-properties {
+                config false;
+                uses laser-properties-pac;
+                description "Laser properties.";
+            }
+            description "Provides status information only.";
         }
         grouping media-channel-pool-capability-pac {
             list supportable-spectrum {
+                config false;
                 uses spectrum;
                 description "none";
             }
             list available-spectrum {
+                config false;
                 uses spectrum;
                 description "none";
             }
             list occupied-spectrum {
+                config false;
                 uses spectrum;
                 description "none";
             }
@@ -161,10 +181,19 @@ module tapi-photonic-media {
         }
         grouping media-channel-properties-pac {
             container occupied-spectrum {
+                config false;
                 uses spectrum;
                 description "none";
             }
-            uses power-properties-pac;
+            container measured-power-ingress {
+                config false;
+                uses power-properties-pac;
+                description "none";
+            }
+            container measured-power-egress {
+                uses power-properties-pac;
+                description "none";
+            }
             description "none";
         }
         grouping otsi-assembly-connection-end-point-spec {
@@ -182,22 +211,31 @@ module tapi-photonic-media {
         }
         grouping otsi-capability-pac {
             list supportable-lower-central-frequency {
+                config false;
                 uses central-frequency-or-wavelength;
-                description "none";
+                description "The lower frequency of the channel spectrum";
             }
             list supportable-upper-central-frequency {
+                config false;
                 uses central-frequency-or-wavelength;
-                description "none";
+                description "The Upper frequency of the channel spectrum";
             }
             list supportable-application-identifier {
+                config false;
                 uses application-identifier;
-                description "none";
+                description "The list of supportable ApplicationIdentifiers.";
             }
             leaf-list supportable-modulation {
                 type modulation-technique;
+                config false;
+                description "This parameter defines the modulation used at the source";
+            }
+            container total-power-warn-threshold {
+                config false;
+                uses total-power-threshold-pac;
                 description "none";
             }
-            description "none";
+            description "Can read the status of the warning for the upper value that the power can reach.";
         }
         grouping otsi-service-interface-point-spec {
             container otsi-capability {
@@ -219,49 +257,70 @@ module tapi-photonic-media {
             description "none";
         }
         grouping otsi-termination-config-pac {
-            container selected-central-frequency {
+            container central-frequency {
                 uses central-frequency-or-wavelength;
-                description "none";
+                description "The central frequency of the laser. It is the oscillation frequency of the corresponding electromagnetic wave";
             }
-            container selected-application-identifier {
+            container application-identifier {
                 uses application-identifier;
-                description "This attribute indicates the selected Application Identifier that is used by the OCh trail termination function. The syntax of ApplicationIdentifier is a pair {ApplicationIdentifierType, PrintableString}. The value of ApplicationIdentifierType is either STANDARD or PROPRIETARY. The value of PrintableString represents the standard application code as defined in the ITU-T Recommendations or a vendor-specific proprietary code. If the ApplicationIdentifierType is STANDARD the value of PrintableString represents a standard application code as defined in the ITU-T Recommendations. If the ApplicationIdentifierType is PROPRIETARY, the first six characters of the PrintableString must contain the Hexadecimal representation of an OUI assigned to the vendor whose implementation generated the Application Identifier; the remaining octets of the PrintableString are unspecified. The value of this attribute of an object instance has to be one of the values identified in the attribute SupportableApplicationIdentifierList of the same object instance. The values and value ranges of the optical interface parameters of a standard application code must be consistent with those values specified in the ITU-T Recommendation for that application code.";
+                description "This attribute indicates the selected Application Identifier.";
             }
-            leaf selected-modulation {
+            leaf modulation {
                 type modulation-technique;
-                description "none";
+                description "The modulation techniqu selected at the source.";
             }
-            uses power-properties-pac;
+            leaf laser-control {
+                type laser-control-type;
+                description "Laser control can be FORCED-ON, FORCED-OFF or LASER-SHUTDOWN";
+            }
+            container transmit-power {
+                uses power-properties-pac;
+                description "Transmit power as requested.";
+            }
+            leaf total-power-warn-threshold-upper {
+            	type decimal64 {
+                	fraction-digits 7;
+                }
+                description "Configure the Max, Default and Min values for the Upper power threshold.";
+            }
+            leaf total-power-warn-threshold-lower {
+            	type decimal64 {
+                	fraction-digits 7;
+                }
+                description "Configure  Max, Default and Min values for lower power threshold.";
+            }
             description "none";
         }
         grouping fec-properties-pac {
             leaf pre-fec-ber {
-                type decimal64 {
-                	fraction-digits 7;
-                }
-                description "none";
+                type uint64;
+                config false;
+                description "counter: bit error rate before correction by FEC";
             }
             leaf post-fec-ber {
-            	type decimal64 {
-                	fraction-digits 7;
-                }
-                description "none";
+                type uint64;
+                config false;
+                description "counter: bit error rate after correction by FEC";
             }
             leaf corrected-bytes {
                 type uint64;
-                description "none";
+                config false;
+                description "Bytes corrected between those that were received corrupted";
             }
             leaf corrected-bits {
                 type uint64;
-                description "none";
+                config false;
+                description "Bits corrected between those that were received corrupted";
             }
             leaf uncorrectable-bytes {
                 type uint64;
-                description "none";
+                config false;
+                description "Bytes that could not be corrected by FEC";
             }
             leaf uncorrectable-bits {
                 type uint64;
-                description "none";
+                config false;
+                description "Bits that could not be corrected by FEC";
             }
             description "none";
         }
@@ -281,7 +340,7 @@ module tapi-photonic-media {
             description "none";
         }
         grouping media-channel-config-pac {
-            container requested-spectrum {
+            container spectrum {
                 uses spectrum;
                 description "none";
             }
@@ -304,36 +363,89 @@ module tapi-photonic-media {
             description "none";
         }
         grouping media-channel-assembly-spec {
-            list mc-pool {
-                config false;
-                uses media-channel-properties-pac;
-                description "none";
-            }
             description "none";
         }
         grouping laser-properties-pac {
+            leaf laser-status {
+                type laser-control-status-type;
+                config false;
+                description "none";
+            }
             leaf laser-application-type {
                 type laser-type;
-                description "none";
+                config false;
+                description "The type of laser, its operational wavelengths, and its applications. String size 255.";
             }
             leaf laser-bias-current {
-                type uint64;
-                description "none";
+            	type decimal64 {
+                	fraction-digits 7;
+                }
+                config false;
+                description "The Bias current of the laser that is the medium polarization current of the laser.";
             }
             leaf laser-temperature {
-                type uint64;
-                description "none";
+            	type decimal64 {
+                	fraction-digits 7;
+                }
+                config false;
+                description "The temperature of the laser";
             }
             description "none";
         }
         grouping power-properties-pac {
             leaf total-power {
-                type uint64;
-                description "none";
+            	type decimal64 {
+                	fraction-digits 7;
+                }
+                description "The total power at any point in a channel specified in dBm.
+                    range of type : -99.000..99.000";
             }
-            leaf spectral-power-density {
-                type uint64;
-                description "none";
+            leaf power-spectral-density {
+            	type decimal64 {
+                	fraction-digits 7;
+                }
+                config false;
+                description "This describes how power of a signal  is distributed over frequency specified in nW/MHz
+                    range of type : -2147483648..2147483648";
+            }
+            description "Indication with severity warning raised when a total power value measured is above the threshold.";
+        }
+        grouping total-power-threshold-pac {
+            leaf total-power-upper-warn-threshold-default {
+            	type decimal64 {
+                	fraction-digits 7;
+                }
+                description "Can read the value of the default  threshold that was set";
+            }
+            leaf total-power-upper-warn-threshold-min {
+            	type decimal64 {
+                	fraction-digits 7;
+                }
+                description "Can read the value of the lower threshold that was set";
+            }
+            leaf total-power-upper-warn-threshold-max {
+            	type decimal64 {
+                	fraction-digits 7;
+                }
+                description "Can  read the value of the upper threshold that was set";
+            }
+            leaf total-power-lower-warn-threshold-default {
+            	type decimal64 {
+                	fraction-digits 7;
+                }
+                description "Can read the value of the default  threshold that was set";
+            }
+            leaf total-power-lower-warn-threshold-max {
+            	type decimal64 {
+                	fraction-digits 7;
+                }
+                description "Can  read the value of the upper threshold that was set";
+            }
+            leaf total-power-lower-warn-threshold-min {
+            	type decimal64 {
+                	fraction-digits 7;
+                }
+                description "Can read the value of the lower threshold that was set";
             }
             description "none";
         }
@@ -388,13 +500,13 @@ module tapi-photonic-media {
         grouping application-identifier {
             leaf application-identifier-type {
                 type application-identifier-type;
-                description "none";
+                description "The ITU-T recommendation which defines the application code format.";
             }
-            leaf application-identifier-value {
+            leaf application-code {
                 type string;
                 description "none";
             }
-            description "none";
+            description "The syntax of ApplicationIdentifier is a pair {ApplicationIdentifierType, PrintableString}. The value of ApplicationIdentifierType is either STANDARD or PROPRIETARY. The value of PrintableString represents the standard application code as defined in the ITU-T Recommendations or a vendor-specific proprietary code. If the ApplicationIdentifierType is STANDARD the value of PrintableString represents a standard application code as defined in the ITU-T Recommendations. If the ApplicationIdentifierType is PROPRIETARY, the first six characters of the PrintableString must contain the Hexadecimal representation of an OUI assigned to the vendor whose implementation generated the Application Identifier; the remaining octets of the PrintableString are unspecified. The value of this attribute of an object instance has to be one of the values identified in the attribute SupportableApplicationIdentifierList of the same object instance. The values and value ranges of the optical interface parameters of a standard application code must be consistent with those values specified in the ITU-T Recommendation for that application code.";
         }
         grouping central-frequency-or-wavelength {
             leaf grid-type {
@@ -406,10 +518,8 @@ module tapi-photonic-media {
                 description "Adjustment granularity in Gigahertz. As per ITU-T G.694.1, it is used to calculate nominal central frequency (in THz)";
             }
             leaf central-frequency {
-            	type decimal64 {
-                	fraction-digits 7;
-                }
-                description "none";
+                type uint64;
+                description "The central frequency of the laser specified in MHz. It is the oscillation frequency of the corresponding electromagnetic wave. ";
             }
             leaf channel-number {
                 type uint64;
@@ -462,9 +572,6 @@ module tapi-photonic-media {
                 enum ITUT_G695 {
                     description "none";
                 }
-                enum NO_IDENTIFIER {
-                    description "none";
-                }
             }
             description "none";
         }
@@ -485,17 +592,11 @@ module tapi-photonic-media {
                         12.5 × m where m is a positive integer and 12.5 is the slot width granularity in GHz.
                         Any combination of frequency slots is allowed as long as no two frequency slots overlap.";
                 }
-                enum UNSPECIFIED {
-                    description "Unspecified/proprietary frequency grid";
-                }
                 enum GRIDLESS {
                     description "none";
                 }
-                enum C_BAND {
-                    description "none";
-                }
-                enum L_BAND {
-                    description "none";
+                enum UNSPECIFIED {
+                    description "Unspecified/proprietary frequency grid";
                 }
             }
             description "The frequency grid standard that specify reference set of frequencies used to denote allowed nominal central frequencies that may be used for defining applications.";
@@ -503,41 +604,37 @@ module tapi-photonic-media {
         typedef adjustment-granularity {
             type enumeration {
                 enum G_100GHZ {
-                    description "0.1 THz";
+                    description "100000 MHz";
                 }
                 enum G_50GHZ {
-                    description "0.05 THz";
+                    description "50000 MHz";
                 }
                 enum G_25GHZ {
-                    description "0.025 THz";
+                    description "25000 MHz";
                 }
                 enum G_12_5GHZ {
-                    description "0.0125 THz";
+                    description "12500 MHz";
                 }
                 enum G_6_25GHZ {
-                    description "0.00625 THz";
+                    description "6250 MHz";
                 }
-                enum G_3_125 {
-                    description "none";
+                enum G_3_125GHZ {
+                    description "3125 MHz";
                 }
                 enum UNCONSTRAINED {
                     description "none";
                 }
             }
-            description "Adjustment granularity in Gigahertz. As per ITU-T G.694.1, it is used to calculate nominal central frequency (in THz)";
+            description "Adjustment granularity in Gigahertz. As per ITU-T G.694.1, it is used to calculate nominal central frequency";
         }
         grouping spectrum {
             leaf upper-frequency {
-            	type decimal64 {
-                	fraction-digits 7;
-                }
-                description "none";
+                type uint64;
+                description "The upper frequency bound of the media channel spectrum specified in MHz";
             }
             leaf lower-frequency {
-            	type decimal64 {
-                	fraction-digits 7;
-                }
-                description "none";
+                type uint64;
+                description "The lower frequency bound of the media channel spectrum specified in MHz";
             }
             container frequency-slot {
                 uses frequency-slot;
@@ -568,6 +665,9 @@ module tapi-photonic-media {
                 enum 16QAM {
                     description "none";
                 }
+                enum UNDEFINED {
+                    description "none";
+                }
             }
             description "none";
         }
@@ -576,9 +676,9 @@ module tapi-photonic-media {
                 uses central-frequency-or-wavelength;
                 description "none";
             }
-            leaf spectral-width-in-ghz {
+            leaf spectral-width {
                 type uint64;
-                description "none";
+                description "Width of the media channel spectrum specified in MHz";
             }
             leaf slot-width-number {
                 type uint64;
@@ -605,6 +705,40 @@ module tapi-photonic-media {
         typedef spectrum-type {
             type identityref {
                 base SPECTRUM_TYPE;
+            }
+            description "none";
+        }
+        typedef laser-control-type {
+            type enumeration {
+                enum FORCED-ON {
+                    description "none";
+                }
+                enum FORCED-OFF {
+                    description "none";
+                }
+                enum AUTOMATIC-LASER-SHUTDOWN {
+                    description "none";
+                }
+                enum UNDEFINED {
+                    description "none";
+                }
+            }
+            description "none";
+        }
+        typedef laser-control-status-type {
+            type enumeration {
+                enum ON {
+                    description "none";
+                }
+                enum OFF {
+                    description "none";
+                }
+                enum PULSING {
+                    description "none";
+                }
+                enum UNDEFINED {
+                    description "none";
+                }
             }
             description "none";
         }
