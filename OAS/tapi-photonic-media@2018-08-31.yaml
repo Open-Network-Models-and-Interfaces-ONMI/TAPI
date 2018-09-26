@@ -4184,7 +4184,7 @@ definitions:
     - "ITUT_G698_2"
     - "ITUT_G696_1"
     - "ITUT_G695"
-  tapi.photonic.media.CentralFrequencyOrWavelength:
+  tapi.photonic.media.CentralFrequency:
     type: "object"
     properties:
       central-frequency:
@@ -4192,23 +4192,9 @@ definitions:
         format: "int32"
         description: "The central frequency of the laser specified in MHz. It is the\
           \ oscillation frequency of the corresponding electromagnetic wave. "
-      channel-number:
-        type: "integer"
-        format: "int32"
-        description: "As per ITU-T G.694.1, this attribute is denoted as 'n' and is\
-          \ used to calculate the nominal central frequency (in THz) as follows:\r\
-          \n                    193.1 + <channelNumber> × <adjustmentGranularity>\
-          \ where channelNumber is a positive or negative integer including 0 and\
-          \ adjustment_granularity is the nominal central frequency granularity in\
-          \ THz"
-      grid-type:
-        description: "Specifies the frequency grid standard used to determine the\
-          \ nominal central frequency and frequency slot width"
-        $ref: "#/definitions/tapi.photonic.media.GridType"
-      adjustment-granularity:
-        description: "Adjustment granularity in Gigahertz. As per ITU-T G.694.1, it\
-          \ is used to calculate nominal central frequency (in THz)"
-        $ref: "#/definitions/tapi.photonic.media.AdjustmentGranularity"
+      frequency-constraint:
+        description: "none"
+        $ref: "#/definitions/tapi.photonic.media.FrequencyConstraint"
   tapi.photonic.media.ConnectionEndPointAugmentation2:
     type: "object"
     properties:
@@ -4256,9 +4242,6 @@ definitions:
   tapi.photonic.media.EndPointAugmentation1:
     type: "object"
     properties:
-      nmc-config:
-        description: "none"
-        $ref: "#/definitions/tapi.photonic.media.MediaChannelConfigPac"
       otsi-config:
         description: "none"
         $ref: "#/definitions/tapi.photonic.media.OtsiTerminationConfigPac"
@@ -4301,23 +4284,17 @@ definitions:
         type: "integer"
         format: "int32"
         description: "counter: bit error rate after correction by FEC"
-  tapi.photonic.media.FrequencySlot:
+  tapi.photonic.media.FrequencyConstraint:
     type: "object"
     properties:
-      central-frequency:
-        description: "none"
-        $ref: "#/definitions/tapi.photonic.media.CentralFrequencyOrWavelength"
-      spectral-width:
-        type: "integer"
-        format: "int32"
-        description: "Width of the media channel spectrum specified in MHz"
-      slot-width-number:
-        type: "integer"
-        format: "int32"
-        description: "As per ITU-T G.694.1, this attribute is denoted as 'm' and is\
-          \ used to calculate the slot width (in GHz) as follows:\r\n            \
-          \        12.5 × m where m is a positive integer and 12.5 is the slot width\
-          \ granularity in GHz."
+      adjustment-granularity:
+        description: "Adjustment granularity in Gigahertz. As per ITU-T G.694.1, it\
+          \ is used to calculate nominal central frequency (in THz)"
+        $ref: "#/definitions/tapi.photonic.media.AdjustmentGranularity"
+      grid-type:
+        description: "Specifies the frequency grid standard used to determine the\
+          \ nominal central frequency and frequency slot width"
+        $ref: "#/definitions/tapi.photonic.media.GridType"
   tapi.photonic.media.GridType:
     type: "string"
     enum:
@@ -4363,12 +4340,6 @@ definitions:
     - "PUMP"
     - "MODULATED"
     - "PULSE"
-  tapi.photonic.media.MediaChannelConfigPac:
-    type: "object"
-    properties:
-      spectrum:
-        description: "none"
-        $ref: "#/definitions/tapi.photonic.media.Spectrum"
   tapi.photonic.media.MediaChannelPoolCapabilityPac:
     type: "object"
     properties:
@@ -4376,23 +4347,23 @@ definitions:
         type: "array"
         description: "none"
         items:
-          $ref: "#/definitions/tapi.photonic.media.Spectrum"
+          $ref: "#/definitions/tapi.photonic.media.SpectrumBand"
       supportable-spectrum:
         type: "array"
         description: "none"
         items:
-          $ref: "#/definitions/tapi.photonic.media.Spectrum"
+          $ref: "#/definitions/tapi.photonic.media.SpectrumBand"
       occupied-spectrum:
         type: "array"
         description: "none"
         items:
-          $ref: "#/definitions/tapi.photonic.media.Spectrum"
+          $ref: "#/definitions/tapi.photonic.media.SpectrumBand"
   tapi.photonic.media.MediaChannelPropertiesPac:
     type: "object"
     properties:
       occupied-spectrum:
         description: "none"
-        $ref: "#/definitions/tapi.photonic.media.Spectrum"
+        $ref: "#/definitions/tapi.photonic.media.SpectrumBand"
       measured-power-egress:
         description: "none"
         $ref: "#/definitions/tapi.photonic.media.PowerPropertiesPac"
@@ -4409,6 +4380,8 @@ definitions:
     - "QPSK"
     - "8QAM"
     - "16QAM"
+    - "PAM4"
+    - "PAM8"
     - "UNDEFINED"
   tapi.photonic.media.OtsiCapabilityPac:
     type: "object"
@@ -4417,7 +4390,7 @@ definitions:
         type: "array"
         description: "The lower frequency of the channel spectrum"
         items:
-          $ref: "#/definitions/tapi.photonic.media.CentralFrequencyOrWavelength"
+          $ref: "#/definitions/tapi.photonic.media.CentralFrequency"
       supportable-application-identifier:
         type: "array"
         description: "The list of supportable ApplicationIdentifiers."
@@ -4435,7 +4408,7 @@ definitions:
         type: "array"
         description: "The Upper frequency of the channel spectrum"
         items:
-          $ref: "#/definitions/tapi.photonic.media.CentralFrequencyOrWavelength"
+          $ref: "#/definitions/tapi.photonic.media.CentralFrequency"
   tapi.photonic.media.OtsiGserverAdaptationPac:
     type: "object"
     properties:
@@ -4452,7 +4425,7 @@ definitions:
       central-frequency:
         description: "The central frequency of the laser. It is the oscillation frequency\
           \ of the corresponding electromagnetic wave"
-        $ref: "#/definitions/tapi.photonic.media.CentralFrequencyOrWavelength"
+        $ref: "#/definitions/tapi.photonic.media.CentralFrequency"
       modulation:
         description: "The modulation techniqu selected at the source."
         $ref: "#/definitions/tapi.photonic.media.ModulationTechnique"
@@ -4461,11 +4434,14 @@ definitions:
         $ref: "#/definitions/tapi.photonic.media.LaserControlType"
       total-power-warn-threshold-lower:
         type: "string"
-        description: "Configure  Max, Default and Min values for lower power threshold."
+        description: "Allows to configure the Lowerpower threshold which is expected\
+          \ to be different from Default, but within the Min and Max values specified\
+          \ as OTSi SIP capability."
       total-power-warn-threshold-upper:
         type: "string"
-        description: "Configure the Max, Default and Min values for the Upper power\
-          \ threshold."
+        description: "Allows to configure the Upper power threshold which is expected\
+          \ to be different from Default, but within the Min and Max values specified\
+          \ as OTSi SIP capability."
       transmit-power:
         description: "Transmit power as requested."
         $ref: "#/definitions/tapi.photonic.media.PowerPropertiesPac"
@@ -4496,7 +4472,7 @@ definitions:
         $ref: "#/definitions/tapi.photonic.media.PowerPropertiesPac"
       selected-central-frequency:
         description: "none"
-        $ref: "#/definitions/tapi.photonic.media.CentralFrequencyOrWavelength"
+        $ref: "#/definitions/tapi.photonic.media.CentralFrequency"
       transmited-power:
         description: "Measured power at the Transmitter."
         $ref: "#/definitions/tapi.photonic.media.PowerPropertiesPac"
@@ -4508,7 +4484,7 @@ definitions:
         $ref: "#/definitions/tapi.photonic.media.LaserPropertiesPac"
       selected-spectrum:
         description: "none"
-        $ref: "#/definitions/tapi.photonic.media.Spectrum"
+        $ref: "#/definitions/tapi.photonic.media.SpectrumBand"
   tapi.photonic.media.OwnedNodeEdgePointAugmentation1:
     type: "object"
     properties:
@@ -4524,11 +4500,10 @@ definitions:
       power-spectral-density:
         type: "string"
         description: "This describes how power of a signal  is distributed over frequency\
-          \ specified in nW/MHz\r\n                    range of type : -2147483648..2147483648"
+          \ specified in nW/MHz"
       total-power:
         type: "string"
-        description: "The total power at any point in a channel specified in dBm.\r\
-          \n                    range of type : -99.000..99.000"
+        description: "The total power at any point in a channel specified in dBm."
   tapi.photonic.media.SelectedModulation:
     type: "string"
     enum:
@@ -4539,6 +4514,8 @@ definitions:
     - "QPSK"
     - "8QAM"
     - "16QAM"
+    - "PAM4"
+    - "PAM8"
     - "UNDEFINED"
   tapi.photonic.media.ServiceInterfacePointAugmentation1:
     type: "object"
@@ -4558,12 +4535,9 @@ definitions:
     x-augmentation:
       prefix: "tapi-photonic-media"
       namespace: "urn:onf:otcc:yang:tapi-photonic-media"
-  tapi.photonic.media.Spectrum:
+  tapi.photonic.media.SpectrumBand:
     type: "object"
     properties:
-      frequency-slot:
-        description: "none"
-        $ref: "#/definitions/tapi.photonic.media.FrequencySlot"
       lower-frequency:
         type: "integer"
         format: "int32"
@@ -4574,6 +4548,9 @@ definitions:
         format: "int32"
         description: "The upper frequency bound of the media channel spectrum specified\
           \ in MHz"
+      frequency-constraint:
+        description: "none"
+        $ref: "#/definitions/tapi.photonic.media.FrequencyConstraint"
   tapi.photonic.media.TotalPowerThresholdPac:
     type: "object"
     properties:

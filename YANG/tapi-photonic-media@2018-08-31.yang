@@ -111,7 +111,7 @@ module tapi-photonic-media {
         grouping otsi-termination-pac {
             container selected-central-frequency {
                 config false;
-                uses central-frequency-or-wavelength;
+                uses central-frequency;
                 description "none";
             }
             container selected-application-identifier {
@@ -127,7 +127,7 @@ module tapi-photonic-media {
             }
             container selected-spectrum {
                 config false;
-                uses spectrum;
+                uses spectrum-band;
                 description "none";
             }
             container transmited-power {
@@ -149,17 +149,17 @@ module tapi-photonic-media {
         grouping media-channel-pool-capability-pac {
             list supportable-spectrum {
                 config false;
-                uses spectrum;
+                uses spectrum-band;
                 description "none";
             }
             list available-spectrum {
                 config false;
-                uses spectrum;
+                uses spectrum-band;
                 description "none";
             }
             list occupied-spectrum {
                 config false;
-                uses spectrum;
+                uses spectrum-band;
                 description "none";
             }
             description "none";
@@ -182,7 +182,7 @@ module tapi-photonic-media {
         grouping media-channel-properties-pac {
             container occupied-spectrum {
                 config false;
-                uses spectrum;
+                uses spectrum-band;
                 description "none";
             }
             container measured-power-ingress {
@@ -212,12 +212,12 @@ module tapi-photonic-media {
         grouping otsi-capability-pac {
             list supportable-lower-central-frequency {
                 config false;
-                uses central-frequency-or-wavelength;
+                uses central-frequency;
                 description "The lower frequency of the channel spectrum";
             }
             list supportable-upper-central-frequency {
                 config false;
-                uses central-frequency-or-wavelength;
+                uses central-frequency;
                 description "The Upper frequency of the channel spectrum";
             }
             list supportable-application-identifier {
@@ -250,15 +250,11 @@ module tapi-photonic-media {
                 uses otsi-termination-config-pac;
                 description "none";
             }
-            container nmc-config {
-                uses media-channel-config-pac;
-                description "none";
-            }
             description "none";
         }
         grouping otsi-termination-config-pac {
             container central-frequency {
-                uses central-frequency-or-wavelength;
+                uses central-frequency;
                 description "The central frequency of the laser. It is the oscillation frequency of the corresponding electromagnetic wave";
             }
             container application-identifier {
@@ -281,13 +277,13 @@ module tapi-photonic-media {
             	type decimal64 {
                 	fraction-digits 7;
                 }
-                description "Configure the Max, Default and Min values for the Upper power threshold.";
+                description "Allows to configure the Upper power threshold which is expected to be different from Default, but within the Min and Max values specified as OTSi SIP capability.";
             }
             leaf total-power-warn-threshold-lower {
             	type decimal64 {
                 	fraction-digits 7;
                 }
-                description "Configure  Max, Default and Min values for lower power threshold.";
+                description "Allows to configure the Lowerpower threshold which is expected to be different from Default, but within the Min and Max values specified as OTSi SIP capability.";
             }
             description "none";
         }
@@ -341,7 +337,7 @@ module tapi-photonic-media {
         }
         grouping media-channel-config-pac {
             container spectrum {
-                uses spectrum;
+                uses spectrum-band;
                 description "none";
             }
             description "none";
@@ -397,16 +393,14 @@ module tapi-photonic-media {
             	type decimal64 {
                 	fraction-digits 7;
                 }
-                description "The total power at any point in a channel specified in dBm.
-                    range of type : -99.000..99.000";
+                description "The total power at any point in a channel specified in dBm.";
             }
             leaf power-spectral-density {
             	type decimal64 {
                 	fraction-digits 7;
                 }
                 config false;
-                description "This describes how power of a signal  is distributed over frequency specified in nW/MHz
-                    range of type : -2147483648..2147483648";
+                description "This describes how power of a signal  is distributed over frequency specified in nW/MHz";
             }
             description "Indication with severity warning raised when a total power value measured is above the threshold.";
         }
@@ -453,48 +447,48 @@ module tapi-photonic-media {
     /***********************
     * package type-definitions
     **********************/ 
-        identity SPECTRUM_TYPE {
+        identity PHOTONIC_LAYER_QUALIFIER {
         	base tapi-common:LAYER_PROTOCOL_QUALIFIER;
             description "none";
         }
-        identity SPECTRUM_TYPE_OTSi {
-            base SPECTRUM_TYPE;
+        identity PHOTONIC_LAYER_QUALIFIER_OTSi {
+            base PHOTONIC_LAYER_QUALIFIER;
             description "none";
         }
-        identity SPECTRUM_TYPE_OTSiA {
-            base SPECTRUM_TYPE;
+        identity PHOTONIC_LAYER_QUALIFIER_OTSiA {
+            base PHOTONIC_LAYER_QUALIFIER;
             description "none";
         }
-        identity SPECTRUM_TYPE_OTSiG {
-            base SPECTRUM_TYPE;
+        identity PHOTONIC_LAYER_QUALIFIER_OTSiG {
+            base PHOTONIC_LAYER_QUALIFIER;
             description "none";
         }
-        identity SPECTRUM_TYPE_NMC {
-            base SPECTRUM_TYPE;
+        identity PHOTONIC_LAYER_QUALIFIER_NMC {
+            base PHOTONIC_LAYER_QUALIFIER;
             description "none";
         }
-        identity SPECTRUM_TYPE_NMCA {
-            base SPECTRUM_TYPE;
+        identity PHOTONIC_LAYER_QUALIFIER_NMCA {
+            base PHOTONIC_LAYER_QUALIFIER;
             description "none";
         }
-        identity SPECTRUM_TYPE_SMC {
-            base SPECTRUM_TYPE;
+        identity PHOTONIC_LAYER_QUALIFIER_SMC {
+            base PHOTONIC_LAYER_QUALIFIER;
             description "none";
         }
-        identity SPECTRUM_TYPE_SMCA {
-            base SPECTRUM_TYPE;
+        identity PHOTONIC_LAYER_QUALIFIER_SMCA {
+            base PHOTONIC_LAYER_QUALIFIER;
             description "none";
         }
-        identity SPECTRUM_TYPE_OCH {
-            base SPECTRUM_TYPE;
+        identity PHOTONIC_LAYER_QUALIFIER_OCH {
+            base PHOTONIC_LAYER_QUALIFIER;
             description "none";
         }
-        identity SPECTRUM_TYPE_OMS {
-            base SPECTRUM_TYPE;
+        identity PHOTONIC_LAYER_QUALIFIER_OMS {
+            base PHOTONIC_LAYER_QUALIFIER;
             description "none";
         }
-        identity SPECTRUM_TYPE_OTS {
-            base SPECTRUM_TYPE;
+        identity PHOTONIC_LAYER_QUALIFIER_OTS {
+            base PHOTONIC_LAYER_QUALIFIER;
             description "none";
         }
         grouping application-identifier {
@@ -508,27 +502,18 @@ module tapi-photonic-media {
             }
             description "The syntax of ApplicationIdentifier is a pair {ApplicationIdentifierType, PrintableString}. The value of ApplicationIdentifierType is either STANDARD or PROPRIETARY. The value of PrintableString represents the standard application code as defined in the ITU-T Recommendations or a vendor-specific proprietary code. If the ApplicationIdentifierType is STANDARD the value of PrintableString represents a standard application code as defined in the ITU-T Recommendations. If the ApplicationIdentifierType is PROPRIETARY, the first six characters of the PrintableString must contain the Hexadecimal representation of an OUI assigned to the vendor whose implementation generated the Application Identifier; the remaining octets of the PrintableString are unspecified. The value of this attribute of an object instance has to be one of the values identified in the attribute SupportableApplicationIdentifierList of the same object instance. The values and value ranges of the optical interface parameters of a standard application code must be consistent with those values specified in the ITU-T Recommendation for that application code.";
         }
-        grouping central-frequency-or-wavelength {
-            leaf grid-type {
-                type grid-type;
-                description "Specifies the frequency grid standard used to determine the nominal central frequency and frequency slot width";
-            }
-            leaf adjustment-granularity {
-                type adjustment-granularity;
-                description "Adjustment granularity in Gigahertz. As per ITU-T G.694.1, it is used to calculate nominal central frequency (in THz)";
+        grouping central-frequency {
+            container frequency-constraint {
+                uses frequency-constraint;
+                description "none";
             }
             leaf central-frequency {
                 type uint64;
                 description "The central frequency of the laser specified in MHz. It is the oscillation frequency of the corresponding electromagnetic wave. ";
             }
-            leaf channel-number {
-                type uint64;
-                description "As per ITU-T G.694.1, this attribute is denoted as 'n' and is used to calculate the nominal central frequency (in THz) as follows:
-                    193.1 + <channelNumber> × <adjustmentGranularity> where channelNumber is a positive or negative integer including 0 and adjustment_granularity is the nominal central frequency granularity in THz";
-            }
-            description "This data-type holds the central frequency directly or optionally the information to determine the nominal central frequency of a FIXED grid (DWDM or CWDM) and FLEX grid type systems.
+            description "This data-type holds the central frequency information as well frequency constraints in terms of GridType ( FIXED grid (DWDM or CWDM) or FLEX grid) and AdjustmentGranularity.
                 As per ITU-T G.694.1, the nominal central frequency (in THz) is calculated as follows:
-                193.1 + <channelNumber> × <adjustmentGranularity> where channelNumber is a positive or negative integer including 0 and <adjustment_granularity> is the nominal central frequency granularity in THz
+                193.1 + <channelNumber> × <adjustmentGranularity> where channelNumber is a positive or negative integer including 0 and <adjustment_granularity> is the channel spacing in THz
                 For FIXED grid types, the adjustmentGranularity is one of (0.1/0.05/0.025/0.0125) THz corresponding to channel spacing of one of (100/50/25/12.5) GHz
                 For FLEX grid type, the adjusmentGranularity is 0.00625 THz and the slot width is variable in increments of 12.5 GHz";
         }
@@ -627,7 +612,7 @@ module tapi-photonic-media {
             }
             description "Adjustment granularity in Gigahertz. As per ITU-T G.694.1, it is used to calculate nominal central frequency";
         }
-        grouping spectrum {
+        grouping spectrum-band {
             leaf upper-frequency {
                 type uint64;
                 description "The upper frequency bound of the media channel spectrum specified in MHz";
@@ -636,8 +621,8 @@ module tapi-photonic-media {
                 type uint64;
                 description "The lower frequency bound of the media channel spectrum specified in MHz";
             }
-            container frequency-slot {
-                uses frequency-slot;
+            container frequency-constraint {
+                uses frequency-constraint;
                 description "none";
             }
             description "This data-type holds the spectrum information in termsof upper/lower frequency directly or optionally the information to determin this in terms of the nominal central frequency and spectral width for a FIXED grid (DWDM or CWDM) and FLEX grid type systems.";
@@ -665,28 +650,17 @@ module tapi-photonic-media {
                 enum 16QAM {
                     description "none";
                 }
+                enum PAM4 {
+                    description "none";
+                }
+                enum PAM8 {
+                    description "none";
+                }
                 enum UNDEFINED {
                     description "none";
                 }
             }
             description "none";
-        }
-        grouping frequency-slot {
-            container central-frequency {
-                uses central-frequency-or-wavelength;
-                description "none";
-            }
-            leaf spectral-width {
-                type uint64;
-                description "Width of the media channel spectrum specified in MHz";
-            }
-            leaf slot-width-number {
-                type uint64;
-                description "As per ITU-T G.694.1, this attribute is denoted as 'm' and is used to calculate the slot width (in GHz) as follows:
-                    12.5 × m where m is a positive integer and 12.5 is the slot width granularity in GHz.";
-            }
-            description "The frequency range allocated to a slot and unavailable to other slots within a flexible grid. A frequency slot is defined by its nominal central frequency. As per ITU-T G.694.1  the slot width is calculated as follows:
-                12.5 × <slotWidthNumber> where slotWidthNumber is a positive integer and 12.5 is the slot width granularity in GHz";
         }
         typedef laser-type {
             type enumeration {
@@ -702,9 +676,9 @@ module tapi-photonic-media {
             }
             description "none";
         }
-        typedef spectrum-type {
+        typedef photonic-layer-qualifier {
             type identityref {
-                base SPECTRUM_TYPE;
+                base PHOTONIC_LAYER_QUALIFIER;
             }
             description "none";
         }
@@ -741,6 +715,21 @@ module tapi-photonic-media {
                 }
             }
             description "none";
+        }
+        grouping frequency-constraint {
+            leaf adjustment-granularity {
+                type adjustment-granularity;
+                description "Adjustment granularity in Gigahertz. As per ITU-T G.694.1, it is used to calculate nominal central frequency (in THz)";
+            }
+            leaf grid-type {
+                type grid-type;
+                description "Specifies the frequency grid standard used to determine the nominal central frequency and frequency slot width";
+            }
+            description "This data-type holds the frequency constraint information in terms of GridType ( FIXED grid (DWDM or CWDM) or FLEX grid) and AdjustmentGranularity.
+                As per ITU-T G.694.1, the nominal central frequency (in THz) is calculated as follows:
+                193.1 + <channelNumber> × <adjustmentGranularity> where channelNumber is a positive or negative integer including 0 and <adjustment_granularity> is the channel spacing in THz
+                For FIXED grid types, the adjustmentGranularity is one of (0.1/0.05/0.025/0.0125) THz corresponding to channel spacing of one of (100/50/25/12.5) GHz
+                For FLEX grid type, the adjusmentGranularity is 0.00625 THz and the slot width is variable in increments of 12.5 GHz";
         }
 
 }
