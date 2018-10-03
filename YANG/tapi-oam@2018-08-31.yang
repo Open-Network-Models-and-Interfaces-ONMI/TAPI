@@ -199,11 +199,6 @@ module tapi-oam {
     * package object-classes
     **********************/ 
         grouping mep {
-            container oam-service-end-point {
-                uses oam-service-end-point-ref;
-                config false;
-                description "none";
-            }
             leaf layer-protocol-name {
                 type tapi-common:layer-protocol-name;
                 config false;
@@ -233,8 +228,7 @@ module tapi-oam {
             list oam-service-end-point {
             	uses oam-service-end-point-ref;
             	key 'oam-service-uuid oam-service-end-point-local-id';
-                min-elements 1;
-                max-elements 2;
+            	min-elements 1;
                 description "none";
             }
             container oam-profile {
@@ -269,13 +263,6 @@ module tapi-oam {
             description "none";
         }
         grouping meg {
-            list me {
-                key 'local-id';
-                config false;
-                min-elements 1;
-                uses maintenance-entity;
-                description "none";
-            }
             list mep {
                 key 'local-id';
                 config false;
@@ -314,33 +301,7 @@ module tapi-oam {
             uses tapi-common:operational-state-pac;
             description "none";
         }
-        grouping maintenance-entity {
-            list mep {
-                uses mep-ref;
-                key 'meg-uuid mep-local-id';
-                config false;
-                max-elements 2;
-                description "none";
-            }
-            list mip {
-            	uses mip-ref;
-                key 'meg-uuid mip-local-id';
-                config false;
-                description "none";
-            }
-            container connection-route {
-                uses tapi-connectivity:route-ref;
-                config false;
-                description "none";
-            }
-            uses tapi-common:local-class;
-            description "none";
-        }
         grouping mip {
-            container oam-service-end-point {
-            	uses oam-service-end-point-ref;
-                description "none";
-            }
             leaf layer-protocol-name {
                 type tapi-common:layer-protocol-name;
                 config false;
@@ -352,7 +313,7 @@ module tapi-oam {
         grouping oam-service {
             list end-point {
                 key 'local-id';
-                min-elements 1;
+                min-elements 2;
                 uses oam-service-end-point;
                 description "none";
             }
@@ -420,6 +381,18 @@ module tapi-oam {
             leaf direction {
                 type tapi-common:port-direction;
                 description "none";
+            }
+            leaf mep-identifier {
+                type string;
+                description "This attribute contains the identifier of the MEP.
+                    This attribute is empty in case the OSEP relates to the provisioing of an MIP.
+                    ";
+            }
+            leaf-list peer-mep-identifier {
+                type string;
+                description "This attribute models the MI_PeerMEP_ID[i] defined in G.8021 and configured as specified in G.8051. It provides the identifiers of the MEPs which are peer to the subject MEP.
+                    This attribute is not specified in case the OSEP relates to the provisioing of an MIP.
+                    In case of P2P, there is only one peer";
             }
             uses tapi-common:local-class;
             uses tapi-common:admin-state-pac;
@@ -563,7 +536,7 @@ module tapi-oam {
             description "none";
             input {
                 list end-point {
-                    min-elements 1;
+                    min-elements 2;
                     uses oam-service-end-point;
                     description "none";
                 }
@@ -615,8 +588,7 @@ module tapi-oam {
                     description "none";
                 }
                 list oam-service-end-point {
-                    min-elements 1;
-                    max-elements 2;
+                    min-elements 2;
                     uses oam-service-end-point;
                     description "none";
                 }
@@ -766,6 +738,14 @@ module tapi-oam {
                     description "none";
                 }
                 leaf state {
+                    type string;
+                    description "none";
+                }
+                leaf mep-identifier {
+                    type string;
+                    description "none";
+                }
+                leaf-list peer-mep-identifier {
                     type string;
                     description "none";
                 }
