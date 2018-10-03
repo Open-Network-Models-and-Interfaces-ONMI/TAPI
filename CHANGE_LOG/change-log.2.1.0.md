@@ -2,6 +2,72 @@
 ## Commit Range: v2.0.2..HEAD
 
 
+* __OAS updates due TAPI 2.1 YANG revision date change to 10/03/2018__
+
+    [karthik-sethuraman](mailto:karthik.sethuraman@necam.com) - Wed, 3 Oct 2018 15:01:01 -0400
+    [351a6e9d81465895221453d623fae17e15192500](https://github.com/OpenNetworkingFoundation/Snowmass-ONFOpenTransport/commit/351a6e9d81465895221453d623fae17e15192500) 
+    
+
+* __Updated TAPI 2.1 YANG revision date to 10/03/2018__
+
+    [karthik-sethuraman](mailto:karthik.sethuraman@necam.com) - Wed, 3 Oct 2018 14:45:02 -0400
+    [e8d4e7721925514dc7b0dffc27e7ab898d4ebf7c](https://github.com/OpenNetworkingFoundation/Snowmass-ONFOpenTransport/commit/e8d4e7721925514dc7b0dffc27e7ab898d4ebf7c) 
+    
+
+* __Fixes #354 as per TAPI 10/02/2018 call discussions__
+
+    [karthik-sethuraman](mailto:karthik.sethuraman@necam.com) - Wed, 3 Oct 2018 10:45:32 -0400
+    [bd3b965d9ade0708becdf71e0acec06f8cef1699](https://github.com/OpenNetworkingFoundation/Snowmass-ONFOpenTransport/commit/bd3b965d9ade0708becdf71e0acec06f8cef1699) 
+    - Maintenance Entity has been removed
+    - OamService will specify at least 2 OSEPs which has provisioning info for
+    either
+    -- 2 MEPs (OamService represents an MEG wholly contained in the domain)
+    -- 1 MEP &amp; 1 MIP (OamService represents a segment of a MEG in an edge domain)
+    -- 2 MIPs (OamService represents a segment of a MEG in a transit domain)
+    - OamJob will specify at least 1 OSEP which points to an MEP
+    - OSEPRelatesToMEP/MIP association navigability changed to one-way from OSEP to
+    MEP/MIP
+    - Added mepIdentifier and peerMepIdentifier attributes to OSEP
+    - Added mipMac &amp; isFullMip attributes to Eth augmentation of MIP
+    
+
+* __Fix #356 - wrap &#34;uses grouping&#34; statement with a container for augments__
+
+    [karthik-sethuraman](mailto:karthik.sethuraman@necam.com) - Mon, 1 Oct 2018 13:48:28 -0400
+    [9d0b83c3692c937d0a80fe7699f4e6442afc472b](https://github.com/OpenNetworkingFoundation/Snowmass-ONFOpenTransport/commit/9d0b83c3692c937d0a80fe7699f4e6442afc472b) 
+    
+
+* __As per review comments, added spectrum property to OtsiConfig pac__
+
+    [karthik-sethuraman](mailto:karthik.sethuraman@necam.com) - Fri, 28 Sep 2018 13:33:54 -0400
+    [58678575923fd3c65e0233b7efd3f5b5ed0d47d6](https://github.com/OpenNetworkingFoundation/Snowmass-ONFOpenTransport/commit/58678575923fd3c65e0233b7efd3f5b5ed0d47d6) 
+    - also fixed the descriptions for central-frequency &amp; frequency-constraint to
+    remove ITU-T formula to calculate nominal-central-frequency based on channel
+    spacing as this not used in TAPI anymore.
+
+* __Partial Fixes to #351, #352 as per 09/25/2018 TAPI call agreements__
+
+    [karthik-sethuraman](mailto:karthik.sethuraman@necam.com) - Wed, 26 Sep 2018 16:16:46 -0400
+    [1af604d724e6bc93144aefacaf4366c7e2b0578b](https://github.com/OpenNetworkingFoundation/Snowmass-ONFOpenTransport/commit/1af604d724e6bc93144aefacaf4366c7e2b0578b) 
+    - Renamed CentralFrequencyOrWavelength data-type to CentralFrequency
+    - Renamed Spectrum data-type to SpectrumBand
+    - Removed support for legacy definitions (m,n) of channel-number and 
+    frequency-slot to compute CentralFrequency &amp; SpectrumBand
+    - Refactored the frequency constraints properties of CentralFrequency
+    (grid-type and adjustment-granularity) into a separate (new) data-type 
+    FrequencyConstraint.
+    - Added FrequencyConstraint property to CentralFrequency and SpectrumBand
+    data-types
+    - Renamed SpectrumType enumeration to PhotonicLayerQualifier
+    - Added 2 additional ModulationTechniques: PAM4 &amp; PAM8
+    - Clarified comments/descriptions for threshold/power configuration attributes
+
+* __2.1.0 change log updates for RC-2__
+
+    [karthik-sethuraman](mailto:karthik.sethuraman@necam.com) - Fri, 21 Sep 2018 16:59:04 -0400
+    [8b96f486d3ae2d3c3bd1516362d309db7627d029](https://github.com/OpenNetworkingFoundation/Snowmass-ONFOpenTransport/commit/8b96f486d3ae2d3c3bd1516362d309db7627d029) 
+    
+
 * __Updated frequency unit to MHz in comments &amp; OpenModelAttr stereotype__
 
     [karthik-sethuraman](mailto:karthik.sethuraman@necam.com) - Wed, 19 Sep 2018 15:45:23 -0400
