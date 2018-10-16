@@ -2,6 +2,18 @@
 ## Commit Range: v2.0.2..HEAD
 
 
+* __Updated YANG date &amp; revision description text with 2.1 release notes__
+
+    [karthik-sethuraman](mailto:karthik.sethuraman@necam.com) - Tue, 16 Oct 2018 14:01:02 -0400
+    [08c387c3a269acabc7dbf77ff9d24411f1eb64f3](https://github.com/OpenNetworkingFoundation/Snowmass-ONFOpenTransport/commit/08c387c3a269acabc7dbf77ff9d24411f1eb64f3) 
+    
+
+* __v2.1.0 change-log updates for RC-3__
+
+    [karthik-sethuraman](mailto:karthik.sethuraman@necam.com) - Wed, 3 Oct 2018 15:26:13 -0400
+    [e520b4cdb58912ad0bdc9c326fad44f5e1fe55ea](https://github.com/OpenNetworkingFoundation/Snowmass-ONFOpenTransport/commit/e520b4cdb58912ad0bdc9c326fad44f5e1fe55ea) 
+    
+
 * __OAS updates due TAPI 2.1 YANG revision date change to 10/03/2018__
 
     [karthik-sethuraman](mailto:karthik.sethuraman@necam.com) - Wed, 3 Oct 2018 15:01:01 -0400
