@@ -26,6 +26,6 @@ The TAPI project delivers [SDKs releases](https://github.com/OpenNetworkingFound
    - The OAS are generated from the YANG data models included in the corresponding SDK release using the [ONF EAGLE YANG2OAS](https://github.com/OpenNetworkingFoundation/EagleYangOpenAPI) tool following the RESTConf protocol specification (https://tools.ietf.org/html/rfc8040).  This specification makes no assessment as to the level of RESTConf compliance of the TAPI REST APIs.
    - Implementations may use other forms of REST APIs but must be based on the YANG models defined in the corresponding TAPI SDK release and are subject to implementation agreements between concerned parties for interoperability.
 - ***TAPI Reference Implementation*** - the python code stubs for which are generated using the [Swagger Codegen](https://swagger.io/tools/swagger-codegen/)
-- TAPI Development Guide - a PDF document providing an overview of the SDK.
+- ***TAPI Implementation Guide*** - a PDF document providing an overview of the SDK.
 
 Changes included in an TAPI release are listed in https://github.com/OpenNetworkingFoundation/TAPI/blob/develop/CHANGE_LOG/
