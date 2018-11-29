@@ -5572,7 +5572,7 @@ paths:
             $ref: "#/definitions/tapi.common.TimeInterval"
         400:
           description: "Internal error"
-  /data/context/oam-context/oam-job={uuid}/pm-current-data={local-id}/elapsed-time/period/:
+  /data/context/oam-context/oam-job={uuid}/pm-current-data={local-id}/elapsed-time/period={unit}/:
     get:
       tags:
       - "tapi-oam"
@@ -5586,6 +5586,11 @@ paths:
       - name: "local-id"
         in: "path"
         description: "Id of pm-current-data"
+        required: true
+        type: "string"
+      - name: "unit"
+        in: "path"
+        description: "Id of period"
         required: true
         type: "string"
       responses:
@@ -14733,6 +14738,27 @@ paths:
           description: "No response"
         400:
           description: "Internal error"
+  /operations/get-connection-end-point-details/:
+    post:
+      tags:
+      - "tapi-connectivity"
+      parameters:
+      - in: "body"
+        name: "tapi.connectivity.getconnectionendpointdetails.Input.body-param"
+        required: false
+        schema:
+          properties:
+            input:
+              $ref: "#/definitions/tapi.connectivity.getconnectionendpointdetails.Input"
+      responses:
+        200:
+          description: "Correct response"
+          schema:
+            $ref: "#/definitions/tapi.connectivity.GetConnectionEndPointDetails"
+        201:
+          description: "No response"
+        400:
+          description: "Internal error"
   /operations/get-connectivity-service-details/:
     post:
       tags:
@@ -15825,6 +15851,11 @@ definitions:
     properties:
       output:
         $ref: "#/definitions/tapi.connectivity.getconnectiondetails.Output"
+  tapi.connectivity.GetConnectionEndPointDetails:
+    type: "object"
+    properties:
+      output:
+        $ref: "#/definitions/tapi.connectivity.getconnectionendpointdetails.Output"
   tapi.connectivity.GetConnectivityServiceDetails:
     type: "object"
     properties:
@@ -16059,8 +16090,8 @@ definitions:
   tapi.connectivity.ceplist.ConnectionEndPoint:
     allOf:
     - $ref: "#/definitions/tapi.connectivity.ConnectionEndPoint"
-    - $ref: "#/definitions/tapi.oam.ConnectionEndPointAugmentation1"
-    - $ref: "#/definitions/tapi.odu.ConnectionEndPointAugmentation2"
+    - $ref: "#/definitions/tapi.oam.ConnectionEndPointAugmentation2"
+    - $ref: "#/definitions/tapi.odu.ConnectionEndPointAugmentation1"
   tapi.connectivity.context.topologycontext.topology.node.ownednodeedgepoint.CepList:
     allOf:
     - type: "object"
@@ -16083,10 +16114,8 @@ definitions:
         items:
           $ref: "#/definitions/tapi.connectivity.ConnectivityServiceEndPoint"
       resilience-constraint:
-        type: "array"
         description: "none"
-        items:
-          $ref: "#/definitions/tapi.connectivity.ResilienceConstraint"
+        $ref: "#/definitions/tapi.connectivity.ResilienceConstraint"
       routing-constraint:
         description: "none"
         $ref: "#/definitions/tapi.path.computation.RoutingConstraint"
@@ -16111,9 +16140,6 @@ definitions:
   tapi.connectivity.getconnectiondetails.Input:
     type: "object"
     properties:
-      service-id-or-name:
-        type: "string"
-        description: "none"
       connection-id-or-name:
         type: "string"
         description: "none"
@@ -16123,6 +16149,27 @@ definitions:
       connection:
         description: "none"
         $ref: "#/definitions/tapi.connectivity.Connection"
+  tapi.connectivity.getconnectionendpointdetails.Input:
+    type: "object"
+    properties:
+      cep-id-or-name:
+        type: "string"
+        description: "none"
+      nep-id-or-name:
+        type: "string"
+        description: "none"
+      node-id-or-name:
+        type: "string"
+        description: "none"
+      topology-id-or-name:
+        type: "string"
+        description: "none"
+  tapi.connectivity.getconnectionendpointdetails.Output:
+    type: "object"
+    properties:
+      connection-end-point:
+        description: "none"
+        $ref: "#/definitions/tapi.connectivity.ConnectionEndPoint"
   tapi.connectivity.getconnectivityservicedetails.Input:
     type: "object"
     properties:
@@ -16153,13 +16200,13 @@ definitions:
         description: "none"
         $ref: "#/definitions/tapi.path.computation.TopologyConstraint"
       end-point:
-        description: "none"
-        $ref: "#/definitions/tapi.connectivity.ConnectivityServiceEndPoint"
-      resilience-constraint:
         type: "array"
         description: "none"
         items:
-          $ref: "#/definitions/tapi.connectivity.ResilienceConstraint"
+          $ref: "#/definitions/tapi.connectivity.ConnectivityServiceEndPoint"
+      resilience-constraint:
+        description: "none"
+        $ref: "#/definitions/tapi.connectivity.ResilienceConstraint"
       routing-constraint:
         description: "none"
         $ref: "#/definitions/tapi.path.computation.RoutingConstraint"
@@ -16585,7 +16632,7 @@ definitions:
       subscription-service:
         description: "none"
         $ref: "#/definitions/tapi.notification.NotificationSubscriptionService"
-  tapi.oam.ConnectionEndPointAugmentation1:
+  tapi.oam.ConnectionEndPointAugmentation2:
     type: "object"
     properties:
       mep-mip-list:
@@ -17271,7 +17318,7 @@ definitions:
       end-point:
         description: "none"
         $ref: "#/definitions/tapi.oam.OamServiceEndPoint"
-  tapi.odu.ConnectionEndPointAugmentation2:
+  tapi.odu.ConnectionEndPointAugmentation1:
     type: "object"
     properties:
       odu-connection-end-point-spec:

@@ -232,7 +232,6 @@ module: tapi-connectivity
   rpcs:
     +---x get-connection-details
     |  +---w input
-    |  |  +---w service-id-or-name?      string
     |  |  +---w connection-id-or-name?   string
     |  +--ro output
     |     +--ro connection
@@ -303,7 +302,7 @@ module: tapi-connectivity
     |        +--ro lifecycle-state?         lifecycle-state
     +---x get-connectivity-service-list
     |  +--ro output
-    |     +--ro service* []
+    |     +--ro service* [uuid]
     |        +--ro end-point* [local-id]
     |        |  +--ro layer-protocol-name?        tapi-common:layer-protocol-name
     |        |  +--ro layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
@@ -346,7 +345,7 @@ module: tapi-connectivity
     |        |  +--ro lifecycle-state?            lifecycle-state
     |        +--ro connection* [connection-uuid]
     |        |  +--ro connection-uuid    -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/uuid
-    |        +--ro uuid?                                 uuid
+    |        +--ro uuid                                  uuid
     |        +--ro name* [value-name]
     |        |  +--ro value-name    string
     |        |  +--ro value?        string
@@ -685,7 +684,7 @@ module: tapi-connectivity
     |  |  |  |  +---w topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
     |  |  |  |  +---w node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
     |  |  |  +---w preferred-transport-layer*   tapi-common:layer-protocol-name
-    |  |  +---w resilience-constraint* []
+    |  |  +---w resilience-constraint
     |  |  |  +---w resilience-type
     |  |  |  |  +---w restoration-policy?   restoration-policy
     |  |  |  |  +---w protection-type?      protection-type
@@ -836,7 +835,7 @@ module: tapi-connectivity
     +---x update-connectivity-service
     |  +---w input
     |  |  +---w service-id-or-name?        string
-    |  |  +---w end-point
+    |  |  +---w end-point* [local-id]
     |  |  |  +---w layer-protocol-name?        tapi-common:layer-protocol-name
     |  |  |  +---w layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
     |  |  |  +---w service-interface-point
@@ -869,7 +868,7 @@ module: tapi-connectivity
     |  |  |  +---w direction?                  tapi-common:port-direction
     |  |  |  +---w role?                       tapi-common:port-role
     |  |  |  +---w protection-role?            protection-role
-    |  |  |  +---w local-id?                   string
+    |  |  |  +---w local-id                    string
     |  |  |  +---w name* [value-name]
     |  |  |  |  +---w value-name    string
     |  |  |  |  +---w value?        string
@@ -948,7 +947,7 @@ module: tapi-connectivity
     |  |  |  |  +---w topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
     |  |  |  |  +---w node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
     |  |  |  +---w preferred-transport-layer*   tapi-common:layer-protocol-name
-    |  |  +---w resilience-constraint* []
+    |  |  +---w resilience-constraint
     |  |  |  +---w resilience-type
     |  |  |  |  +---w restoration-policy?   restoration-policy
     |  |  |  |  +---w protection-type?      protection-type
@@ -1097,5 +1096,38 @@ module: tapi-connectivity
     |        +--ro operational-state?                    operational-state
     |        +--ro lifecycle-state?                      lifecycle-state
     +---x delete-connectivity-service
+    |  +---w input
+    |     +---w service-id-or-name?   string
+    +---x get-connection-end-point-details
        +---w input
-          +---w service-id-or-name?   string
+       |  +---w topology-id-or-name?   string
+       |  +---w node-id-or-name?       string
+       |  +---w nep-id-or-name?        string
+       |  +---w cep-id-or-name?        string
+       +--ro output
+          +--ro connection-end-point
+             +--ro layer-protocol-name?               tapi-common:layer-protocol-name
+             +--ro layer-protocol-qualifier?          tapi-common:layer-protocol-qualifier
+             +--ro parent-node-edge-point
+             |  +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+             |  +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+             |  +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+             +--ro client-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
+             |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+             |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+             |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+             +--ro aggregated-connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
+             |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+             |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+             |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+             |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
+             +--ro connection-port-direction?         tapi-common:port-direction
+             +--ro connection-port-role?              tapi-common:port-role
+             +--ro uuid?                              uuid
+             +--ro name* [value-name]
+             |  +--ro value-name    string
+             |  +--ro value?        string
+             +--ro operational-state?                 operational-state
+             +--ro lifecycle-state?                   lifecycle-state
+             +--ro termination-direction?             termination-direction
+             +--ro termination-state?                 termination-state
