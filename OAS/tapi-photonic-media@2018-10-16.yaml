@@ -17540,6 +17540,27 @@ paths:
           description: "No response"
         400:
           description: "Internal error"
+  /operations/get-connection-end-point-details/:
+    post:
+      tags:
+      - "tapi-connectivity"
+      parameters:
+      - in: "body"
+        name: "tapi.connectivity.getconnectionendpointdetails.Input.body-param"
+        required: false
+        schema:
+          properties:
+            input:
+              $ref: "#/definitions/tapi.connectivity.getconnectionendpointdetails.Input"
+      responses:
+        200:
+          description: "Correct response"
+          schema:
+            $ref: "#/definitions/tapi.connectivity.GetConnectionEndPointDetails"
+        201:
+          description: "No response"
+        400:
+          description: "Internal error"
   /operations/get-connectivity-service-details/:
     post:
       tags:
@@ -18365,6 +18386,7 @@ definitions:
     allOf:
     - $ref: "#/definitions/tapi.common.ServiceInterfacePoint"
     - $ref: "#/definitions/tapi.photonic.media.SipAugmentation1"
+    - $ref: "#/definitions/tapi.photonic.media.SipAugmentation2"
   tapi.common.updateserviceinterfacepoint.Input:
     type: "object"
     properties:
@@ -18500,7 +18522,7 @@ definitions:
           $ref: "#/definitions/tapi.connectivity.ConnectivityServiceRef"
       service-level:
         type: "string"
-        description: "An abstract value the meaning of which is mutually agreed ï¿½\
+        description: "An abstract value the meaning of which is mutually agreed –\
           \ typically represents metrics such as - Class of service, priority, resiliency,\
           \ availability"
       service-type:
@@ -18631,6 +18653,11 @@ definitions:
     properties:
       output:
         $ref: "#/definitions/tapi.connectivity.getconnectiondetails.Output"
+  tapi.connectivity.GetConnectionEndPointDetails:
+    type: "object"
+    properties:
+      output:
+        $ref: "#/definitions/tapi.connectivity.getconnectionendpointdetails.Output"
   tapi.connectivity.GetConnectivityServiceDetails:
     type: "object"
     properties:
@@ -18967,9 +18994,6 @@ definitions:
   tapi.connectivity.getconnectiondetails.Input:
     type: "object"
     properties:
-      service-id-or-name:
-        type: "string"
-        description: "none"
       connection-id-or-name:
         type: "string"
         description: "none"
@@ -18979,6 +19003,33 @@ definitions:
       connection:
         description: "none"
         $ref: "#/definitions/tapi.connectivity.Connection"
+  tapi.connectivity.getconnectionendpointdetails.Input:
+    type: "object"
+    properties:
+      cep-id-or-name:
+        type: "string"
+        description: "none"
+      nep-id-or-name:
+        type: "string"
+        description: "none"
+      node-id-or-name:
+        type: "string"
+        description: "none"
+      topology-id-or-name:
+        type: "string"
+        description: "none"
+  tapi.connectivity.getconnectionendpointdetails.Output:
+    type: "object"
+    properties:
+      connection-end-point:
+        description: "none"
+        $ref: "#/definitions/tapi.connectivity.getconnectionendpointdetails.output.ConnectionEndPoint"
+  tapi.connectivity.getconnectionendpointdetails.output.ConnectionEndPoint:
+    allOf:
+    - $ref: "#/definitions/tapi.connectivity.ConnectionEndPoint"
+    - $ref: "#/definitions/tapi.photonic.media.ConnectionEndPointAugmentation1"
+    - $ref: "#/definitions/tapi.photonic.media.ConnectionEndPointAugmentation2"
+    - $ref: "#/definitions/tapi.photonic.media.ConnectionEndPointAugmentation3"
   tapi.connectivity.getconnectivityservicedetails.Input:
     type: "object"
     properties:
@@ -19051,8 +19102,10 @@ definitions:
         description: "none"
         $ref: "#/definitions/tapi.path.computation.TopologyConstraint"
       end-point:
+        type: "array"
         description: "none"
-        $ref: "#/definitions/tapi.connectivity.connectivityservice.EndPoint"
+        items:
+          $ref: "#/definitions/tapi.connectivity.connectivityservice.EndPoint"
       resilience-constraint:
         description: "none"
         $ref: "#/definitions/tapi.connectivity.ResilienceConstraint"
@@ -19863,13 +19916,13 @@ definitions:
           type: "boolean"
           description: "This attribute is used to indicate that the performance data\
             \ for the current period may not be reliable. Some reasons for this to\
-            \ occur are:\r\n                    ï¿½ Suspect data were detected by the\
-            \ actual resource doing data collection.\r\n                    ï¿½ Transition\
+            \ occur are:\r\n                    – Suspect data were detected by the\
+            \ actual resource doing data collection.\r\n                    – Transition\
             \ of the administrativeState attribute to/from the 'lock' state.\r\n \
-            \                   ï¿½ Transition of the operationalState to/from the 'disabled'\
-            \ state.\r\n                    ï¿½ Scheduler setting that inhibits the\
-            \ collection function.\r\n                    ï¿½ The performance counters\
-            \ were reset during the interval.\r\n                    ï¿½ The currentData\
+            \                   – Transition of the operationalState to/from the 'disabled'\
+            \ state.\r\n                    – Scheduler setting that inhibits the\
+            \ collection function.\r\n                    – The performance counters\
+            \ were reset during the interval.\r\n                    – The currentData\
             \ (or subclass) object instance was created during the monitoring period."
           default: false
         timestamp:
@@ -20947,6 +21000,24 @@ definitions:
       frequency-constraint:
         description: "none"
         $ref: "#/definitions/tapi.photonic.media.FrequencyConstraint"
+  tapi.photonic.media.ConnectionEndPointAugmentation1:
+    type: "object"
+    properties:
+      otsi-assembly-connection-end-point-spec:
+        description: "none"
+        $ref: "#/definitions/tapi.photonic.media.OtsiAssemblyConnectionEndPointSpec"
+    x-augmentation:
+      prefix: "tapi-photonic-media"
+      namespace: "urn:onf:otcc:yang:tapi-photonic-media"
+  tapi.photonic.media.ConnectionEndPointAugmentation2:
+    type: "object"
+    properties:
+      otsi-connection-end-point-spec:
+        description: "none"
+        $ref: "#/definitions/tapi.photonic.media.OtsiConnectionEndPointSpec"
+    x-augmentation:
+      prefix: "tapi-photonic-media"
+      namespace: "urn:onf:otcc:yang:tapi-photonic-media"
   tapi.photonic.media.ConnectionEndPointAugmentation3:
     type: "object"
     properties:
@@ -20959,6 +21030,15 @@ definitions:
   tapi.photonic.media.ConnectionEndPointAugmentation4:
     type: "object"
     properties:
+      ots-connection-end-point-spec:
+        description: "none"
+        $ref: "#/definitions/tapi.photonic.media.OtsConnectionEndPointSpec"
+    x-augmentation:
+      prefix: "tapi-photonic-media"
+      namespace: "urn:onf:otcc:yang:tapi-photonic-media"
+  tapi.photonic.media.ConnectionEndPointAugmentation5:
+    type: "object"
+    properties:
       otsi-connection-end-point-spec:
         description: "Augments the base LayerProtocol information in ConnectionEndPoint\
           \ with OCH-specific information"
@@ -20966,21 +21046,12 @@ definitions:
     x-augmentation:
       prefix: "tapi-photonic-media"
       namespace: "urn:onf:otcc:yang:tapi-photonic-media"
-  tapi.photonic.media.ConnectionEndPointAugmentation5:
+  tapi.photonic.media.ConnectionEndPointAugmentation6:
     type: "object"
     properties:
       media-channel-connection-end-point-spec:
         description: "none"
         $ref: "#/definitions/tapi.photonic.media.MediaChannelConnectionEndPointSpec"
-    x-augmentation:
-      prefix: "tapi-photonic-media"
-      namespace: "urn:onf:otcc:yang:tapi-photonic-media"
-  tapi.photonic.media.ConnectionEndPointAugmentation6:
-    type: "object"
-    properties:
-      ots-connection-end-point-spec:
-        description: "none"
-        $ref: "#/definitions/tapi.photonic.media.OtsConnectionEndPointSpec"
     x-augmentation:
       prefix: "tapi-photonic-media"
       namespace: "urn:onf:otcc:yang:tapi-photonic-media"
@@ -21340,13 +21411,22 @@ definitions:
   tapi.photonic.media.ServiceInterfacePointAugmentation1:
     type: "object"
     properties:
+      media-channel-service-interface-point-spec:
+        description: "none"
+        $ref: "#/definitions/tapi.photonic.media.MediaChannelServiceInterfacePointSpec"
+    x-augmentation:
+      prefix: "tapi-photonic-media"
+      namespace: "urn:onf:otcc:yang:tapi-photonic-media"
+  tapi.photonic.media.ServiceInterfacePointAugmentation2:
+    type: "object"
+    properties:
       otsi-service-interface-point-spec:
         description: "none"
         $ref: "#/definitions/tapi.photonic.media.OtsiServiceInterfacePointSpec"
     x-augmentation:
       prefix: "tapi-photonic-media"
       namespace: "urn:onf:otcc:yang:tapi-photonic-media"
-  tapi.photonic.media.ServiceInterfacePointAugmentation2:
+  tapi.photonic.media.SipAugmentation1:
     type: "object"
     properties:
       media-channel-service-interface-point-spec:
@@ -21355,7 +21435,7 @@ definitions:
     x-augmentation:
       prefix: "tapi-photonic-media"
       namespace: "urn:onf:otcc:yang:tapi-photonic-media"
-  tapi.photonic.media.SipAugmentation1:
+  tapi.photonic.media.SipAugmentation2:
     type: "object"
     properties:
       otsi-service-interface-point-spec:
