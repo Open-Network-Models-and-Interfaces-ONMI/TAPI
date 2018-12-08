@@ -36,7 +36,7 @@ def data_context_get():  # noqa: E501
 
     :rtype: TapiCommonContext
     """
-    return 'do some magic!'
+    return database.context;
 
 
 def data_context_name_post(tapi_common_name_and_value=None):  # noqa: E501
@@ -273,7 +273,7 @@ def data_context_service_interface_pointuuid_get(uuid):  # noqa: E501
 
     :rtype: TapiCommonContextServiceInterfacePoint
     """
-    return 'do some magic!'
+    return database.service_interface_point(uuid);
 
 
 def data_context_service_interface_pointuuid_name_post(uuid, tapi_common_name_and_value=None):  # noqa: E501

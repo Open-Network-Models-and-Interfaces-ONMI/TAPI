@@ -61,7 +61,7 @@ def data_context_topology_context_get():  # noqa: E501
 
     :rtype: TapiTopologyTopologyContext
     """
-    return 'do some magic!'
+    return database.context.topology_context
 
 
 def data_context_topology_context_nw_topology_service_get():  # noqa: E501
@@ -141,7 +141,7 @@ def data_context_topology_context_topologyuuid_get(uuid):  # noqa: E501
 
     :rtype: TapiTopologyTopology
     """
-    return 'do some magic!'
+    return database.topology(uuid)
 
 
 def data_context_topology_context_topologyuuid_linklink_uuid_available_capacity_bandwidth_profile_committed_burst_size_get(uuid, link_uuid):  # noqa: E501
@@ -278,7 +278,7 @@ def data_context_topology_context_topologyuuid_linklink_uuid_get(uuid, link_uuid
 
     :rtype: TapiTopologyLink
     """
-    return 'do some magic!'
+    return database.link(uuid, link_uuid)
 
 
 def data_context_topology_context_topologyuuid_linklink_uuid_latency_characteristictraffic_property_name_get(uuid, link_uuid, traffic_property_name):  # noqa: E501
@@ -675,7 +675,7 @@ def data_context_topology_context_topologyuuid_nodenode_uuid_get(uuid, node_uuid
 
     :rtype: TapiTopologyTopologyNode
     """
-    return 'do some magic!'
+    return database.node(uuid, node_uuid)
 
 
 def data_context_topology_context_topologyuuid_nodenode_uuid_latency_characteristictraffic_property_name_get(uuid, node_uuid, traffic_property_name):  # noqa: E501
@@ -1723,7 +1723,7 @@ def data_context_topology_context_topologyuuid_nodenode_uuid_owned_node_edge_poi
 
     :rtype: TapiTopologyNodeOwnedNodeEdgePoint
     """
-    return 'do some magic!'
+    return database.node_edge_point(uuid, node_uuid, owned_node_edge_point_uuid)
 
 
 def data_context_topology_context_topologyuuid_nodenode_uuid_owned_node_edge_pointowned_node_edge_point_uuid_mapped_service_interface_pointservice_interface_point_uuid_get(uuid, node_uuid, owned_node_edge_point_uuid, service_interface_point_uuid):  # noqa: E501
