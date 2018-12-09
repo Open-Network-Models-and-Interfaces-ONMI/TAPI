@@ -15,10 +15,10 @@ def main():
     app.app.json_encoder = encoder.JSONEncoder
     app.add_api('openapi.yaml', arguments={'title': 'tapi-photonic-media API'})
     with app.app.app_context():
-        with current_app.open_resource("../../database/"+sys.argv[1]+"/context.json", 'r') as f:
+        with current_app.open_resource("../../database/"+sys.argv[2]+"/context.json", 'r') as f:
             data = json.load(f)
             database.context = TapiCommonContext.from_dict(data)
-    app.run(port=sys.argv[2])
+    app.run(port=sys.argv[1])
 
 
 if __name__ == '__main__':

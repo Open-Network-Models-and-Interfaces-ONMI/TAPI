@@ -13,4 +13,4 @@ EXPOSE 8080
 
 ENTRYPOINT ["python3"]
 
-CMD ["-m", "tapi_server"]
+CMD ["-m", "tapi_server" "8080" "tpnd"]
