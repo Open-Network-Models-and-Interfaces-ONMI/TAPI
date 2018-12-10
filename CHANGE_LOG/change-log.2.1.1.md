@@ -2,6 +2,18 @@
 ## Commit Range: v2.1.0..HEAD
 
 
+* __Renamed YANG, TREE &amp; OAS files with 2.1.1 revision date @2018-12-10__
+
+    [Karthik Sethuraman](mailto:karthik.sethuraman@necam.com) - Mon, 10 Dec 2018 15:25:36 -0500
+    [ac2ccf54b97bdf48afae2108f1f9a48a231c1ef7](https://github.com/OpenNetworkingFoundation/TAPI/commit/ac2ccf54b97bdf48afae2108f1f9a48a231c1ef7)
+    
+
+* __Change Logs for Release 2.1.1__
+
+    [Karthik Sethuraman](mailto:karthik.sethuraman@necam.com) - Mon, 10 Dec 2018 14:30:13 -0500
+    [b9caaadaad5a5675acd41d16ddfaf7f084351b22](https://github.com/OpenNetworkingFoundation/TAPI/commit/b9caaadaad5a5675acd41d16ddfaf7f084351b22)
+    
+
 * __README updates and minor cleanup__
 
     [Karthik Sethuraman](mailto:karthik.sethuraman@necam.com) - Sun, 9 Dec 2018 21:13:16 -0500
