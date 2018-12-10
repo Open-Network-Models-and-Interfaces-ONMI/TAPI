@@ -10,7 +10,15 @@ Python 3.5.2+
 
 Python3-tk
 
+This implementation has been tested on [Ubuntu 18.04.1 LTS](https://www.ubuntu.com/download/desktop).
 
+```
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install python3.6
+sudo apt-get install python3-tk
+```
+ 
 ## Usage
 To run the server, please execute the following from the TAPI_RI python_client base directory:
 

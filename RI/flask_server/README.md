@@ -10,6 +10,14 @@ This implementation uses the [Connexion](https://github.com/zalando/connexion) l
 ## Requirements
 Python 3.5.2+
 
+This implementation has been tested on [Ubuntu 18.04.1 LTS](https://www.ubuntu.com/download/desktop).
+
+```
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install python3.6
+```
+
 ## Usage
 To run the server, please execute the following from the TAPI_RI flask_server base directory:
 
@@ -36,12 +44,4 @@ Your OpenAPI definition lives here:
 ```
 http://localhost:8081/openapi.json
 http://localhost:8082/openapi.json
-```
-## Integration Test
-
-To launch the integration tests, use tox:
-
-```
-pip3 install tox --user
-tox
 ```
