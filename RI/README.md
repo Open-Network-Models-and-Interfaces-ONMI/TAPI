@@ -13,7 +13,7 @@ Currently the RI includes following implementations:
 These implementations have been tested on [Ubuntu 18.04.1 LTS](https://www.ubuntu.com/download/desktop).
 
 ## Coverage
-For this release (TAPI 2.1.1), the [tapi-photonic-media OpenAPI file](https://github.com/OpenNetworkingFoundation/TAPI/blob/develop/OAS/tapi-photonic-media@402018-10-16.yaml) has been used to generate the server stubs.
+For this release (TAPI 2.1.1), the [tapi-photonic-media OpenAPI file](https://github.com/OpenNetworkingFoundation/TAPI/blob/develop/OAS/tapi-photonic-media@402018-12-10.yaml) has been used to generate the server stubs.
 
 Only a limited set of following APIs have been implemented in this release:
 * _GET_ /data/context/
