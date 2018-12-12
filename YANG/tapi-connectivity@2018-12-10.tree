@@ -1,0 +1,1133 @@
+
+module: tapi-connectivity
+  augment /tapi-common:context:
+    +--rw connectivity-context
+       +--rw connectivity-service* [uuid]
+       |  +--rw end-point* [local-id]
+       |  |  +--rw layer-protocol-name?        tapi-common:layer-protocol-name
+       |  |  +--rw layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
+       |  |  +--rw service-interface-point
+       |  |  |  +--rw service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+       |  |  +--ro connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
+       |  |  |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |  |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |  |  |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+       |  |  |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
+       |  |  +--rw capacity
+       |  |  |  +--rw total-size
+       |  |  |  |  +--rw value?   uint64
+       |  |  |  |  +--rw unit?    capacity-unit
+       |  |  |  +--rw bandwidth-profile
+       |  |  |     +--rw bw-profile-type?              bandwidth-profile-type
+       |  |  |     +--rw committed-information-rate
+       |  |  |     |  +--rw value?   uint64
+       |  |  |     |  +--rw unit?    capacity-unit
+       |  |  |     +--rw committed-burst-size
+       |  |  |     |  +--rw value?   uint64
+       |  |  |     |  +--rw unit?    capacity-unit
+       |  |  |     +--rw peak-information-rate
+       |  |  |     |  +--rw value?   uint64
+       |  |  |     |  +--rw unit?    capacity-unit
+       |  |  |     +--rw peak-burst-size
+       |  |  |     |  +--rw value?   uint64
+       |  |  |     |  +--rw unit?    capacity-unit
+       |  |  |     +--rw color-aware?                  boolean
+       |  |  |     +--rw coupling-flag?                boolean
+       |  |  +--rw direction?                  tapi-common:port-direction
+       |  |  +--rw role?                       tapi-common:port-role
+       |  |  +--rw protection-role?            protection-role
+       |  |  +--rw local-id                    string
+       |  |  +--rw name* [value-name]
+       |  |  |  +--rw value-name    string
+       |  |  |  +--rw value?        string
+       |  |  +--rw administrative-state?       administrative-state
+       |  |  +--ro operational-state?          operational-state
+       |  |  +--ro lifecycle-state?            lifecycle-state
+       |  +--ro connection* [connection-uuid]
+       |  |  +--ro connection-uuid    -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/uuid
+       |  +--rw uuid                                  uuid
+       |  +--rw name* [value-name]
+       |  |  +--rw value-name    string
+       |  |  +--rw value?        string
+       |  +--rw service-layer?                        tapi-common:layer-protocol-name
+       |  +--rw service-type?                         service-type
+       |  +--rw service-level?                        string
+       |  +--rw requested-capacity
+       |  |  +--rw total-size
+       |  |  |  +--rw value?   uint64
+       |  |  |  +--rw unit?    capacity-unit
+       |  |  +--rw bandwidth-profile
+       |  |     +--rw bw-profile-type?              bandwidth-profile-type
+       |  |     +--rw committed-information-rate
+       |  |     |  +--rw value?   uint64
+       |  |     |  +--rw unit?    capacity-unit
+       |  |     +--rw committed-burst-size
+       |  |     |  +--rw value?   uint64
+       |  |     |  +--rw unit?    capacity-unit
+       |  |     +--rw peak-information-rate
+       |  |     |  +--rw value?   uint64
+       |  |     |  +--rw unit?    capacity-unit
+       |  |     +--rw peak-burst-size
+       |  |     |  +--rw value?   uint64
+       |  |     |  +--rw unit?    capacity-unit
+       |  |     +--rw color-aware?                  boolean
+       |  |     +--rw coupling-flag?                boolean
+       |  +--rw connectivity-direction?               tapi-common:forwarding-direction
+       |  +--rw schedule
+       |  |  +--rw end-time?     date-and-time
+       |  |  +--rw start-time?   date-and-time
+       |  +--rw coroute-inclusion
+       |  |  +--rw connectivity-service-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
+       |  +--rw diversity-exclusion* [connectivity-service-uuid]
+       |  |  +--rw connectivity-service-uuid    -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
+       |  +--rw cost-characteristic* [cost-name]
+       |  |  +--rw cost-name         string
+       |  |  +--rw cost-value?       string
+       |  |  +--rw cost-algorithm?   string
+       |  +--rw latency-characteristic* [traffic-property-name]
+       |  |  +--rw traffic-property-name            string
+       |  |  +--ro fixed-latency-characteristic?    string
+       |  |  +--rw queing-latency-characteristic?   string
+       |  |  +--ro jitter-characteristic?           string
+       |  |  +--ro wander-characteristic?           string
+       |  +--rw risk-diversity-characteristic* [risk-characteristic-name]
+       |  |  +--rw risk-characteristic-name    string
+       |  |  +--rw risk-identifier-list*       string
+       |  +--rw diversity-policy?                     diversity-policy
+       |  +--rw route-objective-function?             route-objective-function
+       |  +--rw route-direction?                      tapi-common:forwarding-direction
+       |  +--rw is-exclusive?                         boolean
+       |  +--ro include-topology* [topology-uuid]
+       |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  +--ro avoid-topology* [topology-uuid]
+       |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  +--ro include-path* [path-uuid]
+       |  |  +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+       |  +--ro exclude-path* [path-uuid]
+       |  |  +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+       |  +--ro include-link* [topology-uuid link-uuid]
+       |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+       |  +--ro exclude-link* [topology-uuid link-uuid]
+       |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+       |  +--ro include-node* [topology-uuid node-uuid]
+       |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |  +--ro node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |  +--ro exclude-node* [topology-uuid node-uuid]
+       |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |  +--ro node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |  +--ro preferred-transport-layer*            tapi-common:layer-protocol-name
+       |  +--rw resilience-type
+       |  |  +--rw restoration-policy?   restoration-policy
+       |  |  +--rw protection-type?      protection-type
+       |  +--rw restoration-coordinate-type?          coordinate-type
+       |  +--rw restore-priority?                     uint64
+       |  +--rw reversion-mode?                       reversion-mode
+       |  +--rw wait-to-revert-time?                  uint64
+       |  +--rw hold-off-time?                        uint64
+       |  +--rw is-lock-out?                          boolean
+       |  +--rw is-frozen?                            boolean
+       |  +--rw is-coordinated-switching-both-ends?   boolean
+       |  +--rw max-switch-times?                     uint64
+       |  +--rw preferred-restoration-layer*          tapi-common:layer-protocol-name
+       |  +--rw administrative-state?                 administrative-state
+       |  +--ro operational-state?                    operational-state
+       |  +--ro lifecycle-state?                      lifecycle-state
+       +--ro connection* [uuid]
+          +--ro connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
+          |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+          |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+          |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+          |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
+          +--ro lower-connection* [connection-uuid]
+          |  +--ro connection-uuid    -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/uuid
+          +--ro supported-client-link* [topology-uuid link-uuid]
+          |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+          |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+          +--ro route* [local-id]
+          |  +--ro connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
+          |  |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+          |  |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+          |  |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+          |  |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
+          |  +--ro local-id                string
+          |  +--ro name* [value-name]
+          |     +--ro value-name    string
+          |     +--ro value?        string
+          +--ro switch-control* [uuid]
+          |  +--ro sub-switch-control* [connection-uuid switch-control-uuid]
+          |  |  +--ro connection-uuid        -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/uuid
+          |  |  +--ro switch-control-uuid    -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/switch-control/uuid
+          |  +--ro switch* [local-id]
+          |  |  +--ro selected-connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
+          |  |  |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+          |  |  |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+          |  |  |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+          |  |  |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
+          |  |  +--ro selected-route* [connection-uuid route-local-id]
+          |  |  |  +--ro connection-uuid    -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/uuid
+          |  |  |  +--ro route-local-id     -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/route/local-id
+          |  |  +--ro selection-control?               selection-control
+          |  |  +--ro selection-reason?                selection-reason
+          |  |  +--ro switch-direction?                tapi-common:port-direction
+          |  |  +--ro local-id                         string
+          |  |  +--ro name* [value-name]
+          |  |     +--ro value-name    string
+          |  |     +--ro value?        string
+          |  +--ro uuid                                  uuid
+          |  +--ro name* [value-name]
+          |  |  +--ro value-name    string
+          |  |  +--ro value?        string
+          |  +--ro resilience-type
+          |  |  +--ro restoration-policy?   restoration-policy
+          |  |  +--ro protection-type?      protection-type
+          |  +--ro restoration-coordinate-type?          coordinate-type
+          |  +--ro restore-priority?                     uint64
+          |  +--ro reversion-mode?                       reversion-mode
+          |  +--ro wait-to-revert-time?                  uint64
+          |  +--ro hold-off-time?                        uint64
+          |  +--ro is-lock-out?                          boolean
+          |  +--ro is-frozen?                            boolean
+          |  +--ro is-coordinated-switching-both-ends?   boolean
+          |  +--ro max-switch-times?                     uint64
+          |  +--ro preferred-restoration-layer*          tapi-common:layer-protocol-name
+          +--ro direction?               tapi-common:forwarding-direction
+          +--ro layer-protocol-name?     tapi-common:layer-protocol-name
+          +--ro uuid                     uuid
+          +--ro name* [value-name]
+          |  +--ro value-name    string
+          |  +--ro value?        string
+          +--ro operational-state?       operational-state
+          +--ro lifecycle-state?         lifecycle-state
+  augment /tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point:
+    +--ro cep-list
+       +--ro connection-end-point* [uuid]
+          +--ro layer-protocol-name?               tapi-common:layer-protocol-name
+          +--ro layer-protocol-qualifier?          tapi-common:layer-protocol-qualifier
+          +--ro parent-node-edge-point
+          |  +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+          |  +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+          |  +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+          +--ro client-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
+          |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+          |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+          |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+          +--ro aggregated-connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
+          |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+          |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+          |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+          |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
+          +--ro connection-port-direction?         tapi-common:port-direction
+          +--ro connection-port-role?              tapi-common:port-role
+          +--ro uuid                               uuid
+          +--ro name* [value-name]
+          |  +--ro value-name    string
+          |  +--ro value?        string
+          +--ro operational-state?                 operational-state
+          +--ro lifecycle-state?                   lifecycle-state
+          +--ro termination-direction?             termination-direction
+          +--ro termination-state?                 termination-state
+
+  rpcs:
+    +---x get-connection-details
+    |  +---w input
+    |  |  +---w connection-id-or-name?   string
+    |  +--ro output
+    |     +--ro connection
+    |        +--ro connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
+    |        |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+    |        |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
+    |        +--ro lower-connection* [connection-uuid]
+    |        |  +--ro connection-uuid    -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/uuid
+    |        +--ro supported-client-link* [topology-uuid link-uuid]
+    |        |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+    |        +--ro route* [local-id]
+    |        |  +--ro connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
+    |        |  |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |  |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+    |        |  |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
+    |        |  +--ro local-id                string
+    |        |  +--ro name* [value-name]
+    |        |     +--ro value-name    string
+    |        |     +--ro value?        string
+    |        +--ro switch-control* [uuid]
+    |        |  +--ro sub-switch-control* [connection-uuid switch-control-uuid]
+    |        |  |  +--ro connection-uuid        -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/uuid
+    |        |  |  +--ro switch-control-uuid    -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/switch-control/uuid
+    |        |  +--ro switch* [local-id]
+    |        |  |  +--ro selected-connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
+    |        |  |  |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  |  |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |  |  |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+    |        |  |  |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
+    |        |  |  +--ro selected-route* [connection-uuid route-local-id]
+    |        |  |  |  +--ro connection-uuid    -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/uuid
+    |        |  |  |  +--ro route-local-id     -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/route/local-id
+    |        |  |  +--ro selection-control?               selection-control
+    |        |  |  +--ro selection-reason?                selection-reason
+    |        |  |  +--ro switch-direction?                tapi-common:port-direction
+    |        |  |  +--ro local-id                         string
+    |        |  |  +--ro name* [value-name]
+    |        |  |     +--ro value-name    string
+    |        |  |     +--ro value?        string
+    |        |  +--ro uuid                                  uuid
+    |        |  +--ro name* [value-name]
+    |        |  |  +--ro value-name    string
+    |        |  |  +--ro value?        string
+    |        |  +--ro resilience-type
+    |        |  |  +--ro restoration-policy?   restoration-policy
+    |        |  |  +--ro protection-type?      protection-type
+    |        |  +--ro restoration-coordinate-type?          coordinate-type
+    |        |  +--ro restore-priority?                     uint64
+    |        |  +--ro reversion-mode?                       reversion-mode
+    |        |  +--ro wait-to-revert-time?                  uint64
+    |        |  +--ro hold-off-time?                        uint64
+    |        |  +--ro is-lock-out?                          boolean
+    |        |  +--ro is-frozen?                            boolean
+    |        |  +--ro is-coordinated-switching-both-ends?   boolean
+    |        |  +--ro max-switch-times?                     uint64
+    |        |  +--ro preferred-restoration-layer*          tapi-common:layer-protocol-name
+    |        +--ro direction?               tapi-common:forwarding-direction
+    |        +--ro layer-protocol-name?     tapi-common:layer-protocol-name
+    |        +--ro uuid?                    uuid
+    |        +--ro name* [value-name]
+    |        |  +--ro value-name    string
+    |        |  +--ro value?        string
+    |        +--ro operational-state?       operational-state
+    |        +--ro lifecycle-state?         lifecycle-state
+    +---x get-connectivity-service-list
+    |  +--ro output
+    |     +--ro service* [uuid]
+    |        +--ro end-point* [local-id]
+    |        |  +--ro layer-protocol-name?        tapi-common:layer-protocol-name
+    |        |  +--ro layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
+    |        |  +--ro service-interface-point
+    |        |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
+    |        |  |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |  |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+    |        |  |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
+    |        |  +--ro capacity
+    |        |  |  +--ro total-size
+    |        |  |  |  +--ro value?   uint64
+    |        |  |  |  +--ro unit?    capacity-unit
+    |        |  |  +--ro bandwidth-profile
+    |        |  |     +--ro bw-profile-type?              bandwidth-profile-type
+    |        |  |     +--ro committed-information-rate
+    |        |  |     |  +--ro value?   uint64
+    |        |  |     |  +--ro unit?    capacity-unit
+    |        |  |     +--ro committed-burst-size
+    |        |  |     |  +--ro value?   uint64
+    |        |  |     |  +--ro unit?    capacity-unit
+    |        |  |     +--ro peak-information-rate
+    |        |  |     |  +--ro value?   uint64
+    |        |  |     |  +--ro unit?    capacity-unit
+    |        |  |     +--ro peak-burst-size
+    |        |  |     |  +--ro value?   uint64
+    |        |  |     |  +--ro unit?    capacity-unit
+    |        |  |     +--ro color-aware?                  boolean
+    |        |  |     +--ro coupling-flag?                boolean
+    |        |  +--ro direction?                  tapi-common:port-direction
+    |        |  +--ro role?                       tapi-common:port-role
+    |        |  +--ro protection-role?            protection-role
+    |        |  +--ro local-id                    string
+    |        |  +--ro name* [value-name]
+    |        |  |  +--ro value-name    string
+    |        |  |  +--ro value?        string
+    |        |  +--ro administrative-state?       administrative-state
+    |        |  +--ro operational-state?          operational-state
+    |        |  +--ro lifecycle-state?            lifecycle-state
+    |        +--ro connection* [connection-uuid]
+    |        |  +--ro connection-uuid    -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/uuid
+    |        +--ro uuid                                  uuid
+    |        +--ro name* [value-name]
+    |        |  +--ro value-name    string
+    |        |  +--ro value?        string
+    |        +--ro service-layer?                        tapi-common:layer-protocol-name
+    |        +--ro service-type?                         service-type
+    |        +--ro service-level?                        string
+    |        +--ro requested-capacity
+    |        |  +--ro total-size
+    |        |  |  +--ro value?   uint64
+    |        |  |  +--ro unit?    capacity-unit
+    |        |  +--ro bandwidth-profile
+    |        |     +--ro bw-profile-type?              bandwidth-profile-type
+    |        |     +--ro committed-information-rate
+    |        |     |  +--ro value?   uint64
+    |        |     |  +--ro unit?    capacity-unit
+    |        |     +--ro committed-burst-size
+    |        |     |  +--ro value?   uint64
+    |        |     |  +--ro unit?    capacity-unit
+    |        |     +--ro peak-information-rate
+    |        |     |  +--ro value?   uint64
+    |        |     |  +--ro unit?    capacity-unit
+    |        |     +--ro peak-burst-size
+    |        |     |  +--ro value?   uint64
+    |        |     |  +--ro unit?    capacity-unit
+    |        |     +--ro color-aware?                  boolean
+    |        |     +--ro coupling-flag?                boolean
+    |        +--ro connectivity-direction?               tapi-common:forwarding-direction
+    |        +--ro schedule
+    |        |  +--ro end-time?     date-and-time
+    |        |  +--ro start-time?   date-and-time
+    |        +--ro coroute-inclusion
+    |        |  +--ro connectivity-service-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
+    |        +--ro diversity-exclusion* [connectivity-service-uuid]
+    |        |  +--ro connectivity-service-uuid    -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
+    |        +--ro cost-characteristic* [cost-name]
+    |        |  +--ro cost-name         string
+    |        |  +--ro cost-value?       string
+    |        |  +--ro cost-algorithm?   string
+    |        +--ro latency-characteristic* [traffic-property-name]
+    |        |  +--ro traffic-property-name            string
+    |        |  +--ro fixed-latency-characteristic?    string
+    |        |  +--ro queing-latency-characteristic?   string
+    |        |  +--ro jitter-characteristic?           string
+    |        |  +--ro wander-characteristic?           string
+    |        +--ro risk-diversity-characteristic* [risk-characteristic-name]
+    |        |  +--ro risk-characteristic-name    string
+    |        |  +--ro risk-identifier-list*       string
+    |        +--ro diversity-policy?                     diversity-policy
+    |        +--ro route-objective-function?             route-objective-function
+    |        +--ro route-direction?                      tapi-common:forwarding-direction
+    |        +--ro is-exclusive?                         boolean
+    |        +--ro include-topology* [topology-uuid]
+    |        |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        +--ro avoid-topology* [topology-uuid]
+    |        |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        +--ro include-path* [path-uuid]
+    |        |  +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+    |        +--ro exclude-path* [path-uuid]
+    |        |  +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+    |        +--ro include-link* [topology-uuid link-uuid]
+    |        |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+    |        +--ro exclude-link* [topology-uuid link-uuid]
+    |        |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+    |        +--ro include-node* [topology-uuid node-uuid]
+    |        |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  +--ro node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        +--ro exclude-node* [topology-uuid node-uuid]
+    |        |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  +--ro node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        +--ro preferred-transport-layer*            tapi-common:layer-protocol-name
+    |        +--ro resilience-type
+    |        |  +--ro restoration-policy?   restoration-policy
+    |        |  +--ro protection-type?      protection-type
+    |        +--ro restoration-coordinate-type?          coordinate-type
+    |        +--ro restore-priority?                     uint64
+    |        +--ro reversion-mode?                       reversion-mode
+    |        +--ro wait-to-revert-time?                  uint64
+    |        +--ro hold-off-time?                        uint64
+    |        +--ro is-lock-out?                          boolean
+    |        +--ro is-frozen?                            boolean
+    |        +--ro is-coordinated-switching-both-ends?   boolean
+    |        +--ro max-switch-times?                     uint64
+    |        +--ro preferred-restoration-layer*          tapi-common:layer-protocol-name
+    |        +--ro administrative-state?                 administrative-state
+    |        +--ro operational-state?                    operational-state
+    |        +--ro lifecycle-state?                      lifecycle-state
+    +---x get-connectivity-service-details
+    |  +---w input
+    |  |  +---w service-id-or-name?   string
+    |  +--ro output
+    |     +--ro service
+    |        +--ro end-point* [local-id]
+    |        |  +--ro layer-protocol-name?        tapi-common:layer-protocol-name
+    |        |  +--ro layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
+    |        |  +--ro service-interface-point
+    |        |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
+    |        |  |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |  |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+    |        |  |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
+    |        |  +--ro capacity
+    |        |  |  +--ro total-size
+    |        |  |  |  +--ro value?   uint64
+    |        |  |  |  +--ro unit?    capacity-unit
+    |        |  |  +--ro bandwidth-profile
+    |        |  |     +--ro bw-profile-type?              bandwidth-profile-type
+    |        |  |     +--ro committed-information-rate
+    |        |  |     |  +--ro value?   uint64
+    |        |  |     |  +--ro unit?    capacity-unit
+    |        |  |     +--ro committed-burst-size
+    |        |  |     |  +--ro value?   uint64
+    |        |  |     |  +--ro unit?    capacity-unit
+    |        |  |     +--ro peak-information-rate
+    |        |  |     |  +--ro value?   uint64
+    |        |  |     |  +--ro unit?    capacity-unit
+    |        |  |     +--ro peak-burst-size
+    |        |  |     |  +--ro value?   uint64
+    |        |  |     |  +--ro unit?    capacity-unit
+    |        |  |     +--ro color-aware?                  boolean
+    |        |  |     +--ro coupling-flag?                boolean
+    |        |  +--ro direction?                  tapi-common:port-direction
+    |        |  +--ro role?                       tapi-common:port-role
+    |        |  +--ro protection-role?            protection-role
+    |        |  +--ro local-id                    string
+    |        |  +--ro name* [value-name]
+    |        |  |  +--ro value-name    string
+    |        |  |  +--ro value?        string
+    |        |  +--ro administrative-state?       administrative-state
+    |        |  +--ro operational-state?          operational-state
+    |        |  +--ro lifecycle-state?            lifecycle-state
+    |        +--ro connection* [connection-uuid]
+    |        |  +--ro connection-uuid    -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/uuid
+    |        +--ro uuid?                                 uuid
+    |        +--ro name* [value-name]
+    |        |  +--ro value-name    string
+    |        |  +--ro value?        string
+    |        +--ro service-layer?                        tapi-common:layer-protocol-name
+    |        +--ro service-type?                         service-type
+    |        +--ro service-level?                        string
+    |        +--ro requested-capacity
+    |        |  +--ro total-size
+    |        |  |  +--ro value?   uint64
+    |        |  |  +--ro unit?    capacity-unit
+    |        |  +--ro bandwidth-profile
+    |        |     +--ro bw-profile-type?              bandwidth-profile-type
+    |        |     +--ro committed-information-rate
+    |        |     |  +--ro value?   uint64
+    |        |     |  +--ro unit?    capacity-unit
+    |        |     +--ro committed-burst-size
+    |        |     |  +--ro value?   uint64
+    |        |     |  +--ro unit?    capacity-unit
+    |        |     +--ro peak-information-rate
+    |        |     |  +--ro value?   uint64
+    |        |     |  +--ro unit?    capacity-unit
+    |        |     +--ro peak-burst-size
+    |        |     |  +--ro value?   uint64
+    |        |     |  +--ro unit?    capacity-unit
+    |        |     +--ro color-aware?                  boolean
+    |        |     +--ro coupling-flag?                boolean
+    |        +--ro connectivity-direction?               tapi-common:forwarding-direction
+    |        +--ro schedule
+    |        |  +--ro end-time?     date-and-time
+    |        |  +--ro start-time?   date-and-time
+    |        +--ro coroute-inclusion
+    |        |  +--ro connectivity-service-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
+    |        +--ro diversity-exclusion* [connectivity-service-uuid]
+    |        |  +--ro connectivity-service-uuid    -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
+    |        +--ro cost-characteristic* [cost-name]
+    |        |  +--ro cost-name         string
+    |        |  +--ro cost-value?       string
+    |        |  +--ro cost-algorithm?   string
+    |        +--ro latency-characteristic* [traffic-property-name]
+    |        |  +--ro traffic-property-name            string
+    |        |  +--ro fixed-latency-characteristic?    string
+    |        |  +--ro queing-latency-characteristic?   string
+    |        |  +--ro jitter-characteristic?           string
+    |        |  +--ro wander-characteristic?           string
+    |        +--ro risk-diversity-characteristic* [risk-characteristic-name]
+    |        |  +--ro risk-characteristic-name    string
+    |        |  +--ro risk-identifier-list*       string
+    |        +--ro diversity-policy?                     diversity-policy
+    |        +--ro route-objective-function?             route-objective-function
+    |        +--ro route-direction?                      tapi-common:forwarding-direction
+    |        +--ro is-exclusive?                         boolean
+    |        +--ro include-topology* [topology-uuid]
+    |        |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        +--ro avoid-topology* [topology-uuid]
+    |        |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        +--ro include-path* [path-uuid]
+    |        |  +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+    |        +--ro exclude-path* [path-uuid]
+    |        |  +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+    |        +--ro include-link* [topology-uuid link-uuid]
+    |        |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+    |        +--ro exclude-link* [topology-uuid link-uuid]
+    |        |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+    |        +--ro include-node* [topology-uuid node-uuid]
+    |        |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  +--ro node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        +--ro exclude-node* [topology-uuid node-uuid]
+    |        |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  +--ro node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        +--ro preferred-transport-layer*            tapi-common:layer-protocol-name
+    |        +--ro resilience-type
+    |        |  +--ro restoration-policy?   restoration-policy
+    |        |  +--ro protection-type?      protection-type
+    |        +--ro restoration-coordinate-type?          coordinate-type
+    |        +--ro restore-priority?                     uint64
+    |        +--ro reversion-mode?                       reversion-mode
+    |        +--ro wait-to-revert-time?                  uint64
+    |        +--ro hold-off-time?                        uint64
+    |        +--ro is-lock-out?                          boolean
+    |        +--ro is-frozen?                            boolean
+    |        +--ro is-coordinated-switching-both-ends?   boolean
+    |        +--ro max-switch-times?                     uint64
+    |        +--ro preferred-restoration-layer*          tapi-common:layer-protocol-name
+    |        +--ro administrative-state?                 administrative-state
+    |        +--ro operational-state?                    operational-state
+    |        +--ro lifecycle-state?                      lifecycle-state
+    +---x create-connectivity-service
+    |  +---w input
+    |  |  +---w end-point* [local-id]
+    |  |  |  +---w layer-protocol-name?        tapi-common:layer-protocol-name
+    |  |  |  +---w layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
+    |  |  |  +---w service-interface-point
+    |  |  |  |  +---w service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+    |  |  |  +---w connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
+    |  |  |  |  +---w topology-uuid                -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |  |  |  |  +---w node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |  |  |  |  +---w node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+    |  |  |  |  +---w connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
+    |  |  |  +---w capacity
+    |  |  |  |  +---w total-size
+    |  |  |  |  |  +---w value?   uint64
+    |  |  |  |  |  +---w unit?    capacity-unit
+    |  |  |  |  +---w bandwidth-profile
+    |  |  |  |     +---w bw-profile-type?              bandwidth-profile-type
+    |  |  |  |     +---w committed-information-rate
+    |  |  |  |     |  +---w value?   uint64
+    |  |  |  |     |  +---w unit?    capacity-unit
+    |  |  |  |     +---w committed-burst-size
+    |  |  |  |     |  +---w value?   uint64
+    |  |  |  |     |  +---w unit?    capacity-unit
+    |  |  |  |     +---w peak-information-rate
+    |  |  |  |     |  +---w value?   uint64
+    |  |  |  |     |  +---w unit?    capacity-unit
+    |  |  |  |     +---w peak-burst-size
+    |  |  |  |     |  +---w value?   uint64
+    |  |  |  |     |  +---w unit?    capacity-unit
+    |  |  |  |     +---w color-aware?                  boolean
+    |  |  |  |     +---w coupling-flag?                boolean
+    |  |  |  +---w direction?                  tapi-common:port-direction
+    |  |  |  +---w role?                       tapi-common:port-role
+    |  |  |  +---w protection-role?            protection-role
+    |  |  |  +---w local-id                    string
+    |  |  |  +---w name* [value-name]
+    |  |  |  |  +---w value-name    string
+    |  |  |  |  +---w value?        string
+    |  |  |  +---w administrative-state?       administrative-state
+    |  |  |  +---w operational-state?          operational-state
+    |  |  |  +---w lifecycle-state?            lifecycle-state
+    |  |  +---w connectivity-constraint
+    |  |  |  +---w service-layer?            tapi-common:layer-protocol-name
+    |  |  |  +---w service-type?             service-type
+    |  |  |  +---w service-level?            string
+    |  |  |  +---w requested-capacity
+    |  |  |  |  +---w total-size
+    |  |  |  |  |  +---w value?   uint64
+    |  |  |  |  |  +---w unit?    capacity-unit
+    |  |  |  |  +---w bandwidth-profile
+    |  |  |  |     +---w bw-profile-type?              bandwidth-profile-type
+    |  |  |  |     +---w committed-information-rate
+    |  |  |  |     |  +---w value?   uint64
+    |  |  |  |     |  +---w unit?    capacity-unit
+    |  |  |  |     +---w committed-burst-size
+    |  |  |  |     |  +---w value?   uint64
+    |  |  |  |     |  +---w unit?    capacity-unit
+    |  |  |  |     +---w peak-information-rate
+    |  |  |  |     |  +---w value?   uint64
+    |  |  |  |     |  +---w unit?    capacity-unit
+    |  |  |  |     +---w peak-burst-size
+    |  |  |  |     |  +---w value?   uint64
+    |  |  |  |     |  +---w unit?    capacity-unit
+    |  |  |  |     +---w color-aware?                  boolean
+    |  |  |  |     +---w coupling-flag?                boolean
+    |  |  |  +---w connectivity-direction?   tapi-common:forwarding-direction
+    |  |  |  +---w schedule
+    |  |  |  |  +---w end-time?     date-and-time
+    |  |  |  |  +---w start-time?   date-and-time
+    |  |  |  +---w coroute-inclusion
+    |  |  |  |  +---w connectivity-service-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
+    |  |  |  +---w diversity-exclusion* [connectivity-service-uuid]
+    |  |  |     +---w connectivity-service-uuid    -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
+    |  |  +---w routing-constraint
+    |  |  |  +---w cost-characteristic* [cost-name]
+    |  |  |  |  +---w cost-name         string
+    |  |  |  |  +---w cost-value?       string
+    |  |  |  |  +---w cost-algorithm?   string
+    |  |  |  +---w latency-characteristic* [traffic-property-name]
+    |  |  |  |  +---w traffic-property-name            string
+    |  |  |  |  +---w fixed-latency-characteristic?    string
+    |  |  |  |  +---w queing-latency-characteristic?   string
+    |  |  |  |  +---w jitter-characteristic?           string
+    |  |  |  |  +---w wander-characteristic?           string
+    |  |  |  +---w risk-diversity-characteristic* [risk-characteristic-name]
+    |  |  |  |  +---w risk-characteristic-name    string
+    |  |  |  |  +---w risk-identifier-list*       string
+    |  |  |  +---w diversity-policy?                diversity-policy
+    |  |  |  +---w route-objective-function?        route-objective-function
+    |  |  |  +---w route-direction?                 tapi-common:forwarding-direction
+    |  |  |  +---w is-exclusive?                    boolean
+    |  |  +---w topology-constraint
+    |  |  |  +---w include-topology* [topology-uuid]
+    |  |  |  |  +---w topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |  |  |  +---w avoid-topology* [topology-uuid]
+    |  |  |  |  +---w topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |  |  |  +---w include-path* [path-uuid]
+    |  |  |  |  +---w path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+    |  |  |  +---w exclude-path* [path-uuid]
+    |  |  |  |  +---w path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+    |  |  |  +---w include-link* [topology-uuid link-uuid]
+    |  |  |  |  +---w topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |  |  |  |  +---w link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+    |  |  |  +---w exclude-link* [topology-uuid link-uuid]
+    |  |  |  |  +---w topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |  |  |  |  +---w link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+    |  |  |  +---w include-node* [topology-uuid node-uuid]
+    |  |  |  |  +---w topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |  |  |  |  +---w node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |  |  |  +---w exclude-node* [topology-uuid node-uuid]
+    |  |  |  |  +---w topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |  |  |  |  +---w node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |  |  |  +---w preferred-transport-layer*   tapi-common:layer-protocol-name
+    |  |  +---w resilience-constraint
+    |  |  |  +---w resilience-type
+    |  |  |  |  +---w restoration-policy?   restoration-policy
+    |  |  |  |  +---w protection-type?      protection-type
+    |  |  |  +---w restoration-coordinate-type?          coordinate-type
+    |  |  |  +---w restore-priority?                     uint64
+    |  |  |  +---w reversion-mode?                       reversion-mode
+    |  |  |  +---w wait-to-revert-time?                  uint64
+    |  |  |  +---w hold-off-time?                        uint64
+    |  |  |  +---w is-lock-out?                          boolean
+    |  |  |  +---w is-frozen?                            boolean
+    |  |  |  +---w is-coordinated-switching-both-ends?   boolean
+    |  |  |  +---w max-switch-times?                     uint64
+    |  |  |  +---w preferred-restoration-layer*          tapi-common:layer-protocol-name
+    |  |  +---w state?                     string
+    |  +--ro output
+    |     +--ro service
+    |        +--ro end-point* [local-id]
+    |        |  +--ro layer-protocol-name?        tapi-common:layer-protocol-name
+    |        |  +--ro layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
+    |        |  +--ro service-interface-point
+    |        |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
+    |        |  |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |  |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+    |        |  |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
+    |        |  +--ro capacity
+    |        |  |  +--ro total-size
+    |        |  |  |  +--ro value?   uint64
+    |        |  |  |  +--ro unit?    capacity-unit
+    |        |  |  +--ro bandwidth-profile
+    |        |  |     +--ro bw-profile-type?              bandwidth-profile-type
+    |        |  |     +--ro committed-information-rate
+    |        |  |     |  +--ro value?   uint64
+    |        |  |     |  +--ro unit?    capacity-unit
+    |        |  |     +--ro committed-burst-size
+    |        |  |     |  +--ro value?   uint64
+    |        |  |     |  +--ro unit?    capacity-unit
+    |        |  |     +--ro peak-information-rate
+    |        |  |     |  +--ro value?   uint64
+    |        |  |     |  +--ro unit?    capacity-unit
+    |        |  |     +--ro peak-burst-size
+    |        |  |     |  +--ro value?   uint64
+    |        |  |     |  +--ro unit?    capacity-unit
+    |        |  |     +--ro color-aware?                  boolean
+    |        |  |     +--ro coupling-flag?                boolean
+    |        |  +--ro direction?                  tapi-common:port-direction
+    |        |  +--ro role?                       tapi-common:port-role
+    |        |  +--ro protection-role?            protection-role
+    |        |  +--ro local-id                    string
+    |        |  +--ro name* [value-name]
+    |        |  |  +--ro value-name    string
+    |        |  |  +--ro value?        string
+    |        |  +--ro administrative-state?       administrative-state
+    |        |  +--ro operational-state?          operational-state
+    |        |  +--ro lifecycle-state?            lifecycle-state
+    |        +--ro connection* [connection-uuid]
+    |        |  +--ro connection-uuid    -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/uuid
+    |        +--ro uuid?                                 uuid
+    |        +--ro name* [value-name]
+    |        |  +--ro value-name    string
+    |        |  +--ro value?        string
+    |        +--ro service-layer?                        tapi-common:layer-protocol-name
+    |        +--ro service-type?                         service-type
+    |        +--ro service-level?                        string
+    |        +--ro requested-capacity
+    |        |  +--ro total-size
+    |        |  |  +--ro value?   uint64
+    |        |  |  +--ro unit?    capacity-unit
+    |        |  +--ro bandwidth-profile
+    |        |     +--ro bw-profile-type?              bandwidth-profile-type
+    |        |     +--ro committed-information-rate
+    |        |     |  +--ro value?   uint64
+    |        |     |  +--ro unit?    capacity-unit
+    |        |     +--ro committed-burst-size
+    |        |     |  +--ro value?   uint64
+    |        |     |  +--ro unit?    capacity-unit
+    |        |     +--ro peak-information-rate
+    |        |     |  +--ro value?   uint64
+    |        |     |  +--ro unit?    capacity-unit
+    |        |     +--ro peak-burst-size
+    |        |     |  +--ro value?   uint64
+    |        |     |  +--ro unit?    capacity-unit
+    |        |     +--ro color-aware?                  boolean
+    |        |     +--ro coupling-flag?                boolean
+    |        +--ro connectivity-direction?               tapi-common:forwarding-direction
+    |        +--ro schedule
+    |        |  +--ro end-time?     date-and-time
+    |        |  +--ro start-time?   date-and-time
+    |        +--ro coroute-inclusion
+    |        |  +--ro connectivity-service-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
+    |        +--ro diversity-exclusion* [connectivity-service-uuid]
+    |        |  +--ro connectivity-service-uuid    -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
+    |        +--ro cost-characteristic* [cost-name]
+    |        |  +--ro cost-name         string
+    |        |  +--ro cost-value?       string
+    |        |  +--ro cost-algorithm?   string
+    |        +--ro latency-characteristic* [traffic-property-name]
+    |        |  +--ro traffic-property-name            string
+    |        |  +--ro fixed-latency-characteristic?    string
+    |        |  +--ro queing-latency-characteristic?   string
+    |        |  +--ro jitter-characteristic?           string
+    |        |  +--ro wander-characteristic?           string
+    |        +--ro risk-diversity-characteristic* [risk-characteristic-name]
+    |        |  +--ro risk-characteristic-name    string
+    |        |  +--ro risk-identifier-list*       string
+    |        +--ro diversity-policy?                     diversity-policy
+    |        +--ro route-objective-function?             route-objective-function
+    |        +--ro route-direction?                      tapi-common:forwarding-direction
+    |        +--ro is-exclusive?                         boolean
+    |        +--ro include-topology* [topology-uuid]
+    |        |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        +--ro avoid-topology* [topology-uuid]
+    |        |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        +--ro include-path* [path-uuid]
+    |        |  +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+    |        +--ro exclude-path* [path-uuid]
+    |        |  +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+    |        +--ro include-link* [topology-uuid link-uuid]
+    |        |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+    |        +--ro exclude-link* [topology-uuid link-uuid]
+    |        |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+    |        +--ro include-node* [topology-uuid node-uuid]
+    |        |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  +--ro node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        +--ro exclude-node* [topology-uuid node-uuid]
+    |        |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  +--ro node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        +--ro preferred-transport-layer*            tapi-common:layer-protocol-name
+    |        +--ro resilience-type
+    |        |  +--ro restoration-policy?   restoration-policy
+    |        |  +--ro protection-type?      protection-type
+    |        +--ro restoration-coordinate-type?          coordinate-type
+    |        +--ro restore-priority?                     uint64
+    |        +--ro reversion-mode?                       reversion-mode
+    |        +--ro wait-to-revert-time?                  uint64
+    |        +--ro hold-off-time?                        uint64
+    |        +--ro is-lock-out?                          boolean
+    |        +--ro is-frozen?                            boolean
+    |        +--ro is-coordinated-switching-both-ends?   boolean
+    |        +--ro max-switch-times?                     uint64
+    |        +--ro preferred-restoration-layer*          tapi-common:layer-protocol-name
+    |        +--ro administrative-state?                 administrative-state
+    |        +--ro operational-state?                    operational-state
+    |        +--ro lifecycle-state?                      lifecycle-state
+    +---x update-connectivity-service
+    |  +---w input
+    |  |  +---w service-id-or-name?        string
+    |  |  +---w end-point* [local-id]
+    |  |  |  +---w layer-protocol-name?        tapi-common:layer-protocol-name
+    |  |  |  +---w layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
+    |  |  |  +---w service-interface-point
+    |  |  |  |  +---w service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+    |  |  |  +---w connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
+    |  |  |  |  +---w topology-uuid                -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |  |  |  |  +---w node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |  |  |  |  +---w node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+    |  |  |  |  +---w connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
+    |  |  |  +---w capacity
+    |  |  |  |  +---w total-size
+    |  |  |  |  |  +---w value?   uint64
+    |  |  |  |  |  +---w unit?    capacity-unit
+    |  |  |  |  +---w bandwidth-profile
+    |  |  |  |     +---w bw-profile-type?              bandwidth-profile-type
+    |  |  |  |     +---w committed-information-rate
+    |  |  |  |     |  +---w value?   uint64
+    |  |  |  |     |  +---w unit?    capacity-unit
+    |  |  |  |     +---w committed-burst-size
+    |  |  |  |     |  +---w value?   uint64
+    |  |  |  |     |  +---w unit?    capacity-unit
+    |  |  |  |     +---w peak-information-rate
+    |  |  |  |     |  +---w value?   uint64
+    |  |  |  |     |  +---w unit?    capacity-unit
+    |  |  |  |     +---w peak-burst-size
+    |  |  |  |     |  +---w value?   uint64
+    |  |  |  |     |  +---w unit?    capacity-unit
+    |  |  |  |     +---w color-aware?                  boolean
+    |  |  |  |     +---w coupling-flag?                boolean
+    |  |  |  +---w direction?                  tapi-common:port-direction
+    |  |  |  +---w role?                       tapi-common:port-role
+    |  |  |  +---w protection-role?            protection-role
+    |  |  |  +---w local-id                    string
+    |  |  |  +---w name* [value-name]
+    |  |  |  |  +---w value-name    string
+    |  |  |  |  +---w value?        string
+    |  |  |  +---w administrative-state?       administrative-state
+    |  |  |  +---w operational-state?          operational-state
+    |  |  |  +---w lifecycle-state?            lifecycle-state
+    |  |  +---w connectivity-constraint
+    |  |  |  +---w service-layer?            tapi-common:layer-protocol-name
+    |  |  |  +---w service-type?             service-type
+    |  |  |  +---w service-level?            string
+    |  |  |  +---w requested-capacity
+    |  |  |  |  +---w total-size
+    |  |  |  |  |  +---w value?   uint64
+    |  |  |  |  |  +---w unit?    capacity-unit
+    |  |  |  |  +---w bandwidth-profile
+    |  |  |  |     +---w bw-profile-type?              bandwidth-profile-type
+    |  |  |  |     +---w committed-information-rate
+    |  |  |  |     |  +---w value?   uint64
+    |  |  |  |     |  +---w unit?    capacity-unit
+    |  |  |  |     +---w committed-burst-size
+    |  |  |  |     |  +---w value?   uint64
+    |  |  |  |     |  +---w unit?    capacity-unit
+    |  |  |  |     +---w peak-information-rate
+    |  |  |  |     |  +---w value?   uint64
+    |  |  |  |     |  +---w unit?    capacity-unit
+    |  |  |  |     +---w peak-burst-size
+    |  |  |  |     |  +---w value?   uint64
+    |  |  |  |     |  +---w unit?    capacity-unit
+    |  |  |  |     +---w color-aware?                  boolean
+    |  |  |  |     +---w coupling-flag?                boolean
+    |  |  |  +---w connectivity-direction?   tapi-common:forwarding-direction
+    |  |  |  +---w schedule
+    |  |  |  |  +---w end-time?     date-and-time
+    |  |  |  |  +---w start-time?   date-and-time
+    |  |  |  +---w coroute-inclusion
+    |  |  |  |  +---w connectivity-service-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
+    |  |  |  +---w diversity-exclusion* [connectivity-service-uuid]
+    |  |  |     +---w connectivity-service-uuid    -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
+    |  |  +---w routing-constraint
+    |  |  |  +---w cost-characteristic* [cost-name]
+    |  |  |  |  +---w cost-name         string
+    |  |  |  |  +---w cost-value?       string
+    |  |  |  |  +---w cost-algorithm?   string
+    |  |  |  +---w latency-characteristic* [traffic-property-name]
+    |  |  |  |  +---w traffic-property-name            string
+    |  |  |  |  +---w fixed-latency-characteristic?    string
+    |  |  |  |  +---w queing-latency-characteristic?   string
+    |  |  |  |  +---w jitter-characteristic?           string
+    |  |  |  |  +---w wander-characteristic?           string
+    |  |  |  +---w risk-diversity-characteristic* [risk-characteristic-name]
+    |  |  |  |  +---w risk-characteristic-name    string
+    |  |  |  |  +---w risk-identifier-list*       string
+    |  |  |  +---w diversity-policy?                diversity-policy
+    |  |  |  +---w route-objective-function?        route-objective-function
+    |  |  |  +---w route-direction?                 tapi-common:forwarding-direction
+    |  |  |  +---w is-exclusive?                    boolean
+    |  |  +---w topology-constraint
+    |  |  |  +---w include-topology* [topology-uuid]
+    |  |  |  |  +---w topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |  |  |  +---w avoid-topology* [topology-uuid]
+    |  |  |  |  +---w topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |  |  |  +---w include-path* [path-uuid]
+    |  |  |  |  +---w path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+    |  |  |  +---w exclude-path* [path-uuid]
+    |  |  |  |  +---w path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+    |  |  |  +---w include-link* [topology-uuid link-uuid]
+    |  |  |  |  +---w topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |  |  |  |  +---w link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+    |  |  |  +---w exclude-link* [topology-uuid link-uuid]
+    |  |  |  |  +---w topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |  |  |  |  +---w link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+    |  |  |  +---w include-node* [topology-uuid node-uuid]
+    |  |  |  |  +---w topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |  |  |  |  +---w node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |  |  |  +---w exclude-node* [topology-uuid node-uuid]
+    |  |  |  |  +---w topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |  |  |  |  +---w node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |  |  |  +---w preferred-transport-layer*   tapi-common:layer-protocol-name
+    |  |  +---w resilience-constraint
+    |  |  |  +---w resilience-type
+    |  |  |  |  +---w restoration-policy?   restoration-policy
+    |  |  |  |  +---w protection-type?      protection-type
+    |  |  |  +---w restoration-coordinate-type?          coordinate-type
+    |  |  |  +---w restore-priority?                     uint64
+    |  |  |  +---w reversion-mode?                       reversion-mode
+    |  |  |  +---w wait-to-revert-time?                  uint64
+    |  |  |  +---w hold-off-time?                        uint64
+    |  |  |  +---w is-lock-out?                          boolean
+    |  |  |  +---w is-frozen?                            boolean
+    |  |  |  +---w is-coordinated-switching-both-ends?   boolean
+    |  |  |  +---w max-switch-times?                     uint64
+    |  |  |  +---w preferred-restoration-layer*          tapi-common:layer-protocol-name
+    |  |  +---w state?                     string
+    |  +--ro output
+    |     +--ro service
+    |        +--ro end-point* [local-id]
+    |        |  +--ro layer-protocol-name?        tapi-common:layer-protocol-name
+    |        |  +--ro layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
+    |        |  +--ro service-interface-point
+    |        |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
+    |        |  |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |  |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+    |        |  |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
+    |        |  +--ro capacity
+    |        |  |  +--ro total-size
+    |        |  |  |  +--ro value?   uint64
+    |        |  |  |  +--ro unit?    capacity-unit
+    |        |  |  +--ro bandwidth-profile
+    |        |  |     +--ro bw-profile-type?              bandwidth-profile-type
+    |        |  |     +--ro committed-information-rate
+    |        |  |     |  +--ro value?   uint64
+    |        |  |     |  +--ro unit?    capacity-unit
+    |        |  |     +--ro committed-burst-size
+    |        |  |     |  +--ro value?   uint64
+    |        |  |     |  +--ro unit?    capacity-unit
+    |        |  |     +--ro peak-information-rate
+    |        |  |     |  +--ro value?   uint64
+    |        |  |     |  +--ro unit?    capacity-unit
+    |        |  |     +--ro peak-burst-size
+    |        |  |     |  +--ro value?   uint64
+    |        |  |     |  +--ro unit?    capacity-unit
+    |        |  |     +--ro color-aware?                  boolean
+    |        |  |     +--ro coupling-flag?                boolean
+    |        |  +--ro direction?                  tapi-common:port-direction
+    |        |  +--ro role?                       tapi-common:port-role
+    |        |  +--ro protection-role?            protection-role
+    |        |  +--ro local-id                    string
+    |        |  +--ro name* [value-name]
+    |        |  |  +--ro value-name    string
+    |        |  |  +--ro value?        string
+    |        |  +--ro administrative-state?       administrative-state
+    |        |  +--ro operational-state?          operational-state
+    |        |  +--ro lifecycle-state?            lifecycle-state
+    |        +--ro connection* [connection-uuid]
+    |        |  +--ro connection-uuid    -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/uuid
+    |        +--ro uuid?                                 uuid
+    |        +--ro name* [value-name]
+    |        |  +--ro value-name    string
+    |        |  +--ro value?        string
+    |        +--ro service-layer?                        tapi-common:layer-protocol-name
+    |        +--ro service-type?                         service-type
+    |        +--ro service-level?                        string
+    |        +--ro requested-capacity
+    |        |  +--ro total-size
+    |        |  |  +--ro value?   uint64
+    |        |  |  +--ro unit?    capacity-unit
+    |        |  +--ro bandwidth-profile
+    |        |     +--ro bw-profile-type?              bandwidth-profile-type
+    |        |     +--ro committed-information-rate
+    |        |     |  +--ro value?   uint64
+    |        |     |  +--ro unit?    capacity-unit
+    |        |     +--ro committed-burst-size
+    |        |     |  +--ro value?   uint64
+    |        |     |  +--ro unit?    capacity-unit
+    |        |     +--ro peak-information-rate
+    |        |     |  +--ro value?   uint64
+    |        |     |  +--ro unit?    capacity-unit
+    |        |     +--ro peak-burst-size
+    |        |     |  +--ro value?   uint64
+    |        |     |  +--ro unit?    capacity-unit
+    |        |     +--ro color-aware?                  boolean
+    |        |     +--ro coupling-flag?                boolean
+    |        +--ro connectivity-direction?               tapi-common:forwarding-direction
+    |        +--ro schedule
+    |        |  +--ro end-time?     date-and-time
+    |        |  +--ro start-time?   date-and-time
+    |        +--ro coroute-inclusion
+    |        |  +--ro connectivity-service-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
+    |        +--ro diversity-exclusion* [connectivity-service-uuid]
+    |        |  +--ro connectivity-service-uuid    -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
+    |        +--ro cost-characteristic* [cost-name]
+    |        |  +--ro cost-name         string
+    |        |  +--ro cost-value?       string
+    |        |  +--ro cost-algorithm?   string
+    |        +--ro latency-characteristic* [traffic-property-name]
+    |        |  +--ro traffic-property-name            string
+    |        |  +--ro fixed-latency-characteristic?    string
+    |        |  +--ro queing-latency-characteristic?   string
+    |        |  +--ro jitter-characteristic?           string
+    |        |  +--ro wander-characteristic?           string
+    |        +--ro risk-diversity-characteristic* [risk-characteristic-name]
+    |        |  +--ro risk-characteristic-name    string
+    |        |  +--ro risk-identifier-list*       string
+    |        +--ro diversity-policy?                     diversity-policy
+    |        +--ro route-objective-function?             route-objective-function
+    |        +--ro route-direction?                      tapi-common:forwarding-direction
+    |        +--ro is-exclusive?                         boolean
+    |        +--ro include-topology* [topology-uuid]
+    |        |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        +--ro avoid-topology* [topology-uuid]
+    |        |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        +--ro include-path* [path-uuid]
+    |        |  +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+    |        +--ro exclude-path* [path-uuid]
+    |        |  +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+    |        +--ro include-link* [topology-uuid link-uuid]
+    |        |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+    |        +--ro exclude-link* [topology-uuid link-uuid]
+    |        |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+    |        +--ro include-node* [topology-uuid node-uuid]
+    |        |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  +--ro node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        +--ro exclude-node* [topology-uuid node-uuid]
+    |        |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  +--ro node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        +--ro preferred-transport-layer*            tapi-common:layer-protocol-name
+    |        +--ro resilience-type
+    |        |  +--ro restoration-policy?   restoration-policy
+    |        |  +--ro protection-type?      protection-type
+    |        +--ro restoration-coordinate-type?          coordinate-type
+    |        +--ro restore-priority?                     uint64
+    |        +--ro reversion-mode?                       reversion-mode
+    |        +--ro wait-to-revert-time?                  uint64
+    |        +--ro hold-off-time?                        uint64
+    |        +--ro is-lock-out?                          boolean
+    |        +--ro is-frozen?                            boolean
+    |        +--ro is-coordinated-switching-both-ends?   boolean
+    |        +--ro max-switch-times?                     uint64
+    |        +--ro preferred-restoration-layer*          tapi-common:layer-protocol-name
+    |        +--ro administrative-state?                 administrative-state
+    |        +--ro operational-state?                    operational-state
+    |        +--ro lifecycle-state?                      lifecycle-state
+    +---x delete-connectivity-service
+    |  +---w input
+    |     +---w service-id-or-name?   string
+    +---x get-connection-end-point-details
+       +---w input
+       |  +---w topology-id-or-name?   string
+       |  +---w node-id-or-name?       string
+       |  +---w nep-id-or-name?        string
+       |  +---w cep-id-or-name?        string
+       +--ro output
+          +--ro connection-end-point
+             +--ro layer-protocol-name?               tapi-common:layer-protocol-name
+             +--ro layer-protocol-qualifier?          tapi-common:layer-protocol-qualifier
+             +--ro parent-node-edge-point
+             |  +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+             |  +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+             |  +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+             +--ro client-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
+             |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+             |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+             |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+             +--ro aggregated-connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
+             |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+             |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+             |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+             |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
+             +--ro connection-port-direction?         tapi-common:port-direction
+             +--ro connection-port-role?              tapi-common:port-role
+             +--ro uuid?                              uuid
+             +--ro name* [value-name]
+             |  +--ro value-name    string
+             |  +--ro value?        string
+             +--ro operational-state?                 operational-state
+             +--ro lifecycle-state?                   lifecycle-state
+             +--ro termination-direction?             termination-direction
+             +--ro termination-state?                 termination-state
