@@ -109,8 +109,8 @@ module tapi-photonic-media {
         description "none";
     }
     augment "/tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point" {
-        container media-channel-service-interface-point-spec {
-            uses media-channel-service-interface-point-spec;
+        container media-channel-connectivity-service-end-point-spec {
+            uses media-channel-connectivity-service-end-point-spec;
             description "none";
         }
         description "none";
@@ -276,6 +276,13 @@ module tapi-photonic-media {
         }
         description "none";
     }
+    augment "/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:link" {
+        container power-loss-characteristic {
+            uses power-loss-pac;
+            description "none";
+        }
+        description "none";
+    }
 
    /**************************
     * package object-classes
@@ -429,7 +436,9 @@ module tapi-photonic-media {
             uses total-power-threshold-pac;
             description "none";
         }
+        uses power-management-capability-pac;
         description "Can read the status of the warning for the upper value that the power can reach.";
+
     }
     grouping otsi-service-interface-point-spec {
         container otsi-capability {
@@ -446,6 +455,57 @@ module tapi-photonic-media {
         }
         description "none";
     }
+    grouping power-management-capability-pac{
+      container supportable-maximum-output-power {
+          uses power-properties-pac;
+          description "This parameter exposes the maximum output power
+            supported at the Logical-Termination-Point (LTP) associated to the SIP.";
+      }
+      container supportable-minimum-output-power {
+          uses power-properties-pac;
+          description "This parameter exposes the minimum output power
+            supported at the Logical-Termination-Point (LTP) associated to the SIP.";
+      }
+      container tolerable-maximum-input-power {
+          uses power-properties-pac;
+          description "This parameter exposes the maximum input power
+            tolerated at the Logical-Termination-Point (LTP) associated to the SIP.";
+      }
+      container tolerable-minimum-input-power {
+          uses power-properties-pac;
+          description "This parameter exposes the minimum input power
+            tolerated at the Logical-Termination-Point (LTP) associated to the SIP.";
+      }
+      description "This pac includes power management capabilities which can
+        be exposed as part of the characterization of the different LTPs at the PHOTONIC_MEDIA layer.";
+    }
+
+    grouping power-management-config-pac{
+      container intended-maximum-output-power {
+          uses power-properties-pac;
+          description "This parameter shall be used to specify the maximum output power
+            desired at the Logical-Termination-Point (LTP) associated to the CSEP.";
+      }
+      container intended-minimum-output-power {
+          uses power-properties-pac;
+          description "This parameter shall be used to specify the minimum output power
+            desired at the Logical-Termination-Point (LTP) associated to the CSEP.";
+      }
+      container expected-maximum-input-power {
+          uses power-properties-pac;
+          description "This parameter shall be used to specify the maximum input power
+            being received at the Logical-Termination-Point (LTP) associated to the CSEP.";
+      }
+      container expected-minimum-input-power {
+          uses power-properties-pac;
+          description "This parameter shall be used to specify the minimum input power
+            being received at the Logical-Termination-Point (LTP) associated to the CSEP.";
+      }
+      description "This pac includes power management constrains which can
+        be included as part of the characterization of the Connectivity-Service-End-Points
+        associated to Logical-Termination-Points (LTPs) at the PHOTONIC_MEDIA layer.";
+    }
+
     grouping otsi-termination-config-pac {
         container central-frequency {
             uses central-frequency;
@@ -524,6 +584,11 @@ module tapi-photonic-media {
             uses media-channel-pool-capability-pac;
             description "none";
         }
+        container mc-capability{
+            config false;
+            uses power-management-capability-pac;
+            description "none";
+        }
         description "none";
     }
     grouping media-channel-connectivity-service-end-point-spec {
@@ -537,6 +602,13 @@ module tapi-photonic-media {
         container spectrum {
             uses spectrum-band;
             description "none";
+        }
+        container power-constrains{
+            uses power-management-config-pac;
+            description "This parameters shall be used to configure the expected
+              and intended (desired) power levels at the endpoints of the media
+              Channel connectivity service. These parameters are dependent of the
+              related OTSi power-management capabilities exposed at the SIPs";
         }
         description "none";
     }
@@ -585,6 +657,14 @@ module tapi-photonic-media {
             description "The temperature of the laser";
         }
         description "none";
+    }
+    grouping power-loss-pac {
+        leaf expected-loss {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            description "The total power loss in a photonic link specified in dB.";
+        }
     }
     grouping power-properties-pac {
         leaf total-power {
