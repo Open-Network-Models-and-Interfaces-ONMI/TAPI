@@ -73,7 +73,7 @@ module tapi-connectivity {
         }
         description "Augments the base TAPI Context with ConnectivityService information";
     }
-    augment "/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point" {
+    augment "/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:node-edge-point" {
         container cep-list {
             uses cep-list;
             description "none";
@@ -107,7 +107,7 @@ module tapi-connectivity {
         uses tapi-topology:node-edge-point-ref;
         leaf connection-end-point-uuid {
             type leafref {
-                path '/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point/tapi-connectivity:uuid';
+                path '/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point/tapi-connectivity:uuid';
             }
             description "none";
         }
@@ -234,6 +234,10 @@ module tapi-connectivity {
             config false;
             description "Each EP of the FC has a role (e.g., working, protection, protected, symmetric, hub, spoke, leaf, root)  in the context of the FC with respect to the FC function. ";
         }
+        leaf protection-role {
+            type protection-role;
+            description "none";
+        }
         uses tapi-common:resource-spec;
         uses tapi-common:operational-state-pac;
         uses tapi-common:termination-pac;
@@ -317,6 +321,18 @@ module tapi-connectivity {
             config false;
             description "none";
         }
+        container peer-fwd-connectivity-service-end-point {
+            uses connectivity-service-end-point-ref;
+            description "none";
+        }
+        container server-connectivity-service-end-point {
+            uses connectivity-service-end-point-ref;
+            description "none";
+        }
+        container protecting-connectivity-service-end-point {
+            uses connectivity-service-end-point-ref;
+            description "none";
+        }
         container capacity {
             uses tapi-common:capacity;
             description "none";
@@ -383,10 +399,6 @@ module tapi-connectivity {
             min-elements 1;
             description "none";
         }
-        leaf selection-control {
-            type selection-control;
-            description "Degree of administrative control applied to the switch selection.";
-        }
         leaf selection-reason {
             type selection-reason;
             config false;
@@ -426,13 +438,21 @@ module tapi-connectivity {
         description "Represents the capability to control and coordinate switches, to add/delete/modify FCs and to add/delete/modify LTPs/LPs so as to realize a protection scheme.";
     }
     grouping resilience-constraint {
-        container resilience-type {
-            uses tapi-topology:resilience-type;
+        leaf protection-type {
+            type tapi-topology:protection-type;
+            description "none";
+        }
+        leaf restoration-policy {
+            type tapi-topology:restoration-policy;
             description "none";
         }
         leaf restoration-coordinate-type {
             type coordinate-type;
             description " The coordination mechanism between multi-layers.";
+        }
+        leaf fault-condition-determination {
+            type fault-condition-determination;
+            description "none";
         }
         leaf restore-priority {
             type uint64;
@@ -476,6 +496,10 @@ module tapi-connectivity {
             type tapi-common:layer-protocol-name;
             description "Indicate which layer this resilience parameters package configured for.";
         }
+        leaf selection-control {
+            type selection-control;
+            description "Degree of administrative control applied to the switch selection.";
+        }
         description "A list of control parameters to apply to a switch.";
     }
     grouping cep-list {
@@ -490,6 +514,25 @@ module tapi-connectivity {
    /**************************
     * package type-definitions
     **************************/
+    identity FAULT_CONDITION_DETERMINATION {
+        description "none";
+    }
+    identity FAULT_CONDITION_DETERMINATION_INHERENT {
+        base FAULT_CONDITION_DETERMINATION;
+        description "Inherent monitored (/I): The fault condition status of each link connection is derived from the status of the underlying server layer trail.";
+    }
+    identity FAULT_CONDITION_DETERMINATION_NON_INTRUSIVE {
+        base FAULT_CONDITION_DETERMINATION;
+        description "Non-intrusive monitored (/N): Each serial compound link connection is extended with a non-intrusive monitoring termination sink function to derive the fault condition status from the traffic signal that is present.";
+    }
+    identity FAULT_CONDITION_DETERMINATION_SUBLAYER {
+        base FAULT_CONDITION_DETERMINATION;
+        description "Sublayer monitored (/S): Each serial compound link connection is extended with tandem connection monitoring or segment termination/adaptation functions to derive the fault condition status independent of the traffic signal present.";
+    }
+    identity FAULT_CONDITION_DETERMINATION_TEST {
+        base FAULT_CONDITION_DETERMINATION;
+        description "Test monitored (/T): Each serial compound link connection's fault condition status is derived from an additional monitored serial compound link connection transported via the same serial compound link.";
+    }
     typedef service-type {
         type enumeration {
             enum POINT_TO_POINT_CONNECTIVITY {
@@ -601,6 +644,17 @@ module tapi-connectivity {
         }
         description "none";
     }
+    typedef fault-condition-determination {
+    	type identityref {
+            base FAULT_CONDITION_DETERMINATION;
+        }
+        description "ITU-T G.808-201611
+            3.2.6.8 subnetwork connection protection
+            Transport entity protection for the case where the transport entity is a subnetwork connection.
+            The serial compound link connection within the subnetwork connection is protected by adding bridges and selectors
+            in the connection functions at the edges of the protected domain and an additional serial compound link connection between these connection functions.
+            The determination of a fault condition on a serial compound link connection within the protected domain can be performed as follows: see enum.";
+    }
 
    /**************************
     * package interfaces
@@ -671,7 +725,7 @@ module tapi-connectivity {
                 description "none";
             }
             leaf state {
-                type string;
+                type tapi-common:administrative-state;
                 description "none";
             }
         }
@@ -711,7 +765,7 @@ module tapi-connectivity {
                 description "none";
             }
             leaf state {
-                type string;
+                type tapi-common:administrative-state;
                 description "none";
             }
         }

@@ -73,7 +73,7 @@ module tapi-oam {
         }
         description "Augments the base TAPI Context with OamService information";
     }
-    augment "/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point" {
+    augment "/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point" {
         container mep-mip-list {
             uses mep-mip-list;
             description "none";
@@ -93,11 +93,11 @@ module tapi-oam {
         }
         description "none";
     }
-    grouping oam-service-end-point-ref {
+    grouping oam-service-point-ref {
         uses oam-service-ref;
-        leaf oam-service-end-point-local-id {
+        leaf oam-service-point-local-id {
             type leafref {
-                path '/tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-service/tapi-oam:end-point/tapi-oam:local-id';
+                path '/tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-service/tapi-oam:oam-service-point/tapi-oam:local-id';
             }
             description "none";
         }
@@ -151,21 +151,21 @@ module tapi-oam {
         }
         description "none";
     }
-    grouping pm-current-data-ref {
+    grouping current-data-ref {
         uses oam-job-ref;
-        leaf pm-current-data-local-id {
+        leaf current-data-local-id {
             type leafref {
-                path '/tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:pm-current-data/tapi-oam:local-id';
+                path '/tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:current-data/tapi-oam:local-id';
             }
             description "none";
         }
         description "none";
     }
-    grouping pm-history-data-ref {
-        uses pm-current-data-ref;
-        leaf pm-history-data-local-id {
+    grouping history-data-ref {
+        uses current-data-ref;
+        leaf history-data-local-id {
             type leafref {
-                path '/tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:pm-current-data/tapi-oam:pm-history-data/tapi-oam:local-id';
+                path '/tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:current-data/tapi-oam:history-data/tapi-oam:local-id';
             }
             description "none";
         }
@@ -210,30 +210,14 @@ module tapi-oam {
             config false;
             description "none";
         }
-        leaf direction {
-            type tapi-common:termination-direction;
-            config false;
-            description "none";
-        }
-        leaf mep-identifier {
-            type string;
-            config false;
-            description "none";
-        }
-        leaf-list peer-mep-identifier {
-            type string;
-            config false;
-            min-elements 1;
-            description "none";
-        }
         uses tapi-common:local-class;
         uses tapi-common:operational-state-pac;
         description "none";
     }
     grouping oam-job {
-        list oam-service-end-point {
-            uses oam-service-end-point-ref;
-            key 'oam-service-uuid oam-service-end-point-local-id';
+        list oam-service-point {
+            uses oam-service-point-ref;
+            key 'oam-service-uuid oam-service-point-local-id';
             min-elements 1;
             description "none";
         }
@@ -241,10 +225,10 @@ module tapi-oam {
             uses oam-profile-ref;
             description "none";
         }
-        list pm-current-data {
+        list current-data {
             key 'local-id';
             config false;
-            uses pm-current-data;
+            uses current-data;
             description "Granularity period of the CurrentData identifies the specific CurrentData instance in the scope of this OamJob.
                 For example, typically at least
                 one 15min and
@@ -288,21 +272,6 @@ module tapi-oam {
             config false;
             description "none";
         }
-        leaf direction {
-            type tapi-common:forwarding-direction;
-            config false;
-            description "none";
-        }
-        leaf meg-level {
-            type uint64;
-            config false;
-            description "none";
-        }
-        leaf meg-identifier {
-            type string;
-            config false;
-            description "none";
-        }
         uses tapi-common:resource-spec;
         uses tapi-common:operational-state-pac;
         description "none";
@@ -317,10 +286,10 @@ module tapi-oam {
         description "none";
     }
     grouping oam-service {
-        list end-point {
+        list oam-service-point {
             key 'local-id';
             min-elements 2;
-            uses oam-service-end-point;
+            uses oam-service-point;
             description "none";
         }
         container meg {
@@ -328,13 +297,12 @@ module tapi-oam {
             config false;
             description "none";
         }
-        container oam-profile {
-            uses oam-profile-ref;
+        leaf layer-protocol-name {
+            type tapi-common:layer-protocol-name;
             description "none";
         }
         uses tapi-common:service-spec;
         uses tapi-common:admin-state-pac;
-        uses oam-constraint;
         description "none";
     }
     grouping oam-context {
@@ -361,7 +329,7 @@ module tapi-oam {
         }
         description "none";
     }
-    grouping oam-service-end-point {
+    grouping oam-service-point {
         container service-interface-point {
             uses tapi-common:service-interface-point-ref;
             description "none";
@@ -384,21 +352,10 @@ module tapi-oam {
             type tapi-common:layer-protocol-name;
             description "none";
         }
-        leaf direction {
-            type tapi-common:port-direction;
-            description "none";
-        }
-        leaf mep-identifier {
-            type string;
-            description "This attribute contains the identifier of the MEP.
-                This attribute is empty in case the OSEP relates to the provisioing of an MIP.
-                ";
-        }
-        leaf-list peer-mep-identifier {
-            type string;
-            description "This attribute models the MI_PeerMEP_ID[i] defined in G.8021 and configured as specified in G.8051. It provides the identifiers of the MEPs which are peer to the subject MEP.
-                This attribute is not specified in case the OSEP relates to the provisioing of an MIP.
-                In case of P2P, there is only one peer";
+        leaf is-mip {
+            type boolean;
+            description "If true, the object is related to a MIP.
+                If false, the object is related to a MEP.";
         }
         uses tapi-common:local-class;
         uses tapi-common:admin-state-pac;
@@ -417,35 +374,16 @@ module tapi-oam {
         }
         description "none";
     }
-    grouping oam-constraint {
-        leaf layer-protocol-name {
-            type tapi-common:layer-protocol-name;
-            description "none";
-        }
-        leaf direction {
-            type tapi-common:forwarding-direction;
-            description "none";
-        }
-        leaf meg-level {
-            type uint64;
-            description "none";
-        }
-        description "none";
-    }
-    grouping pm-current-data {
-        list pm-history-data {
+    grouping current-data {
+        list history-data {
             key 'local-id';
             config false;
-            uses pm-history-data;
+            uses history-data;
             description "in case of 24hr Current Data, at least 1 History Data.
                 In case of 15min Current Data, at least 16 History Data.
                 In case of <15min, the number of History Data shall be able to cover a span of 4 hours.";
         }
-        container granularity-period {
-            uses tapi-common:time-period;
-            description "none";
-        }
-        leaf timestamp {
+        leaf period-start-time {
             type tapi-common:date-and-time;
             config false;
             description "This attribute indicates the start of the current monitoring interval.
@@ -455,32 +393,26 @@ module tapi-oam {
             uses tapi-common:time-interval;
             description "none";
         }
-        leaf suspect-interval-flag {
-            type boolean;
-            description "This attribute is used to indicate that the performance data for the current period may not be reliable. Some reasons for this to occur are:
-                – Suspect data were detected by the actual resource doing data collection.
-                – Transition of the administrativeState attribute to/from the 'lock' state.
-                – Transition of the operationalState to/from the 'disabled' state.
-                – Scheduler setting that inhibits the collection function.
-                – The performance counters were reset during the interval.
-                – The currentData (or subclass) object instance was created during the monitoring period.";
+        container pm-data-pac {
+            uses pm-data-pac;
+            description "none";
         }
         uses tapi-common:local-class;
         description "none";
     }
-    grouping pm-history-data {
-        container granularity-period {
-            uses tapi-common:time-period;
-            description "none";
+    grouping history-data {
+        leaf period-start-time {
+            type tapi-common:date-and-time;
+            description "This attribute indicates the start of the monitoring interval.
+                The value is bound to the quarter of an hour in case of a 15 minute interval and bound to the hour in case of a 24 hour interval.";
         }
         leaf period-end-time {
             type tapi-common:date-and-time;
             description "none";
         }
-        leaf suspect-interval-flag {
-            type boolean;
-            config false;
-            description "This attribute indicates that the performance data may not be reliable.";
+        container pm-data-pac {
+            uses pm-data-pac;
+            description "none";
         }
         uses tapi-common:local-class;
         description "none";
@@ -490,12 +422,6 @@ module tapi-oam {
             key 'local-id';
             min-elements 1;
             uses pm-threshold-data;
-            description "none";
-        }
-        list pm-bin-data {
-            key 'local-id';
-            min-elements 1;
-            uses pm-bin-data;
             description "none";
         }
         uses tapi-common:global-class;
@@ -513,12 +439,21 @@ module tapi-oam {
         uses tapi-common:local-class;
         description "none";
     }
-    grouping pm-bin-data {
+    grouping pm-data-pac {
         container granularity-period {
             uses tapi-common:time-period;
             description "none";
         }
-        uses tapi-common:local-class;
+        leaf suspect-interval-flag {
+            type boolean;
+            description "This attribute is used to indicate that the performance data for the current period may not be reliable. Some reasons for this to occur are:
+                – Suspect data were detected by the actual resource doing data collection.
+                – Transition of the administrativeState attribute to/from the 'lock' state.
+                – Transition of the operationalState to/from the 'disabled' state.
+                – Scheduler setting that inhibits the collection function.
+                – The performance counters were reset during the interval.
+                – The currentData (or subclass) object instance was created during the monitoring period.";
+        }
         description "none";
     }
 
@@ -541,23 +476,23 @@ module tapi-oam {
     rpc create-oam-service {
         description "none";
         input {
-            list end-point {
-                key 'local-id';
+            list oam-service-point {
+            	key 'local-id';
                 min-elements 2;
-                uses oam-service-end-point;
+                uses oam-service-point;
                 description "none";
             }
-            container oam-constraint {
-                uses oam-constraint;
+            leaf layer-protocol-name {
+                type tapi-common:layer-protocol-name;
                 description "none";
             }
             leaf state {
-                type string;
+                type tapi-common:administrative-state;
                 description "none";
             }
         }
         output {
-            container service {
+            container oam-service {
                 uses oam-service;
                 description "none";
             }
@@ -566,7 +501,7 @@ module tapi-oam {
     rpc delete-oam-service {
         description "none";
         input {
-            leaf service-id {
+            leaf oam-service-id {
                 type string;
                 description "none";
             }
@@ -575,62 +510,14 @@ module tapi-oam {
     rpc get-oam-service {
         description "none";
         input {
-            leaf service-id {
+            leaf oam-service-id {
                 type string;
                 description "none";
             }
         }
         output {
-            container service {
+            container oam-service {
                 uses oam-service;
-                description "none";
-            }
-        }
-    }
-    rpc create-oam-job {
-        description "none";
-        input {
-            leaf oam-job-type {
-                type oam-job-type;
-                description "none";
-            }
-            list oam-service-end-point {
-                key 'local-id';
-                min-elements 2;
-                uses oam-service-end-point;
-                description "none";
-            }
-            container oam-profile {
-                uses oam-profile;
-                description "none";
-            }
-            leaf state {
-                type string;
-                description "none";
-            }
-            leaf schedule {
-                type string;
-                description "none";
-            }
-        }
-        output {
-            container oam-job {
-                uses oam-job;
-                description "none";
-            }
-        }
-    }
-    rpc get-oam-job {
-        description "none";
-        input {
-            leaf job-id {
-                type string;
-                description "none";
-            }
-        }
-        output {
-            container oam-job {
-                uses oam-job;
                 description "none";
             }
         }
@@ -638,8 +525,8 @@ module tapi-oam {
     rpc get-oam-service-list {
         description "none";
         output {
-            list service {
-                key 'uuid';
+            list oam-service {
+            	key 'uuid';
                 uses oam-service;
                 description "none";
             }
@@ -648,7 +535,7 @@ module tapi-oam {
     rpc get-meg {
         description "none";
         input {
-            leaf service-id {
+            leaf oam-service-id {
                 type string;
                 description "none";
             }
@@ -663,71 +550,31 @@ module tapi-oam {
     rpc update-oam-service {
         description "none";
         input {
-            leaf service-id {
+            leaf oam-service-id {
                 type string;
                 description "none";
             }
-            list end-point {
-                key 'local-id';
-                uses oam-service-end-point;
-                description "none";
-            }
-            container oam-constraint {
-                uses oam-constraint;
+            list oam-service-point {
+            	key 'local-id';
+                uses oam-service-point;
                 description "none";
             }
             leaf state {
-                type string;
+                type tapi-common:administrative-state;
                 description "none";
             }
         }
         output {
-            container service {
+            container oam-service {
                 uses oam-service;
                 description "none";
             }
         }
     }
-    rpc delete-oam-job {
+    rpc create-oam-service-point {
         description "none";
         input {
-            leaf job-id {
-                type string;
-                description "none";
-            }
-        }
-    }
-    rpc update-oam-job {
-        description "none";
-        input {
-            leaf job-id {
-                type string;
-                description "none";
-            }
-            container oam-profile {
-                uses oam-profile;
-                description "none";
-            }
-            leaf state {
-                type string;
-                description "none";
-            }
-            leaf schedule {
-                type string;
-                description "none";
-            }
-        }
-        output {
-            container oam-job {
-                uses oam-job;
-                description "none";
-            }
-        }
-    }
-    rpc create-oam-service-end-point {
-        description "none";
-        input {
-            leaf service-id {
+            leaf oam-service-id {
                 type string;
                 description "none";
             }
@@ -743,83 +590,239 @@ module tapi-oam {
                 type string;
                 description "none";
             }
-            leaf direction {
+            leaf state {
+                type tapi-common:administrative-state;
+                description "none";
+            }
+        }
+        output {
+            container oam-service-point {
+                uses oam-service-point;
+                description "none";
+            }
+        }
+    }
+    rpc delete-oam-service-point {
+        description "none";
+        input {
+            leaf oam-service-id {
+                type string;
+                description "none";
+            }
+            leaf oam-service-point-id {
+                type string;
+                description "none";
+            }
+        }
+    }
+    rpc update-oam-service-point {
+        description "none";
+        input {
+            leaf oam-service-id {
+                type string;
+                description "none";
+            }
+            leaf oam-service-point-id {
                 type string;
                 description "none";
             }
             leaf state {
+                type tapi-common:administrative-state;
+                description "none";
+            }
+        }
+        output {
+            container oam-service-point {
+                uses oam-service-point;
+                description "none";
+            }
+        }
+    }
+    rpc get-oam-service-point {
+        description "none";
+        input {
+            leaf oam-service-id {
                 type string;
                 description "none";
             }
-            leaf mep-identifier {
-                type string;
-                description "none";
-            }
-            leaf-list peer-mep-identifier {
+            leaf oam-service-point-id {
                 type string;
                 description "none";
             }
         }
         output {
-            container end-point {
-                uses oam-service-end-point;
+            container oam-service-point {
+                uses oam-service-point;
                 description "none";
             }
         }
     }
-    rpc delete-oam-service-end-point {
+    rpc create-oam-job {
         description "none";
         input {
-            leaf service-id {
+            leaf oam-job-type {
+                type oam-job-type;
+                description "none";
+            }
+            leaf oam-service-id {
                 type string;
                 description "none";
             }
-            leaf o-sep-id {
+            leaf-list oam-service-point-id {
                 type string;
+                min-elements 1;
                 description "none";
             }
-        }
-    }
-    rpc update-oam-service-end-point {
-        description "none";
-        input {
-            leaf service-id {
-                type string;
-                description "none";
-            }
-            leaf o-sep-id {
+            leaf oam-profile-id {
                 type string;
                 description "none";
             }
             leaf state {
+                type tapi-common:administrative-state;
+                description "none";
+            }
+            leaf schedule {
                 type string;
                 description "none";
             }
         }
         output {
-            container end-point {
-                uses oam-service-end-point;
+            container oam-job {
+                uses oam-job;
                 description "none";
             }
         }
     }
-    rpc get-oam-service-end-point {
+    rpc update-oam-job {
         description "none";
         input {
-            leaf service-id {
+            leaf oam-job-id {
                 type string;
                 description "none";
             }
-            leaf o-sep-id {
+            container oam-profile {
+                uses oam-profile;
+                description "none";
+            }
+            leaf state {
+                type tapi-common:administrative-state;
+                description "none";
+            }
+            leaf schedule {
                 type string;
                 description "none";
             }
         }
         output {
-            container end-point {
-                uses oam-service-end-point;
+            container oam-job {
+                uses oam-job;
                 description "none";
             }
         }
     }
+    rpc delete-oam-job {
+        description "none";
+        input {
+            leaf oam-job-id {
+                type string;
+                description "none";
+            }
+        }
+    }
+    rpc get-oam-job {
+        description "none";
+        input {
+            leaf oam-job-id {
+                type string;
+                description "none";
+            }
+        }
+        output {
+            container oam-job {
+                uses oam-job;
+                description "none";
+            }
+        }
+    }
+    rpc get-oam-job-list {
+        description "none";
+        output {
+            list oam-job {
+            	key 'uuid';
+                uses oam-job;
+                description "none";
+            }
+        }
+    }
+    rpc create-oam-profile {
+        description "none";
+        input {
+            list pm-threshold-data {
+                min-elements 1;
+                uses pm-threshold-data;
+                description "none";
+            }
+        }
+        output {
+            container oam-profile {
+                uses oam-profile;
+                description "none";
+            }
+        }
+    }
+    rpc update-oam-profile {
+        description "none";
+        input {
+            leaf oam-profile-id {
+                type string;
+                description "none";
+            }
+            list pm-threshold-data {
+                min-elements 1;
+                uses pm-threshold-data;
+                description "none";
+            }
+        }
+        output {
+            container oam-profile {
+                uses oam-profile;
+                description "none";
+            }
+        }
+    }
+    rpc delete-oam-profile {
+        description "none";
+        input {
+            leaf oam-profile-id {
+                type string;
+                description "none";
+            }
+        }
+    }
+    rpc get-oam-profile {
+        description "none";
+        input {
+            leaf oam-profile-id {
+                type string;
+                description "none";
+            }
+        }
+        output {
+            container oam-profile {
+                uses oam-profile;
+                description "none";
+            }
+        }
+    }
+    rpc get-oam-profile-list {
+        description "none";
+        output {
+            list oam-profile {
+            	key 'uuid';
+                uses oam-profile;
+                description "none";
+            }
+        }
+    }
+
 }

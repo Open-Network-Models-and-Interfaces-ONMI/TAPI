@@ -104,7 +104,7 @@ module tapi-topology {
         uses node-ref;
         leaf node-edge-point-uuid {
             type leafref {
-                path '/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-topology:uuid';
+                path '/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:node-edge-point/tapi-topology:uuid';
             }
             description "none";
         }
@@ -145,8 +145,12 @@ module tapi-topology {
                 Is applicable to simple Links where all LinkEnds are BIDIRECTIONAL (the Link will be BIDIRECTIONAL) or UNIDIRECTIONAL (the Link will be UNIDIRECTIONAL).
                 Is not present in more complex cases.";
         }
-        container resilience-type {
-            uses resilience-type;
+        leaf protection-type {
+            type protection-type;
+            description "none";
+        }
+        leaf restoration-policy {
+            type restoration-policy;
             description "none";
         }
         uses tapi-common:resource-spec;
@@ -161,7 +165,7 @@ module tapi-topology {
         description "The Link object class models effective adjacency between two or more ForwardingDomains (FD). ";
     }
     grouping node {
-        list owned-node-edge-point {
+        list node-edge-point {
             key 'uuid';
             config false;
             uses node-edge-point;
@@ -239,9 +243,9 @@ module tapi-topology {
             config false;
             description "none";
         }
-        leaf-list supported-cep-layer-protocol-qualifier {
-            type tapi-common:layer-protocol-qualifier;
+        list available-cep-layer-protocol {
             min-elements 1;
+            uses nep-layer-protocol-capability;
             description "none";
         }
         list aggregated-node-edge-point {
@@ -572,17 +576,6 @@ module tapi-topology {
         }
         description "none";
     }
-    grouping resilience-type {
-        leaf restoration-policy {
-            type restoration-policy;
-            description "none";
-        }
-        leaf protection-type {
-            type protection-type;
-            description "none";
-        }
-        description "none";
-    }
     typedef restoration-policy {
         type enumeration {
             enum PER_DOMAIN_RESTORATION {
@@ -594,32 +587,46 @@ module tapi-topology {
             enum NA {
                 description "none";
             }
-        }
-        description "none";
-    }
-    typedef protection-type {
-        type enumeration {
-            enum NO_PROTECTON {
-                description "none";
-            }
-            enum ONE_PLUS_ONE_PROTECTION {
-                description "none";
-            }
-            enum ONE_PLUS_ONE_PROTECTION_WITH_DYNAMIC_RESTORATION {
-                description "none";
-            }
-            enum PERMANENT_ONE_PLUS_ONE_PROTECTION {
-                description "none";
-            }
-            enum ONE_FOR_ONE_PROTECTION {
-                description "none";
-            }
             enum DYNAMIC_RESTORATION {
                 description "none";
             }
             enum PRE_COMPUTED_RESTORATION {
                 description "none";
             }
+        }
+        description "none";
+    }
+    typedef protection-type {
+        type enumeration {
+            enum NO_PROTECTION {
+                description "none";
+            }
+            enum ONE_PLUS_ONE_PROTECTION {
+                description "none";
+            }
+            enum ONE_FOR_ONE_PROTECTION {
+                description "none";
+            }
+            enum ONE_FOR_N_PROTECTION {
+                description "none";
+            }
+            enum M_FOR_N_PROTECTION {
+                description "none";
+            }
+            enum ONE_FOR_ONE_BY_N {
+                description "none";
+            }
+        }
+        description "none";
+    }
+    grouping nep-layer-protocol-capability {
+        leaf layer-protocol-qualifier {
+            type tapi-common:layer-protocol-qualifier;
+            description "none";
+        }
+        leaf number-of-cep-instances {
+            type uint64;
+            description "none";
         }
         description "none";
     }
