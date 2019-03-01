@@ -13,29 +13,36 @@ module tapi-topology {
     description "
         This module contains TAPI Topology Model definitions.
         Source: TapiTopology.uml
-        - The TAPI YANG models included in this TAPI release are a *normative* part of the TAPI SDK.
-        - The YANG specifications have been generated from the corresponding UML model using the [ONF EAGLE UML2YANG mapping tool]
-          <https://github.com/OpenNetworkingFoundation/EagleUmlYang>
-          and further edited manually to comply with the [ONF IISOMI UML2YANG mapping guidelines]
-          <https://wiki.opennetworking.org/display/OIMT/UML+-+YANG+Guidelines>
-        - Status of YANG model artifacts can be determined by referring to the corresponding UML artifacts.
-          As described in the UML models, some artifacts are considered *experimental*, and thus the corresponding YANG artifacts.
-        - The ONF TAPI release process does not guarantee backward compatibility of YANG models across major versions of TAPI releases.
-          The YANG model backward compatibility criteria are outlined in section 11 of <https://tools.ietf.org/html/rfc7950>.
-          YANG models included in this release may not be backward compatible with previous TAPI releases.
         Copyright (c) 2018 Open Networking Foundation (ONF). All rights reserved.
-        License: This module is distributed under the Apache License 2.0";
+        License: This module is distributed under the Apache License 2.0
+    	- The TAPI YANG models included in this TAPI release are a *normative* part of the TAPI SDK.
+        - The YANG specifications have been generated from the corresponding UML model using the [ONF EAGLE UML2YANG mapping tool]
+        <https://github.com/OpenNetworkingFoundation/EagleUmlYang>
+        and further edited manually to comply with the [ONF IISOMI UML2YANG mapping guidelines]
+        <https://wiki.opennetworking.org/display/OIMT/UML+-+YANG+Guidelines>
+        - Status of YANG model artifacts can be determined by referring to the corresponding UML artifacts.
+        As described in the UML models, some artifacts are considered *experimental*, and thus the corresponding YANG artifacts.
+        - The ONF TAPI release process does not guarantee backward compatibility of YANG models across major versions of TAPI releases.
+        The YANG model backward compatibility criteria are outlined in section 11 of <https://tools.ietf.org/html/rfc7950>.
+        YANG models included in this release may not be backward compatible with previous TAPI releases.";
+    revision 2019-03-31 {
+        description "ONF Transport API version 2.2-RC1.
+                   Changes included in this TAPI release (v2.2) are listed in
+                  <https://github.com/OpenNetworkingFoundation/TAPI/blob/develop/CHANGE_LOG/change-log.2.2.md>";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
+                  <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.2.0/UML>";
+    }
     revision 2018-12-10 {
         description "ONF Transport API version 2.1.1.
                    Changes included in this TAPI release (v2.1.1) are listed in
-                   <https://github.com/OpenNetworkingFoundation/TAPI/blob/develop/CHANGE_LOG/change-log.2.1.1.md>";
+                  <https://github.com/OpenNetworkingFoundation/TAPI/blob/develop/CHANGE_LOG/change-log.2.1.1.md>";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
-                  <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.1.0/UML>";
+                  <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.1.1/UML>";
     }
     revision 2018-10-16 {
         description "ONF Transport API version 2.1.0.
                    Changes included in this TAPI release (v2.1.0) are listed in
-                   <https://github.com/OpenNetworkingFoundation/TAPI/blob/develop/CHANGE_LOG/change-log.2.1.0.md>";
+                  <https://github.com/OpenNetworkingFoundation/TAPI/blob/develop/CHANGE_LOG/change-log.2.1.0.md>";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
                   <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.1.0/UML>";
     }
@@ -60,6 +67,7 @@ module tapi-topology {
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 6020, RFC 6087 and ONF TAPI UML model
                   <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.0.0/UML>";
     }
+    
     augment "/tapi-common:context" {
         container topology-context {
             uses topology-context;
@@ -67,9 +75,9 @@ module tapi-topology {
         }
         description "Augments the base TAPI Context with TopologyService information";
     }
-
-   /**************************
-    * definitions of refrences
+    
+    /**************************
+    * definitions of references
     **************************/
     grouping topology-ref {
         leaf topology-uuid {
@@ -104,7 +112,7 @@ module tapi-topology {
         uses node-ref;
         leaf node-edge-point-uuid {
             type leafref {
-                path '/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-topology:uuid';
+                path '/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:node-edge-point/tapi-topology:uuid';
             }
             description "none";
         }
@@ -120,10 +128,10 @@ module tapi-topology {
         }
         description "none";
     }
-
-   /**************************
+    
+    /**************************
     * package object-classes
-    **************************/
+    **************************/ 
     grouping link {
         list node-edge-point {
             uses node-edge-point-ref;
@@ -141,12 +149,16 @@ module tapi-topology {
         leaf direction {
             type tapi-common:forwarding-direction;
             config false;
-            description "The directionality of the Link.
-                Is applicable to simple Links where all LinkEnds are BIDIRECTIONAL (the Link will be BIDIRECTIONAL) or UNIDIRECTIONAL (the Link will be UNIDIRECTIONAL).
+            description "The directionality of the Link. 
+                Is applicable to simple Links where all LinkEnds are BIDIRECTIONAL (the Link will be BIDIRECTIONAL) or UNIDIRECTIONAL (the Link will be UNIDIRECTIONAL). 
                 Is not present in more complex cases.";
         }
-        container resilience-type {
-            uses resilience-type;
+        leaf protection-type {
+            type protection-type;
+            description "none";
+        }
+        leaf restoration-policy {
+            type restoration-policy;
             description "none";
         }
         uses tapi-common:resource-spec;
@@ -161,7 +173,7 @@ module tapi-topology {
         description "The Link object class models effective adjacency between two or more ForwardingDomains (FD). ";
     }
     grouping node {
-        list owned-node-edge-point {
+        list node-edge-point {
             key 'uuid';
             config false;
             uses node-edge-point;
@@ -195,7 +207,7 @@ module tapi-topology {
         uses transfer-cost-pac;
         uses transfer-integrity-pac;
         uses transfer-timing-pac;
-        description "The ForwardingDomain (FD) object class models the ForwardingDomain topological component which is used to effect forwarding of transport characteristic information and offers the potential to enable forwarding.
+        description "The ForwardingDomain (FD) object class models the ForwardingDomain topological component which is used to effect forwarding of transport characteristic information and offers the potential to enable forwarding. 
             At the lowest level of recursion, an FD (within a network element (NE)) represents a switch matrix (i.e., a fabric). Note that an NE can encompass multiple switch matrices (FDs). ";
     }
     grouping topology {
@@ -218,7 +230,7 @@ module tapi-topology {
             description "none";
         }
         uses tapi-common:resource-spec;
-        description "The ForwardingDomain (FD) object class models the ForwardingDomain topological component which is used to effect forwarding of transport characteristic information and offers the potential to enable forwarding.
+        description "The ForwardingDomain (FD) object class models the ForwardingDomain topological component which is used to effect forwarding of transport characteristic information and offers the potential to enable forwarding. 
             At the lowest level of recursion, an FD (within a network element (NE)) represents a switch matrix (i.e., a fabric). Note that an NE can encompass multiple switch matrices (FDs). ";
     }
     grouping layer-protocol-transition-pac {
@@ -227,7 +239,7 @@ module tapi-topology {
             min-elements 2;
             description "Provides the ordered structure of layer protocol transitions encapsulated in the TopologicalEntity. The ordering relates to the LinkPort role.";
         }
-        description "Relevant for a Link that is formed by abstracting one or more LTPs (in a stack) to focus on the flow and deemphasize the protocol transformation.
+        description "Relevant for a Link that is formed by abstracting one or more LTPs (in a stack) to focus on the flow and deemphasize the protocol transformation. 
             This abstraction is relevant when considering multi-layer routing. 
             The layer protocols of the LTP and the order of their application to the signal is still relevant and need to be accounted for. This is derived from the LTP spec details.
             This Pac provides the relevant abstractions of the LTPs and provides the necessary association to the LTPs involved.
@@ -239,9 +251,9 @@ module tapi-topology {
             config false;
             description "none";
         }
-        leaf-list supported-cep-layer-protocol-qualifier {
-            type tapi-common:layer-protocol-qualifier;
+        list available-cep-layer-protocol {
             min-elements 1;
+            uses nep-layer-protocol-capability;
             description "none";
         }
         list aggregated-node-edge-point {
@@ -270,7 +282,7 @@ module tapi-topology {
         uses tapi-common:admin-state-pac;
         uses tapi-common:termination-pac;
         uses tapi-common:capacity-pac;
-        description "The LogicalTerminationPoint (LTP) object class encapsulates the termination and adaptation functions of one or more transport layers.
+        description "The LogicalTerminationPoint (LTP) object class encapsulates the termination and adaptation functions of one or more transport layers. 
             The structure of LTP supports all transport protocols including circuit and packet forms.";
     }
     grouping risk-parameter-pac {
@@ -281,7 +293,7 @@ module tapi-topology {
             uses risk-characteristic;
             description "A list of risk characteristics for consideration in an analysis of shared risk. Each element of the list represents a specific risk consideration.";
         }
-        description "The risk characteristics of a TopologicalEntity come directly from the underlying physical realization.
+        description "The risk characteristics of a TopologicalEntity come directly from the underlying physical realization. 
             The risk characteristics propagate from the physical realization to the client and from the server layer to the client layer, this propagation may be modified by protection.
             A TopologicalEntity may suffer degradation or failure as a result of a problem in a part of the underlying realization.
             The realization can be partitioned into segments which have some relevant common failure modes.
@@ -302,16 +314,16 @@ module tapi-topology {
             uses cost-characteristic;
             description "The list of costs where each cost relates to some aspect of the TopologicalEntity.";
         }
-        description "The cost characteristics of a TopologicalEntity not necessarily correlated to the cost of the underlying physical realization.
+        description "The cost characteristics of a TopologicalEntity not necessarily correlated to the cost of the underlying physical realization. 
             They may be quite specific to the individual TopologicalEntity e.g. opportunity cost. Relates to layer capacity
-            There may be many perspectives from which cost may be considered  for a particular TopologicalEntity and hence many specific costs and potentially cost algorithms.
+            There may be many perspectives from which cost may be considered  for a particular TopologicalEntity and hence many specific costs and potentially cost algorithms. 
             Using an entity will incur a cost. ";
     }
     grouping transfer-integrity-pac {
         leaf error-characteristic {
             type string;
             config false;
-            description "Describes the degree to which the signal propagated can be errored.
+            description "Describes the degree to which the signal propagated can be errored. 
                 Applies to TDM systems as the errored signal will be propagated and not packet as errored packets will be discarded.";
         }
         leaf loss-characteristic {
@@ -323,7 +335,7 @@ module tapi-topology {
         leaf repeat-delivery-characteristic {
             type string;
             config false;
-            description "Primarily applies to packet systems where a packet may be delivered more than once (in fault recovery for example).
+            description "Primarily applies to packet systems where a packet may be delivered more than once (in fault recovery for example). 
                 It can also apply to TDM where several frames may be received twice due to switching in a system with a large differential propagation delay.";
         }
         leaf delivery-order-characteristic {
@@ -457,9 +469,9 @@ module tapi-topology {
         description "none";
     }
 
-   /**************************
+    /**************************
     * package type-definitions
-    **************************/
+    **************************/ 
     grouping cost-characteristic {
         leaf cost-name {
             type string;
@@ -506,7 +518,7 @@ module tapi-topology {
     grouping risk-characteristic {
         leaf risk-characteristic-name {
             type string;
-            description "The name of the risk characteristic. The characteristic may be related to a specific degree of closeness.
+            description "The name of the risk characteristic. The characteristic may be related to a specific degree of closeness. 
                 For example a particular characteristic may apply to failures that are localized (e.g. to one side of a road) where as another characteristic may relate to failures that have a broader impact (e.g. both sides of a road that crosses a bridge).
                 Depending upon the importance of the traffic being routed different risk characteristics will be evaluated.";
         }
@@ -572,17 +584,6 @@ module tapi-topology {
         }
         description "none";
     }
-    grouping resilience-type {
-        leaf restoration-policy {
-            type restoration-policy;
-            description "none";
-        }
-        leaf protection-type {
-            type protection-type;
-            description "none";
-        }
-        description "none";
-    }
     typedef restoration-policy {
         type enumeration {
             enum PER_DOMAIN_RESTORATION {
@@ -594,26 +595,6 @@ module tapi-topology {
             enum NA {
                 description "none";
             }
-        }
-        description "none";
-    }
-    typedef protection-type {
-        type enumeration {
-            enum NO_PROTECTON {
-                description "none";
-            }
-            enum ONE_PLUS_ONE_PROTECTION {
-                description "none";
-            }
-            enum ONE_PLUS_ONE_PROTECTION_WITH_DYNAMIC_RESTORATION {
-                description "none";
-            }
-            enum PERMANENT_ONE_PLUS_ONE_PROTECTION {
-                description "none";
-            }
-            enum ONE_FOR_ONE_PROTECTION {
-                description "none";
-            }
             enum DYNAMIC_RESTORATION {
                 description "none";
             }
@@ -623,10 +604,44 @@ module tapi-topology {
         }
         description "none";
     }
+    typedef protection-type {
+        type enumeration {
+            enum NO_PROTECTION {
+                description "none";
+            }
+            enum ONE_PLUS_ONE_PROTECTION {
+                description "none";
+            }
+            enum ONE_FOR_ONE_PROTECTION {
+                description "none";
+            }
+            enum ONE_FOR_N_PROTECTION {
+                description "none";
+            }
+            enum M_FOR_N_PROTECTION {
+                description "none";
+            }
+            enum ONE_FOR_ONE_BY_N {
+                description "none";
+            }
+        }
+        description "none";
+    }
+    grouping nep-layer-protocol-capability {
+        leaf layer-protocol-qualifier {
+            type tapi-common:layer-protocol-qualifier;
+            description "none";
+        }
+        leaf number-of-cep-instances {
+            type uint64;
+            description "none";
+        }
+        description "none";
+    }
 
-   /**************************
+    /**************************
     * package interfaces
-    **************************/
+    **************************/ 
     rpc get-topology-details {
         description "none";
         input {
@@ -713,4 +728,5 @@ module tapi-topology {
             }
         }
     }
+
 }
