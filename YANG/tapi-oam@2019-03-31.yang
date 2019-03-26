@@ -10,6 +10,9 @@ module tapi-oam {
     import tapi-topology {
         prefix tapi-topology;
     }
+    import tapi-notification {
+        prefix tapi-notification;
+    }
     organization "ONF OTCC (Open Transport Configuration & Control) Project";
     contact "
          Project Web: <https://wiki.opennetworking.org/display/OTCC/TAPI>
@@ -434,12 +437,21 @@ module tapi-oam {
         description "none";
     }
     grouping pm-threshold-data {
-        leaf is-transient {
-            type boolean;
+        leaf-list applicable-job-type {
+            type oam-job-type;
+            description "This attribute allows an PMThresholdData instance to be constrained to specific job types. If an PMThresholdData instance is so configured to be applicable to more than one job type (worst case ALL), only the parameters relevant for the job instance will be used (non-applicable profile parameters will be ignored)";
+        }
+        list threshold-parameter {
+            key 'pm-parameter-name threshold-location threshold-crossing';
+            uses threshold-parameter;
             description "none";
         }
         container granularity-period {
             uses tapi-common:time-period;
+            description "none";
+        }
+        leaf is-transient {
+            type boolean;
             description "none";
         }
         uses tapi-common:local-class;
@@ -462,6 +474,53 @@ module tapi-oam {
         }
         description "none";
     }
+    grouping tca-info {
+        leaf is-transient {
+            type boolean;
+            config false;
+            description "none";
+        }
+        leaf perceived-severity {
+            type perceived-tca-severity;
+            description "none";
+        }
+        container threshold-parameter {
+            config false;
+            uses threshold-parameter;
+            description "none";
+        }
+        leaf measurement-interval {
+            type tapi-common:date-and-time;
+            description "none";
+        }
+        leaf suspect-interval-flag {
+            type boolean;
+            description "none";
+        }
+        description "none";
+    }
+    grouping alarm-info {
+        leaf is-transient {
+            type boolean;
+            config false;
+            description "none";
+        }
+        leaf perceived-severity {
+            type perceived-severity-type;
+            config false;
+            description "none";
+        }
+        leaf probable-cause {
+            type alarm-condition-name;
+            config false;
+            description "none";
+        }
+        leaf service-affecting {
+            type service-affecting;
+            description "none";
+        }
+        description "none";
+    }
 
     /**************************
     * package type-definitions
@@ -469,9 +528,165 @@ module tapi-oam {
     identity OAM_JOB_TYPE {
         description "none";
     }
+    identity OAM_NOTIFICATION_TYPE {
+    	base tapi-notification:NOTIFICATION_TYPE;
+        description "none";
+    }
+    identity OAM_NOTIFICATION_TYPE_ALARM_EVENT {
+        base OAM_NOTIFICATION_TYPE;
+        description "none";
+    }
+    identity OAM_NOTIFICATION_TYPE_THRESHOLD_CROSSING_ALERT {
+        base OAM_NOTIFICATION_TYPE;
+        description "none";
+    }
+    identity ALARM_CONDITION_NAME {
+        description "none";
+    }
+    identity PM_PARAMETER_NAME {
+        description "none";
+    }
     typedef oam-job-type {
         type identityref {
             base OAM_JOB_TYPE;
+        }
+        description "none";
+    }
+    typedef threshold-crossing-type {
+        type enumeration {
+            enum THRESHOLD_ABOVE {
+                description "none";
+            }
+            enum THRESHOLD_BELOW {
+                description "none";
+            }
+            enum CLEARED {
+                description "none";
+            }
+        }
+        description "none";
+    }
+    typedef perceived-tca-severity {
+        type enumeration {
+            enum WARNING {
+                description "none";
+            }
+            enum CLEAR {
+                description "none";
+            }
+        }
+        description "none";
+    }
+    typedef perceived-severity-type {
+        type enumeration {
+            enum CRITICAL {
+                description "none";
+            }
+            enum MAJOR {
+                description "none";
+            }
+            enum MINOR {
+                description "none";
+            }
+            enum WARNING {
+                description "none";
+            }
+            enum CLEARED {
+                description "none";
+            }
+        }
+        description "none";
+    }
+    typedef service-affecting {
+        type enumeration {
+            enum SERVICE_AFFECTING {
+                description "none";
+            }
+            enum NOT_SERVICE_AFFECTING {
+                description "none";
+            }
+            enum UNKNOWN {
+                description "none";
+            }
+        }
+        description "none";
+    }
+    typedef oam-notification-type {
+        type identityref {
+            base OAM_NOTIFICATION_TYPE;
+        }
+        description "none";
+    }
+    typedef alarm-condition-name {
+        type identityref {
+            base ALARM_CONDITION_NAME;
+        }
+        description "none";
+    }
+    grouping pm-parameter {
+        leaf pm-parameter-name {
+            type pm-parameter-name;
+            description "none";
+        }
+        leaf pm-parameter-int-value {
+            type uint64;
+            description "none";
+        }
+        leaf pm-parameter-real-value {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            description "none";
+        }
+        description "none";
+    }
+    typedef pm-parameter-name {
+        type identityref {
+            base PM_PARAMETER_NAME;
+        }
+        description "none";
+    }
+    grouping threshold-parameter {
+    	leaf pm-parameter-name {
+    		type leafref {
+    			path "../pm-parameter/pm-parameter-name";
+    		}
+    		description "none";
+    	}
+        container pm-parameter {
+            uses pm-parameter;
+            description "none";
+        }
+        leaf threshold-location {
+            type threshold-crossing-qualifier;
+            description "none";
+        }
+        leaf threshold-crossing {
+            type threshold-crossing-type;
+            description "none";
+        }
+        description "none";
+    }
+    typedef threshold-crossing-qualifier {
+        type enumeration {
+            enum NOT_APPLICABLE {
+                description "none";
+            }
+            enum NEAR_END {
+                description "none";
+            }
+            enum FAR_END {
+                description "none";
+            }
+            enum BIDIRECTIONAL {
+                description "none";
+            }
+            enum FORWARD {
+                description "none";
+            }
+            enum BACKWARD {
+                description "none";
+            }
         }
         description "none";
     }
