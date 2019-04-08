@@ -1,10 +1,16 @@
 # Change Log
 ## Commit Range: 2.1.1..HEAD
 
+__[Updated change log (md &amp; html formats) for commits since v2.1.1](https://github.com/OpenNetworkingFoundation/TAPI/commit/87cddca516e62d34484842ae22ec41e59cc98b82)__
+
+    [karthik-sethuraman](mailto:karthik.sethuraman@necam.com) - Mon, 8 Apr 2019 17:59:33 -0400
+    
+    
+
 __[minor typo fix](https://github.com/OpenNetworkingFoundation/TAPI/commit/7c4372f17f5b344bce50f96121995ac564b1b691)__
 
     [karthik-sethuraman](mailto:karthik.sethuraman@necam.com) - Mon, 8 Apr 2019 16:06:28 -0400
-    EAD -&gt; refs/heads/develop, refs/remotes/origin/develop
+    
     
 
 __[YANG and TREE file updates for UML commits since commit #8a59a68](https://github.com/OpenNetworkingFoundation/TAPI/commit/c0dc9f30c0936999be5cfa814163261b70bd7f1a)__
