@@ -251,24 +251,17 @@ module tapi-connectivity {
             The structure of LTP supports all transport protocols including circuit and packet forms.";
     }
     grouping connectivity-constraint {
-        leaf service-layer {
-            type tapi-common:layer-protocol-name;
-            description "none";
-        }
         leaf service-type {
             type service-type;
             description "none";
         }
         leaf service-level {
             type string;
-            description "An abstract value the meaning of which is mutually agreed – typically represents metrics such as - Class of service, priority, resiliency, availability";
+            description "An abstract value the meaning of which is mutually agreed – typically represents metrics such as - Class of service, priority, resiliency, availability
+                Class of Service Name.";
         }
         container requested-capacity {
             uses tapi-common:capacity;
-            description "none";
-        }
-        leaf connectivity-direction {
-            type tapi-common:forwarding-direction;
             description "none";
         }
         container schedule {
@@ -307,12 +300,21 @@ module tapi-connectivity {
             uses tapi-path-computation:routing-constraint;
             description "none";
         }
-        container topology-constraint {
+        list topology-constraint {
+            key 'local-id';
             uses tapi-path-computation:topology-constraint;
             description "none";
         }
         container resilience-constraint {
             uses resilience-constraint;
+            description "none";
+        }
+        leaf direction {
+            type tapi-common:forwarding-direction;
+            description "none";
+        }
+        leaf layer-protocol-name {
+            type tapi-common:layer-protocol-name;
             description "none";
         }
         uses tapi-common:service-spec;
@@ -551,6 +553,38 @@ module tapi-connectivity {
         base FAULT_CONDITION_DETERMINATION;
         description "Test monitored (/T): Each serial compound link connection's fault condition status is derived from an additional monitored serial compound link connection transported via the same serial compound link.";
     }
+    identity CONNECTIVITY_OBJECT_TYPE {
+    	base tapi-common:OBJECT_TYPE;
+        description "none";
+    }
+    identity CONNECTIVITY_OBJECT_TYPE_CONNECTIVITY_SERVICE {
+        base CONNECTIVITY_OBJECT_TYPE;
+        description "none";
+    }
+    identity CONNECTIVITY_OBJECT_TYPE_CONNECTIVITY_SERVICE_END_POINT {
+        base CONNECTIVITY_OBJECT_TYPE;
+        description "none";
+    }
+    identity CONNECTIVITY_OBJECT_TYPE_CONNECTION {
+        base CONNECTIVITY_OBJECT_TYPE;
+        description "none";
+    }
+    identity CONNECTIVITY_OBJECT_TYPE_CONNECTION_END_POINT {
+        base CONNECTIVITY_OBJECT_TYPE;
+        description "none";
+    }
+    identity CONNECTIVITY_OBJECT_TYPE_SWITCH_CONTROL {
+        base CONNECTIVITY_OBJECT_TYPE;
+        description "none";
+    }
+    identity CONNECTIVITY_OBJECT_TYPE_SWITCH {
+        base CONNECTIVITY_OBJECT_TYPE;
+        description "none";
+    }
+    identity CONNECTIVITY_OBJECT_TYPE_ROUTE {
+        base CONNECTIVITY_OBJECT_TYPE;
+        description "none";
+    }
     typedef service-type {
         type enumeration {
             enum POINT_TO_POINT_CONNECTIVITY {
@@ -673,6 +707,12 @@ module tapi-connectivity {
             in the connection functions at the edges of the protected domain and an additional serial compound link connection between these connection functions.
             The determination of a fault condition on a serial compound link connection within the protected domain can be performed as follows: see enum.";
     }
+    typedef connectivity-object-type {
+        type identityref {
+            base CONNECTIVITY_OBJECT_TYPE;
+        }
+        description "The list of TAPI Connectivity Object types/classes.";
+    }
 
     /**************************
     * package interfaces
@@ -734,7 +774,8 @@ module tapi-connectivity {
                 uses tapi-path-computation:routing-constraint;
                 description "none";
             }
-            container topology-constraint {
+            list topology-constraint {
+                key 'local-id';
                 uses tapi-path-computation:topology-constraint;
                 description "none";
             }
@@ -774,7 +815,8 @@ module tapi-connectivity {
                 uses tapi-path-computation:routing-constraint;
                 description "none";
             }
-            container topology-constraint {
+            list topology-constraint {
+                key 'local-id';
                 uses tapi-path-computation:topology-constraint;
                 description "none";
             }

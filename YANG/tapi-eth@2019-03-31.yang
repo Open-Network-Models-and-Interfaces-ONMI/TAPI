@@ -1431,6 +1431,10 @@ module tapi-eth {
             uses statistical-lm-performance-parameters;
             description "This attribute contains the statistical near end performnace parameters.";
         }
+        container total-counters-near-end-1-lm-parameters {
+            uses total-counters-lm-performance-parameters;
+            description "This attribute contains the results of an on-demand synthetic loss measurement job in the ingress direction.";
+        }
         description "This object class represents the PM current data collected in a pro-active loss measurement job (using 1SL).";
     }
     grouping eth-pro-active-dm-performance-data {
@@ -1449,6 +1453,11 @@ module tapi-eth {
         description "This object class represents the PM current data collected in a pro-active delay measurement job (using DMM/DMR).";
     }
     grouping eth-pro-active-lm-performance-data {
+        leaf bidirectional-uas {
+            type uint64;
+            description "This attribute contains the bidirectional UAS (unavailable seconds) detected in the monitoring interval.
+                range of type : 0..900 for 15min interval or 0..86400 for 24 hr interval.";
+        }
         container statistical-far-end-lm-parameters {
             uses statistical-lm-performance-parameters;
             description "This attribute contains the statistical far end performnace parameters.";
@@ -1457,10 +1466,13 @@ module tapi-eth {
             uses statistical-lm-performance-parameters;
             description "This attribute contains the statistical near end performnace parameters.";
         }
-        leaf bidirectional-uas {
-            type uint64;
-            description "This attribute contains the bidirectional UAS (unavailable seconds) detected in the monitoring interval.
-                range of type : 0..900 for 15min interval or 0..86400 for 24 hr interval.";
+        container total-counters-far-end-lm-parameters {
+            uses total-counters-lm-performance-parameters;
+            description "This attribute contains the results of an on-demand synthetic loss measurement job in the egress direction.";
+        }
+        container total-counters-near-end-lm-parameters {
+            uses total-counters-lm-performance-parameters;
+            description "This attribute contains the results of an on-demand synthetic loss measurement job in the ingress direction.";
         }
         description "This object class represents the PM current data collected in a pro-active loss measurement job (using LMM/LMR or SLM/SLR).";
     }
@@ -1970,7 +1982,36 @@ module tapi-eth {
             description "MEF 35.1:
                 [D8] A SOAM PM Implementation SHOULD support a configurable (in minutes) offset from ToD time for alignment of the start of Measurement Intervals other than the first Measurement Interval.";
         }
-        description "none";
+        leaf flr-availability-delta-time {
+            type uint64;
+            default "1";
+            description "none";
+        }
+        leaf flr-availability-threshold {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            default "0.1";
+            description "Frame loss ratio threshold to be used in evaluating the Available/Unavailable state of each time interval (as specified by Availability Delta Time).
+                MEF 35.1:
+                [R81]/[CR61] A SOAM PM Implementation MUST support a configurable Availability frame loss ratio threshold to be used in evaluating the Available/Unavailable state of each delta-t interval per MEF 10.3
+                [R82]/[CR62] The Availability frame loss ratio threshold range of 0.00 through 1.00 MUST be supported in increments of 0.01.
+                [D33]/[CD18] [O8] The default Availability frame loss ratio threshold SHOULD be 0.1.";
+        }
+        leaf flr-availability-samples {
+            type uint64;
+            default "10";
+            description "Number of consecutive Availability Frame Loss Ratio measurements to be used to determine Available/Unavailable state transitions.
+                MEF 35.1:
+                [R80]/[CR60] [O8] The number range of 1 through 10 MUST be supported for the configurable number of consecutive Availability flr measurements to be used to determine Available/Unavailable state transitions.
+                This parameter is equivalent to the Availability parameter of n as specified by MEF 10.3.
+                [D32]/[CD17] [O8] The default number of n for Availability SHOULD be 10.";
+        }
+        description "Time length over which each Availability Frame Loss Ratio value is calculated. This parameter allows to generalize SES and UAS.
+            MEF 35.1:
+            [R78]/[CR58] [O8] A SOAM PM Implementation MUST support a configurable parameter for the length of time over which each Availability flr value is calculated, with a range of 1s – 300s.  This parameter is equivalent to delta-t as specified by MEF 10.3.
+            [R79]/[CR59] [O8] The length of time over which each Availability flr value is calculated (delta-t) MUST be an integer multiple of the interval between each SLM/1SL frame transmission.
+            [D31]/[CD16] [O8] The default length of time over which each Availability flr value is calculated SHOULD be 1s.";
     }
     grouping eth-pro-active-1-dm-source-performance-data {
         description "This object class represents the PM current data collected in a pro-active delay measurement job (using 1DM), on the source or controller MEP.";
@@ -2370,15 +2411,39 @@ module tapi-eth {
     }
     identity ETH_PM_PARAMETER_NAME_MINIMUM_FRAME_DELAY_VARIATION {
         base ETH_PM_PARAMETER_NAME;
-        description "none";
+        description "This attribute contains the minimum frame delay variation measured in units of ns (nano second, 1x10e-9 seconds).
+            Y.1563:
+            The 2-point frame delay variation (vk) for an Ethernet frame k between SRC and DST is the difference between the absolute Ethernet frame transfer delay (xk) of frame k and a defined reference Ethernet frame transfer delay, d1,2, between those same MPs:  vk = xk – d1,2.";
     }
     identity ETH_PM_PARAMETER_NAME_MAXIMUM_FRAME_DELAY_VARIATION {
         base ETH_PM_PARAMETER_NAME;
-        description "none";
+        description "This attribute contains the maximum frame delay variation measured in units of ns (nano second, 1x10e-9 seconds).
+            Y.1563:
+            The 2-point frame delay variation (vk) for an Ethernet frame k between SRC and DST is the difference between the absolute Ethernet frame transfer delay (xk) of frame k and a defined reference Ethernet frame transfer delay, d1,2, between those same MPs:  vk = xk – d1,2.";
     }
     identity ETH_PM_PARAMETER_NAME_AVERAGE_FRAME_DELAY_VARIATION {
         base ETH_PM_PARAMETER_NAME;
-        description "none";
+        description "This attribute contains the average frame delay variation measured in units of ns (nano second, 1x10e-9 seconds).
+            Y.1563:
+            The 2-point frame delay variation (vk) for an Ethernet frame k between SRC and DST is the difference between the absolute Ethernet frame transfer delay (xk) of frame k and a defined reference Ethernet frame transfer delay, d1,2, between those same MPs:  vk = xk – d1,2.";
+    }
+    identity ETH_PM_PARAMETER_NAME_MINIMUM_INTER_FRAME_DELAY_VARIATION {
+        base ETH_PM_PARAMETER_NAME;
+        description "This attribute contains the minimum frame delay variation measured in units of ns (nano second, 1x10e-9 seconds).
+            G.8013/Y.1731:
+            Frame delay variation is a measure of the variations in the frame delay between a pair of service frames";
+    }
+    identity ETH_PM_PARAMETER_NAME_MAXIMUM_INTER_FRAME_DELAY_VARIATION {
+        base ETH_PM_PARAMETER_NAME;
+        description "This attribute contains the maximum frame delay variation measured in units of ns (nano second, 1x10e-9 seconds).
+            G.8013/Y.1731:
+            Frame delay variation is a measure of the variations in the frame delay between a pair of service frames";
+    }
+    identity ETH_PM_PARAMETER_NAME_AVERAGE_INTER_FRAME_DELAY_VARIATION {
+        base ETH_PM_PARAMETER_NAME;
+        description "This attribute contains the average frame delay variation measured in units of ns (nano second, 1x10e-9 seconds).
+            G.8013/Y.1731:
+            Frame delay variation is a measure of the variations in the frame delay between a pair of service frames";
     }
     identity ETH_PM_PARAMETER_NAME_MINIMUM_FRAME_LOSS_RATIO {
         base ETH_PM_PARAMETER_NAME;
@@ -2392,11 +2457,11 @@ module tapi-eth {
         base ETH_PM_PARAMETER_NAME;
         description "none";
     }
-    identity ETH_PM_PARAMETER_NAME_SERVERE_ERRORED_SECONDS {
+    identity ETH_PM_PARAMETER_NAME_HIGH_LOSS_INTERVALS {
         base ETH_PM_PARAMETER_NAME;
         description "none";
     }
-    identity ETH_PM_PARAMETER_NAME_UNASSIGNED_ERRORED_SECONDS {
+    identity ETH_PM_PARAMETER_NAME_UNAVAILABLE_INTERVALS {
         base ETH_PM_PARAMETER_NAME;
         description "none";
     }
@@ -2986,15 +3051,39 @@ module tapi-eth {
         }
         leaf minimum-frame-delay-variation {
             type uint64;
-            description "This attribute contains the minimum frame delay variation measured in units of ns (nano second, 1x10e-9 seconds).";
+            description "This attribute contains the minimum frame delay variation measured in units of ns (nano second, 1x10e-9 seconds).
+                Y.1563:
+                The 2-point frame delay variation (vk) for an Ethernet frame k between SRC and DST is the difference between the absolute Ethernet frame transfer delay (xk) of frame k and a defined reference Ethernet frame transfer delay, d1,2, between those same MPs:  vk = xk – d1,2.";
         }
         leaf average-frame-delay-variation {
             type uint64;
-            description "This attribute contains the average frame delay variation measured in units of ns (nano second, 1x10e-9 seconds).";
+            description "This attribute contains the average frame delay variation measured in units of ns (nano second, 1x10e-9 seconds).
+                Y.1563:
+                The 2-point frame delay variation (vk) for an Ethernet frame k between SRC and DST is the difference between the absolute Ethernet frame transfer delay (xk) of frame k and a defined reference Ethernet frame transfer delay, d1,2, between those same MPs:  vk = xk – d1,2.";
         }
         leaf maximum-frame-delay-variation {
             type uint64;
-            description "This attribute contains the maximum frame delay variation measured in units of ns (nano second, 1x10e-9 seconds).";
+            description "This attribute contains the maximum frame delay variation measured in units of ns (nano second, 1x10e-9 seconds).
+                Y.1563:
+                The 2-point frame delay variation (vk) for an Ethernet frame k between SRC and DST is the difference between the absolute Ethernet frame transfer delay (xk) of frame k and a defined reference Ethernet frame transfer delay, d1,2, between those same MPs:  vk = xk – d1,2.";
+        }
+        leaf minimum-inter-frame-delay-variation {
+            type uint64;
+            description "This attribute contains the minimum frame delay variation measured in units of ns (nano second, 1x10e-9 seconds).
+                G.8013/Y.1731:
+                Frame delay variation is a measure of the variations in the frame delay between a pair of service frames";
+        }
+        leaf average-inter-frame-delay-variation {
+            type uint64;
+            description "This attribute contains the average frame delay variation measured in units of ns (nano second, 1x10e-9 seconds).
+                G.8013/Y.1731:
+                Frame delay variation is a measure of the variations in the frame delay between a pair of service frames";
+        }
+        leaf maximum-inter-frame-delay-variation {
+            type uint64;
+            description "This attribute contains the maximum frame delay variation measured in units of ns (nano second, 1x10e-9 seconds).
+                G.8013/Y.1731:
+                Frame delay variation is a measure of the variations in the frame delay between a pair of service frames";
         }
         description "This data type contains the statistical delay measurement performance parameters.";
     }
@@ -3020,14 +3109,17 @@ module tapi-eth {
             description "This attribute contains the maximum frame loss ratio calculated over a period of time.
                 The accuracy of the value is for further study.";
         }
-        leaf ses {
+        leaf hli-count {
             type uint64;
-            description "This attribute contains the SES detected in the monitoring interval.
+            description "A generalized SES.
+                MEF 10.3: The Resiliency attributes are similar to the definitions of Severely Errored Seconds (SES) and Consecutive SES in section 9 and Annex B (respectively) of Y.1563 [6], when delta-t = 1 second.
+                MEF 35.1: Count of High Loss Intervals during the Measurement Interval.
                 range of type : 0..900 for 15min interval or 0..86400 for 24 hr interval.";
         }
-        leaf uas {
+        leaf unavailable-intervals {
             type uint64;
-            description "This attribute contains UAS (unavailable seconds) detected in the monitoring interval.
+            description "A generalized UAS.
+                MEF 35.1: A 32-bit counter reflecting the number of delta-t intervals evaluated as Unavailable (i.e., for which A<Controller, Responder>(delta-t) = 0).
                 range of type : 0..900 for 15min interval or 0..86400 for 24 hr interval.";
         }
         description "This data type contains the statistical loss measurement performance parameters.";

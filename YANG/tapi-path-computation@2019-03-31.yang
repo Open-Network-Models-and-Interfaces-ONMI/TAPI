@@ -175,7 +175,8 @@ module tapi-path-computation {
             uses routing-constraint;
             description "none";
         }
-        container topology-constraint {
+        list topology-constraint {
+            key 'local-id';
             uses topology-constraint;
             description "none";
         }
@@ -185,6 +186,14 @@ module tapi-path-computation {
         }
         container optimization-constraint {
             uses path-optimization-constraint;
+            description "none";
+        }
+        leaf direction {
+            type tapi-common:forwarding-direction;
+            description "none";
+        }
+        leaf layer-protocol-name {
+            type tapi-common:layer-protocol-name;
             description "none";
         }
         uses tapi-common:service-spec;
@@ -252,14 +261,14 @@ module tapi-path-computation {
             type route-objective-function;
             description "none";
         }
-        leaf route-direction {
-            type tapi-common:forwarding-direction;
-            description "none";
-        }
         leaf is-exclusive {
             type boolean;
             default "true";
             description "To distinguish if the resources are to be exclusive to the service";
+        }
+        leaf tolerable-impact {
+            type grades-of-impact;
+            description "Grades of maximum tolerable disruption to traffic.";
         }
         description "none";
     }
@@ -278,66 +287,98 @@ module tapi-path-computation {
         description "none";
     }
     grouping topology-constraint {
-        list include-topology {
+        container include-topology {
             uses tapi-topology:topology-ref;
-            key 'topology-uuid';
             description "none";
         }
-        list avoid-topology {
+        container avoid-topology {
             uses tapi-topology:topology-ref;
-            key 'topology-uuid';
             description "none";
         }
-        list include-path {
+        container include-path {
             uses tapi-path-computation:path-ref;
-            key 'path-uuid';
             description "none";
         }
-        list exclude-path {
+        container exclude-path {
             uses tapi-path-computation:path-ref;
-            key 'path-uuid';
             description "none";
         }
-        list include-link {
+        container include-link {
             uses tapi-topology:link-ref;
-            key 'topology-uuid link-uuid';
             description "This is a loose constraint - that is it is unordered and could be a partial list ";
         }
-        list exclude-link {
+        container exclude-link {
             uses tapi-topology:link-ref;
-            key 'topology-uuid link-uuid';
             description "none";
         }
-        list include-node {
+        container include-node {
             uses tapi-topology:node-ref;
-            key 'topology-uuid node-uuid';
             description "This is a loose constraint - that is it is unordered and could be a partial list";
         }
-        list exclude-node {
+        container exclude-node {
             uses tapi-topology:node-ref;
-            key 'topology-uuid node-uuid';
             description "none";
         }
-        list include-node-edge-point {
+        container include-node-edge-point {
         	uses tapi-topology:node-edge-point-ref;
-        	key 'topology-uuid node-uuid node-edge-point-uuid';
             description "none";
         }
-        list exclude-node-edge-point {
+        container exclude-node-edge-point {
         	uses tapi-topology:node-edge-point-ref;
-        	key 'topology-uuid node-uuid node-edge-point-uuid';
             description "none";
         }
         leaf-list preferred-transport-layer {
             type tapi-common:layer-protocol-name;
             description "soft constraint requested by client to indicate the layer(s) of transport connection that it prefers to carry the service. This could be same as the service layer or one of the supported server layers";
         }
+        leaf constraint-weight {
+            type uint64;
+            description "Zero and positive values: zero means 'strongly required to be included', +1 means 'less strongly required to be included', etc.
+                For example the work/intended route will be calculated considering the topologies which weights are lowest (but not negative).
+                Negative values: -1 means 'strongly required to be excluded', -2 means 'less strongly required to be excluded', etc.";
+        }
+        uses tapi-common:local-class;
         description "none";
     }
 
     /**************************
     * package type-definitions
     **************************/ 
+    identity GRADES_OF_IMPACT {
+        description "none";
+    }
+    identity GRADES_OF_IMPACT_HITLESS {
+        base GRADES_OF_IMPACT;
+        description "none";
+    }
+    identity GRADES_OF_IMPACT_MINOR_IMPACT {
+        base GRADES_OF_IMPACT;
+        description "less or equal to 50ms";
+    }
+    identity GRADES_OF_IMPACT_MAJOR_IMPACT {
+        base GRADES_OF_IMPACT;
+        description "Order of magnitude: several seconds to minutes.";
+    }
+    identity GRADES_OF_IMPACT_LONG_IMPACT {
+        base GRADES_OF_IMPACT;
+        description "Order of magnitude: several minutes to hours.";
+    }
+    identity PATH_COMPUTATION_OBJECT_TYPE {
+    	base tapi-common:OBJECT_TYPE;
+        description "none";
+    }
+    identity PATH_COMPUTATION_OBJECT_TYPE_PATH_COMPUTATION_SERVICE {
+        base PATH_COMPUTATION_OBJECT_TYPE;
+        description "none";
+    }
+    identity PATH_COMPUTATION_OBJECT_TYPE_PATH_COMPUTATION_SERVICE_END_POINT {
+        base PATH_COMPUTATION_OBJECT_TYPE;
+        description "none";
+    }
+    identity PATH_COMPUTATION_OBJECT_TYPE_PATH {
+        base PATH_COMPUTATION_OBJECT_TYPE;
+        description "none";
+    }
     typedef route-objective-function {
         type enumeration {
             enum MIN_WORK_ROUTE_HOP {
@@ -383,6 +424,18 @@ module tapi-path-computation {
             }
         }
         description "none";
+    }
+    typedef grades-of-impact {
+        type identityref {
+            base GRADES_OF_IMPACT;
+        }
+        description "none";
+    }
+    typedef path-computation-object-type {
+        type identityref {
+            base PATH_COMPUTATION_OBJECT_TYPE;
+        }
+        description "The list of TAPI Path Computation Object types/classes.";
     }
 
     /**************************
