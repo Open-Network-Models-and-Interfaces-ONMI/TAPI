@@ -76,6 +76,34 @@ module tapi-eth {
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 6020, RFC 6087 and ONF TAPI UML model
                   <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.0.0/UML>";
     }
+    augment "/tapi-oam:update-oam-service/tapi-oam:input/tapi-oam:oam-service-point" {
+        container eth-oam-mep-service-point {
+            uses eth-oam-mep-service-point;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-oam:create-oam-service/tapi-oam:input/tapi-oam:oam-service-point" {
+        container eth-oam-mep-service-point {
+            uses eth-oam-mep-service-point;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-oam:create-oam-service/tapi-oam:input/tapi-oam:oam-service-point" {
+        container eth-oam-mip-service-point {
+            uses eth-oam-mip-service-point;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-oam:update-oam-service/tapi-oam:input/tapi-oam:oam-service-point" {
+        container eth-oam-mip-service-point {
+            uses eth-oam-mip-service-point;
+            description "none";
+        }
+        description "none";
+    }
     augment "/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point" {
         container eth-connection-end-point-spec {
             uses eth-connection-end-point-spec;
@@ -1453,11 +1481,6 @@ module tapi-eth {
         description "This object class represents the PM current data collected in a pro-active delay measurement job (using DMM/DMR).";
     }
     grouping eth-pro-active-lm-performance-data {
-        leaf bidirectional-uas {
-            type uint64;
-            description "This attribute contains the bidirectional UAS (unavailable seconds) detected in the monitoring interval.
-                range of type : 0..900 for 15min interval or 0..86400 for 24 hr interval.";
-        }
         container statistical-far-end-lm-parameters {
             uses statistical-lm-performance-parameters;
             description "This attribute contains the statistical far end performnace parameters.";
@@ -1473,6 +1496,12 @@ module tapi-eth {
         container total-counters-near-end-lm-parameters {
             uses total-counters-lm-performance-parameters;
             description "This attribute contains the results of an on-demand synthetic loss measurement job in the ingress direction.";
+        }
+        leaf bidir-unavailable-intervals {
+            type uint64;
+            description "A generalized (bidirectional) UAS.
+                MEF 35.1: A 32-bit counter reflecting the number of delta-t intervals evaluated as Unavailable (i.e., for which A<Controller, Responder>(delta-t) = 0).
+                ";
         }
         description "This object class represents the PM current data collected in a pro-active loss measurement job (using LMM/LMR or SLM/SLR).";
     }
@@ -1522,10 +1551,6 @@ module tapi-eth {
         description "none";
     }
     grouping eth-on-demand-lm-performance-data {
-        leaf bidirectional-uas {
-            type uint64;
-            description "This attribute contains the bidirectional UAS (unavailable seconds) detected in the monitoring interval.";
-        }
         container statistical-near-end-lm-parameters {
             uses statistical-lm-performance-parameters;
             description "This attribute contains the statistical near end performnace parameters.";
@@ -1541,6 +1566,12 @@ module tapi-eth {
         container total-counters-far-end-lm-parameters {
             uses total-counters-lm-performance-parameters;
             description "This attribute contains the results of an on-demand synthetic loss measurement job in the egress direction.";
+        }
+        leaf bidir-unavailable-intervals {
+            type uint64;
+            description "A generalized (bidirectional) UAS.
+                MEF 35.1: A 32-bit counter reflecting the number of delta-t intervals evaluated as Unavailable (i.e., for which A<Controller, Responder>(delta-t) = 0).
+                ";
         }
         description "none";
     }
@@ -1985,7 +2016,11 @@ module tapi-eth {
         leaf flr-availability-delta-time {
             type uint64;
             default "1";
-            description "none";
+            description "Time length over which each Availability Frame Loss Ratio value is calculated.
+                MEF 35.1:
+                [R78]/[CR58] [O8] A SOAM PM Implementation MUST support a configurable parameter for the length of time over which each Availability flr value is calculated, with a range of 1s – 300s.  This parameter is equivalent to delta-t as specified by MEF 10.3.
+                [R79]/[CR59] [O8] The length of time over which each Availability flr value is calculated (delta-t) MUST be an integer multiple of the interval between each SLM/1SL frame transmission.
+                [D31]/[CD16] [O8] The default length of time over which each Availability flr value is calculated SHOULD be 1s.";
         }
         leaf flr-availability-threshold {
             type decimal64 {
