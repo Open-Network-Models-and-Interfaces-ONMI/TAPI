@@ -1,5 +1,28 @@
 
 module: tapi-oam
+  augment /tapi-notification:get-notification-list/tapi-notification:output/tapi-notification:notification:
+    +-- alarm-info
+       +--ro is-transient?         boolean
+       +--ro perceived-severity?   perceived-severity-type
+       +--ro probable-cause?       alarm-condition-name
+       +-- service-affecting?    service-affecting
+  augment /tapi-notification:get-notification-list/tapi-notification:output/tapi-notification:notification:
+    +-- tca-info
+       +--ro is-transient?            boolean
+       +-- perceived-severity?      perceived-tca-severity
+       +--ro threshold-parameter
+       |  +--ro pm-parameter-name?    -> ../pm-parameter/pm-parameter-name
+       |  +--ro pm-parameter
+       |  |  +--ro pm-parameter-name?         pm-parameter-name
+       |  |  +--ro pm-parameter-bin-number?   uint64
+       |  |  +--ro pm-parameter-int-value?    uint64
+       |  |  +--ro pm-parameter-real-value?   decimal64
+       |  +--ro threshold-location?   threshold-crossing-qualifier
+       |  +--ro threshold-crossing?   threshold-crossing-type
+       +-- measurement-interval?    tapi-common:date-and-time
+       +-- suspect-interval-flag?   boolean
+       +-- oam-job
+          +-- oam-job-uuid?   -> /tapi-common:context/tapi-oam:oam-context/oam-job/uuid
   augment /tapi-common:context:
     +--rw oam-context
        +--rw oam-service* [uuid]
@@ -133,6 +156,29 @@ module: tapi-oam
        +--ro mep* [meg-uuid mep-local-id]
           +--ro meg-uuid        -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
           +--ro mep-local-id    -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
+  augment /tapi-common:context/tapi-notification:notification-context/tapi-notification:notification:
+    +--ro alarm-info
+       +--ro is-transient?         boolean
+       +--ro perceived-severity?   perceived-severity-type
+       +--ro probable-cause?       alarm-condition-name
+       +--ro service-affecting?    service-affecting
+  augment /tapi-common:context/tapi-notification:notification-context/tapi-notification:notification:
+    +--ro tca-info
+       +--ro is-transient?            boolean
+       +--ro perceived-severity?      perceived-tca-severity
+       +--ro threshold-parameter
+       |  +--ro pm-parameter-name?    -> ../pm-parameter/pm-parameter-name
+       |  +--ro pm-parameter
+       |  |  +--ro pm-parameter-name?         pm-parameter-name
+       |  |  +--ro pm-parameter-bin-number?   uint64
+       |  |  +--ro pm-parameter-int-value?    uint64
+       |  |  +--ro pm-parameter-real-value?   decimal64
+       |  +--ro threshold-location?   threshold-crossing-qualifier
+       |  +--ro threshold-crossing?   threshold-crossing-type
+       +--ro measurement-interval?    tapi-common:date-and-time
+       +--ro suspect-interval-flag?   boolean
+       +--ro oam-job
+          +--ro oam-job-uuid?   -> /tapi-common:context/tapi-oam:oam-context/oam-job/uuid
 
   rpcs:
     +---x create-oam-service
