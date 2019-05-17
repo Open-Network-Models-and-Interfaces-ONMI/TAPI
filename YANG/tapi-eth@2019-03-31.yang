@@ -1154,16 +1154,6 @@ module tapi-eth {
             When number is greater than 1, then the process is to perform a Loopback (LB) Series process (send a series of N LB messages to a particular MEP/MIP. ";
     }
     grouping eth-mep-common {
-        leaf is-cc-enabled {
-            type boolean;
-            description "This attribute models the MI_CC_Enable signal defined in G.8021 and configured as specified in G8051.";
-        }
-        leaf cc-period {
-            type oam-period;
-            description "This attribute models the MI_CC_Period signal defined in G.8021 and configured as specified in G8051. 
-                It is the period at which the CCM message should be sent. 
-                Default values are: 3.33 ms for PS, 100 ms for PM, 1 s for FM.";
-        }
         leaf cc-priority {
             type uint64 {
                 range "0..7";
@@ -1202,10 +1192,6 @@ module tapi-eth {
             This object class models the MEP functions that are common to MEP Sink and MEP Source.";
     }
     grouping eth-mep-sink {
-        leaf-list dm-1-priority {
-            type uint64;
-            description "This attribute indicates the list of 1DM priorities for the MepSink.";
-        }
         leaf ais-priority {
             type uint64 {
                 range "0..7";
@@ -1366,7 +1352,7 @@ module tapi-eth {
     }
     grouping eth-on-demand-measurement-job-control-sink {
         leaf sink-mep-id {
-            type string;
+            type uint64;
             description "none";
         }
         leaf source-address {
@@ -1378,7 +1364,7 @@ module tapi-eth {
     }
     grouping eth-on-demand-measurement-job-control-source {
         leaf controller-mep-id {
-            type string;
+            type uint64;
             description "none";
         }
         leaf oam-pdu-generation-type {
@@ -1406,7 +1392,7 @@ module tapi-eth {
     }
     grouping eth-pro-active-measurement-job-control-sink {
         leaf sink-mep-id {
-            type string;
+            type uint64;
             description "none";
         }
         leaf source-address {
@@ -1423,7 +1409,7 @@ module tapi-eth {
     }
     grouping eth-pro-active-measurement-job-control-source {
         leaf controller-mep-id {
-            type string;
+            type uint64;
             description "none";
         }
         leaf destination-address {
@@ -1663,7 +1649,12 @@ module tapi-eth {
         leaf sent-tst-frames {
             type uint64;
             config false;
-            description "G.8052: This parameter returns the total number of sent TST frames.";
+            description "G.8052: This parameter returns the total number of sent TST frames.
+                Optional in case of sink only MEP.";
+        }
+        leaf rec-tst-frames {
+            type uint64;
+            description "Received TST frames. Optional in case of source only MEP.";
         }
         description "none";
     }
@@ -1954,8 +1945,21 @@ module tapi-eth {
             description "none";
         }
         leaf meg-identifier {
-            type uint64;
-            description "none";
+            type string;
+            description "Optional in case 802.1Q maintenanceAssociationName is used.";
+        }
+        leaf is-cc-enabled {
+            type boolean;
+            description "This attribute models the MI_CC_Enable signal defined in G.8021 and configured as specified in G8051.
+                ITU-T G.8013/Y.1731 (2015)/Amd.1 (11/2018): When ETH-CC transmission is enabled in a MEG,
+                all MEPs are enabled to periodically transmit frames with ETH-CC information to their peer MEPs in the MEG.";
+        }
+        leaf cc-period {
+            type oam-period;
+            description "This attribute models the MI_CC_Period signal defined in G.8021 and configured as specified in G8051. 
+                It is the period at which the CCM message should be sent. 
+                Default values are: 3.33 ms for PS, 100 ms for PM, 1 s for FM.
+                ITU-T G.8013/Y.1731 (2015)/Amd.1 (11/2018): The ETH-CC transmission period is the same for all MEPs in the MEG.";
         }
         description "none";
     }
@@ -3127,22 +3131,19 @@ module tapi-eth {
             type decimal64 {
                 fraction-digits 7;
             }
-            description "This attribute contains the minimum frame loss ratio calculated over a period of time.
-                The accuracy of the value is for further study.";
+            description "This attribute contains the minimum frame loss ratio calculated over a period of time.";
         }
         leaf average-frame-loss-ratio {
             type decimal64 {
                 fraction-digits 7;
             }
-            description "This attribute contains the average frame loss ratio calculated over a period of time.
-                The accuracy of the value is for further study.";
+            description "This attribute contains the average frame loss ratio calculated over a period of time.";
         }
         leaf maximum-frame-loss-ratio {
             type decimal64 {
                 fraction-digits 7;
             }
-            description "This attribute contains the maximum frame loss ratio calculated over a period of time.
-                The accuracy of the value is for further study.";
+            description "This attribute contains the maximum frame loss ratio calculated over a period of time.";
         }
         leaf hli-count {
             type uint64;

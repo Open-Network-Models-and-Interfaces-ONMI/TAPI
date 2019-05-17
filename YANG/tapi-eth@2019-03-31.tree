@@ -3,7 +3,6 @@ module: tapi-eth
   augment /tapi-oam:update-oam-service/tapi-oam:input/tapi-oam:oam-service-point:
     +-- eth-oam-mep-service-point
        +-- eth-mep-sink
-       |  +-- dm-1-priority*             uint64
        |  +-- ais-priority?              uint64
        |  +-- ais-period?                oam-period
        |  +-- is-csf-reported?           boolean
@@ -25,8 +24,6 @@ module: tapi-eth
        |  +-- csf-period?     oam-period
        |  +-- csf-config?     csf-config
        +-- eth-mep-common
-          +-- is-cc-enabled?    boolean
-          +-- cc-period?        oam-period
           +-- cc-priority?      uint64
           +-- lck-period?       oam-period
           +-- lck-priority?     uint64
@@ -35,7 +32,6 @@ module: tapi-eth
   augment /tapi-oam:create-oam-service/tapi-oam:input/tapi-oam:oam-service-point:
     +-- eth-oam-mep-service-point
        +-- eth-mep-sink
-       |  +-- dm-1-priority*             uint64
        |  +-- ais-priority?              uint64
        |  +-- ais-period?                oam-period
        |  +-- is-csf-reported?           boolean
@@ -57,8 +53,6 @@ module: tapi-eth
        |  +-- csf-period?     oam-period
        |  +-- csf-config?     csf-config
        +-- eth-mep-common
-          +-- is-cc-enabled?    boolean
-          +-- cc-period?        oam-period
           +-- cc-priority?      uint64
           +-- lck-period?       oam-period
           +-- lck-priority?     uint64
@@ -197,12 +191,12 @@ module: tapi-eth
        +--ro eth-meg-common
           +--ro meg-level?        uint64
           +--ro client-mel?       uint64
-          +--ro meg-identifier?   uint64
+          +--ro meg-identifier?   string
+          +--ro is-cc-enabled?    boolean
+          +--ro cc-period?        oam-period
   augment /tapi-common:context/tapi-oam:oam-context/tapi-oam:meg/tapi-oam:mep:
     +--ro eth-mep-spec
        +--ro eth-mep-common
-       |  +--ro is-cc-enabled?    boolean
-       |  +--ro cc-period?        oam-period
        |  +--ro cc-priority?      uint64
        |  +--ro lck-period?       oam-period
        |  +--ro lck-priority?     uint64
@@ -214,7 +208,6 @@ module: tapi-eth
        |  +--ro csf-period?     oam-period
        |  +--ro csf-config?     csf-config
        +--ro eth-mep-sink
-       |  +--ro dm-1-priority*             uint64
        |  +--ro ais-priority?              uint64
        |  +--ro ais-period?                oam-period
        |  +--ro is-csf-reported?           boolean
@@ -239,7 +232,7 @@ module: tapi-eth
   augment /tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job:
     +--rw eth-pro-active-single-ended-measurement-job
        +--rw eth-pro-active-measurement-job-control-source
-          +--rw controller-mep-id?             string
+          +--rw controller-mep-id?             uint64
           +--rw destination-address?           mac-address
           +--rw data-tlv-length?               uint64
           +--rw is-enabled?                    boolean
@@ -277,7 +270,7 @@ module: tapi-eth
   augment /tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job:
     +--rw eth-pro-active-dual-ended-measurement-job
        +--rw eth-pro-active-measurement-job-control-source
-       |  +--rw controller-mep-id?             string
+       |  +--rw controller-mep-id?             uint64
        |  +--rw destination-address?           mac-address
        |  +--rw data-tlv-length?               uint64
        |  +--rw is-enabled?                    boolean
@@ -292,7 +285,7 @@ module: tapi-eth
        |  +--rw flr-availability-threshold?    decimal64
        |  +--rw flr-availability-samples?      uint64
        +--rw eth-pro-active-measurement-job-control-sink
-          +--rw sink-mep-id?                   string
+          +--rw sink-mep-id?                   uint64
           +--rw source-address?                mac-address
           +--rw is-enabled?                    boolean
           +--rw priority?                      uint64
@@ -534,7 +527,7 @@ module: tapi-eth
   augment /tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job:
     +--rw eth-on-demand-dual-ended-measurement-job
        +--rw eth-on-demand-measurement-job-control-source
-       |  +--rw controller-mep-id?             string
+       |  +--rw controller-mep-id?             uint64
        |  +--rw oam-pdu-generation-type?       oam-pdu-generation-type
        |  +--rw destination-address?           mac-address
        |  +--rw data-tlv-length?               uint64
@@ -549,7 +542,7 @@ module: tapi-eth
        |  +--rw flr-availability-threshold?    decimal64
        |  +--rw flr-availability-samples?      uint64
        +--rw eth-on-demand-measurement-job-control-sink
-          +--rw sink-mep-id?                   string
+          +--rw sink-mep-id?                   uint64
           +--rw source-address?                mac-address
           +--rw priority?                      uint64
           +--rw test-identifier?               uint64
@@ -564,7 +557,7 @@ module: tapi-eth
   augment /tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job:
     +--rw eth-on-demand-single-ended-measurement-job
        +--rw eth-on-demand-measurement-job-control-source
-          +--rw controller-mep-id?             string
+          +--rw controller-mep-id?             uint64
           +--rw oam-pdu-generation-type?       oam-pdu-generation-type
           +--rw destination-address?           mac-address
           +--rw data-tlv-length?               uint64
@@ -739,6 +732,7 @@ module: tapi-eth
   augment /tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:current-data:
     +--ro eth-test-result-data
        +--ro sent-tst-frames?   uint64
+       +--ro rec-tst-frames?    uint64
   augment /tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:current-data:
     +--ro eth-loopback-result-data
        +--ro rec-lbr-frames?            uint64
@@ -779,7 +773,7 @@ module: tapi-eth
   augment /tapi-oam:create-oam-job/tapi-oam:input:
     +---w eth-pro-active-dual-ended-measurement-job
        +---w eth-pro-active-measurement-job-control-source
-       |  +---w controller-mep-id?             string
+       |  +---w controller-mep-id?             uint64
        |  +---w destination-address?           mac-address
        |  +---w data-tlv-length?               uint64
        |  +---w is-enabled?                    boolean
@@ -794,7 +788,7 @@ module: tapi-eth
        |  +---w flr-availability-threshold?    decimal64
        |  +---w flr-availability-samples?      uint64
        +---w eth-pro-active-measurement-job-control-sink
-          +---w sink-mep-id?                   string
+          +---w sink-mep-id?                   uint64
           +---w source-address?                mac-address
           +---w is-enabled?                    boolean
           +---w priority?                      uint64
@@ -810,7 +804,7 @@ module: tapi-eth
   augment /tapi-oam:create-oam-job/tapi-oam:input:
     +---w eth-pro-active-single-ended-measurement-job
        +---w eth-pro-active-measurement-job-control-source
-          +---w controller-mep-id?             string
+          +---w controller-mep-id?             uint64
           +---w destination-address?           mac-address
           +---w data-tlv-length?               uint64
           +---w is-enabled?                    boolean
@@ -827,7 +821,7 @@ module: tapi-eth
   augment /tapi-oam:create-oam-job/tapi-oam:input:
     +---w eth-on-demand-single-ended-measurement-job
        +---w eth-on-demand-measurement-job-control-source
-          +---w controller-mep-id?             string
+          +---w controller-mep-id?             uint64
           +---w oam-pdu-generation-type?       oam-pdu-generation-type
           +---w destination-address?           mac-address
           +---w data-tlv-length?               uint64
@@ -844,7 +838,7 @@ module: tapi-eth
   augment /tapi-oam:create-oam-job/tapi-oam:input:
     +---w eth-on-demand-dual-ended-measurement-job
        +---w eth-on-demand-measurement-job-control-source
-       |  +---w controller-mep-id?             string
+       |  +---w controller-mep-id?             uint64
        |  +---w oam-pdu-generation-type?       oam-pdu-generation-type
        |  +---w destination-address?           mac-address
        |  +---w data-tlv-length?               uint64
@@ -859,7 +853,7 @@ module: tapi-eth
        |  +---w flr-availability-threshold?    decimal64
        |  +---w flr-availability-samples?      uint64
        +---w eth-on-demand-measurement-job-control-sink
-          +---w sink-mep-id?                   string
+          +---w sink-mep-id?                   uint64
           +---w source-address?                mac-address
           +---w priority?                      uint64
           +---w test-identifier?               uint64
@@ -903,7 +897,7 @@ module: tapi-eth
   augment /tapi-oam:update-oam-job/tapi-oam:input:
     +---w eth-pro-active-dual-ended-measurement-job
        +---w eth-pro-active-measurement-job-control-source
-       |  +---w controller-mep-id?             string
+       |  +---w controller-mep-id?             uint64
        |  +---w destination-address?           mac-address
        |  +---w data-tlv-length?               uint64
        |  +---w is-enabled?                    boolean
@@ -918,7 +912,7 @@ module: tapi-eth
        |  +---w flr-availability-threshold?    decimal64
        |  +---w flr-availability-samples?      uint64
        +---w eth-pro-active-measurement-job-control-sink
-          +---w sink-mep-id?                   string
+          +---w sink-mep-id?                   uint64
           +---w source-address?                mac-address
           +---w is-enabled?                    boolean
           +---w priority?                      uint64
@@ -934,7 +928,7 @@ module: tapi-eth
   augment /tapi-oam:update-oam-job/tapi-oam:input:
     +---w eth-pro-active-single-ended-measurement-job
        +---w eth-pro-active-measurement-job-control-source
-          +---w controller-mep-id?             string
+          +---w controller-mep-id?             uint64
           +---w destination-address?           mac-address
           +---w data-tlv-length?               uint64
           +---w is-enabled?                    boolean
@@ -951,7 +945,7 @@ module: tapi-eth
   augment /tapi-oam:update-oam-job/tapi-oam:input:
     +---w eth-on-demand-dual-ended-measurement-job
        +---w eth-on-demand-measurement-job-control-source
-       |  +---w controller-mep-id?             string
+       |  +---w controller-mep-id?             uint64
        |  +---w oam-pdu-generation-type?       oam-pdu-generation-type
        |  +---w destination-address?           mac-address
        |  +---w data-tlv-length?               uint64
@@ -966,7 +960,7 @@ module: tapi-eth
        |  +---w flr-availability-threshold?    decimal64
        |  +---w flr-availability-samples?      uint64
        +---w eth-on-demand-measurement-job-control-sink
-          +---w sink-mep-id?                   string
+          +---w sink-mep-id?                   uint64
           +---w source-address?                mac-address
           +---w priority?                      uint64
           +---w test-identifier?               uint64
@@ -999,7 +993,7 @@ module: tapi-eth
   augment /tapi-oam:get-oam-job/tapi-oam:output/tapi-oam:oam-job:
     +-- eth-pro-active-dual-ended-measurement-job
        +-- eth-pro-active-measurement-job-control-source
-       |  +-- controller-mep-id?             string
+       |  +-- controller-mep-id?             uint64
        |  +-- destination-address?           mac-address
        |  +-- data-tlv-length?               uint64
        |  +-- is-enabled?                    boolean
@@ -1014,7 +1008,7 @@ module: tapi-eth
        |  +-- flr-availability-threshold?    decimal64
        |  +-- flr-availability-samples?      uint64
        +-- eth-pro-active-measurement-job-control-sink
-          +-- sink-mep-id?                   string
+          +-- sink-mep-id?                   uint64
           +-- source-address?                mac-address
           +-- is-enabled?                    boolean
           +-- priority?                      uint64
@@ -1030,7 +1024,7 @@ module: tapi-eth
   augment /tapi-oam:get-oam-job/tapi-oam:output/tapi-oam:oam-job:
     +-- eth-pro-active-single-ended-measurement-job
        +-- eth-pro-active-measurement-job-control-source
-          +-- controller-mep-id?             string
+          +-- controller-mep-id?             uint64
           +-- destination-address?           mac-address
           +-- data-tlv-length?               uint64
           +-- is-enabled?                    boolean
@@ -1047,7 +1041,7 @@ module: tapi-eth
   augment /tapi-oam:get-oam-job/tapi-oam:output/tapi-oam:oam-job:
     +-- eth-on-demand-single-ended-measurement-job
        +-- eth-on-demand-measurement-job-control-source
-          +-- controller-mep-id?             string
+          +-- controller-mep-id?             uint64
           +-- oam-pdu-generation-type?       oam-pdu-generation-type
           +-- destination-address?           mac-address
           +-- data-tlv-length?               uint64
@@ -1064,7 +1058,7 @@ module: tapi-eth
   augment /tapi-oam:get-oam-job/tapi-oam:output/tapi-oam:oam-job:
     +-- eth-on-demand-dual-ended-measurement-job
        +-- eth-on-demand-measurement-job-control-source
-       |  +-- controller-mep-id?             string
+       |  +-- controller-mep-id?             uint64
        |  +-- oam-pdu-generation-type?       oam-pdu-generation-type
        |  +-- destination-address?           mac-address
        |  +-- data-tlv-length?               uint64
@@ -1079,7 +1073,7 @@ module: tapi-eth
        |  +-- flr-availability-threshold?    decimal64
        |  +-- flr-availability-samples?      uint64
        +-- eth-on-demand-measurement-job-control-sink
-          +-- sink-mep-id?                   string
+          +-- sink-mep-id?                   uint64
           +-- source-address?                mac-address
           +-- priority?                      uint64
           +-- test-identifier?               uint64
@@ -1113,7 +1107,7 @@ module: tapi-eth
   augment /tapi-oam:get-oam-job-list/tapi-oam:output/tapi-oam:oam-job:
     +-- eth-pro-active-dual-ended-measurement-job
        +-- eth-pro-active-measurement-job-control-source
-       |  +-- controller-mep-id?             string
+       |  +-- controller-mep-id?             uint64
        |  +-- destination-address?           mac-address
        |  +-- data-tlv-length?               uint64
        |  +-- is-enabled?                    boolean
@@ -1128,7 +1122,7 @@ module: tapi-eth
        |  +-- flr-availability-threshold?    decimal64
        |  +-- flr-availability-samples?      uint64
        +-- eth-pro-active-measurement-job-control-sink
-          +-- sink-mep-id?                   string
+          +-- sink-mep-id?                   uint64
           +-- source-address?                mac-address
           +-- is-enabled?                    boolean
           +-- priority?                      uint64
@@ -1144,7 +1138,7 @@ module: tapi-eth
   augment /tapi-oam:get-oam-job-list/tapi-oam:output/tapi-oam:oam-job:
     +-- eth-on-demand-single-ended-measurement-job
        +-- eth-on-demand-measurement-job-control-source
-          +-- controller-mep-id?             string
+          +-- controller-mep-id?             uint64
           +-- oam-pdu-generation-type?       oam-pdu-generation-type
           +-- destination-address?           mac-address
           +-- data-tlv-length?               uint64
@@ -1161,7 +1155,7 @@ module: tapi-eth
   augment /tapi-oam:get-oam-job-list/tapi-oam:output/tapi-oam:oam-job:
     +-- eth-on-demand-dual-ended-measurement-job
        +-- eth-on-demand-measurement-job-control-source
-       |  +-- controller-mep-id?             string
+       |  +-- controller-mep-id?             uint64
        |  +-- oam-pdu-generation-type?       oam-pdu-generation-type
        |  +-- destination-address?           mac-address
        |  +-- data-tlv-length?               uint64
@@ -1176,7 +1170,7 @@ module: tapi-eth
        |  +-- flr-availability-threshold?    decimal64
        |  +-- flr-availability-samples?      uint64
        +-- eth-on-demand-measurement-job-control-sink
-          +-- sink-mep-id?                   string
+          +-- sink-mep-id?                   uint64
           +-- source-address?                mac-address
           +-- priority?                      uint64
           +-- test-identifier?               uint64
@@ -1191,7 +1185,6 @@ module: tapi-eth
   augment /tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-service/tapi-oam:oam-service-point:
     +--rw eth-oam-mep-service-point
        +--rw eth-mep-sink
-       |  +--rw dm-1-priority*             uint64
        |  +--rw ais-priority?              uint64
        |  +--rw ais-period?                oam-period
        |  +--rw is-csf-reported?           boolean
@@ -1213,8 +1206,6 @@ module: tapi-eth
        |  +--rw csf-period?     oam-period
        |  +--rw csf-config?     csf-config
        +--rw eth-mep-common
-          +--rw is-cc-enabled?    boolean
-          +--rw cc-period?        oam-period
           +--rw cc-priority?      uint64
           +--rw lck-period?       oam-period
           +--rw lck-priority?     uint64
@@ -1241,7 +1232,9 @@ module: tapi-eth
        +--rw eth-meg-common
           +--rw meg-level?        uint64
           +--rw client-mel?       uint64
-          +--rw meg-identifier?   uint64
+          +--rw meg-identifier?   string
+          +--rw is-cc-enabled?    boolean
+          +--rw cc-period?        oam-period
   augment /tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:current-data:
     +--ro eth-pro-active-1-dm-source-performance-data
   augment /tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:current-data/tapi-oam:history-data:
@@ -1819,7 +1812,9 @@ module: tapi-eth
        +-- eth-meg-common
           +-- meg-level?        uint64
           +-- client-mel?       uint64
-          +-- meg-identifier?   uint64
+          +-- meg-identifier?   string
+          +-- is-cc-enabled?    boolean
+          +-- cc-period?        oam-period
   augment /tapi-oam:get-oam-service-list/tapi-oam:output/tapi-oam:oam-service:
     +-- eth-oam-service
        +-- eth-cfm-maintenance-domain
@@ -1837,7 +1832,9 @@ module: tapi-eth
        +-- eth-meg-common
           +-- meg-level?        uint64
           +-- client-mel?       uint64
-          +-- meg-identifier?   uint64
+          +-- meg-identifier?   string
+          +-- is-cc-enabled?    boolean
+          +-- cc-period?        oam-period
   augment /tapi-oam:create-oam-service/tapi-oam:input/tapi-oam:oam-service-point:
     +-- eth-oam-service
        +-- eth-cfm-maintenance-domain
@@ -1855,7 +1852,9 @@ module: tapi-eth
        +-- eth-meg-common
           +-- meg-level?        uint64
           +-- client-mel?       uint64
-          +-- meg-identifier?   uint64
+          +-- meg-identifier?   string
+          +-- is-cc-enabled?    boolean
+          +-- cc-period?        oam-period
   augment /tapi-oam:update-oam-service/tapi-oam:output/tapi-oam:oam-service:
     +-- eth-oam-service
        +-- eth-cfm-maintenance-domain
@@ -1873,7 +1872,9 @@ module: tapi-eth
        +-- eth-meg-common
           +-- meg-level?        uint64
           +-- client-mel?       uint64
-          +-- meg-identifier?   uint64
+          +-- meg-identifier?   string
+          +-- is-cc-enabled?    boolean
+          +-- cc-period?        oam-period
   augment /tapi-oam:create-oam-service/tapi-oam:output/tapi-oam:oam-service:
     +-- eth-oam-service
        +-- eth-cfm-maintenance-domain
@@ -1891,7 +1892,9 @@ module: tapi-eth
        +-- eth-meg-common
           +-- meg-level?        uint64
           +-- client-mel?       uint64
-          +-- meg-identifier?   uint64
+          +-- meg-identifier?   string
+          +-- is-cc-enabled?    boolean
+          +-- cc-period?        oam-period
   augment /tapi-oam:update-oam-service/tapi-oam:input/tapi-oam:oam-service-point:
     +-- eth-oam-service
        +-- eth-cfm-maintenance-domain
@@ -1909,7 +1912,9 @@ module: tapi-eth
        +-- eth-meg-common
           +-- meg-level?        uint64
           +-- client-mel?       uint64
-          +-- meg-identifier?   uint64
+          +-- meg-identifier?   string
+          +-- is-cc-enabled?    boolean
+          +-- cc-period?        oam-period
   augment /tapi-oam:get-oam-service/tapi-oam:output/tapi-oam:oam-service/tapi-oam:oam-service-point:
     +-- eth-oam-mip-service-point
        +-- eth-mip-common
@@ -1917,7 +1922,6 @@ module: tapi-eth
   augment /tapi-oam:get-oam-service/tapi-oam:output/tapi-oam:oam-service/tapi-oam:oam-service-point:
     +-- eth-oam-mep-service-point
        +-- eth-mep-sink
-       |  +-- dm-1-priority*             uint64
        |  +-- ais-priority?              uint64
        |  +-- ais-period?                oam-period
        |  +-- is-csf-reported?           boolean
@@ -1939,8 +1943,6 @@ module: tapi-eth
        |  +-- csf-period?     oam-period
        |  +-- csf-config?     csf-config
        +-- eth-mep-common
-          +-- is-cc-enabled?    boolean
-          +-- cc-period?        oam-period
           +-- cc-priority?      uint64
           +-- lck-period?       oam-period
           +-- lck-priority?     uint64
@@ -1953,7 +1955,6 @@ module: tapi-eth
   augment /tapi-oam:get-oam-service-list/tapi-oam:output/tapi-oam:oam-service/tapi-oam:oam-service-point:
     +-- eth-oam-mep-service-point
        +-- eth-mep-sink
-       |  +-- dm-1-priority*             uint64
        |  +-- ais-priority?              uint64
        |  +-- ais-period?                oam-period
        |  +-- is-csf-reported?           boolean
@@ -1975,8 +1976,6 @@ module: tapi-eth
        |  +-- csf-period?     oam-period
        |  +-- csf-config?     csf-config
        +-- eth-mep-common
-          +-- is-cc-enabled?    boolean
-          +-- cc-period?        oam-period
           +-- cc-priority?      uint64
           +-- lck-period?       oam-period
           +-- lck-priority?     uint64
@@ -1989,7 +1988,6 @@ module: tapi-eth
   augment /tapi-oam:create-oam-service/tapi-oam:output/tapi-oam:oam-service/tapi-oam:oam-service-point:
     +-- eth-oam-mep-service-point
        +-- eth-mep-sink
-       |  +-- dm-1-priority*             uint64
        |  +-- ais-priority?              uint64
        |  +-- ais-period?                oam-period
        |  +-- is-csf-reported?           boolean
@@ -2011,8 +2009,6 @@ module: tapi-eth
        |  +-- csf-period?     oam-period
        |  +-- csf-config?     csf-config
        +-- eth-mep-common
-          +-- is-cc-enabled?    boolean
-          +-- cc-period?        oam-period
           +-- cc-priority?      uint64
           +-- lck-period?       oam-period
           +-- lck-priority?     uint64
@@ -2025,7 +2021,6 @@ module: tapi-eth
   augment /tapi-oam:get-oam-service-point/tapi-oam:output/tapi-oam:oam-service-point:
     +-- eth-oam-mep-service-point
        +-- eth-mep-sink
-       |  +-- dm-1-priority*             uint64
        |  +-- ais-priority?              uint64
        |  +-- ais-period?                oam-period
        |  +-- is-csf-reported?           boolean
@@ -2047,8 +2042,6 @@ module: tapi-eth
        |  +-- csf-period?     oam-period
        |  +-- csf-config?     csf-config
        +-- eth-mep-common
-          +-- is-cc-enabled?    boolean
-          +-- cc-period?        oam-period
           +-- cc-priority?      uint64
           +-- lck-period?       oam-period
           +-- lck-priority?     uint64
@@ -2061,7 +2054,6 @@ module: tapi-eth
   augment /tapi-oam:create-oam-service-point/tapi-oam:output/tapi-oam:oam-service-point:
     +-- eth-oam-mep-service-point
        +-- eth-mep-sink
-       |  +-- dm-1-priority*             uint64
        |  +-- ais-priority?              uint64
        |  +-- ais-period?                oam-period
        |  +-- is-csf-reported?           boolean
@@ -2083,8 +2075,6 @@ module: tapi-eth
        |  +-- csf-period?     oam-period
        |  +-- csf-config?     csf-config
        +-- eth-mep-common
-          +-- is-cc-enabled?    boolean
-          +-- cc-period?        oam-period
           +-- cc-priority?      uint64
           +-- lck-period?       oam-period
           +-- lck-priority?     uint64
@@ -2097,7 +2087,6 @@ module: tapi-eth
   augment /tapi-oam:update-oam-service-point/tapi-oam:output/tapi-oam:oam-service-point:
     +-- eth-oam-mep-service-point
        +-- eth-mep-sink
-       |  +-- dm-1-priority*             uint64
        |  +-- ais-priority?              uint64
        |  +-- ais-period?                oam-period
        |  +-- is-csf-reported?           boolean
@@ -2119,8 +2108,6 @@ module: tapi-eth
        |  +-- csf-period?     oam-period
        |  +-- csf-config?     csf-config
        +-- eth-mep-common
-          +-- is-cc-enabled?    boolean
-          +-- cc-period?        oam-period
           +-- cc-priority?      uint64
           +-- lck-period?       oam-period
           +-- lck-priority?     uint64
@@ -2147,12 +2134,12 @@ module: tapi-eth
        +-- eth-meg-common
           +-- meg-level?        uint64
           +-- client-mel?       uint64
-          +-- meg-identifier?   uint64
+          +-- meg-identifier?   string
+          +-- is-cc-enabled?    boolean
+          +-- cc-period?        oam-period
   augment /tapi-oam:get-meg/tapi-oam:output/tapi-oam:meg/tapi-oam:mep:
     +--ro eth-mep-spec
        +--ro eth-mep-common
-       |  +--ro is-cc-enabled?    boolean
-       |  +--ro cc-period?        oam-period
        |  +--ro cc-priority?      uint64
        |  +--ro lck-period?       oam-period
        |  +--ro lck-priority?     uint64
@@ -2164,7 +2151,6 @@ module: tapi-eth
        |  +--ro csf-period?     oam-period
        |  +--ro csf-config?     csf-config
        +--ro eth-mep-sink
-       |  +--ro dm-1-priority*             uint64
        |  +--ro ais-priority?              uint64
        |  +--ro ais-period?                oam-period
        |  +--ro is-csf-reported?           boolean
@@ -2236,7 +2222,7 @@ module: tapi-eth
   augment /tapi-oam:create-oam-job/tapi-oam:output/tapi-oam:oam-job:
     +-- eth-on-demand-dual-ended-measurement-job
        +-- eth-on-demand-measurement-job-control-source
-       |  +-- controller-mep-id?             string
+       |  +-- controller-mep-id?             uint64
        |  +-- oam-pdu-generation-type?       oam-pdu-generation-type
        |  +-- destination-address?           mac-address
        |  +-- data-tlv-length?               uint64
@@ -2251,7 +2237,7 @@ module: tapi-eth
        |  +-- flr-availability-threshold?    decimal64
        |  +-- flr-availability-samples?      uint64
        +-- eth-on-demand-measurement-job-control-sink
-          +-- sink-mep-id?                   string
+          +-- sink-mep-id?                   uint64
           +-- source-address?                mac-address
           +-- priority?                      uint64
           +-- test-identifier?               uint64
@@ -2266,7 +2252,7 @@ module: tapi-eth
   augment /tapi-oam:create-oam-job/tapi-oam:output/tapi-oam:oam-job:
     +-- eth-pro-active-dual-ended-measurement-job
        +-- eth-pro-active-measurement-job-control-source
-       |  +-- controller-mep-id?             string
+       |  +-- controller-mep-id?             uint64
        |  +-- destination-address?           mac-address
        |  +-- data-tlv-length?               uint64
        |  +-- is-enabled?                    boolean
@@ -2281,7 +2267,7 @@ module: tapi-eth
        |  +-- flr-availability-threshold?    decimal64
        |  +-- flr-availability-samples?      uint64
        +-- eth-pro-active-measurement-job-control-sink
-          +-- sink-mep-id?                   string
+          +-- sink-mep-id?                   uint64
           +-- source-address?                mac-address
           +-- is-enabled?                    boolean
           +-- priority?                      uint64
@@ -2297,7 +2283,7 @@ module: tapi-eth
   augment /tapi-oam:create-oam-job/tapi-oam:output/tapi-oam:oam-job:
     +-- eth-pro-active-single-ended-measurement-job
        +-- eth-pro-active-measurement-job-control-source
-          +-- controller-mep-id?             string
+          +-- controller-mep-id?             uint64
           +-- destination-address?           mac-address
           +-- data-tlv-length?               uint64
           +-- is-enabled?                    boolean
@@ -2314,7 +2300,7 @@ module: tapi-eth
   augment /tapi-oam:create-oam-job/tapi-oam:output/tapi-oam:oam-job:
     +-- eth-on-demand-single-ended-measurement-job
        +-- eth-on-demand-measurement-job-control-source
-          +-- controller-mep-id?             string
+          +-- controller-mep-id?             uint64
           +-- oam-pdu-generation-type?       oam-pdu-generation-type
           +-- destination-address?           mac-address
           +-- data-tlv-length?               uint64
@@ -2331,7 +2317,7 @@ module: tapi-eth
   augment /tapi-oam:update-oam-job/tapi-oam:output/tapi-oam:oam-job:
     +-- eth-on-demand-single-ended-measurement-job
        +-- eth-on-demand-measurement-job-control-source
-          +-- controller-mep-id?             string
+          +-- controller-mep-id?             uint64
           +-- oam-pdu-generation-type?       oam-pdu-generation-type
           +-- destination-address?           mac-address
           +-- data-tlv-length?               uint64
@@ -2348,7 +2334,7 @@ module: tapi-eth
   augment /tapi-oam:update-oam-job/tapi-oam:output/tapi-oam:oam-job:
     +-- eth-pro-active-dual-ended-measurement-job
        +-- eth-pro-active-measurement-job-control-source
-       |  +-- controller-mep-id?             string
+       |  +-- controller-mep-id?             uint64
        |  +-- destination-address?           mac-address
        |  +-- data-tlv-length?               uint64
        |  +-- is-enabled?                    boolean
@@ -2363,7 +2349,7 @@ module: tapi-eth
        |  +-- flr-availability-threshold?    decimal64
        |  +-- flr-availability-samples?      uint64
        +-- eth-pro-active-measurement-job-control-sink
-          +-- sink-mep-id?                   string
+          +-- sink-mep-id?                   uint64
           +-- source-address?                mac-address
           +-- is-enabled?                    boolean
           +-- priority?                      uint64
@@ -2379,7 +2365,7 @@ module: tapi-eth
   augment /tapi-oam:update-oam-job/tapi-oam:output/tapi-oam:oam-job:
     +-- eth-on-demand-dual-ended-measurement-job
        +-- eth-on-demand-measurement-job-control-source
-       |  +-- controller-mep-id?             string
+       |  +-- controller-mep-id?             uint64
        |  +-- oam-pdu-generation-type?       oam-pdu-generation-type
        |  +-- destination-address?           mac-address
        |  +-- data-tlv-length?               uint64
@@ -2394,7 +2380,7 @@ module: tapi-eth
        |  +-- flr-availability-threshold?    decimal64
        |  +-- flr-availability-samples?      uint64
        +-- eth-on-demand-measurement-job-control-sink
-          +-- sink-mep-id?                   string
+          +-- sink-mep-id?                   uint64
           +-- source-address?                mac-address
           +-- priority?                      uint64
           +-- test-identifier?               uint64
@@ -2409,7 +2395,7 @@ module: tapi-eth
   augment /tapi-oam:update-oam-job/tapi-oam:output/tapi-oam:oam-job:
     +-- eth-pro-active-single-ended-measurement-job
        +-- eth-pro-active-measurement-job-control-source
-          +-- controller-mep-id?             string
+          +-- controller-mep-id?             uint64
           +-- destination-address?           mac-address
           +-- data-tlv-length?               uint64
           +-- is-enabled?                    boolean
@@ -2437,7 +2423,7 @@ module: tapi-eth
   augment /tapi-oam:update-oam-job/tapi-oam:input:
     +---w eth-on-demand-single-ended-measurement-job
        +---w eth-on-demand-measurement-job-control-source
-          +---w controller-mep-id?             string
+          +---w controller-mep-id?             uint64
           +---w oam-pdu-generation-type?       oam-pdu-generation-type
           +---w destination-address?           mac-address
           +---w data-tlv-length?               uint64
@@ -2454,7 +2440,7 @@ module: tapi-eth
   augment /tapi-oam:get-oam-job-list/tapi-oam:output/tapi-oam:oam-job:
     +-- eth-pro-active-single-ended-measurement-job
        +-- eth-pro-active-measurement-job-control-source
-          +-- controller-mep-id?             string
+          +-- controller-mep-id?             uint64
           +-- destination-address?           mac-address
           +-- data-tlv-length?               uint64
           +-- is-enabled?                    boolean
@@ -2575,7 +2561,6 @@ module: tapi-eth
   augment /tapi-oam:update-oam-service/tapi-oam:output/tapi-oam:oam-service/tapi-oam:oam-service-point:
     +-- eth-oam-mep-service-point
        +-- eth-mep-sink
-       |  +-- dm-1-priority*             uint64
        |  +-- ais-priority?              uint64
        |  +-- ais-period?                oam-period
        |  +-- is-csf-reported?           boolean
@@ -2597,8 +2582,6 @@ module: tapi-eth
        |  +-- csf-period?     oam-period
        |  +-- csf-config?     csf-config
        +-- eth-mep-common
-          +-- is-cc-enabled?    boolean
-          +-- cc-period?        oam-period
           +-- cc-priority?      uint64
           +-- lck-period?       oam-period
           +-- lck-priority?     uint64
