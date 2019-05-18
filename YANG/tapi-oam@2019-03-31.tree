@@ -1,28 +1,5 @@
 
 module: tapi-oam
-  augment /tapi-notification:get-notification-list/tapi-notification:output/tapi-notification:notification:
-    +-- alarm-info
-       +--ro is-transient?         boolean
-       +--ro perceived-severity?   perceived-severity-type
-       +--ro probable-cause?       alarm-condition-name
-       +-- service-affecting?    service-affecting
-  augment /tapi-notification:get-notification-list/tapi-notification:output/tapi-notification:notification:
-    +-- tca-info
-       +--ro is-transient?            boolean
-       +-- perceived-severity?      perceived-tca-severity
-       +--ro threshold-parameter
-       |  +--ro pm-parameter-name?    -> ../pm-parameter/pm-parameter-name
-       |  +--ro pm-parameter
-       |  |  +--ro pm-parameter-name?         pm-parameter-name
-       |  |  +--ro pm-parameter-bin-number?   uint64
-       |  |  +--ro pm-parameter-int-value?    uint64
-       |  |  +--ro pm-parameter-real-value?   decimal64
-       |  +--ro threshold-location?   threshold-crossing-qualifier
-       |  +--ro threshold-crossing?   threshold-crossing-type
-       +-- measurement-interval?    tapi-common:date-and-time
-       +-- suspect-interval-flag?   boolean
-       +-- oam-job
-          +-- oam-job-uuid?   -> /tapi-common:context/tapi-oam:oam-context/oam-job/uuid
   augment /tapi-common:context:
     +--rw oam-context
        +--rw oam-service* [uuid]
@@ -127,15 +104,18 @@ module: tapi-oam
        +--rw oam-profile* [uuid]
           +--rw pm-threshold-data* [local-id]
           |  +--rw applicable-job-type*   oam-job-type
-          |  +--rw threshold-parameter* [pm-parameter-name threshold-location threshold-crossing]
-          |  |  +--rw pm-parameter-name     -> ../pm-parameter/pm-parameter-name
-          |  |  +--rw pm-parameter
-          |  |  |  +--rw pm-parameter-name?         pm-parameter-name
-          |  |  |  +--rw pm-parameter-bin-number?   uint64
+          |  +--rw threshold-parameter* [pm-parameter-name threshold-location]
+          |  |  +--rw pm-parameter-name          pm-parameter-name
+          |  |  +--rw threshold-location         threshold-crossing-qualifier
+          |  |  +--rw pm-parameter-above-thrs
           |  |  |  +--rw pm-parameter-int-value?    uint64
           |  |  |  +--rw pm-parameter-real-value?   decimal64
-          |  |  +--rw threshold-location    threshold-crossing-qualifier
-          |  |  +--rw threshold-crossing    threshold-crossing-type
+          |  |  +--rw pm-parameter-below-thrs
+          |  |  |  +--rw pm-parameter-int-value?    uint64
+          |  |  |  +--rw pm-parameter-real-value?   decimal64
+          |  |  +--rw pm-parameter-clear-thrs
+          |  |     +--rw pm-parameter-int-value?    uint64
+          |  |     +--rw pm-parameter-real-value?   decimal64
           |  +--rw granularity-period
           |  |  +--rw value?   uint64
           |  |  +--rw unit?    time-unit
@@ -167,18 +147,47 @@ module: tapi-oam
        +--ro is-transient?            boolean
        +--ro perceived-severity?      perceived-tca-severity
        +--ro threshold-parameter
-       |  +--ro pm-parameter-name?    -> ../pm-parameter/pm-parameter-name
-       |  +--ro pm-parameter
-       |  |  +--ro pm-parameter-name?         pm-parameter-name
-       |  |  +--ro pm-parameter-bin-number?   uint64
+       |  +--ro pm-parameter-name?         pm-parameter-name
+       |  +--ro threshold-location?        threshold-crossing-qualifier
+       |  +--ro pm-parameter-above-thrs
        |  |  +--ro pm-parameter-int-value?    uint64
        |  |  +--ro pm-parameter-real-value?   decimal64
-       |  +--ro threshold-location?   threshold-crossing-qualifier
-       |  +--ro threshold-crossing?   threshold-crossing-type
+       |  +--ro pm-parameter-below-thrs
+       |  |  +--ro pm-parameter-int-value?    uint64
+       |  |  +--ro pm-parameter-real-value?   decimal64
+       |  +--ro pm-parameter-clear-thrs
+       |     +--ro pm-parameter-int-value?    uint64
+       |     +--ro pm-parameter-real-value?   decimal64
        +--ro measurement-interval?    tapi-common:date-and-time
        +--ro suspect-interval-flag?   boolean
        +--ro oam-job
           +--ro oam-job-uuid?   -> /tapi-common:context/tapi-oam:oam-context/oam-job/uuid
+  augment /tapi-notification:get-notification-list/tapi-notification:output/tapi-notification:notification:
+    +-- alarm-info
+       +--ro is-transient?         boolean
+       +--ro perceived-severity?   perceived-severity-type
+       +--ro probable-cause?       alarm-condition-name
+       +-- service-affecting?    service-affecting
+  augment /tapi-notification:get-notification-list/tapi-notification:output/tapi-notification:notification:
+    +-- tca-info
+       +--ro is-transient?            boolean
+       +-- perceived-severity?      perceived-tca-severity
+       +--ro threshold-parameter
+       |  +--ro pm-parameter-name?         pm-parameter-name
+       |  +--ro threshold-location?        threshold-crossing-qualifier
+       |  +--ro pm-parameter-above-thrs
+       |  |  +--ro pm-parameter-int-value?    uint64
+       |  |  +--ro pm-parameter-real-value?   decimal64
+       |  +--ro pm-parameter-below-thrs
+       |  |  +--ro pm-parameter-int-value?    uint64
+       |  |  +--ro pm-parameter-real-value?   decimal64
+       |  +--ro pm-parameter-clear-thrs
+       |     +--ro pm-parameter-int-value?    uint64
+       |     +--ro pm-parameter-real-value?   decimal64
+       +-- measurement-interval?    tapi-common:date-and-time
+       +-- suspect-interval-flag?   boolean
+       +-- oam-job
+          +-- oam-job-uuid?   -> /tapi-common:context/tapi-oam:oam-context/oam-job/uuid
 
   rpcs:
     +---x create-oam-service
@@ -542,15 +551,18 @@ module: tapi-oam
     |  |  +---w oam-profile
     |  |  |  +---w pm-threshold-data* [local-id]
     |  |  |  |  +---w applicable-job-type*   oam-job-type
-    |  |  |  |  +---w threshold-parameter* [pm-parameter-name threshold-location threshold-crossing]
-    |  |  |  |  |  +---w pm-parameter-name     -> ../pm-parameter/pm-parameter-name
-    |  |  |  |  |  +---w pm-parameter
-    |  |  |  |  |  |  +---w pm-parameter-name?         pm-parameter-name
-    |  |  |  |  |  |  +---w pm-parameter-bin-number?   uint64
+    |  |  |  |  +---w threshold-parameter* [pm-parameter-name threshold-location]
+    |  |  |  |  |  +---w pm-parameter-name          pm-parameter-name
+    |  |  |  |  |  +---w threshold-location         threshold-crossing-qualifier
+    |  |  |  |  |  +---w pm-parameter-above-thrs
     |  |  |  |  |  |  +---w pm-parameter-int-value?    uint64
     |  |  |  |  |  |  +---w pm-parameter-real-value?   decimal64
-    |  |  |  |  |  +---w threshold-location    threshold-crossing-qualifier
-    |  |  |  |  |  +---w threshold-crossing    threshold-crossing-type
+    |  |  |  |  |  +---w pm-parameter-below-thrs
+    |  |  |  |  |  |  +---w pm-parameter-int-value?    uint64
+    |  |  |  |  |  |  +---w pm-parameter-real-value?   decimal64
+    |  |  |  |  |  +---w pm-parameter-clear-thrs
+    |  |  |  |  |     +---w pm-parameter-int-value?    uint64
+    |  |  |  |  |     +---w pm-parameter-real-value?   decimal64
     |  |  |  |  +---w granularity-period
     |  |  |  |  |  +---w value?   uint64
     |  |  |  |  |  +---w unit?    time-unit
@@ -714,15 +726,18 @@ module: tapi-oam
     |  +---w input
     |  |  +---w pm-threshold-data* []
     |  |     +---w applicable-job-type*   oam-job-type
-    |  |     +---w threshold-parameter* [pm-parameter-name threshold-location threshold-crossing]
-    |  |     |  +---w pm-parameter-name     -> ../pm-parameter/pm-parameter-name
-    |  |     |  +---w pm-parameter
-    |  |     |  |  +---w pm-parameter-name?         pm-parameter-name
-    |  |     |  |  +---w pm-parameter-bin-number?   uint64
+    |  |     +---w threshold-parameter* [pm-parameter-name threshold-location]
+    |  |     |  +---w pm-parameter-name          pm-parameter-name
+    |  |     |  +---w threshold-location         threshold-crossing-qualifier
+    |  |     |  +---w pm-parameter-above-thrs
     |  |     |  |  +---w pm-parameter-int-value?    uint64
     |  |     |  |  +---w pm-parameter-real-value?   decimal64
-    |  |     |  +---w threshold-location    threshold-crossing-qualifier
-    |  |     |  +---w threshold-crossing    threshold-crossing-type
+    |  |     |  +---w pm-parameter-below-thrs
+    |  |     |  |  +---w pm-parameter-int-value?    uint64
+    |  |     |  |  +---w pm-parameter-real-value?   decimal64
+    |  |     |  +---w pm-parameter-clear-thrs
+    |  |     |     +---w pm-parameter-int-value?    uint64
+    |  |     |     +---w pm-parameter-real-value?   decimal64
     |  |     +---w granularity-period
     |  |     |  +---w value?   uint64
     |  |     |  +---w unit?    time-unit
@@ -735,15 +750,18 @@ module: tapi-oam
     |     +--ro oam-profile
     |        +--ro pm-threshold-data* [local-id]
     |        |  +--ro applicable-job-type*   oam-job-type
-    |        |  +--ro threshold-parameter* [pm-parameter-name threshold-location threshold-crossing]
-    |        |  |  +--ro pm-parameter-name     -> ../pm-parameter/pm-parameter-name
-    |        |  |  +--ro pm-parameter
-    |        |  |  |  +--ro pm-parameter-name?         pm-parameter-name
-    |        |  |  |  +--ro pm-parameter-bin-number?   uint64
+    |        |  +--ro threshold-parameter* [pm-parameter-name threshold-location]
+    |        |  |  +--ro pm-parameter-name          pm-parameter-name
+    |        |  |  +--ro threshold-location         threshold-crossing-qualifier
+    |        |  |  +--ro pm-parameter-above-thrs
     |        |  |  |  +--ro pm-parameter-int-value?    uint64
     |        |  |  |  +--ro pm-parameter-real-value?   decimal64
-    |        |  |  +--ro threshold-location    threshold-crossing-qualifier
-    |        |  |  +--ro threshold-crossing    threshold-crossing-type
+    |        |  |  +--ro pm-parameter-below-thrs
+    |        |  |  |  +--ro pm-parameter-int-value?    uint64
+    |        |  |  |  +--ro pm-parameter-real-value?   decimal64
+    |        |  |  +--ro pm-parameter-clear-thrs
+    |        |  |     +--ro pm-parameter-int-value?    uint64
+    |        |  |     +--ro pm-parameter-real-value?   decimal64
     |        |  +--ro granularity-period
     |        |  |  +--ro value?   uint64
     |        |  |  +--ro unit?    time-unit
@@ -761,15 +779,18 @@ module: tapi-oam
     |  |  +---w oam-profile-id?      string
     |  |  +---w pm-threshold-data* []
     |  |     +---w applicable-job-type*   oam-job-type
-    |  |     +---w threshold-parameter* [pm-parameter-name threshold-location threshold-crossing]
-    |  |     |  +---w pm-parameter-name     -> ../pm-parameter/pm-parameter-name
-    |  |     |  +---w pm-parameter
-    |  |     |  |  +---w pm-parameter-name?         pm-parameter-name
-    |  |     |  |  +---w pm-parameter-bin-number?   uint64
+    |  |     +---w threshold-parameter* [pm-parameter-name threshold-location]
+    |  |     |  +---w pm-parameter-name          pm-parameter-name
+    |  |     |  +---w threshold-location         threshold-crossing-qualifier
+    |  |     |  +---w pm-parameter-above-thrs
     |  |     |  |  +---w pm-parameter-int-value?    uint64
     |  |     |  |  +---w pm-parameter-real-value?   decimal64
-    |  |     |  +---w threshold-location    threshold-crossing-qualifier
-    |  |     |  +---w threshold-crossing    threshold-crossing-type
+    |  |     |  +---w pm-parameter-below-thrs
+    |  |     |  |  +---w pm-parameter-int-value?    uint64
+    |  |     |  |  +---w pm-parameter-real-value?   decimal64
+    |  |     |  +---w pm-parameter-clear-thrs
+    |  |     |     +---w pm-parameter-int-value?    uint64
+    |  |     |     +---w pm-parameter-real-value?   decimal64
     |  |     +---w granularity-period
     |  |     |  +---w value?   uint64
     |  |     |  +---w unit?    time-unit
@@ -782,15 +803,18 @@ module: tapi-oam
     |     +--ro oam-profile
     |        +--ro pm-threshold-data* [local-id]
     |        |  +--ro applicable-job-type*   oam-job-type
-    |        |  +--ro threshold-parameter* [pm-parameter-name threshold-location threshold-crossing]
-    |        |  |  +--ro pm-parameter-name     -> ../pm-parameter/pm-parameter-name
-    |        |  |  +--ro pm-parameter
-    |        |  |  |  +--ro pm-parameter-name?         pm-parameter-name
-    |        |  |  |  +--ro pm-parameter-bin-number?   uint64
+    |        |  +--ro threshold-parameter* [pm-parameter-name threshold-location]
+    |        |  |  +--ro pm-parameter-name          pm-parameter-name
+    |        |  |  +--ro threshold-location         threshold-crossing-qualifier
+    |        |  |  +--ro pm-parameter-above-thrs
     |        |  |  |  +--ro pm-parameter-int-value?    uint64
     |        |  |  |  +--ro pm-parameter-real-value?   decimal64
-    |        |  |  +--ro threshold-location    threshold-crossing-qualifier
-    |        |  |  +--ro threshold-crossing    threshold-crossing-type
+    |        |  |  +--ro pm-parameter-below-thrs
+    |        |  |  |  +--ro pm-parameter-int-value?    uint64
+    |        |  |  |  +--ro pm-parameter-real-value?   decimal64
+    |        |  |  +--ro pm-parameter-clear-thrs
+    |        |  |     +--ro pm-parameter-int-value?    uint64
+    |        |  |     +--ro pm-parameter-real-value?   decimal64
     |        |  +--ro granularity-period
     |        |  |  +--ro value?   uint64
     |        |  |  +--ro unit?    time-unit
@@ -813,15 +837,18 @@ module: tapi-oam
     |     +--ro oam-profile
     |        +--ro pm-threshold-data* [local-id]
     |        |  +--ro applicable-job-type*   oam-job-type
-    |        |  +--ro threshold-parameter* [pm-parameter-name threshold-location threshold-crossing]
-    |        |  |  +--ro pm-parameter-name     -> ../pm-parameter/pm-parameter-name
-    |        |  |  +--ro pm-parameter
-    |        |  |  |  +--ro pm-parameter-name?         pm-parameter-name
-    |        |  |  |  +--ro pm-parameter-bin-number?   uint64
+    |        |  +--ro threshold-parameter* [pm-parameter-name threshold-location]
+    |        |  |  +--ro pm-parameter-name          pm-parameter-name
+    |        |  |  +--ro threshold-location         threshold-crossing-qualifier
+    |        |  |  +--ro pm-parameter-above-thrs
     |        |  |  |  +--ro pm-parameter-int-value?    uint64
     |        |  |  |  +--ro pm-parameter-real-value?   decimal64
-    |        |  |  +--ro threshold-location    threshold-crossing-qualifier
-    |        |  |  +--ro threshold-crossing    threshold-crossing-type
+    |        |  |  +--ro pm-parameter-below-thrs
+    |        |  |  |  +--ro pm-parameter-int-value?    uint64
+    |        |  |  |  +--ro pm-parameter-real-value?   decimal64
+    |        |  |  +--ro pm-parameter-clear-thrs
+    |        |  |     +--ro pm-parameter-int-value?    uint64
+    |        |  |     +--ro pm-parameter-real-value?   decimal64
     |        |  +--ro granularity-period
     |        |  |  +--ro value?   uint64
     |        |  |  +--ro unit?    time-unit
@@ -839,15 +866,18 @@ module: tapi-oam
           +--ro oam-profile* [uuid]
              +--ro pm-threshold-data* [local-id]
              |  +--ro applicable-job-type*   oam-job-type
-             |  +--ro threshold-parameter* [pm-parameter-name threshold-location threshold-crossing]
-             |  |  +--ro pm-parameter-name     -> ../pm-parameter/pm-parameter-name
-             |  |  +--ro pm-parameter
-             |  |  |  +--ro pm-parameter-name?         pm-parameter-name
-             |  |  |  +--ro pm-parameter-bin-number?   uint64
+             |  +--ro threshold-parameter* [pm-parameter-name threshold-location]
+             |  |  +--ro pm-parameter-name          pm-parameter-name
+             |  |  +--ro threshold-location         threshold-crossing-qualifier
+             |  |  +--ro pm-parameter-above-thrs
              |  |  |  +--ro pm-parameter-int-value?    uint64
              |  |  |  +--ro pm-parameter-real-value?   decimal64
-             |  |  +--ro threshold-location    threshold-crossing-qualifier
-             |  |  +--ro threshold-crossing    threshold-crossing-type
+             |  |  +--ro pm-parameter-below-thrs
+             |  |  |  +--ro pm-parameter-int-value?    uint64
+             |  |  |  +--ro pm-parameter-real-value?   decimal64
+             |  |  +--ro pm-parameter-clear-thrs
+             |  |     +--ro pm-parameter-int-value?    uint64
+             |  |     +--ro pm-parameter-real-value?   decimal64
              |  +--ro granularity-period
              |  |  +--ro value?   uint64
              |  |  +--ro unit?    time-unit

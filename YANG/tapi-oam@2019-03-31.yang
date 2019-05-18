@@ -76,20 +76,6 @@ module tapi-oam {
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 6020, RFC 6087 and ONF TAPI UML model
                   <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.0.0/UML>";
     }
-    augment "/tapi-notification:get-notification-list/tapi-notification:output/tapi-notification:notification" {
-        container alarm-info {
-            uses alarm-info;
-            description "none";
-        }
-        description "none";
-    }
-    augment "/tapi-notification:get-notification-list/tapi-notification:output/tapi-notification:notification" {
-        container tca-info {
-            uses tca-info;
-            description "none";
-        }
-        description "none";
-    }
     augment "/tapi-common:context" {
         container oam-context {
             uses oam-context;
@@ -112,6 +98,20 @@ module tapi-oam {
         description "none";
     }
     augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:notification" {
+        container tca-info {
+            uses tca-info;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-notification:get-notification-list/tapi-notification:output/tapi-notification:notification" {
+        container alarm-info {
+            uses alarm-info;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-notification:get-notification-list/tapi-notification:output/tapi-notification:notification" {
         container tca-info {
             uses tca-info;
             description "none";
@@ -144,16 +144,6 @@ module tapi-oam {
         leaf meg-uuid {
             type leafref {
                 path '/tapi-common:context/tapi-oam:oam-context/tapi-oam:meg/tapi-oam:uuid';
-            }
-            description "none";
-        }
-        description "none";
-    }
-    grouping maintenance-entity-ref {
-        uses meg-ref;
-        leaf maintenance-entity-local-id {
-            type leafref {
-                path '/tapi-common:context/tapi-oam:oam-context/tapi-oam:meg/tapi-oam:me/tapi-oam:local-id';
             }
             description "none";
         }
@@ -469,7 +459,7 @@ module tapi-oam {
             description "This attribute allows an PMThresholdData instance to be constrained to specific job types. If an PMThresholdData instance is so configured to be applicable to more than one job type (worst case ALL), only the parameters relevant for the job instance will be used (non-applicable profile parameters will be ignored)";
         }
         list threshold-parameter {
-            key 'pm-parameter-name threshold-location threshold-crossing';
+            key 'pm-parameter-name threshold-location';
             uses threshold-parameter;
             description "none";
         }
@@ -526,7 +516,8 @@ module tapi-oam {
         }
         container oam-job {
             uses oam-job-ref;
-            description "none";
+            description "MEF 35.1
+                Identification of the PM Session for which the TCA Function was configured.";
         }
         description "none";
     }
@@ -627,20 +618,6 @@ module tapi-oam {
         }
         description "none";
     }
-    typedef threshold-crossing-type {
-        type enumeration {
-            enum THRESHOLD_ABOVE {
-                description "none";
-            }
-            enum THRESHOLD_BELOW {
-                description "none";
-            }
-            enum CLEARED {
-                description "none";
-            }
-        }
-        description "none";
-    }
     typedef perceived-tca-severity {
         type enumeration {
             enum WARNING {
@@ -703,23 +680,11 @@ module tapi-oam {
             type pm-parameter-name;
             description "none";
         }
-        leaf pm-parameter-bin-number {
-            type uint64;
+        container pm-parameter-value {
+            uses pm-parameter-value;
             description "none";
         }
-        leaf pm-parameter-int-value {
-            type uint64;
-            description "none";
-        }
-        leaf pm-parameter-real-value {
-            type decimal64 {
-                fraction-digits 7;
-            }
-            description "none";
-        }
-        description "MEF 35.1: For performance metrics that use Measurement Bins, thresholds are defined in terms of an Upper Bin Count (UBC). 
-            The Upper Bin Count of bin k is the total of the counts for bins k and above, i.e. UBC(k) = count of bin (k) + count of bin (k+1) + ... + count of bin (n), where n is the last bin.
-            To configure a threshold, both the bin number, k, and the total count, N, need to be specified - this is represented as (N, k).  A threshold (N, k) is considered to have been crossed when UBC(k) >= N.";
+        description "none";
     }
     typedef pm-parameter-name {
         type identityref {
@@ -728,22 +693,24 @@ module tapi-oam {
         description "none";
     }
     grouping threshold-parameter {
-    	leaf pm-parameter-name {
-    		type leafref {
-    			path "../pm-parameter/pm-parameter-name";
-    		}
-    		description "none";
-    	}
-        container pm-parameter {
-            uses pm-parameter;
+        leaf pm-parameter-name {
+            type pm-parameter-name;
             description "none";
         }
         leaf threshold-location {
             type threshold-crossing-qualifier;
             description "none";
         }
-        leaf threshold-crossing {
-            type threshold-crossing-type;
+        container pm-parameter-above-thrs {
+            uses pm-parameter-value;
+            description "none";
+        }
+        container pm-parameter-below-thrs {
+            uses pm-parameter-value;
+            description "none";
+        }
+        container pm-parameter-clear-thrs {
+            uses pm-parameter-value;
             description "none";
         }
         description "none";
@@ -776,6 +743,19 @@ module tapi-oam {
             base OAM_OBJECT_TYPE;
         }
         description "The list of TAPI Global Object Class types on which Notifications can be raised.";
+    }
+    grouping pm-parameter-value {
+        leaf pm-parameter-int-value {
+            type uint64;
+            description "none";
+        }
+        leaf pm-parameter-real-value {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            description "none";
+        }
+        description "none";
     }
 
     /**************************
