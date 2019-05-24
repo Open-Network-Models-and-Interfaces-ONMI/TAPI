@@ -1,6 +1,159 @@
 # Change Log
 ## Commit Range: 2.1.1..HEAD
 
+__[Changed the multiplicity of Connection.boundingNode to 0..1 from 1](https://github.com/OpenNetworkingFoundation/TAPI/commit/6b1379e25c1e42542ba8f48dcd02c76ac6efbcdf)__
+
+    [karthik-sethuraman](mailto:karthik.sethuraman@necam.com) - Thu, 23 May 2019 13:07:09 -0400
+    
+    
+
+__[Replaced TopologyConstraint pointers from references/leafref to UUID](https://github.com/OpenNetworkingFoundation/TAPI/commit/c26cc818600b0835eeca4f2a636b4e8a2a3d1657)__
+
+    [karthik-sethuraman](mailto:karthik.sethuraman@necam.com) - Tue, 21 May 2019 13:23:15 -0400
+    
+    It was pointed on TAPI call @ 05/21/2019 that Yang 1.0 cannot handle such
+    (leaf)references to read-only entities (in Topology subtree) from an
+    configurable sub-tree (ConnectivityService subtree). So now the attributes are
+    more loosely scoped/typed to any UUID, rather than to specific sub-tree
+    namespace
+
+__[Bug Fix: Updated NotificationChannel attribute to read-only](https://github.com/OpenNetworkingFoundation/TAPI/commit/d73ad976a14beeb24ac33292f7cb20494795a55c)__
+
+    [karthik-sethuraman](mailto:karthik.sethuraman@necam.com) - Mon, 20 May 2019 16:55:09 -0400
+    
+    
+
+__[Bug Fix: Updated Path ServiceEndPoint attributes to RW](https://github.com/OpenNetworkingFoundation/TAPI/commit/ad9a0bf8a9a2621599f0a74e8d5ad31f9d4e886d)__
+
+    [karthik-sethuraman](mailto:karthik.sethuraman@necam.com) - Mon, 20 May 2019 16:42:39 -0400
+    
+    
+
+__[Added Operations/RPCs for retrieving Device &amp; PhysicalSpan](https://github.com/OpenNetworkingFoundation/TAPI/commit/bdcb7214d615d7f07e77f28d444c92a66d2801d8)__
+
+    [karthik-sethuraman](mailto:karthik.sethuraman@necam.com) - Mon, 20 May 2019 15:25:19 -0400
+    
+    
+
+__[Bug Fix: Removed the output parameter for deleteNotifSubscription](https://github.com/OpenNetworkingFoundation/TAPI/commit/8b5f28051e88fa52802b0fd72216b1ef9c28e8b0)__
+
+    [karthik-sethuraman](mailto:karthik.sethuraman@necam.com) - Fri, 17 May 2019 18:36:15 -0400
+    
+    
+
+__[Bug Fix: #418: Removed grouping statement for maintenance-entity-ref](https://github.com/OpenNetworkingFoundation/TAPI/commit/d95f6ddbfc6df5d028faac631242cdce9a6e3e2b)__
+
+    [karthik-sethuraman](mailto:karthik.sethuraman@necam.com) - Fri, 17 May 2019 18:13:19 -0400
+    
+    As MaintenanceEntity class was removed from TAPI-OAM model. Since this yang
+    grouping was inserted manually, it was not cleaned up by the tool
+
+__[Yang and Tree file updates related to previous commit &amp; PRs 416,417](https://github.com/OpenNetworkingFoundation/TAPI/commit/97903bb27bc4741d61084f4696530080210189a0)__
+
+    [karthik-sethuraman](mailto:karthik.sethuraman@necam.com) - Fri, 17 May 2019 17:59:22 -0400
+    
+    
+
+__[Renamed NodeAggregatesNEPs &amp; TopologyExposesNEPs to be more descriptive](https://github.com/OpenNetworkingFoundation/TAPI/commit/8a1667edad99c0e71c683c1535955ff11e125e27)__
+
+    [karthik-sethuraman](mailto:karthik.sethuraman@necam.com) - Fri, 17 May 2019 16:24:14 -0400
+    
+    
+
+__[Adjustments to threshold configuration:](https://github.com/OpenNetworkingFoundation/TAPI/commit/0c13a9fad026630873a450edee2c0539a52d1e41)__
+
+    [amazzini](mailto:mazzini64@tiscali.it) - Wed, 1 May 2019 11:41:48 +0200
+    
+    TAPI OAM, removed ThresholdCrossingType, renamed back ThresholdSettings as
+    PmParameter. ThresholdParameter class, added three new attributes: 
+    pmParameterAboveThrs, pmParameterBelowThrs, pmParameterClearThrs. Extracted
+    from PmParameter the values, now in dedicated PmParameterValue type.
+
+__[Modifications to OAM and Eth:](https://github.com/OpenNetworkingFoundation/TAPI/commit/2b5a3a43cc63028ca02fc34a546a72323af7a61b)__
+
+    [amazzini](mailto:mazzini64@tiscali.it) - Wed, 1 May 2019 00:44:37 +0200
+    
+    TAPI Eth: isCcEnabled and ccPeriod moved from EthMepCommon to EthMegCommon. 
+    TAPI Eth: removed dm1Priority of EthMepSink. TAPI OAM: moved pmParameterName
+    from PmParameter type to ThresholdParameter type. Renamed PmParameterType as
+    ThresholdSettings type, [1..2]. Moved thresholdCrossing to ThresholdSettings
+    type, and renamed as thresholdCrossingType. Removed pmParameterBinNumber.
+    
+
+__[Some modifications](https://github.com/OpenNetworkingFoundation/TAPI/commit/f9129782f6e956c5577df6047ed149b2112a6748)__
+
+    [amazzini](mailto:mazzini64@tiscali.it) - Fri, 26 Apr 2019 02:17:59 +0200
+    
+    Eth: EthMegCommon, megIndentifier is a string, with multiplicity 0..1 since it
+    wouldn’t be present if an 802.1Q MA Name is used instead. Eth: added comment to
+    enableAisInsertion: “Enable/disable AIS PDU transmission” Eth:
+    EthProActiveMeasurementJobControlSource,
+    EthOnDemandMeasurementJobControlSource, controllerMepId from string to integer. 
+    Eth: EthProActiveMeasurementJobControlSink,
+    EthOnDemandMeasurementJobControlSink, sinkMepId from string to integer. Eth:
+    EthTestResultData, added “receivedTstFrames” [0..1] and put optional also
+    sentTstFrames. Oam: minor/diagrams
+    
+
+__[Added comment to TcaInfo, _oamJob pointer](https://github.com/OpenNetworkingFoundation/TAPI/commit/5c35a72a2f65c48753cf0430be93b3019dd5a793)__
+
+    [amazzini](mailto:mazzini64@tiscali.it) - Fri, 19 Apr 2019 18:53:12 +0200
+    
+    
+
+__[Bug Fix: RPC augments for EthOam Mep/Mip ServicePoint](https://github.com/OpenNetworkingFoundation/TAPI/commit/52f1813d3806f8dec86149a7d887132bf11aa86d)__
+
+    [karthik-sethuraman](mailto:karthik.sethuraman@necam.com) - Tue, 16 Apr 2019 13:30:40 -0400
+    
+    
+
+__[Bug Fix: Added specify/augment targets for AlarmInfo/TcaInfo](https://github.com/OpenNetworkingFoundation/TAPI/commit/84668a27dfe6de23cbe7be59366a4552bb937a75)__
+
+    [karthik-sethuraman](mailto:karthik.sethuraman@necam.com) - Tue, 16 Apr 2019 13:08:42 -0400
+    
+    
+
+__[Tree file updates to match YANG from previous commits](https://github.com/OpenNetworkingFoundation/TAPI/commit/c0754a028f21d2940773bf92f658fb2d1ebaad97)__
+
+    [karthik-sethuraman](mailto:karthik.sethuraman@necam.com) - Tue, 16 Apr 2019 12:37:09 -0400
+    
+    
+
+__[Restored the NodeAggregatesNEPs association and marked as deprecated](https://github.com/OpenNetworkingFoundation/TAPI/commit/0a808c0feddf8a74b0c3fbc79ea7cb2d2553da6d)__
+
+    [karthik-sethuraman](mailto:karthik.sethuraman@necam.com) - Tue, 16 Apr 2019 12:35:24 -0400
+    
+    - as agreed on the 04/09 TAPI call, this is a major change to be included in
+    v2.2. This attribute maybe be removed in v3.0
+
+__[Added “input” specify from EthOamMep/Mip to Create/UpdateOamService](https://github.com/OpenNetworkingFoundation/TAPI/commit/a0f459d337d386fdbf68c94c4d008dbf74492b40)__
+
+    [amazzini](mailto:mazzini64@tiscali.it) - Sat, 13 Apr 2019 01:01:38 +0200
+    
+    TAPI OAM and Ethernet: minor diagram adjustments.
+    
+
+__[Added reference to TCAInfo the reference to OamJob](https://github.com/OpenNetworkingFoundation/TAPI/commit/2f3f1ed5a4208ad24a04cba9d5752adc74bc270b)__
+
+    [amazzini](mailto:mazzini64@tiscali.it) - Fri, 12 Apr 2019 19:23:51 +0200
+    
+    
+
+__[Some corrections on Ethernet model](https://github.com/OpenNetworkingFoundation/TAPI/commit/c871068039e98b734acd2f4bceb7b81599b31ffa)__
+
+    [amazzini](mailto:mazzini64@tiscali.it) - Fri, 12 Apr 2019 15:36:43 +0200
+    
+    EthProActiveLmPerformanceData, EthOnDemandLmPerformanceData, replaced 
+    bidirectionaUas with bidirUnavailableIntervals
+    
+    Added missing comment to flrAvailabilityDeltaTime
+    
+
+__[Final updates to v2.2.0-RC1 change logs](https://github.com/OpenNetworkingFoundation/TAPI/commit/5f6527e80955cd048492220bad8caf373180daf6)__
+
+    [karthik-sethuraman](mailto:karthik.sethuraman@necam.com) - Mon, 8 Apr 2019 18:19:42 -0400
+    
+
 __[Updated change log (md &amp; html formats) for commits since v2.1.1](https://github.com/OpenNetworkingFoundation/TAPI/commit/87cddca516e62d34484842ae22ec41e59cc98b82)__
 
     [karthik-sethuraman](mailto:karthik.sethuraman@necam.com) - Mon, 8 Apr 2019 17:59:33 -0400
