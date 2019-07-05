@@ -1,6 +1,95 @@
 # Change Log
 ## Commit Range: 2.1.1..HEAD
 
+__[OAS Files for TAPI 2.2](https://github.com/OpenNetworkingFoundation/TAPI/commit/ad6d1b54eb103831b8480b4af1e39ad90a20b907)__
+
+    [karthik-sethuraman](mailto:karthik.sethuraman@necam.com) - Fri, 5 Jul 2019 08:46:14 -0400
+    EAD -&gt; refs/heads/develop, refs/remotes/origin/develop
+    
+
+__[Removed old OAS files in prep for 2.2-RC3](https://github.com/OpenNetworkingFoundation/TAPI/commit/6976123cae404bb883c8f4e05bfb6b72a1d774a4)__
+
+    [karthik-sethuraman](mailto:karthik.sethuraman@necam.com) - Mon, 1 Jul 2019 11:41:20 -0400
+    
+    
+
+__[UML/YANG/TREE file updates to align &amp; be consistent with PR #441](https://github.com/OpenNetworkingFoundation/TAPI/commit/fff795940f9f3a9cebe8971a2537cb6764228d61)__
+
+    [karthik-sethuraman](mailto:karthik.sethuraman@necam.com) - Fri, 28 Jun 2019 18:22:11 -0400
+    
+    - Updated all UML-Operations/YANG-RPCs to use UUIDs so that it is consistent
+    with the REST CRUD data APIs flavor
+    - used consistent labels (uuid) for the UUID key parameters and fixed parameter
+    type to TapiCommon::Uuid (instead of String)
+    - other minor bug fixes (explicit config=false statements)
+
+__[Yang updates related to PR #428](https://github.com/OpenNetworkingFoundation/TAPI/commit/a7677de36cbcc1106862d506a046d054f570ff53)__
+
+    [Karthik Sethuraman](mailto:karthik.sethuraman@necam.com) - Fri, 28 Jun 2019 14:32:47 -0400
+    
+    - minor UML organization to move atrifacts into appropriate folders
+
+__[UML &amp; corresponding Yang updates to align with PR #439](https://github.com/OpenNetworkingFoundation/TAPI/commit/6655e1388d1f4be0ba3c8b29e4960505588940fb)__
+
+    [Karthik Sethuraman](mailto:karthik.sethuraman@necam.com) - Fri, 28 Jun 2019 10:57:15 -0400
+    
+    - created an CentralFrequencyBand datatype and using that in OtsiCapability pac
+    instead of in-lining as in previous Yang commit
+
+__[PathComputationService uuid, name](https://github.com/OpenNetworkingFoundation/TAPI/commit/8440938381a33559d038d7ad3e614cd7f497caed)__
+
+    [amazzini](mailto:mazzini64@tiscali.it) - Wed, 26 Jun 2019 16:10:50 +0200
+    
+    Issue #433, add &#34;name&#34; as input parameter of create and update 
+    PathComputationService. Issue #340, add &#34;UUID&#34; as input parameter of create 
+    PathComputationService.
+
+__[OAM Service/Job/Profile uuid,name,layerProtocolName](https://github.com/OpenNetworkingFoundation/TAPI/commit/8c47dee14af58affc44b0e54c7be37929b57b115)__
+
+    [amazzini](mailto:mazzini64@tiscali.it) - Wed, 26 Jun 2019 16:06:36 +0200
+    
+    Issue #434, add &#34;layerProtocolName&#34; as input parameter of create OAM 
+    Service/ServicePoint/Job/Profile. Issue #433, add &#34;name&#34; as input parameter of
+    create and update OAM Service/ServicePoint/Job/Profile. Issue #340, add &#34;UUID&#34;
+    as input parameter of create OAM Service/ServicePoint/Job/Profile.
+
+__[ConnectivityService uuid,name,layerProtocolName,direction](https://github.com/OpenNetworkingFoundation/TAPI/commit/58377da11763f33f44411206fa78ce28840cfcf2)__
+
+    [amazzini](mailto:mazzini64@tiscali.it) - Wed, 26 Jun 2019 16:03:22 +0200
+    
+    Issue #425, set “direction” attribute of ConnectivityService as read only. 
+    Issue #434, add &#34;layerProtocolName&#34; as input parameter of create Connectivity
+    Service. Issue #433, add &#34;name&#34; as input parameter of create and update 
+    ConnectivityService. Issue #340, add &#34;UUID&#34; as input parameter of create
+    ConnectivityService.
+
+__[OTSI SIP spec #429](https://github.com/OpenNetworkingFoundation/TAPI/commit/955108a5491bf586f094dc9d398caecb110de1a4)__
+
+    [Arturo Mayoral](mailto:arturo.mayoral.ext@telefonica.com) - Wed, 26 Jun 2019 11:43:19 +0200
+    
+    This pull request replace current definition of the otsi tunability
+    capabilities as two separate lists: supportable-lower-central-frequency and
+    supportable-upper-central-frequency, by a single
+    supportable-central-frequency-spectrum-band. After discussions into the TAPI
+    calls on18/06/2019 and 25/06/2019, the group agreed on defining the tunabilty
+    capabilities of otsi transmitters as a single list of bands defined by the
+    lower and upper central frequencies of the band, and the frequency-contrains
+    which specify the rest of feasible central frequencies within the band. An OTSi
+    transmitter can have associated more than one band (i.e., C and L bands).
+    
+
+__[Updated Ethernet TAPI Alarm Condition (G.8021/G.8051/G.806)](https://github.com/OpenNetworkingFoundation/TAPI/commit/a755b7dec3b99a9f367d3364a5f2cf6475f8ebe8)__
+
+    [amazzini](mailto:mazzini64@tiscali.it) - Fri, 31 May 2019 19:31:05 +0200
+    
+    
+
+__[Change-log for version 2.2.0-RC2](https://github.com/OpenNetworkingFoundation/TAPI/commit/7823102f708488dff2228adb680b8ab88550700a)__
+
+    [karthik-sethuraman](mailto:karthik.sethuraman@necam.com) - Fri, 24 May 2019 08:22:34 -0400
+    
+    
+
 __[Changed the multiplicity of Connection.boundingNode to 0..1 from 1](https://github.com/OpenNetworkingFoundation/TAPI/commit/6b1379e25c1e42542ba8f48dcd02c76ac6efbcdf)__
 
     [karthik-sethuraman](mailto:karthik.sethuraman@necam.com) - Thu, 23 May 2019 13:07:09 -0400
