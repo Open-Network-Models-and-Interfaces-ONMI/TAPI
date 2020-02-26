@@ -1,0 +1,865 @@
+module tapi-streaming {
+    namespace "urn:onf:params:xml:ns:yang:tapi-streaming";
+    prefix tapi-streaming;
+    import tapi-common {
+        prefix tapi-common;
+    }
+    organization "ONF (Open Networking Foundation) IMP Working Group";
+    contact "WG Web: <https://www.open{[]}networking.org/technical-communities/areas/services/> 
+ WG List: mailto: <wg list name>@opennetworking.org>, 
+.WG Chair: your-WG-chair<mailto:your-WG-chair@example.com> 
+Editor: your-name<mailto:your-email@example.com>";
+    description "This module contains TAPI Streaming Model definitions.
+        Source: TapiStreaming.uml
+        Copyright (c) 2018 Open Networking Foundation (ONF). All rights reserved.
+        License: This module is distributed under the Apache License 2.0
+        - The TAPI YANG models included in this TAPI release are a *normative* part of the TAPI SDK.
+        - The YANG specifications have been generated from the corresponding UML model using the [ONF EAGLE UML2YANG mapping tool]
+        <https://github.com/OpenNetworkingFoundation/EagleUmlYang>
+        and further edited manually to comply with the [ONF IISOMI UML2YANG mapping guidelines]
+        <https://wiki.opennetworking.org/display/OIMT/UML+-+YANG+Guidelines>
+        - Status of YANG model artifacts can be determined by referring to the corresponding UML artifacts.
+        As described in the UML models, some artifacts are considered *experimental*, and thus the corresponding YANG artifacts.
+        - The ONF TAPI release process does not guarantee backward compatibility of YANG models across major versions of TAPI releases.
+        The YANG model backward compatibility criteria are outlined in section 11 of <https://tools.ietf.org/html/rfc7950>.
+        YANG models included in this release may not be backward compatible with previous TAPI releases.";
+    revision 2017-11-13 {
+        description "Test revision";
+        reference "Papyrus";
+    }
+    augment "/tapi-common:context/tapi-streaming:stream-context/tapi-streaming:supported-stream-type" {
+        container compacted-log-details {
+            uses compacted-log-details;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-streaming:stream-context/tapi-streaming:available-stream/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body/tapi-streaming:condition-detector" {
+        container alarm-condition-detector-record {
+            uses alarm-condition-detector-record;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-streaming:stream-context/tapi-streaming:available-stream/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
+        container condition-detector-record {
+            uses condition-detector-record;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-streaming:stream-context/tapi-streaming:available-stream/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
+        container any-class {
+            uses any-class;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context" {
+        container stream-admin-context {
+            uses stream-admin-context;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context" {
+        container stream-context {
+            uses stream-context;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-streaming:stream-context/tapi-streaming:supported-stream-type" {
+        container connection-protocol-details {
+            uses connection-protocol-details;
+            description "none";
+        }
+        description "none";
+    }
+    /**************************
+    * package type-definitions
+    **************************/ 
+    identity ALARM_DETECTOR_STATE {
+        description "none";
+    }
+    identity ALARM_DETECTOR_STATE_ACTIVE {
+        base ALARM_DETECTOR_STATE;
+        description "The detector is indicating the operation of the monitored entity is not within acceptable bounds with respect to the specific condition measured.
+            If INTERMITTENT is supported there may be a requirement for persisted unacceptable operation after a problem occurs before ACTIVE is declared as an alternative may be to declare INTERMITTENT.
+            Where INTERMITTENT is supported, ACTIVE indicates the stable presence of a problem.";
+    }
+    identity ALARM_DETECTOR_STATE_INTERMITTENT {
+        base ALARM_DETECTOR_STATE;
+        description "The detector is indicating the operation of the monitored entity is intermittently not within acceptable bounds with respect to the specific condition measured.
+            INTERMITTENT support is optional. Where it is supported there may be a requirement for persisted unacceptable operation after a problem occurs before ACTIVE or INTERMITTENT is declared.";
+    }
+    identity ALARM_DETECTOR_STATE_CLEAR {
+        base ALARM_DETECTOR_STATE;
+        description "The detector is indicating the operation of the monitored entity is within acceptable bounds with respect to the specific condition measured.
+            There may be a requirement for persisted acceptable operation after a problem before clear is declared etc.
+            For a Compacted Log solution a CLEAR alarm will be considered as a DELETE ChangeType in the RecordBody.
+            Hence a CLEAR will also cause a Tombstone record in a Compacted Log solution.";
+    }
+    identity LOG_RECORD_STRATEGY {
+        description "none";
+    }
+    identity LOG_RECORD_STRATEGY_WHOLE_ENTITY_ON_CHANGE {
+        base LOG_RECORD_STRATEGY;
+        description "A record provides a snapshot of a whole entity and a snapshot is taken on each change.
+            The record includes all properties and values whether they have changed or not.";
+    }
+    identity LOG_RECORD_STRATEGY_CHANGE_ONLY {
+        base LOG_RECORD_STRATEGY;
+        description "Each record only provides a view of the changes that have occurred (on a per entity change basis).
+            E.g., the log only includes the attribute that has changed and not other attributes that have not changed.";
+    }
+    identity LOG_RECORD_STRATEGY_WHOLE_ENTITY_PERIODIC {
+        base LOG_RECORD_STRATEGY;
+        description "A snapshot of an entity is recorded periodically regardess of whether there has been change or not.";
+    }
+    identity LOG_STORAGE_STRATEGY {
+        description "none";
+    }
+    identity LOG_STORAGE_STRATEGY_COMPACTED {
+        base LOG_STORAGE_STRATEGY;
+        description "The log uses some mechanism to remove noisey detail whilst enabling the client to achieve eventual consistency (alignment) with current state.";
+    }
+    identity LOG_STORAGE_STRATEGY_TRUNCATED {
+        base LOG_STORAGE_STRATEGY;
+        description "The log only maintains recent records and disposes of old records. 
+            This log does not alone enable the client to achieve alignment with current state.";
+    }
+    identity LOG_STORAGE_STRATEGY_FULL_HISTORY {
+        base LOG_STORAGE_STRATEGY;
+        description "Maintains a history from system initiation with no missing records. 
+            Provides initial state at the begining of the history";
+    }
+    identity LOG_STORAGE_STRATEGY_FULL_HISTORY_WITH_PERIODIC_BASELINE {
+        base LOG_STORAGE_STRATEGY;
+        description "Provides a history with initial state and perioidic/occasional statements of current state at a particular point in time.";
+    }
+    identity OBJECT_CLASS_IDENTIFIER {
+        description "none";
+    }
+    identity OBJECT_CLASS_IDENTIFIER_NODE {
+        base OBJECT_CLASS_IDENTIFIER;
+        description "none";
+    }
+    identity OBJECT_CLASS_IDENTIFIER_CONNECTION {
+        base OBJECT_CLASS_IDENTIFIER;
+        description "none";
+    }
+    identity OBJECT_CLASS_IDENTIFIER_LINK {
+        base OBJECT_CLASS_IDENTIFIER;
+        description "none";
+    }
+    identity OBJECT_CLASS_IDENTIFIER_CONNECTION_END_POINT {
+        base OBJECT_CLASS_IDENTIFIER;
+        description "none";
+    }
+    identity OBJECT_CLASS_IDENTIFIER_CONNECTIVITY_SERVICE {
+        base OBJECT_CLASS_IDENTIFIER;
+        description "none";
+    }
+    identity OBJECT_CLASS_IDENTIFIER_INTER_RULE_GROUP {
+        base OBJECT_CLASS_IDENTIFIER;
+        description "none";
+    }
+    identity OBJECT_CLASS_IDENTIFIER_MAINTENANCE_ENTITY {
+        base OBJECT_CLASS_IDENTIFIER;
+        description "none";
+    }
+    identity OBJECT_CLASS_IDENTIFIER_MAINTENANCE_ENTITY_GROUP {
+        base OBJECT_CLASS_IDENTIFIER;
+        description "none";
+    }
+    identity OBJECT_CLASS_IDENTIFIER_MEG_END_POINT {
+        base OBJECT_CLASS_IDENTIFIER;
+        description "none";
+    }
+    identity OBJECT_CLASS_IDENTIFIER_MEG_INTERMEDIATE_POINT {
+        base OBJECT_CLASS_IDENTIFIER;
+        description "none";
+    }
+    identity OBJECT_CLASS_IDENTIFIER_NODE_EDGE_POINT {
+        base OBJECT_CLASS_IDENTIFIER;
+        description "none";
+    }
+    identity OBJECT_CLASS_IDENTIFIER_OAM_JOB {
+        base OBJECT_CLASS_IDENTIFIER;
+        description "none";
+    }
+    identity OBJECT_CLASS_IDENTIFIER_PATH {
+        base OBJECT_CLASS_IDENTIFIER;
+        description "none";
+    }
+    identity OBJECT_CLASS_IDENTIFIER_NODE_RULE_GROUP {
+        base OBJECT_CLASS_IDENTIFIER;
+        description "none";
+    }
+    identity OBJECT_CLASS_IDENTIFIER_PATH_COMPUTATION_SERVICE {
+        base OBJECT_CLASS_IDENTIFIER;
+        description "none";
+    }
+    identity OBJECT_CLASS_IDENTIFIER_ROUTE {
+        base OBJECT_CLASS_IDENTIFIER;
+        description "none";
+    }
+    identity OBJECT_CLASS_IDENTIFIER_RULE {
+        base OBJECT_CLASS_IDENTIFIER;
+        description "none";
+    }
+    identity OBJECT_CLASS_IDENTIFIER_SERVICE_INTERFACE_POINT {
+        base OBJECT_CLASS_IDENTIFIER;
+        description "none";
+    }
+    identity OBJECT_CLASS_IDENTIFIER_SWITCH {
+        base OBJECT_CLASS_IDENTIFIER;
+        description "none";
+    }
+    identity OBJECT_CLASS_IDENTIFIER_SWITCH_CONTROL {
+        base OBJECT_CLASS_IDENTIFIER;
+        description "none";
+    }
+    identity OBJECT_CLASS_IDENTIFIER_TOPOLOGY {
+        base OBJECT_CLASS_IDENTIFIER;
+        description "none";
+    }
+    identity OBJECT_CLASS_IDENTIFIER_VIRTUAL_NETWORK_SERVICE {
+        base OBJECT_CLASS_IDENTIFIER;
+        description "none";
+    }
+    identity STREAM_STATE {
+        description "none";
+    }
+    identity STREAM_STATE_ALIGNING {
+        base STREAM_STATE;
+        description "The log that underpins the stream is aligning with other backend services and hence may not be providing full service.
+            If events are provided they will be completely valid.";
+    }
+    identity STREAM_STATE_ACTIVE {
+        base STREAM_STATE;
+        description "The stream is operating such that if a client connects records will be provided as per back pressure etc.";
+    }
+    identity STREAM_STATE_PAUSED {
+        base STREAM_STATE;
+        description "Although the stream is available it has been paused by the administrator such that the records are being appended to the log but a new client will not receive any events whilst the stream is paused.";
+    }
+    identity STREAM_STATE_TERMINATED {
+        base STREAM_STATE;
+        description "The stream is essentially no longer available. It will be removed from the AvailableStreams list shortly.";
+    }
+    identity RECORD_TYPE {
+        description "none";
+    }
+    identity RECORD_TYPE_CREATE_UPDATE {
+        base RECORD_TYPE;
+        description "The record includes a create or update.
+            Where there is an update in a non-compacted log the information with be sparse (e.g., a single atttrinbute) and about an entity that is already known.";
+    }
+    identity RECORD_TYPE_DELETE {
+        base RECORD_TYPE;
+        description "The record is about a delete.
+            The record may have a LogRecordHeader and a LogRecordBody but no augmented content.
+            The entityKey should be sufficient to identify the entity to be deleted.
+            Under certain circumstances there may be class content in the LogRecordBody.";
+    }
+    identity RECORD_TYPE_TOMBSTONE {
+        base RECORD_TYPE;
+        description "Used in a Compacted log to remove old records and truncate deletion history.
+            Is only a LogRecordHeader with no LogRecordBody.";
+    }
+    identity SOURCE_PRECISION {
+        description "none";
+    }
+    identity SOURCE_PRECISION_UNKNOWN {
+        base SOURCE_PRECISION;
+        description "none";
+    }
+    identity SOURCE_PRECISION_FREE_RUNNING {
+        base SOURCE_PRECISION;
+        description "The clock at the event source is free-running.
+            The view of time of day at the source may be significantly different from that at other sources.
+            ";
+    }
+    identity SOURCE_PRECISION_SYNCHRONISED {
+        base SOURCE_PRECISION;
+        description "The clock at the event source is appropriately synchronised to the timing master.
+            The view of time of day at the source should be essentially the same as that at other time-synchronized sources.
+            The state of the clock at the event source is not known.
+            The view of time of day at the source is suspect.";
+    }
+    identity SPREAD {
+        description "none";
+    }
+    identity SPREAD_AT {
+        base SPREAD;
+        description "The event occurred at a particular time.";
+    }
+    identity SPREAD_BEFORE {
+        base SPREAD;
+        description "The event occurred before a particular time.";
+    }
+    identity SPREAD_AFTER {
+        base SPREAD;
+        description "The event occurred after a particular time.";
+    }
+    identity SPREAD_BETWEEN {
+        base SPREAD;
+        description "The event occurred between two stated times.";
+    }
+    typedef alarm-detector-state {
+        type identityref {
+            base ALARM_DETECTOR_STATE;
+        }
+        description "The state of the processed boolean alarm detector.
+            The source applies some analysis to the raw detector to determine the state.
+            The processing by the source my vary.";
+    }
+    grouping legacy-properties {
+        leaf perceived-severity {
+            type perceived-severity-type;
+            description "A device will provide an indication of importance for each alarm. 
+                This property indicates the importance.
+                In some cases the severity may change through the life of an active alarm.";
+        }
+        leaf service-affecting {
+            type service-affecting;
+            description "Some devices will indicate, from its very narrow viewpoint, whether service has been impacted or not.
+                This property carries this detail.";
+        }
+        leaf is-acknowledged {
+            type boolean;
+            description "Devices offer a capability to acknowledge alarms (to stop the bells ringing).
+                Often an EMS will offer a similar capability.
+                This property reflects the current acknowledge state.";
+        }
+        leaf-list additional-alarm-info {
+            type string;
+            description "Often, alarms raised by devices have additional information. 
+                This property can be used to convey this.";
+        }
+        description "At this point in the evolution of control solutions LegacyProperties are probably mandatory, however, it is anticipated that as control solutions advance the LegacyProperties will become irrelevant.";
+    }
+    typedef perceived-severity-type {
+        type enumeration {
+            enum CRITICAL {
+                description "The higherst severity of ACTIVE/INTERMITTENT alarm.";
+            }
+            enum MAJOR {
+                description "The middle severity of ACTIVE/INTERMITTENT alarm.";
+            }
+            enum MINOR {
+                description "The lowest severity of ACTIVE/INTERMITTENT alarm.";
+            }
+            enum WARNING {
+                description "An extremely low importance ACTIVE/INTERMITTENT alarm (lowere than MINOR).";
+            }
+            enum CLEARED {
+                description "The severity of a CLEAR where no other severity information is available.";
+            }
+        }
+        description "The values for importance of an ACTIVE, INTERMITTENT or CLEAR alarm.";
+    }
+    typedef service-affecting {
+        type enumeration {
+            enum SERVICE_AFFECTING {
+                description "The condition is believed to impact service.";
+            }
+            enum NOT_SERVICE_AFFECTING {
+                description "The condition is believed to not impact service.";
+            }
+            enum UNKNOWN {
+                description "The service impact of the condition is not known.";
+            }
+        }
+        description "Indicates whether the device considers the condition to be impacting service.
+            Note that the detected condition along with knowledge of the topology and protection provide a more suitable approach.";
+    }
+    typedef log-record-strategy {
+        type identityref {
+            base LOG_RECORD_STRATEGY;
+        }
+        description "Defines the different approaches for logging information about an event covering the log trigger and the log content.";
+    }
+    typedef log-storage-strategy {
+        type identityref {
+            base LOG_STORAGE_STRATEGY;
+        }
+        description "Defines the storage (record retention) approach.";
+    }
+    typedef object-class-identifier {
+        type identityref {
+            base OBJECT_CLASS_IDENTIFIER;
+        }
+        description "The list of TAPI Global Object Class types on which Notifications can be raised.";
+    }
+    typedef stream-state {
+        type identityref {
+            base STREAM_STATE;
+        }
+        description "The state of the available stream.";
+    }
+    grouping approx-date-and-time {
+        leaf primary-time-stamp {
+            type tapi-common:date-and-time;
+            config false;
+            description "Time of the event at the origin where known precisely.
+                Where the event is known to be before particular time, this field records that time.
+                Where the event is known to be after a particular time, this field records that time (this is an unusual case where there is no proposed before time).
+                Where the event is known to have occurred in a time window, this field records the end time (the time before which the event must have occurred).";
+        }
+        leaf start-time-stamp {
+            type tapi-common:date-and-time;
+            config false;
+            description "The time after which the event is known to have occurred when the event is known to have occurred between two times.
+                The primaryTimeStamp provides the end time.";
+        }
+        leaf spread {
+            type spread;
+            config false;
+            description "Indicates the knowledge of the time of occurence of the event.";
+        }
+        leaf source-precesion {
+            type source-precision;
+            config false;
+            description "none";
+        }
+        description "Allows for recording of an aspect of imprecise time.";
+    }
+    typedef record-type {
+        type identityref {
+            base RECORD_TYPE;
+        }
+        description "The type of the record.
+            Used to understand what log content will be present and how to interpret it.
+            For some record types there is special encoding.
+            A ACTIVE alarm and an INTERMITTENT alarm are CREATE_UPDATE.
+            A CLEAR alarm is DELETE with an adjacent TOMBSTONE record.";
+    }
+    typedef source-indicator {
+        type enumeration {
+            enum RESOURCE_OPERATION {
+                description "The event is from the operation of the network resources.
+                    The event source has a relatively fast time characteristic.";
+            }
+            enum MANAGEMENT_OPERATION {
+                description "Event is from a Management operation (slow control).
+                    The event source has a relatively slow time characteristic.";
+            }
+            enum UNKNOWN {
+                description "The origin of the event is not known.";
+            }
+        }
+        description "Source of the event.
+            Use to give some idea of the time characteristics of the event source.";
+    }
+    typedef source-precision {
+        type identityref {
+            base SOURCE_PRECISION;
+        }
+        description "Alternative statements about timing precision at the event source.";
+    }
+    typedef spread {
+        type identityref {
+            base SPREAD;
+        }
+        description "The alterntive time of occurrence statements.";
+    }
+
+    /**************************
+    * package object-classes
+    **************************/ 
+    grouping compacted-log-details {
+        leaf tombstone-retention {
+            type string;
+            config false;
+            description "Time in minutes.
+                The time period for which a Tombstone record will be held in the log from when it was logged. 
+                This provides an adjustment to the essential Compaction strategy such that after the tombstoneRetention period there will be no records about a particular thing that existed but no longer exists.
+                Tombstone retention overrides recordRetention for Tombstones.
+                Key word 'FOREVER' means that Tombstone records will never be removed from the log.
+                Can be adjusted by an administrator (via a separate view) through the life of the stream.";
+        }
+        leaf compaction-delay {
+            type string;
+            config false;
+            description "Time in minutes. 
+                The delay between logging the record and making the record available for compaction.
+                This provides an adjustment to the essential Compaction strategy such that there may be several distinct records for the same thing in the where those records are not older than the Compaction Delay.
+                Can be adjusted by an administrator (via a separate view) through the life of the stream.";
+        }
+        description "Details relevant for a CompactedLog.
+            The essential Compacted Log strategy is to remove historic records about a particular thing such that only the latest record about each thing exists in the log.
+            The essental strategy is refined by the paramters of this structure.";
+    }
+    grouping alarm-condition-detector-record {
+        leaf alarm-detector-state {
+            type alarm-detector-state;
+            config false;
+            description "The state of the detector.
+                The detector state accounts for the time characteristics of the detected condition.";
+        }
+        container legacy-properties {
+            config false;
+            uses legacy-properties;
+            description "Alarm systems of the 20th century were based primarily on local lamps (initially filament bulbs) and bells.
+                Lamps can only be on or off, and bells sounding or not sounding, so alarms were boolean in nature.
+                Where a detctor was essentially multi-state it was converted into multiple boolean statements.
+                The management of the equipments was essentially human only and local only (there were rarely remote systems).
+                The device with the problem was the only possible indicator of importance and it had only three distinct bulbs to illuminate (filament bulbs tend to fail requiring costly replacement).
+                The devices were relatively simple in function and analysis of the detectors was crude.
+                There was only the device to indicate severity
+                The device also could provide the best view as to whether a service was impacted, although clearly it had almost no knowledge.
+                In a modern solution with well connected remote systems that increasingly analyse problems and where there is increasingly 'lights out' building operation, the device's guess at severity etc. is irrelavant.
+                In addition with sophisticated resilience mechanisms, the device cannot make any relevant statement on whether the customer service has been impacted.
+                Likewise, in a world where there were no remote systems and local management was the only practice, alarms had to be locally 'acknowledged'. 
+                Where there are remote systems, per alarm acknowleged is burdensome.
+                However, many solutions and operational practices continue to use the historic schemes.
+                On that basis, the schemes are supported but relegated to optional.";
+        }
+        description "A record of the state of a detector where that detector has two underling states taht are of asymmetric importance.";
+    }
+    grouping condition-detector-record {
+        leaf condition-native-name {
+            type string;
+            config false;
+            description "The name used for the Condition by the source of the information.";
+        }
+        leaf measured-entity-uuid {
+            type tapi-common:uuid;
+            config false;
+            description "The Uuid of the TAPI entity that represents the entity measured at source.
+                If the TAPI entity can not be identified as it cannot be mapped, then this property can be ommitted.";
+        }
+        leaf measured-entity-native-id {
+            type string;
+            config false;
+            description "The identifier (invariant over the life) of the instance of the measured entity at the source.";
+        }
+        leaf condition-normalized-name {
+            type string;
+            config false;
+            description "It is often the case that there is a Condition Name that is commonly used or even standardised that has not been used by the source of the condition. 
+                If this is the case then that common/standard name is provided in via this property.";
+        }
+        leaf measured-entity-class {
+            type object-class-identifier;
+            config false;
+            description "The TAPI class of the measured entity. 
+                If the class can not be identified as it cannot be mapped, then this property can be ommitted.";
+        }
+        leaf detector-uuid {
+            type tapi-common:uuid;
+            config false;
+            description "The Uuid of the TAPI entity that represents the detector.
+                If the TAPI entity can not be identified as it cannot be mapped, then this property can be ommitted.
+                Where the detector is not modelled independently, but instead is a part of the measured entity such that it is identified by a 'local id' built from the UUID of the measured entity and the condition name, then this property may be ommitted.";
+        }
+        leaf detector-native-id {
+            type string;
+            config false;
+            description "The identifier (invariant over the life) of the instance of the detector at the source.";
+        }
+        leaf condition-detector-type {
+            type string;
+            config false;
+            description "Identifies the type of detector.
+                This drives the conditional augmentation. 
+                Some types of detector may not need specific augmentation.
+                The strings will be controlled.
+                Valid values:
+                - AlarmConditionDetector";
+        }
+        description "ConditionDetector represents any monitoring component that assesses properties of something and determines from those properties what conditions are associated with the thing.
+            For example, a thing might be 'too hot' or might be 'unreliable'.
+            The monitor may a multi-state output. 
+            The ConditionDetector lifecycle depends upon the lifecycle of the thing it is monitoring (this is a general OAM model consideration).
+            The entityKey in the AppendLogRecordHeader for a ConditionDetector record is the nativeDetector Id which may be derived from other ids (most robustly, nativeOwningEntityName (to which the detector is associated) + natveConditionName).";
+    }
+    grouping any-class {
+        description "In the final version all classes that can stream will be explicitly associated with the AppendLogRecordBody";
+    }
+    grouping stream-admin-context {
+        list stream-monitor {
+            config false;
+            uses stream-monitor;
+            description "The list of available stream monitors.";
+        }
+        uses tapi-common:global-class;
+        description "Context providing access to stream administration functionality.";
+    }
+    grouping stream-monitor {
+        leaf id-of-last-record-read-from-log {
+            type string;
+            config false;
+            description "The id/key of the last record read from the log by the client stream.
+                The analysis of this value needs to account for stream buffering in the comms layer.";
+        }
+        leaf id-of-last-record-written-to-log {
+            type string;
+            config false;
+            description "The id/key of the last record written to the log. 
+                This is the same value for all clients of the stream.";
+        }
+        leaf available-stream {
+            type leafref {
+                path '/tapi-common:context/tapi-streaming:available-stream/tapi-streaming:connection-address';
+            }
+            config false;
+            description "none";
+        }
+        leaf client-id {
+            type string;
+            config false;
+            description "The id of the connected client.";
+        }
+        leaf last-updated {
+            type tapi-common:date-and-time;
+            config false;
+            description "The date/time when the values provided were recorded.";
+        }
+        leaf client-address {
+            type string;
+            config false;
+            description "The address of the connected client that is being monitored.";
+        }
+        description "Information on the monitoring of the use of a specific AvailableStream.";
+    }
+    grouping connection-protocol-details {
+        leaf-list allowed-connection-protocols {
+            type string;
+            config false;
+            description "Name of the allowed protocol.";
+        }
+        description "Details of the connection protocols available for the specific stream.";
+    }
+    grouping available-stream {
+        leaf connection-address {
+            type string;
+            config false;
+            description "Provides the address for the connection. 
+                The format of the address and attachment mechnism will depend on the connection protocol defined in another attribute of this class.";
+        }
+        leaf stream-state {
+            type stream-state;
+            config false;
+            description "The state of the stream.";
+        }
+        leaf stream-connection-type {
+            type leafref {
+                path '/tapi-common:context/tapi-streaming:supported-sream-type/tapi-streaming:stream-type-id';
+            }
+            config false;
+            description "Identifies the type of stream that is available for connection.";
+        }
+        leaf stream-id {
+            type string;
+            config false;
+            description "The id of the stream.";
+        }
+        leaf connection-protocol {
+            type string;
+            config false;
+            description "Names the connection protocol for this particular available stream.
+                The connection protocol is chosen from the lost of connecion protocols identified in the referenced SupportedStreamType.";
+        }
+        description "Details of stream a stream that can be connected to by a client application.";
+    }
+    grouping stream-context {
+        list available-stream {
+            key 'connection-address';
+            config false;
+            uses available-stream;
+            description "none";
+        }
+        list supported-sream-type {
+            key 'stream-type-id';
+            config false;
+            uses supported-stream-type;
+            description "none";
+        }
+        description "All streams relevant to the specific TapiContext.";
+    }
+    grouping supported-stream-type {
+        leaf stream-type-name {
+            type string;
+            config false;
+            description "Name of the stream type.
+                Name of the stream type.";
+        }
+        leaf record-retention {
+            type string;
+            config false;
+            description "Time in minutes.
+                Statement of retention time and/or retention capacity in bytes.
+                Key word 'FOREVER' means that records will never be removed from the log.
+                May be overridden for particular cases of specific LogStorageStrategy (via augment).";
+        }
+        leaf segment-size {
+            type string;
+            config false;
+            description "Size of substructuring of the log.";
+        }
+        leaf-list stream-type-content {
+            type object-class-identifier;
+            description "Identifies the classes that are supported through the stream. 
+                The list may be a subset of the classes within the context.";
+        }
+        leaf log-storage-strategy {
+            type log-storage-strategy;
+            config false;
+            description "Indicates the storage characteristics of the log supporting the stream.";
+        }
+        leaf log-record-strategy {
+            type log-record-strategy;
+            config false;
+            description "Indicates the type of content of each log record.";
+        }
+        leaf stream-type-id {
+            type tapi-common:uuid;
+            config false;
+            description "The identifier for the stream type.";
+        }
+        description "Definition of a supported stream type.";
+    }
+    grouping log-record {
+        container log-record-header {
+            config false;
+            uses log-record-header;
+            description "The header of the log record providing general parameters of the record common to all records.";
+        }
+        container log-record-body {
+            config false;
+            uses log-record-body;
+            description "The body of the log record providing specific logged details.";
+        }
+        description "A specific atomic entry in a log.";
+    }
+    grouping log-record-body {
+        container event-time-stamp {
+            config false;
+            uses approx-date-and-time;
+            description "Time of the event at the origin of the event that triggered the generation of the record. 
+                The structure allows for time uncertainty.";
+        }
+        leaf event-source-indicator {
+            type tapi-notification:source-indicator;
+            config false;
+            description "Indicates whether the source is controlled or potentially chaotic.
+                The time characteristic of the source may be determined from the metadata describing the detector.
+                Where there is an alternative (and probably more detailed) source of information on time characteristic this attribute can be ommitted.";
+        }
+        list additional-event-info {
+            key 'value-name';
+            config false;
+            uses tapi-common:name-and-value;
+            description "Addition information related to the event such as change reason where changeReason would be the name and the value text would provide information on the reason for change.";
+        }
+        leaf-list parent-address {
+            type string;
+            config false;
+            description "Gives the position of the entity in the address tree (usually containment) that is raising the event by providing the name/id values in the address of the parent.
+                Is the sequence of named levels in the tree up to but excluding the entity of the notification. 
+                It includes the NE id.";
+        }
+        description "The specific details of the Record.";
+    }
+    grouping log-record-header {
+        leaf tapi-context {
+            type tapi-common:uuid;
+            config false;
+            description "The identifier of the context.";
+        }
+        leaf token {
+            type string;
+            config false;
+            description "A coded (and compact) form of the fullLogRecordOffsetId.
+                This property is used to request streaming from a particular point (e.g., the last correctly handled record).";
+        }
+        list full-log-record-offset-id {
+            key 'value-name';
+            config false;
+            min-elements 1;
+            uses tapi-common:name-and-value;
+            description "In a complex log solution there may be various parts to the log.
+                The record token is a compressed form of log record reference.
+                This property provides the verbose form 
+                Fore example it may include:
+                - stream id
+                - topic
+                - partition
+                - partition offset
+                - sequence number ( the offset is essentially the sequence number associated with the partition)";
+        }
+        leaf log-append-time-stamp {
+            type tapi-common:date-and-time;
+            config false;
+            description "The time when the record was appended to the log.";
+        }
+        leaf entity-key {
+            type string;
+            config false;
+            description "The identifier of the entity that is used in a Compacted log as the compaction key.
+                The entityKey value, where appropriate, may be based upon the identifiers from the event source.
+                It can be built from some specific detail combination that meets the necessary uniqueness and durability requirements.
+                entityKey is the value used during compaction.
+                Ideally it is a UUID format, if this can be formed from the source identifier.";
+        }
+        leaf record-type {
+            type record-type;
+            config false;
+            description "The type of the record.
+                Can be used to understand which elements of the record will be present.";
+        }
+        description "The header of the log record providing general parameters of the record common to all records.";
+    }
+    notification stream-record {
+        uses stream-record;
+        description "none";
+    }
+    grouping stream-record {
+        list log-record {
+            config false;
+            uses log-record;
+            description "Each stream record may include a number of log records.";
+        }
+        description "The stream content.";
+    }
+
+    /**************************
+    * package interfaces
+    **************************/ 
+    rpc connect-to-stream {
+        description "none";
+        input {
+            leaf start-from-token {
+                type string;
+                description "none";
+            }
+            leaf connection-address {
+                type string;
+                description "none";
+            }
+        }
+    }
+    rpc get-available-stream-connection-details {
+        description "none";
+        output {
+            list active-connections {
+                uses available-stream;
+                description "none";
+            }
+        }
+    }
+    rpc get-supported-stream-connection-types {
+        description "none";
+        output {
+            list supported-stream-types {
+                uses supported-stream-type;
+                description "none";
+            }
+        }
+    }
+
+}
