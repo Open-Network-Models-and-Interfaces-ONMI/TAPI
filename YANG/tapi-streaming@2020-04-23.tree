@@ -1,0 +1,210 @@
+
+module: tapi-streaming
+  augment /tapi-common:context:
+    +--rw stream-admin-context
+       +--ro stream-monitor* [uuid]
+       |  +--ro id-of-last-record-read-from-log?    string
+       |  +--ro id-of-last-record-written-to-log?   string
+       |  +--ro available-stream
+       |  |  +--ro available-stream-uuid?   -> /tapi-common:context/tapi-streaming:stream-context/available-stream/uuid
+       |  +--ro client-id?                          string
+       |  +--ro last-updated?                       tapi-common:date-and-time
+       |  +--ro client-address?                     string
+       |  +--ro uuid                                uuid
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
+       +--rw uuid?             uuid
+       +--rw name* [value-name]
+          +--rw value-name    string
+          +--rw value?        string
+  augment /tapi-common:context:
+    +--rw stream-context
+       +--ro available-stream* [uuid]
+       |  +--ro connection-address?      string
+       |  +--ro stream-state?            stream-state
+       |  +--ro supported-stream-type
+       |  |  +--ro supported-stream-type-uuid?   -> /tapi-common:context/tapi-streaming:stream-context/supported-stream-type/uuid
+       |  +--ro stream-id?               string
+       |  +--ro connection-protocol?     string
+       |  +--ro uuid                     uuid
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
+       +--ro supported-stream-type* [uuid]
+          +--ro stream-type-name?              string
+          +--ro record-retention?              string
+          +--ro segment-size?                  string
+          +--ro record-content*                object-class-identifier
+          +--ro log-storage-strategy?          log-storage-strategy
+          +--ro log-record-strategy?           log-record-strategy
+          +--ro uuid                           uuid
+          +--ro name* [value-name]
+          |  +--ro value-name    string
+          |  +--ro value?        string
+          +--rw compacted-log-details
+          |  +--ro tombstone-retention?   string
+          |  +--ro compaction-delay?      string
+          +--ro connection-protocol-details
+             +--ro allowed-connection-protocols*   string
+
+  rpcs:
+    +---x connect-to-stream
+    |  +---w input
+    |     +---w start-from-token?     string
+    |     +---w connection-address?   string
+    +---x get-available-stream-connection-details
+    |  +--ro output
+    |     +--ro active-connections* []
+    |        +--ro connection-address?      string
+    |        +--ro stream-state?            stream-state
+    |        +--ro supported-stream-type
+    |        |  +--ro supported-stream-type-uuid?   -> /tapi-common:context/tapi-streaming:stream-context/supported-stream-type/uuid
+    |        +--ro stream-id?               string
+    |        +--ro connection-protocol?     string
+    |        +--ro uuid?                    uuid
+    |        +--ro name* [value-name]
+    |           +--ro value-name    string
+    |           +--ro value?        string
+    +---x get-supported-stream-connection-types
+       +--ro output
+          +--ro supported-stream-types* []
+             +--ro stream-type-name?       string
+             +--ro record-retention?       string
+             +--ro segment-size?           string
+             +--ro record-content*         object-class-identifier
+             +--ro log-storage-strategy?   log-storage-strategy
+             +--ro log-record-strategy?    log-record-strategy
+             +--ro uuid?                   uuid
+             +--ro name* [value-name]
+                +--ro value-name    string
+                +--ro value?        string
+
+  notifications:
+    +---n stream-record
+       +--ro log-record* []
+          +--ro log-record-header
+          |  +--ro tapi-context?                tapi-common:uuid
+          |  +--ro token?                       string
+          |  +--ro full-log-record-offset-id* [value-name]
+          |  |  +--ro value-name    string
+          |  |  +--ro value?        string
+          |  +--ro log-append-time-stamp?       tapi-common:date-and-time
+          |  +--ro entity-key?                  string
+          |  +--ro record-type?                 record-type
+          |  +--ro record-authenticity-token?   string
+          +--ro log-record-body
+             +--ro event-time-stamp
+             |  +--ro primary-time-stamp?   tapi-common:date-and-time
+             |  +--ro start-time-stamp?     tapi-common:date-and-time
+             |  +--ro spread?               spread
+             |  +--ro source-precesion?     source-precision
+             +--ro event-source?              event-source
+             +--ro additional-event-info* [value-name]
+             |  +--ro value-name    string
+             |  +--ro value?        string
+             +--ro parent-address*            string
+             +--ro record-content?            object-class-identifier
+             +--rw condition-detector
+             |  +--ro condition-native-name?             string
+             |  +--ro measured-entity-uuid?              tapi-common:uuid
+             |  +--ro measured-entity-native-id?         string
+             |  +--ro condition-normalized-name?         string
+             |  +--ro measured-entity-class?             object-class-identifier
+             |  +--ro detector-uuid?                     tapi-common:uuid
+             |  +--ro detector-native-id?                string
+             |  +--ro condition-detector-type?           condition-detector-type
+             |  +--ro measured-entity-local-id*          string
+             |  +--ro alarm-condition-detector-detail
+             |     +--ro alarm-detector-state?   alarm-detector-state
+             |     +--ro legacy-properties
+             |        +--ro perceived-severity?      perceived-severity
+             |        +--ro service-affect?          service-affect
+             |        +--ro is-acknowledged?         boolean
+             |        +--ro additional-alarm-info*   string
+             +--ro service-interface-point
+             |  +--ro layer-protocol-name?                  layer-protocol-name
+             |  +--ro supported-layer-protocol-qualifier*   layer-protocol-qualifier
+             |  +--ro direction?                            port-direction
+             |  +--ro uuid?                                 uuid
+             |  +--ro name* [value-name]
+             |  |  +--ro value-name    string
+             |  |  +--ro value?        string
+             |  +--ro administrative-state?                 administrative-state
+             |  +--ro operational-state?                    operational-state
+             |  +--ro lifecycle-state?                      lifecycle-state
+             |  +--ro total-potential-capacity
+             |  |  +--ro total-size
+             |  |  |  +--ro value?   uint64
+             |  |  |  +--ro unit?    capacity-unit
+             |  |  +--ro bandwidth-profile
+             |  |     +--ro bw-profile-type?              bandwidth-profile-type
+             |  |     +--ro committed-information-rate
+             |  |     |  +--ro value?   uint64
+             |  |     |  +--ro unit?    capacity-unit
+             |  |     +--ro committed-burst-size
+             |  |     |  +--ro value?   uint64
+             |  |     |  +--ro unit?    capacity-unit
+             |  |     +--ro peak-information-rate
+             |  |     |  +--ro value?   uint64
+             |  |     |  +--ro unit?    capacity-unit
+             |  |     +--ro peak-burst-size
+             |  |     |  +--ro value?   uint64
+             |  |     |  +--ro unit?    capacity-unit
+             |  |     +--ro color-aware?                  boolean
+             |  |     +--ro coupling-flag?                boolean
+             |  +--ro available-capacity
+             |     +--ro total-size
+             |     |  +--ro value?   uint64
+             |     |  +--ro unit?    capacity-unit
+             |     +--ro bandwidth-profile
+             |        +--ro bw-profile-type?              bandwidth-profile-type
+             |        +--ro committed-information-rate
+             |        |  +--ro value?   uint64
+             |        |  +--ro unit?    capacity-unit
+             |        +--ro committed-burst-size
+             |        |  +--ro value?   uint64
+             |        |  +--ro unit?    capacity-unit
+             |        +--ro peak-information-rate
+             |        |  +--ro value?   uint64
+             |        |  +--ro unit?    capacity-unit
+             |        +--ro peak-burst-size
+             |        |  +--ro value?   uint64
+             |        |  +--ro unit?    capacity-unit
+             |        +--ro color-aware?                  boolean
+             |        +--ro coupling-flag?                boolean
+             +--ro any-class
+             +--ro stream-monitor
+             |  +--ro id-of-last-record-read-from-log?    string
+             |  +--ro id-of-last-record-written-to-log?   string
+             |  +--ro available-stream
+             |  |  +--ro available-stream-uuid?   -> /tapi-common:context/tapi-streaming:stream-context/available-stream/uuid
+             |  +--ro client-id?                          string
+             |  +--ro last-updated?                       tapi-common:date-and-time
+             |  +--ro client-address?                     string
+             |  +--ro uuid?                               uuid
+             |  +--ro name* [value-name]
+             |     +--ro value-name    string
+             |     +--ro value?        string
+             +--ro supported-stream-type
+             |  +--ro stream-type-name?       string
+             |  +--ro record-retention?       string
+             |  +--ro segment-size?           string
+             |  +--ro record-content*         object-class-identifier
+             |  +--ro log-storage-strategy?   log-storage-strategy
+             |  +--ro log-record-strategy?    log-record-strategy
+             |  +--ro uuid?                   uuid
+             |  +--ro name* [value-name]
+             |     +--ro value-name    string
+             |     +--ro value?        string
+             +--ro available-stream
+                +--ro connection-address?      string
+                +--ro stream-state?            stream-state
+                +--ro supported-stream-type
+                |  +--ro supported-stream-type-uuid?   -> /tapi-common:context/tapi-streaming:stream-context/supported-stream-type/uuid
+                +--ro stream-id?               string
+                +--ro connection-protocol?     string
+                +--ro uuid?                    uuid
+                +--ro name* [value-name]
+                   +--ro value-name    string
+                   +--ro value?        string

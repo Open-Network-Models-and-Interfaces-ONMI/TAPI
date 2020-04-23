@@ -1,0 +1,939 @@
+
+module: tapi-oam
+  augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
+    +--ro mep
+       +--ro layer-protocol-name?   tapi-common:layer-protocol-name
+       +--ro direction?             tapi-common:termination-direction
+       +--ro mep-identifier?        string
+       +--ro peer-mep-identifier*   string
+       +--ro local-id?              string
+       +--ro name* [value-name]
+       |  +--ro value-name    string
+       |  +--ro value?        string
+       +--ro operational-state?     operational-state
+       +--ro lifecycle-state?       lifecycle-state
+  augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
+    +--ro oam-job
+       +--ro oam-service-end-point* [oam-service-uuid oam-service-end-point-local-id]
+       |  +--ro oam-service-uuid                  -> /tapi-common:context/tapi-oam:oam-context/oam-service/uuid
+       |  +--ro oam-service-end-point-local-id    -> /tapi-common:context/tapi-oam:oam-context/oam-service/end-point/local-id
+       +--ro oam-profile
+       |  +--ro oam-profile-uuid?   -> /tapi-common:context/tapi-oam:oam-context/oam-profile/uuid
+       +--ro pm-current-data* [local-id]
+       |  +--ro pm-history-data* [local-id]
+       |  |  +--ro granularity-period
+       |  |  |  +--ro value?   uint64
+       |  |  |  +--ro unit?    time-unit
+       |  |  +--ro period-end-time?         tapi-common:date-and-time
+       |  |  +--ro suspect-interval-flag?   boolean
+       |  |  +--ro local-id                 string
+       |  |  +--ro name* [value-name]
+       |  |     +--ro value-name    string
+       |  |     +--ro value?        string
+       |  +--ro granularity-period
+       |  |  +--ro value?   uint64
+       |  |  +--ro unit?    time-unit
+       |  +--ro timestamp?               tapi-common:date-and-time
+       |  +--ro elapsed-time
+       |  |  +--ro period* [unit]
+       |  |     +--ro value?   uint64
+       |  |     +--ro unit     time-unit
+       |  +--ro suspect-interval-flag?   boolean
+       |  +--ro local-id                 string
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
+       +--ro oam-job-type?            oam-job-type
+       +--ro schedule
+       |  +--ro end-time?     date-and-time
+       |  +--ro start-time?   date-and-time
+       +--ro creation-time?           tapi-common:date-and-time
+       +--ro uuid?                    uuid
+       +--ro name* [value-name]
+       |  +--ro value-name    string
+       |  +--ro value?        string
+       +--ro administrative-state?    administrative-state
+       +--ro operational-state?       operational-state
+       +--ro lifecycle-state?         lifecycle-state
+  augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
+    +--ro meg
+       +--ro mep* [local-id]
+       |  +--ro layer-protocol-name?   tapi-common:layer-protocol-name
+       |  +--ro direction?             tapi-common:termination-direction
+       |  +--ro mep-identifier?        string
+       |  +--ro peer-mep-identifier*   string
+       |  +--ro local-id               string
+       |  +--ro name* [value-name]
+       |  |  +--ro value-name    string
+       |  |  +--ro value?        string
+       |  +--ro operational-state?     operational-state
+       |  +--ro lifecycle-state?       lifecycle-state
+       +--ro mip* [local-id]
+       |  +--ro layer-protocol-name?   tapi-common:layer-protocol-name
+       |  +--ro local-id               string
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
+       +--ro layer-protocol-name?   tapi-common:layer-protocol-name
+       +--ro direction?             tapi-common:forwarding-direction
+       +--ro meg-level?             uint64
+       +--ro meg-identifier?        string
+       +--ro uuid?                  uuid
+       +--ro name* [value-name]
+       |  +--ro value-name    string
+       |  +--ro value?        string
+       +--ro operational-state?     operational-state
+       +--ro lifecycle-state?       lifecycle-state
+  augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
+    +--ro mip
+       +--ro layer-protocol-name?   tapi-common:layer-protocol-name
+       +--ro local-id?              string
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
+    +--ro oam-service
+       +--ro end-point* [local-id]
+       |  +--ro service-interface-point
+       |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+       |  +--ro connectivity-service-end-point
+       |  |  +--ro connectivity-service-uuid?                 -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
+       |  |  +--ro connectivity-service-end-point-local-id?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/end-point/local-id
+       |  +--ro mep
+       |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+       |  |  +--ro mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
+       |  +--ro mip
+       |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+       |  |  +--ro mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
+       |  +--ro layer-protocol-name?              tapi-common:layer-protocol-name
+       |  +--ro direction?                        tapi-common:port-direction
+       |  +--ro mep-identifier?                   string
+       |  +--ro peer-mep-identifier*              string
+       |  +--ro local-id                          string
+       |  +--ro name* [value-name]
+       |  |  +--ro value-name    string
+       |  |  +--ro value?        string
+       |  +--ro administrative-state?             administrative-state
+       |  +--ro operational-state?                operational-state
+       |  +--ro lifecycle-state?                  lifecycle-state
+       +--ro meg
+       |  +--ro meg-uuid?   -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+       +--ro oam-profile
+       |  +--ro oam-profile-uuid?   -> /tapi-common:context/tapi-oam:oam-context/oam-profile/uuid
+       +--ro uuid?                   uuid
+       +--ro name* [value-name]
+       |  +--ro value-name    string
+       |  +--ro value?        string
+       +--ro administrative-state?   administrative-state
+       +--ro operational-state?      operational-state
+       +--ro lifecycle-state?        lifecycle-state
+       +--ro layer-protocol-name?    tapi-common:layer-protocol-name
+       +--ro direction?              tapi-common:forwarding-direction
+       +--ro meg-level?              uint64
+  augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
+    +--ro oam-service-end-point
+       +--ro service-interface-point
+       |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+       +--ro connectivity-service-end-point
+       |  +--ro connectivity-service-uuid?                 -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
+       |  +--ro connectivity-service-end-point-local-id?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/end-point/local-id
+       +--ro mep
+       |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+       |  +--ro mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
+       +--ro mip
+       |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+       |  +--ro mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
+       +--ro layer-protocol-name?              tapi-common:layer-protocol-name
+       +--ro direction?                        tapi-common:port-direction
+       +--ro mep-identifier?                   string
+       +--ro peer-mep-identifier*              string
+       +--ro local-id?                         string
+       +--ro name* [value-name]
+       |  +--ro value-name    string
+       |  +--ro value?        string
+       +--ro administrative-state?             administrative-state
+       +--ro operational-state?                operational-state
+       +--ro lifecycle-state?                  lifecycle-state
+  augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
+    +--ro pm-current-data
+       +--ro pm-history-data* [local-id]
+       |  +--ro granularity-period
+       |  |  +--ro value?   uint64
+       |  |  +--ro unit?    time-unit
+       |  +--ro period-end-time?         tapi-common:date-and-time
+       |  +--ro suspect-interval-flag?   boolean
+       |  +--ro local-id                 string
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
+       +--ro granularity-period
+       |  +--ro value?   uint64
+       |  +--ro unit?    time-unit
+       +--ro timestamp?               tapi-common:date-and-time
+       +--ro elapsed-time
+       |  +--ro period* [unit]
+       |     +--ro value?   uint64
+       |     +--ro unit     time-unit
+       +--ro suspect-interval-flag?   boolean
+       +--ro local-id?                string
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
+    +--ro pm-history-data
+       +--ro granularity-period
+       |  +--ro value?   uint64
+       |  +--ro unit?    time-unit
+       +--ro period-end-time?         tapi-common:date-and-time
+       +--ro suspect-interval-flag?   boolean
+       +--ro local-id?                string
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
+    +--ro oam-profile
+       +--ro pm-threshold-data* [local-id]
+       |  +--ro granularity-period
+       |  |  +--ro value?   uint64
+       |  |  +--ro unit?    time-unit
+       |  +--ro is-transient?         boolean
+       |  +--ro local-id              string
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
+       +--ro pm-bin-data* [local-id]
+       |  +--ro granularity-period
+       |  |  +--ro value?   uint64
+       |  |  +--ro unit?    time-unit
+       |  +--ro local-id              string
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
+       +--ro uuid?                uuid
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
+    +--ro pm-threshold-data
+       +--ro granularity-period
+       |  +--ro value?   uint64
+       |  +--ro unit?    time-unit
+       +--ro is-transient?         boolean
+       +--ro local-id?             string
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
+    +--ro pm-bin-data
+       +--ro granularity-period
+       |  +--ro value?   uint64
+       |  +--ro unit?    time-unit
+       +--ro local-id?             string
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-common:context:
+    +--rw oam-context
+       +--rw oam-service* [uuid]
+       |  +--rw end-point* [local-id]
+       |  |  +--rw service-interface-point
+       |  |  |  +--rw service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+       |  |  +--rw connectivity-service-end-point
+       |  |  |  +--rw connectivity-service-uuid?                 -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
+       |  |  |  +--rw connectivity-service-end-point-local-id?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/end-point/local-id
+       |  |  +--ro mep
+       |  |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+       |  |  |  +--ro mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
+       |  |  +--ro mip
+       |  |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+       |  |  |  +--ro mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
+       |  |  +--rw layer-protocol-name?              tapi-common:layer-protocol-name
+       |  |  +--rw direction?                        tapi-common:port-direction
+       |  |  +--rw mep-identifier?                   string
+       |  |  +--rw peer-mep-identifier*              string
+       |  |  +--rw local-id                          string
+       |  |  +--rw name* [value-name]
+       |  |  |  +--rw value-name    string
+       |  |  |  +--rw value?        string
+       |  |  +--rw administrative-state?             administrative-state
+       |  |  +--ro operational-state?                operational-state
+       |  |  +--ro lifecycle-state?                  lifecycle-state
+       |  +--ro meg
+       |  |  +--ro meg-uuid?   -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+       |  +--rw oam-profile
+       |  |  +--rw oam-profile-uuid?   -> /tapi-common:context/tapi-oam:oam-context/oam-profile/uuid
+       |  +--rw uuid                    uuid
+       |  +--rw name* [value-name]
+       |  |  +--rw value-name    string
+       |  |  +--rw value?        string
+       |  +--rw administrative-state?   administrative-state
+       |  +--ro operational-state?      operational-state
+       |  +--ro lifecycle-state?        lifecycle-state
+       |  +--rw layer-protocol-name?    tapi-common:layer-protocol-name
+       |  +--rw direction?              tapi-common:forwarding-direction
+       |  +--rw meg-level?              uint64
+       +--ro meg* [uuid]
+       |  +--ro mep* [local-id]
+       |  |  +--ro layer-protocol-name?   tapi-common:layer-protocol-name
+       |  |  +--ro direction?             tapi-common:termination-direction
+       |  |  +--ro mep-identifier?        string
+       |  |  +--ro peer-mep-identifier*   string
+       |  |  +--ro local-id               string
+       |  |  +--ro name* [value-name]
+       |  |  |  +--ro value-name    string
+       |  |  |  +--ro value?        string
+       |  |  +--ro operational-state?     operational-state
+       |  |  +--ro lifecycle-state?       lifecycle-state
+       |  +--ro mip* [local-id]
+       |  |  +--ro layer-protocol-name?   tapi-common:layer-protocol-name
+       |  |  +--ro local-id               string
+       |  |  +--ro name* [value-name]
+       |  |     +--ro value-name    string
+       |  |     +--ro value?        string
+       |  +--ro layer-protocol-name?   tapi-common:layer-protocol-name
+       |  +--ro direction?             tapi-common:forwarding-direction
+       |  +--ro meg-level?             uint64
+       |  +--ro meg-identifier?        string
+       |  +--ro uuid                   uuid
+       |  +--ro name* [value-name]
+       |  |  +--ro value-name    string
+       |  |  +--ro value?        string
+       |  +--ro operational-state?     operational-state
+       |  +--ro lifecycle-state?       lifecycle-state
+       +--rw oam-job* [uuid]
+       |  +--rw oam-service-end-point* [oam-service-uuid oam-service-end-point-local-id]
+       |  |  +--rw oam-service-uuid                  -> /tapi-common:context/tapi-oam:oam-context/oam-service/uuid
+       |  |  +--rw oam-service-end-point-local-id    -> /tapi-common:context/tapi-oam:oam-context/oam-service/end-point/local-id
+       |  +--rw oam-profile
+       |  |  +--rw oam-profile-uuid?   -> /tapi-common:context/tapi-oam:oam-context/oam-profile/uuid
+       |  +--ro pm-current-data* [local-id]
+       |  |  +--ro pm-history-data* [local-id]
+       |  |  |  +--ro granularity-period
+       |  |  |  |  +--ro value?   uint64
+       |  |  |  |  +--ro unit?    time-unit
+       |  |  |  +--ro period-end-time?         tapi-common:date-and-time
+       |  |  |  +--ro suspect-interval-flag?   boolean
+       |  |  |  +--ro local-id                 string
+       |  |  |  +--ro name* [value-name]
+       |  |  |     +--ro value-name    string
+       |  |  |     +--ro value?        string
+       |  |  +--ro granularity-period
+       |  |  |  +--ro value?   uint64
+       |  |  |  +--ro unit?    time-unit
+       |  |  +--ro timestamp?               tapi-common:date-and-time
+       |  |  +--ro elapsed-time
+       |  |  |  +--ro period* [unit]
+       |  |  |     +--ro value?   uint64
+       |  |  |     +--ro unit     time-unit
+       |  |  +--ro suspect-interval-flag?   boolean
+       |  |  +--ro local-id                 string
+       |  |  +--ro name* [value-name]
+       |  |     +--ro value-name    string
+       |  |     +--ro value?        string
+       |  +--rw oam-job-type?            oam-job-type
+       |  +--rw schedule
+       |  |  +--rw end-time?     date-and-time
+       |  |  +--rw start-time?   date-and-time
+       |  +--ro creation-time?           tapi-common:date-and-time
+       |  +--rw uuid                     uuid
+       |  +--rw name* [value-name]
+       |  |  +--rw value-name    string
+       |  |  +--rw value?        string
+       |  +--rw administrative-state?    administrative-state
+       |  +--ro operational-state?       operational-state
+       |  +--ro lifecycle-state?         lifecycle-state
+       +--rw oam-profile* [uuid]
+          +--rw pm-threshold-data* [local-id]
+          |  +--rw granularity-period
+          |  |  +--rw value?   uint64
+          |  |  +--rw unit?    time-unit
+          |  +--rw is-transient?         boolean
+          |  +--rw local-id              string
+          |  +--rw name* [value-name]
+          |     +--rw value-name    string
+          |     +--rw value?        string
+          +--rw pm-bin-data* [local-id]
+          |  +--rw granularity-period
+          |  |  +--rw value?   uint64
+          |  |  +--rw unit?    time-unit
+          |  +--rw local-id              string
+          |  +--rw name* [value-name]
+          |     +--rw value-name    string
+          |     +--rw value?        string
+          +--rw uuid                 uuid
+          +--rw name* [value-name]
+             +--rw value-name    string
+             +--rw value?        string
+  augment /tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point:
+    +--ro mep-mip-list
+       +--ro mip* [meg-uuid mip-local-id]
+       |  +--ro meg-uuid        -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+       |  +--ro mip-local-id    -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
+       +--ro mep* [meg-uuid mep-local-id]
+          +--ro meg-uuid        -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+          +--ro mep-local-id    -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
+
+  rpcs:
+    +---x create-oam-service
+    |  +---w input
+    |  |  +---w end-point* [local-id]
+    |  |  |  +---w service-interface-point
+    |  |  |  |  +---w service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+    |  |  |  +---w connectivity-service-end-point
+    |  |  |  |  +---w connectivity-service-uuid?                 -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
+    |  |  |  |  +---w connectivity-service-end-point-local-id?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/end-point/local-id
+    |  |  |  +---w mep
+    |  |  |  |  +---w meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+    |  |  |  |  +---w mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
+    |  |  |  +---w mip
+    |  |  |  |  +---w meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+    |  |  |  |  +---w mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
+    |  |  |  +---w layer-protocol-name?              tapi-common:layer-protocol-name
+    |  |  |  +---w direction?                        tapi-common:port-direction
+    |  |  |  +---w mep-identifier?                   string
+    |  |  |  +---w peer-mep-identifier*              string
+    |  |  |  +---w local-id                          string
+    |  |  |  +---w name* [value-name]
+    |  |  |  |  +---w value-name    string
+    |  |  |  |  +---w value?        string
+    |  |  |  +---w administrative-state?             administrative-state
+    |  |  |  +---w operational-state?                operational-state
+    |  |  |  +---w lifecycle-state?                  lifecycle-state
+    |  |  +---w oam-constraint
+    |  |  |  +---w layer-protocol-name?   tapi-common:layer-protocol-name
+    |  |  |  +---w direction?             tapi-common:forwarding-direction
+    |  |  |  +---w meg-level?             uint64
+    |  |  +---w state?            string
+    |  +--ro output
+    |     +--ro service
+    |        +--ro end-point* [local-id]
+    |        |  +--ro service-interface-point
+    |        |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro connectivity-service-end-point
+    |        |  |  +--ro connectivity-service-uuid?                 -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
+    |        |  |  +--ro connectivity-service-end-point-local-id?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/end-point/local-id
+    |        |  +--ro mep
+    |        |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+    |        |  |  +--ro mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
+    |        |  +--ro mip
+    |        |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+    |        |  |  +--ro mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
+    |        |  +--ro layer-protocol-name?              tapi-common:layer-protocol-name
+    |        |  +--ro direction?                        tapi-common:port-direction
+    |        |  +--ro mep-identifier?                   string
+    |        |  +--ro peer-mep-identifier*              string
+    |        |  +--ro local-id                          string
+    |        |  +--ro name* [value-name]
+    |        |  |  +--ro value-name    string
+    |        |  |  +--ro value?        string
+    |        |  +--ro administrative-state?             administrative-state
+    |        |  +--ro operational-state?                operational-state
+    |        |  +--ro lifecycle-state?                  lifecycle-state
+    |        +--ro meg
+    |        |  +--ro meg-uuid?   -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+    |        +--ro oam-profile
+    |        |  +--ro oam-profile-uuid?   -> /tapi-common:context/tapi-oam:oam-context/oam-profile/uuid
+    |        +--ro uuid?                   uuid
+    |        +--ro name* [value-name]
+    |        |  +--ro value-name    string
+    |        |  +--ro value?        string
+    |        +--ro administrative-state?   administrative-state
+    |        +--ro operational-state?      operational-state
+    |        +--ro lifecycle-state?        lifecycle-state
+    |        +--ro layer-protocol-name?    tapi-common:layer-protocol-name
+    |        +--ro direction?              tapi-common:forwarding-direction
+    |        +--ro meg-level?              uint64
+    +---x delete-oam-service
+    |  +---w input
+    |     +---w service-id?   string
+    +---x get-oam-service
+    |  +---w input
+    |  |  +---w service-id?   string
+    |  +--ro output
+    |     +--ro service
+    |        +--ro end-point* [local-id]
+    |        |  +--ro service-interface-point
+    |        |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro connectivity-service-end-point
+    |        |  |  +--ro connectivity-service-uuid?                 -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
+    |        |  |  +--ro connectivity-service-end-point-local-id?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/end-point/local-id
+    |        |  +--ro mep
+    |        |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+    |        |  |  +--ro mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
+    |        |  +--ro mip
+    |        |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+    |        |  |  +--ro mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
+    |        |  +--ro layer-protocol-name?              tapi-common:layer-protocol-name
+    |        |  +--ro direction?                        tapi-common:port-direction
+    |        |  +--ro mep-identifier?                   string
+    |        |  +--ro peer-mep-identifier*              string
+    |        |  +--ro local-id                          string
+    |        |  +--ro name* [value-name]
+    |        |  |  +--ro value-name    string
+    |        |  |  +--ro value?        string
+    |        |  +--ro administrative-state?             administrative-state
+    |        |  +--ro operational-state?                operational-state
+    |        |  +--ro lifecycle-state?                  lifecycle-state
+    |        +--ro meg
+    |        |  +--ro meg-uuid?   -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+    |        +--ro oam-profile
+    |        |  +--ro oam-profile-uuid?   -> /tapi-common:context/tapi-oam:oam-context/oam-profile/uuid
+    |        +--ro uuid?                   uuid
+    |        +--ro name* [value-name]
+    |        |  +--ro value-name    string
+    |        |  +--ro value?        string
+    |        +--ro administrative-state?   administrative-state
+    |        +--ro operational-state?      operational-state
+    |        +--ro lifecycle-state?        lifecycle-state
+    |        +--ro layer-protocol-name?    tapi-common:layer-protocol-name
+    |        +--ro direction?              tapi-common:forwarding-direction
+    |        +--ro meg-level?              uint64
+    +---x create-oam-job
+    |  +---w input
+    |  |  +---w oam-job-type?            oam-job-type
+    |  |  +---w oam-service-end-point* [local-id]
+    |  |  |  +---w service-interface-point
+    |  |  |  |  +---w service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+    |  |  |  +---w connectivity-service-end-point
+    |  |  |  |  +---w connectivity-service-uuid?                 -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
+    |  |  |  |  +---w connectivity-service-end-point-local-id?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/end-point/local-id
+    |  |  |  +---w mep
+    |  |  |  |  +---w meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+    |  |  |  |  +---w mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
+    |  |  |  +---w mip
+    |  |  |  |  +---w meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+    |  |  |  |  +---w mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
+    |  |  |  +---w layer-protocol-name?              tapi-common:layer-protocol-name
+    |  |  |  +---w direction?                        tapi-common:port-direction
+    |  |  |  +---w mep-identifier?                   string
+    |  |  |  +---w peer-mep-identifier*              string
+    |  |  |  +---w local-id                          string
+    |  |  |  +---w name* [value-name]
+    |  |  |  |  +---w value-name    string
+    |  |  |  |  +---w value?        string
+    |  |  |  +---w administrative-state?             administrative-state
+    |  |  |  +---w operational-state?                operational-state
+    |  |  |  +---w lifecycle-state?                  lifecycle-state
+    |  |  +---w oam-profile
+    |  |  |  +---w pm-threshold-data* [local-id]
+    |  |  |  |  +---w granularity-period
+    |  |  |  |  |  +---w value?   uint64
+    |  |  |  |  |  +---w unit?    time-unit
+    |  |  |  |  +---w is-transient?         boolean
+    |  |  |  |  +---w local-id              string
+    |  |  |  |  +---w name* [value-name]
+    |  |  |  |     +---w value-name    string
+    |  |  |  |     +---w value?        string
+    |  |  |  +---w pm-bin-data* [local-id]
+    |  |  |  |  +---w granularity-period
+    |  |  |  |  |  +---w value?   uint64
+    |  |  |  |  |  +---w unit?    time-unit
+    |  |  |  |  +---w local-id              string
+    |  |  |  |  +---w name* [value-name]
+    |  |  |  |     +---w value-name    string
+    |  |  |  |     +---w value?        string
+    |  |  |  +---w uuid?                uuid
+    |  |  |  +---w name* [value-name]
+    |  |  |     +---w value-name    string
+    |  |  |     +---w value?        string
+    |  |  +---w state?                   string
+    |  |  +---w schedule?                string
+    |  +--ro output
+    |     +--ro oam-job
+    |        +--ro oam-service-end-point* [oam-service-uuid oam-service-end-point-local-id]
+    |        |  +--ro oam-service-uuid                  -> /tapi-common:context/tapi-oam:oam-context/oam-service/uuid
+    |        |  +--ro oam-service-end-point-local-id    -> /tapi-common:context/tapi-oam:oam-context/oam-service/end-point/local-id
+    |        +--ro oam-profile
+    |        |  +--ro oam-profile-uuid?   -> /tapi-common:context/tapi-oam:oam-context/oam-profile/uuid
+    |        +--ro pm-current-data* [local-id]
+    |        |  +--ro pm-history-data* [local-id]
+    |        |  |  +--ro granularity-period
+    |        |  |  |  +--ro value?   uint64
+    |        |  |  |  +--ro unit?    time-unit
+    |        |  |  +--ro period-end-time?         tapi-common:date-and-time
+    |        |  |  +--ro suspect-interval-flag?   boolean
+    |        |  |  +--ro local-id                 string
+    |        |  |  +--ro name* [value-name]
+    |        |  |     +--ro value-name    string
+    |        |  |     +--ro value?        string
+    |        |  +--ro granularity-period
+    |        |  |  +--ro value?   uint64
+    |        |  |  +--ro unit?    time-unit
+    |        |  +--ro timestamp?               tapi-common:date-and-time
+    |        |  +--ro elapsed-time
+    |        |  |  +--ro period* [unit]
+    |        |  |     +--ro value?   uint64
+    |        |  |     +--ro unit     time-unit
+    |        |  +--ro suspect-interval-flag?   boolean
+    |        |  +--ro local-id                 string
+    |        |  +--ro name* [value-name]
+    |        |     +--ro value-name    string
+    |        |     +--ro value?        string
+    |        +--ro oam-job-type?            oam-job-type
+    |        +--ro schedule
+    |        |  +--ro end-time?     date-and-time
+    |        |  +--ro start-time?   date-and-time
+    |        +--ro creation-time?           tapi-common:date-and-time
+    |        +--ro uuid?                    uuid
+    |        +--ro name* [value-name]
+    |        |  +--ro value-name    string
+    |        |  +--ro value?        string
+    |        +--ro administrative-state?    administrative-state
+    |        +--ro operational-state?       operational-state
+    |        +--ro lifecycle-state?         lifecycle-state
+    +---x get-oam-job
+    |  +---w input
+    |  |  +---w job-id?   string
+    |  +--ro output
+    |     +--ro oam-job
+    |        +--ro oam-service-end-point* [oam-service-uuid oam-service-end-point-local-id]
+    |        |  +--ro oam-service-uuid                  -> /tapi-common:context/tapi-oam:oam-context/oam-service/uuid
+    |        |  +--ro oam-service-end-point-local-id    -> /tapi-common:context/tapi-oam:oam-context/oam-service/end-point/local-id
+    |        +--ro oam-profile
+    |        |  +--ro oam-profile-uuid?   -> /tapi-common:context/tapi-oam:oam-context/oam-profile/uuid
+    |        +--ro pm-current-data* [local-id]
+    |        |  +--ro pm-history-data* [local-id]
+    |        |  |  +--ro granularity-period
+    |        |  |  |  +--ro value?   uint64
+    |        |  |  |  +--ro unit?    time-unit
+    |        |  |  +--ro period-end-time?         tapi-common:date-and-time
+    |        |  |  +--ro suspect-interval-flag?   boolean
+    |        |  |  +--ro local-id                 string
+    |        |  |  +--ro name* [value-name]
+    |        |  |     +--ro value-name    string
+    |        |  |     +--ro value?        string
+    |        |  +--ro granularity-period
+    |        |  |  +--ro value?   uint64
+    |        |  |  +--ro unit?    time-unit
+    |        |  +--ro timestamp?               tapi-common:date-and-time
+    |        |  +--ro elapsed-time
+    |        |  |  +--ro period* [unit]
+    |        |  |     +--ro value?   uint64
+    |        |  |     +--ro unit     time-unit
+    |        |  +--ro suspect-interval-flag?   boolean
+    |        |  +--ro local-id                 string
+    |        |  +--ro name* [value-name]
+    |        |     +--ro value-name    string
+    |        |     +--ro value?        string
+    |        +--ro oam-job-type?            oam-job-type
+    |        +--ro schedule
+    |        |  +--ro end-time?     date-and-time
+    |        |  +--ro start-time?   date-and-time
+    |        +--ro creation-time?           tapi-common:date-and-time
+    |        +--ro uuid?                    uuid
+    |        +--ro name* [value-name]
+    |        |  +--ro value-name    string
+    |        |  +--ro value?        string
+    |        +--ro administrative-state?    administrative-state
+    |        +--ro operational-state?       operational-state
+    |        +--ro lifecycle-state?         lifecycle-state
+    +---x get-oam-service-list
+    |  +--ro output
+    |     +--ro service* [uuid]
+    |        +--ro end-point* [local-id]
+    |        |  +--ro service-interface-point
+    |        |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro connectivity-service-end-point
+    |        |  |  +--ro connectivity-service-uuid?                 -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
+    |        |  |  +--ro connectivity-service-end-point-local-id?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/end-point/local-id
+    |        |  +--ro mep
+    |        |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+    |        |  |  +--ro mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
+    |        |  +--ro mip
+    |        |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+    |        |  |  +--ro mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
+    |        |  +--ro layer-protocol-name?              tapi-common:layer-protocol-name
+    |        |  +--ro direction?                        tapi-common:port-direction
+    |        |  +--ro mep-identifier?                   string
+    |        |  +--ro peer-mep-identifier*              string
+    |        |  +--ro local-id                          string
+    |        |  +--ro name* [value-name]
+    |        |  |  +--ro value-name    string
+    |        |  |  +--ro value?        string
+    |        |  +--ro administrative-state?             administrative-state
+    |        |  +--ro operational-state?                operational-state
+    |        |  +--ro lifecycle-state?                  lifecycle-state
+    |        +--ro meg
+    |        |  +--ro meg-uuid?   -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+    |        +--ro oam-profile
+    |        |  +--ro oam-profile-uuid?   -> /tapi-common:context/tapi-oam:oam-context/oam-profile/uuid
+    |        +--ro uuid                    uuid
+    |        +--ro name* [value-name]
+    |        |  +--ro value-name    string
+    |        |  +--ro value?        string
+    |        +--ro administrative-state?   administrative-state
+    |        +--ro operational-state?      operational-state
+    |        +--ro lifecycle-state?        lifecycle-state
+    |        +--ro layer-protocol-name?    tapi-common:layer-protocol-name
+    |        +--ro direction?              tapi-common:forwarding-direction
+    |        +--ro meg-level?              uint64
+    +---x get-meg
+    |  +---w input
+    |  |  +---w service-id?   string
+    |  +--ro output
+    |     +--ro meg
+    |        +--ro mep* [local-id]
+    |        |  +--ro layer-protocol-name?   tapi-common:layer-protocol-name
+    |        |  +--ro direction?             tapi-common:termination-direction
+    |        |  +--ro mep-identifier?        string
+    |        |  +--ro peer-mep-identifier*   string
+    |        |  +--ro local-id               string
+    |        |  +--ro name* [value-name]
+    |        |  |  +--ro value-name    string
+    |        |  |  +--ro value?        string
+    |        |  +--ro operational-state?     operational-state
+    |        |  +--ro lifecycle-state?       lifecycle-state
+    |        +--ro mip* [local-id]
+    |        |  +--ro layer-protocol-name?   tapi-common:layer-protocol-name
+    |        |  +--ro local-id               string
+    |        |  +--ro name* [value-name]
+    |        |     +--ro value-name    string
+    |        |     +--ro value?        string
+    |        +--ro layer-protocol-name?   tapi-common:layer-protocol-name
+    |        +--ro direction?             tapi-common:forwarding-direction
+    |        +--ro meg-level?             uint64
+    |        +--ro meg-identifier?        string
+    |        +--ro uuid?                  uuid
+    |        +--ro name* [value-name]
+    |        |  +--ro value-name    string
+    |        |  +--ro value?        string
+    |        +--ro operational-state?     operational-state
+    |        +--ro lifecycle-state?       lifecycle-state
+    +---x update-oam-service
+    |  +---w input
+    |  |  +---w service-id?       string
+    |  |  +---w end-point* [local-id]
+    |  |  |  +---w service-interface-point
+    |  |  |  |  +---w service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+    |  |  |  +---w connectivity-service-end-point
+    |  |  |  |  +---w connectivity-service-uuid?                 -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
+    |  |  |  |  +---w connectivity-service-end-point-local-id?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/end-point/local-id
+    |  |  |  +---w mep
+    |  |  |  |  +---w meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+    |  |  |  |  +---w mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
+    |  |  |  +---w mip
+    |  |  |  |  +---w meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+    |  |  |  |  +---w mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
+    |  |  |  +---w layer-protocol-name?              tapi-common:layer-protocol-name
+    |  |  |  +---w direction?                        tapi-common:port-direction
+    |  |  |  +---w mep-identifier?                   string
+    |  |  |  +---w peer-mep-identifier*              string
+    |  |  |  +---w local-id                          string
+    |  |  |  +---w name* [value-name]
+    |  |  |  |  +---w value-name    string
+    |  |  |  |  +---w value?        string
+    |  |  |  +---w administrative-state?             administrative-state
+    |  |  |  +---w operational-state?                operational-state
+    |  |  |  +---w lifecycle-state?                  lifecycle-state
+    |  |  +---w oam-constraint
+    |  |  |  +---w layer-protocol-name?   tapi-common:layer-protocol-name
+    |  |  |  +---w direction?             tapi-common:forwarding-direction
+    |  |  |  +---w meg-level?             uint64
+    |  |  +---w state?            string
+    |  +--ro output
+    |     +--ro service
+    |        +--ro end-point* [local-id]
+    |        |  +--ro service-interface-point
+    |        |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro connectivity-service-end-point
+    |        |  |  +--ro connectivity-service-uuid?                 -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
+    |        |  |  +--ro connectivity-service-end-point-local-id?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/end-point/local-id
+    |        |  +--ro mep
+    |        |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+    |        |  |  +--ro mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
+    |        |  +--ro mip
+    |        |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+    |        |  |  +--ro mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
+    |        |  +--ro layer-protocol-name?              tapi-common:layer-protocol-name
+    |        |  +--ro direction?                        tapi-common:port-direction
+    |        |  +--ro mep-identifier?                   string
+    |        |  +--ro peer-mep-identifier*              string
+    |        |  +--ro local-id                          string
+    |        |  +--ro name* [value-name]
+    |        |  |  +--ro value-name    string
+    |        |  |  +--ro value?        string
+    |        |  +--ro administrative-state?             administrative-state
+    |        |  +--ro operational-state?                operational-state
+    |        |  +--ro lifecycle-state?                  lifecycle-state
+    |        +--ro meg
+    |        |  +--ro meg-uuid?   -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+    |        +--ro oam-profile
+    |        |  +--ro oam-profile-uuid?   -> /tapi-common:context/tapi-oam:oam-context/oam-profile/uuid
+    |        +--ro uuid?                   uuid
+    |        +--ro name* [value-name]
+    |        |  +--ro value-name    string
+    |        |  +--ro value?        string
+    |        +--ro administrative-state?   administrative-state
+    |        +--ro operational-state?      operational-state
+    |        +--ro lifecycle-state?        lifecycle-state
+    |        +--ro layer-protocol-name?    tapi-common:layer-protocol-name
+    |        +--ro direction?              tapi-common:forwarding-direction
+    |        +--ro meg-level?              uint64
+    +---x delete-oam-job
+    |  +---w input
+    |     +---w job-id?   string
+    +---x update-oam-job
+    |  +---w input
+    |  |  +---w job-id?        string
+    |  |  +---w oam-profile
+    |  |  |  +---w pm-threshold-data* [local-id]
+    |  |  |  |  +---w granularity-period
+    |  |  |  |  |  +---w value?   uint64
+    |  |  |  |  |  +---w unit?    time-unit
+    |  |  |  |  +---w is-transient?         boolean
+    |  |  |  |  +---w local-id              string
+    |  |  |  |  +---w name* [value-name]
+    |  |  |  |     +---w value-name    string
+    |  |  |  |     +---w value?        string
+    |  |  |  +---w pm-bin-data* [local-id]
+    |  |  |  |  +---w granularity-period
+    |  |  |  |  |  +---w value?   uint64
+    |  |  |  |  |  +---w unit?    time-unit
+    |  |  |  |  +---w local-id              string
+    |  |  |  |  +---w name* [value-name]
+    |  |  |  |     +---w value-name    string
+    |  |  |  |     +---w value?        string
+    |  |  |  +---w uuid?                uuid
+    |  |  |  +---w name* [value-name]
+    |  |  |     +---w value-name    string
+    |  |  |     +---w value?        string
+    |  |  +---w state?         string
+    |  |  +---w schedule?      string
+    |  +--ro output
+    |     +--ro oam-job
+    |        +--ro oam-service-end-point* [oam-service-uuid oam-service-end-point-local-id]
+    |        |  +--ro oam-service-uuid                  -> /tapi-common:context/tapi-oam:oam-context/oam-service/uuid
+    |        |  +--ro oam-service-end-point-local-id    -> /tapi-common:context/tapi-oam:oam-context/oam-service/end-point/local-id
+    |        +--ro oam-profile
+    |        |  +--ro oam-profile-uuid?   -> /tapi-common:context/tapi-oam:oam-context/oam-profile/uuid
+    |        +--ro pm-current-data* [local-id]
+    |        |  +--ro pm-history-data* [local-id]
+    |        |  |  +--ro granularity-period
+    |        |  |  |  +--ro value?   uint64
+    |        |  |  |  +--ro unit?    time-unit
+    |        |  |  +--ro period-end-time?         tapi-common:date-and-time
+    |        |  |  +--ro suspect-interval-flag?   boolean
+    |        |  |  +--ro local-id                 string
+    |        |  |  +--ro name* [value-name]
+    |        |  |     +--ro value-name    string
+    |        |  |     +--ro value?        string
+    |        |  +--ro granularity-period
+    |        |  |  +--ro value?   uint64
+    |        |  |  +--ro unit?    time-unit
+    |        |  +--ro timestamp?               tapi-common:date-and-time
+    |        |  +--ro elapsed-time
+    |        |  |  +--ro period* [unit]
+    |        |  |     +--ro value?   uint64
+    |        |  |     +--ro unit     time-unit
+    |        |  +--ro suspect-interval-flag?   boolean
+    |        |  +--ro local-id                 string
+    |        |  +--ro name* [value-name]
+    |        |     +--ro value-name    string
+    |        |     +--ro value?        string
+    |        +--ro oam-job-type?            oam-job-type
+    |        +--ro schedule
+    |        |  +--ro end-time?     date-and-time
+    |        |  +--ro start-time?   date-and-time
+    |        +--ro creation-time?           tapi-common:date-and-time
+    |        +--ro uuid?                    uuid
+    |        +--ro name* [value-name]
+    |        |  +--ro value-name    string
+    |        |  +--ro value?        string
+    |        +--ro administrative-state?    administrative-state
+    |        +--ro operational-state?       operational-state
+    |        +--ro lifecycle-state?         lifecycle-state
+    +---x create-oam-service-end-point
+    |  +---w input
+    |  |  +---w service-id?            string
+    |  |  +---w sip-id?                string
+    |  |  +---w c-sep-id?              string
+    |  |  +---w layer?                 string
+    |  |  +---w direction?             string
+    |  |  +---w state?                 string
+    |  |  +---w mep-identifier?        string
+    |  |  +---w peer-mep-identifier*   string
+    |  +--ro output
+    |     +--ro end-point
+    |        +--ro service-interface-point
+    |        |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+    |        +--ro connectivity-service-end-point
+    |        |  +--ro connectivity-service-uuid?                 -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
+    |        |  +--ro connectivity-service-end-point-local-id?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/end-point/local-id
+    |        +--ro mep
+    |        |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+    |        |  +--ro mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
+    |        +--ro mip
+    |        |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+    |        |  +--ro mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
+    |        +--ro layer-protocol-name?              tapi-common:layer-protocol-name
+    |        +--ro direction?                        tapi-common:port-direction
+    |        +--ro mep-identifier?                   string
+    |        +--ro peer-mep-identifier*              string
+    |        +--ro local-id?                         string
+    |        +--ro name* [value-name]
+    |        |  +--ro value-name    string
+    |        |  +--ro value?        string
+    |        +--ro administrative-state?             administrative-state
+    |        +--ro operational-state?                operational-state
+    |        +--ro lifecycle-state?                  lifecycle-state
+    +---x delete-oam-service-end-point
+    |  +---w input
+    |     +---w service-id?   string
+    |     +---w o-sep-id?     string
+    +---x update-oam-service-end-point
+    |  +---w input
+    |  |  +---w service-id?   string
+    |  |  +---w o-sep-id?     string
+    |  |  +---w state?        string
+    |  +--ro output
+    |     +--ro end-point
+    |        +--ro service-interface-point
+    |        |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+    |        +--ro connectivity-service-end-point
+    |        |  +--ro connectivity-service-uuid?                 -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
+    |        |  +--ro connectivity-service-end-point-local-id?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/end-point/local-id
+    |        +--ro mep
+    |        |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+    |        |  +--ro mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
+    |        +--ro mip
+    |        |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+    |        |  +--ro mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
+    |        +--ro layer-protocol-name?              tapi-common:layer-protocol-name
+    |        +--ro direction?                        tapi-common:port-direction
+    |        +--ro mep-identifier?                   string
+    |        +--ro peer-mep-identifier*              string
+    |        +--ro local-id?                         string
+    |        +--ro name* [value-name]
+    |        |  +--ro value-name    string
+    |        |  +--ro value?        string
+    |        +--ro administrative-state?             administrative-state
+    |        +--ro operational-state?                operational-state
+    |        +--ro lifecycle-state?                  lifecycle-state
+    +---x get-oam-service-end-point
+       +---w input
+       |  +---w service-id?   string
+       |  +---w o-sep-id?     string
+       +--ro output
+          +--ro end-point
+             +--ro service-interface-point
+             |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+             +--ro connectivity-service-end-point
+             |  +--ro connectivity-service-uuid?                 -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
+             |  +--ro connectivity-service-end-point-local-id?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/end-point/local-id
+             +--ro mep
+             |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+             |  +--ro mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
+             +--ro mip
+             |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+             |  +--ro mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
+             +--ro layer-protocol-name?              tapi-common:layer-protocol-name
+             +--ro direction?                        tapi-common:port-direction
+             +--ro mep-identifier?                   string
+             +--ro peer-mep-identifier*              string
+             +--ro local-id?                         string
+             +--ro name* [value-name]
+             |  +--ro value-name    string
+             |  +--ro value?        string
+             +--ro administrative-state?             administrative-state
+             +--ro operational-state?                operational-state
+             +--ro lifecycle-state?                  lifecycle-state
