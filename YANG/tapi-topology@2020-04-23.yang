@@ -1,15 +1,21 @@
 module tapi-topology {
+    yang-version "1.1";
     namespace "urn:onf:otcc:yang:tapi-topology";
     prefix tapi-topology;
     import tapi-common {
         prefix tapi-common;
     }
+    import tapi-streaming {
+        prefix tapi-streaming;
+    }
     organization "ONF OTCC (Open Transport Configuration & Control) Project";
     contact "
          Project Web: <https://wiki.opennetworking.org/display/OTCC/TAPI>
          Project List: <mailto:transport-api@opennetworking.org>
-         Editor: Karthik Sethuraman
-                 <mailto:karthik.sethuraman@necam.com>";
+         Editor: Karthik Sethuraman <mailto:karthik.sethuraman@necam.com>
+         Andrea Mazzin <mailto:andrea.mazzini@nokia.com>
+         Arturo Mayoral <mailto:arturo.mayoral@telefonica.com>
+         Nigel Davis <mailto:ndavis@ciena.com>";
     description "
         This module contains TAPI Topology Model definitions.
         Source: TapiTopology.uml
@@ -24,7 +30,21 @@ module tapi-topology {
           The YANG model backward compatibility criteria are outlined in section 11 of <https://tools.ietf.org/html/rfc7950>.
           YANG models included in this release may not be backward compatible with previous TAPI releases.
         Copyright (c) 2018 Open Networking Foundation (ONF). All rights reserved.
-        License: This module is distributed under the Apache License 2.0";
+        License: This module is distributed under the Apache License 2.0.";
+    revision 2020-04-23 {
+        description "ONF Transport API version 2.1.3.
+                   Changes included in this TAPI release (v2.1.3) are listed in
+                   <https://github.com/OpenNetworkingFoundation/TAPI/blob/develop_v2_1/CHANGE_LOG/change-log.2.1.3.md>";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
+                  <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.1.0/UML>";
+    }
+    revision 2019-07-16 {
+        description "ONF Transport API version 2.1.2.
+                   Changes included in this TAPI release (v2.1.2) are listed in
+                   <https://github.com/OpenNetworkingFoundation/TAPI/blob/develop_v2_1/CHANGE_LOG/change-log.2.1.2.md>";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
+                  <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.1.0/UML>";
+    }
     revision 2018-12-10 {
         description "ONF Transport API version 2.1.1.
                    Changes included in this TAPI release (v2.1.1) are listed in
@@ -66,6 +86,70 @@ module tapi-topology {
             description "Augments the base TAPI Context with TopologyService information";
         }
         description "Augments the base TAPI Context with TopologyService information";
+    }
+    augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
+       when "tapi-streaming:record-content='LINK'";
+       container link {
+            uses link;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
+        when "tapi-streaming:record-content='NODE'";
+        container node {
+            uses node;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
+        when "tapi-streaming:record-content='TOPOLOGY'";
+        container topology {
+            uses topology;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
+        when "tapi-streaming:record-content='NODE_EDGE_POINT'";
+        container node-edge-point {
+            uses node-edge-point;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
+        when "tapi-streaming:record-content='RULE'";
+        container rule {
+            uses rule;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
+        when "tapi-streaming:record-content='NODE_RULE_GROUP'";
+        container node-rule-group {
+            uses node-rule-group;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
+        when "tapi-streaming:record-content='INTER_RULE_GROUP'";
+        container inter-rule-group {
+            uses inter-rule-group;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
+        when "tapi-streaming:record-content='NETWORK_TOPOLOGY_SERVICE'";
+        container network-topology-service {
+            uses network-topology-service;
+            description "none";
+        }
+        description "none";
     }
 
    /**************************
@@ -120,10 +204,19 @@ module tapi-topology {
         }
         description "none";
     }
+    grouping connection-spc-ref {
+        leaf connection-spc-uuid {
+            type leafref {
+                path '/tapi-topology:connection-spec/tapi-topology:uuid';
+            }
+            description "none";
+        }
+        description "none";
+    }
 
    /**************************
     * package object-classes
-    **************************/
+    **************************/ 
     grouping link {
         list node-edge-point {
             uses node-edge-point-ref;
@@ -218,7 +311,7 @@ module tapi-topology {
             description "none";
         }
         uses tapi-common:resource-spec;
-        description "The ForwardingDomain (FD) object class models the ForwardingDomain topological component which is used to effect forwarding of transport characteristic information and offers the potential to enable forwarding.
+        description "The ForwardingDomain (FD) object class models the ForwardingDomain topological component which is used to effect forwarding of transport characteristic information and offers the potential to enable forwarding. 
             At the lowest level of recursion, an FD (within a network element (NE)) represents a switch matrix (i.e., a fabric). Note that an NE can encompass multiple switch matrices (FDs). ";
     }
     grouping layer-protocol-transition-pac {
@@ -228,7 +321,7 @@ module tapi-topology {
             description "Provides the ordered structure of layer protocol transitions encapsulated in the TopologicalEntity. The ordering relates to the LinkPort role.";
         }
         description "Relevant for a Link that is formed by abstracting one or more LTPs (in a stack) to focus on the flow and deemphasize the protocol transformation.
-            This abstraction is relevant when considering multi-layer routing. 
+            This abstraction is relevant when considering multi-layer routing.
             The layer protocols of the LTP and the order of their application to the signal is still relevant and need to be accounted for. This is derived from the LTP spec details.
             This Pac provides the relevant abstractions of the LTPs and provides the necessary association to the LTPs involved.
             Links that included details in this Pac are often referred to as Transitional Links.";
@@ -303,7 +396,7 @@ module tapi-topology {
             description "The list of costs where each cost relates to some aspect of the TopologicalEntity.";
         }
         description "The cost characteristics of a TopologicalEntity not necessarily correlated to the cost of the underlying physical realization.
-            They may be quite specific to the individual TopologicalEntity e.g. opportunity cost. Relates to layer capacity
+            They may be quite specific to the individual TopologicalEntity e.g. opportunity cost. Relates to layer capacity.
             There may be many perspectives from which cost may be considered  for a particular TopologicalEntity and hence many specific costs and potentially cost algorithms.
             Using an entity will incur a cost. ";
     }
@@ -395,71 +488,193 @@ module tapi-topology {
             key 'local-id';
             min-elements 1;
             uses rule;
-            description "none";
+			config false;
+            description "The list of rules of the InterRuleGroup.";
         }
         list associated-node-rule-group {
             uses node-rule-group-ref;
             key 'topology-uuid node-uuid node-rule-group-uuid';
             min-elements 2;
-            description "none";
+			config false;
+            description "The NodeRuleGroups that the InterRuleGroup constrains interconnection between.
+                The CEPs of the NEPs of a referenced NodeRuleGroup can interconnect to the CEPs of the NEPs of another referenced NodeRuleGroup constrained by the rules of the InterRuleGroup.";
         }
         uses tapi-common:resource-spec;
         uses tapi-common:capacity-pac;
         uses transfer-cost-pac;
         uses transfer-timing-pac;
         uses risk-parameter-pac;
-        description "none";
+        description "Rules that apply between groups of NEPs.";
     }
     grouping node-rule-group {
         list rule {
             key 'local-id';
             min-elements 1;
             uses rule;
-            description "none";
+			config false;
+            description "The list of rules of the NodeRuleGroup.";
         }
         list node-edge-point {
             uses node-edge-point-ref;
             key 'topology-uuid node-uuid node-edge-point-uuid';
             min-elements 1;
-            description "none";
+			config false;
+            description "NEPs and their client CEPs that the rules apply to.";
         }
-        list composed-rule-group {
+        list node-rule-group {
             uses node-rule-group-ref;
             key 'topology-uuid node-uuid node-rule-group-uuid';
-            description "none";
+			config false;
+            description "NodeRuleGroups may be nested such that finer grained rules may be applied.
+                A nested rule group should have a subset of the NEPs of the superior rule group.";
         }
         list inter-rule-group {
             key 'uuid';
             uses inter-rule-group;
-            description "none";
+			config false;
+            description "Nested NodeRuleGroups may have InterRuleGroups. The Superior NodeRuleGroup contains the nested NodeRuleGroups and their associated InterRuleGroups.
+                This is equivalent to the Node-Topology hierarchy.";
         }
         uses tapi-common:resource-spec;
         uses tapi-common:capacity-pac;
         uses transfer-cost-pac;
         uses transfer-timing-pac;
         uses risk-parameter-pac;
-        description "none";
+        description "Rules that apply to a group of NEPs.
+            ";
     }
     grouping rule {
         leaf rule-type {
             type rule-type;
-            description "none";
+            config false;
+            description "The focus of the rule.";
         }
         leaf forwarding-rule {
             type forwarding-rule;
-            description "none";
+            config false;
+            description "Rule that restricts the creation/deletion of a Connection between points in the node rule group or related by the inter rule group between node rule groups.";
         }
         leaf override-priority {
             type uint64;
-            description "none";
+            config false;
+            description "The overridePriority allows for one rule in a rule group to override another.
+                Priority n rules override priority n+1 rules.
+                Rules of the same priority override as follows (n overrides n+1):
+                1 - MustNot
+                2 - Must
+                3 - May
+                4 - Null
+                Within a rule the flexibility rules (signal, port role...) override as follows (n overriedes n+1):
+                1 - Any
+                2 - Same
+                3 - Different
+                Where there are two or more 'Same' rules, they will form an intersection where all must be met.
+                ";
+        }
+        leaf-list cep-direction {
+            type tapi-common:port-direction;
+            config false;
+            description "cep direction is a list of port directions that the rule applies to.
+                No entry means all cep directions.";
+        }
+        list cep-port-role {
+            uses port-role-rule;
+			config false;
+            description "Indicates the port role to which the rule applies. 
+                The port role is interpreted in the context of the connection type which is identified by the connection spec. 
+                The port role is not meaningful in the absence of a connection spec reference.
+                If a node rule group carries a port role, that role applies also to the associated inter rule where the combination of the roles in the node rule groups at the ends of the inter group rule define the connection orientation.
+                For example a root-and-leaf connection may be used in a node where a node rule group collects one set of NEPs has the port role 'root' and another node rule group collects another set of NEPs has the port role 'leaf' where these are joined by an inter rule group. This combination specifies an allowed orientation of the root-and-leaf connection.
+                No port role statement means all port roles are allowed.";
+        }
+        list connection-spec-reference {
+            config false;
+            uses connection-spec-reference;
+            description "Identifies the type of connection that the rule applies to. 
+                If the attribute is not present then the rule applies to all types of connection supported by the device.";
+        }
+        leaf-list layer-protocol-qualifier {
+            type tapi-common:layer-protocol-qualifier;
+            config false;
+            description "Qualifies a rule for a particular layerProtocol identifying the qualifiers that the rule apples to.
+                If the attribute is not present then the rule applies to all relevant qualifiers of the layer protocol of the parent entity.";
+        }
+        container signal-property {
+            config false;
+            uses signal-property-rule;
+            description "The rule only applies to signals with the properties listed. 
+                If the attribute is not present then the rule applies to all signals.";
+        }
+        leaf-list complex-rule {
+            type string;
+            config false;
+            description "Allows for more complex rules where the basic rule system is not sufficient.";
         }
         uses tapi-common:local-class;
-        description "none";
+        description "Single complex rule statememt.
+            A Node with no rule group has no restrictions and is essentially May/Any
+            A node rule group constrain the CEP connectability in the Node.
+            A connection from a NEP must abide by all rules that relate to that NEP
+            Rules that are for a particular layerProtocolQualifier, connectionSpecReference, cepPortRole and cepDirection combination must be abided by in combination as dictated by overridePriority.
+            If a particular
+            - connectionSpecReference does not have any rule statements then it is not supported and connections of that type are not possible within the rule group.
+            - cepPortRole of a particular connectionSpecReference does not have any rule statements then it is not supported and connections of that connectionSpecReference (type) cannot have that cepPortRole for CEPs from NEPs in that rule group.
+            - cepDirection for a particular connectionSpecReference does not have any rule statements then it is not supported and connections of that connectionSpecReference (type) cannot have that cepPortDirection for CEPs from NEPs in that rule group.
+            Rules that are for different layerProtocolQualifiers or connectionSpecReferences are independent and provide options for connection in the rule group.
+            Some rules may apply to multiple connectionSpecReferences and all cepPortRoles and all cepDirections.";
+    }
+    grouping connection-spec {
+        uses tapi-common:resource-spec;
+        description "Placeholder for the connection spec.
+            This area will be developed in subsequent releases.";
     }
 
-   /**************************
+    container connection-spec {
+       uses connection-spec;
+       description "none";
+    }
+
+    /**************************
     * package type-definitions
-    **************************/
+    **************************/ 
+    identity PORT_ROLE_RULE_OPTION {
+        description "none";
+    }
+    identity PORT_ROLE_RULE_OPTION_SAME_ROLE {
+        base PORT_ROLE_RULE_OPTION;
+        description "The ports of the connection to which the rule applies must have the same role from the list in port role.";
+    }
+    identity PORT_ROLE_RULE_OPTION_DIFFERENT_ROLE {
+        base PORT_ROLE_RULE_OPTION;
+        description "The ports of the connection to which the rule applies must have different roles from the list in port role.";
+    }
+    identity PORT_ROLE_RULE_OPTION_ANY_ROLE {
+        base PORT_ROLE_RULE_OPTION;
+        description "The ports of the connection to which the rule applies may take any identified role.";
+    }
+    identity PORT_ROLE_RULE_OPTION_NOT_ROLE {
+        base PORT_ROLE_RULE_OPTION;
+        description "The ports of the connection to which the rule applies must not have any of the listed roles.";
+    }
+    identity SIGNAL_PROPERTY_VALUE_RULE {
+        description "none";
+    }
+    identity SIGNAL_PROPERTY_VALUE_RULE_SAME_VALUE {
+        base SIGNAL_PROPERTY_VALUE_RULE;
+        description "The signal property of the cep to which the rule applies must have the same value from the identied list.";
+    }
+    identity SIGNAL_PROPERTY_VALUE_RULE_ANY_VALUE {
+        base SIGNAL_PROPERTY_VALUE_RULE;
+        description "The signal property of the cep to which the rule applies may take any identified value.";
+    }
+    identity SIGNAL_PROPERTY_VALUE_RULE_DIFFERENT_VALUE {
+        base SIGNAL_PROPERTY_VALUE_RULE;
+        description "The signal property of the cep to which the rule applies each must have different values from the identified list.";
+    }
+    identity SIGNAL_PROPERTY_VALUE_RULE_NOT_VALUE {
+        base SIGNAL_PROPERTY_VALUE_RULE;
+        description "The signal property of the cep to which the rule applies must not have any of the identified values.";
+    }
     grouping cost-characteristic {
         leaf cost-name {
             type string;
@@ -535,42 +750,50 @@ module tapi-topology {
     typedef forwarding-rule {
         type enumeration {
             enum MAY_FORWARD_ACROSS_GROUP {
-                description "none";
+                description "NEPs referenced by the node rule group (or indirectly by the inter rule group between node rule groups) may have connections created between them unless some other rule overrides this.
+                    For an inter rule group points in a node rule group at one end of the inter rule group may be connected to points in an node rule group at an other end of the inter rule group.";
             }
             enum MUST_FORWARD_ACROSS_GROUP {
-                description "none";
+                description "NEPs referenced by the node rule group (or indirectly by the inter rule group between node rule groups) MUST have connections created between them unless some other rule overrides this.
+                    For an inter rule group points in a node rule group at one end of the inter rule group MUST be connected to points in an node rule group at an other end of the inter rule group.";
             }
             enum CANNOT_FORWARD_ACROSS_GROUP {
-                description "none";
+                description "NEPs referenced by the node rule group (or indirectly by the inter rule group between node rule groups) MUST NOT have connections created between them.
+                    For an inter rule group points in a node rule group at one end of the inter rule group MUST NOT be connected to points in an node rule group at an other end of the inter rule group.";
             }
             enum NO_STATEMENT_ON_FORWARDING {
-                description "none";
+                description "The rule group makes no statement on forwarding.";
+            }
+            enum INTER_CONNECTION_CONTENTION {
+                description "Connections to NEPs in the rule group contend for resources based upon a constraint of some signal property.
+                    For example, each connection to a NEP in the group must use a different value of the signal property from all other connections to NEPs in the rule group.
+                    For example, each connection to a NEP in the group must use a same value of the signal property as all other connections to NEPs in the rule group. In this case the first connection created in the rule group sets the value and the group constraint is freed when the last connection is deleted.";
             }
         }
-        description "none";
+        description "Rule that restricts the creation/deletion of an connection between points referenced by rule groups.";
     }
     typedef rule-type {
         type enumeration {
             enum FORWARDING {
-                description "none";
+                description "The rule applies to the creation of connections.";
             }
             enum CAPACITY {
-                description "none";
+                description "The rule applies to capacity limitations.";
             }
             enum COST {
-                description "none";
+                description "The rule applies to the cost of the creation of connections.";
             }
             enum TIMING {
-                description "none";
+                description "The rule applies to timing constraints across the group.";
             }
             enum RISK {
-                description "none";
+                description "The rule applies to risk considerations across the group so as to express shared risk.";
             }
             enum GROUPING {
-                description "none";
+                description "The rule is simply for grouping related to other rules.";
             }
         }
-        description "none";
+        description "The focus of the rule.";
     }
     grouping resilience-type {
         leaf restoration-policy {
@@ -620,13 +843,85 @@ module tapi-topology {
             enum PRE_COMPUTED_RESTORATION {
                 description "none";
             }
+            enum ONE_PLUS_ONE_PROTECTION_WITH_PRE_COMPUTED_RESTORATION {
+                description "none";
+            }
         }
         description "none";
     }
+    grouping connection-spec-reference {
+        leaf connection-spec-name {
+            type string;
+            config false;
+            description "The name of the connection type spec.
+                This can be used as a reference to a paper document where full formal machine interpretable specs are not supported.";
+        }
+        container connection-spec {
+            uses connection-spc-ref;
+            config false;
+            description "The reference to the formal connection type spec.";
+        }
+        description "The definition of the type of connection.
+            This definition will explain the flows in the connections and how they relate to the port roles.";
+    }
+    typedef port-role {
+        type string;
+        description "The role of a port in the context of the connection spec referenced in the rule.";
+    }
+    grouping port-role-rule {
+        leaf-list port-role {
+            type port-role;
+            config false;
+            description "The role(s) of the port(s) considered in the rule.";
+        }
+        leaf-list port-role-rule {
+            type port-role-rule-option;
+            config false;
+            description "Where the rule references more than one port role or where there are rule intersections either as a result of overlay of rules or inter rule group usage indicates role matching criteria for a connection following the rules.
+                For example if two port roles, 'a' and 'b', are listed and the port role rule is 'different', this means that a connection connecting points in that group must have port roles that are different for each CEP in that group.
+                In the example if a connection can have n ports of role 'a' and m ports of role 'b' then a maximum of two ports can be drawn from the NEPs of the group and where there are two, one must be role 'a' and one must be role 'b'.";
+        }
+        description "Constrains which port roles the rule applies to.";
+    }
+    typedef port-role-rule-option {
+        type identityref {
+            base PORT_ROLE_RULE_OPTION;
+        }
+        description "Indicates how to interpret the port role list.";
+    }
+    grouping signal-property-rule {
+        leaf signal-property-name {
+            type string;
+            config false;
+            description "The name of the signal property to which the rule applies.";
+        }
+        leaf signal-property-value-rule {
+            type signal-property-value-rule;
+            config false;
+            description "Indicates how the signal properties should be accounted for.";
+        }
+        leaf-list applicable-signal-value {
+            type string;
+            config false;
+            description "Specific values of the signal property to which the rule applies.";
+        }
+        leaf number-of-signal-values {
+            type uint64;
+            config false;
+            description "The number of instances of this specific property that can be supported by the group.";
+        }
+        description "Rule related to an identified signal property.";
+    }
+    typedef signal-property-value-rule {
+        type identityref {
+            base SIGNAL_PROPERTY_VALUE_RULE;
+        }
+        description "Indicates how to interpret the signal property value rule.";
+    }
 
-   /**************************
+    /**************************
     * package interfaces
-    **************************/
+    **************************/ 
     rpc get-topology-details {
         description "none";
         input {
@@ -713,4 +1008,5 @@ module tapi-topology {
             }
         }
     }
+
 }

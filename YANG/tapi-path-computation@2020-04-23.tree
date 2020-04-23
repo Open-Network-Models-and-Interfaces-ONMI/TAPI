@@ -54,6 +54,15 @@ module: tapi-path-computation
        |  |  +--rw route-objective-function?        route-objective-function
        |  |  +--rw route-direction?                 tapi-common:forwarding-direction
        |  |  +--rw is-exclusive?                    boolean
+       |  |  +--rw max-allowed-cost
+       |  |  |  +--rw value?      uint64
+       |  |  |  +--rw priority?   uint64
+       |  |  +--rw max-allowed-hops
+       |  |  |  +--rw value?      uint64
+       |  |  |  +--rw priority?   uint64
+       |  |  +--rw max-allowed-delay
+       |  |     +--rw value?      uint64
+       |  |     +--rw priority?   uint64
        |  +--rw topology-constraint
        |  |  +--rw include-topology*            tapi-common:uuid
        |  |  +--rw avoid-topology*              tapi-common:uuid
@@ -106,12 +115,201 @@ module: tapi-path-computation
           |  +--ro route-objective-function?        route-objective-function
           |  +--ro route-direction?                 tapi-common:forwarding-direction
           |  +--ro is-exclusive?                    boolean
+          |  +--ro max-allowed-cost
+          |  |  +--ro value?      uint64
+          |  |  +--ro priority?   uint64
+          |  +--ro max-allowed-hops
+          |  |  +--ro value?      uint64
+          |  |  +--ro priority?   uint64
+          |  +--ro max-allowed-delay
+          |     +--ro value?      uint64
+          |     +--ro priority?   uint64
           +--ro direction?             tapi-common:forwarding-direction
           +--ro layer-protocol-name?   tapi-common:layer-protocol-name
           +--ro uuid                   uuid
           +--ro name* [value-name]
              +--ro value-name    string
              +--ro value?        string
+  augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
+    +--ro path
+       +--ro link* [topology-uuid link-uuid]
+       |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+       +--ro routing-constraint
+       |  +--ro cost-characteristic* [cost-name]
+       |  |  +--ro cost-name         string
+       |  |  +--ro cost-value?       string
+       |  |  +--ro cost-algorithm?   string
+       |  +--ro latency-characteristic* [traffic-property-name]
+       |  |  +--ro traffic-property-name            string
+       |  |  +--ro fixed-latency-characteristic?    string
+       |  |  +--ro queing-latency-characteristic?   string
+       |  |  +--ro jitter-characteristic?           string
+       |  |  +--ro wander-characteristic?           string
+       |  +--ro risk-diversity-characteristic* [risk-characteristic-name]
+       |  |  +--ro risk-characteristic-name    string
+       |  |  +--ro risk-identifier-list*       string
+       |  +--ro diversity-policy?                diversity-policy
+       |  +--ro route-objective-function?        route-objective-function
+       |  +--ro route-direction?                 tapi-common:forwarding-direction
+       |  +--ro is-exclusive?                    boolean
+       |  +--ro max-allowed-cost
+       |  |  +--ro value?      uint64
+       |  |  +--ro priority?   uint64
+       |  +--ro max-allowed-hops
+       |  |  +--ro value?      uint64
+       |  |  +--ro priority?   uint64
+       |  +--ro max-allowed-delay
+       |     +--ro value?      uint64
+       |     +--ro priority?   uint64
+       +--ro direction?             tapi-common:forwarding-direction
+       +--ro layer-protocol-name?   tapi-common:layer-protocol-name
+       +--ro uuid?                  uuid
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
+    +--ro path-computation-service
+       +--ro path* [path-uuid]
+       |  +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+       +--ro end-point* [local-id]
+       |  +--ro service-interface-point
+       |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+       |  +--ro layer-protocol-name?        tapi-common:layer-protocol-name
+       |  +--ro layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
+       |  +--ro capacity
+       |  |  +--ro total-size
+       |  |  |  +--ro value?   uint64
+       |  |  |  +--ro unit?    capacity-unit
+       |  |  +--ro bandwidth-profile
+       |  |     +--ro bw-profile-type?              bandwidth-profile-type
+       |  |     +--ro committed-information-rate
+       |  |     |  +--ro value?   uint64
+       |  |     |  +--ro unit?    capacity-unit
+       |  |     +--ro committed-burst-size
+       |  |     |  +--ro value?   uint64
+       |  |     |  +--ro unit?    capacity-unit
+       |  |     +--ro peak-information-rate
+       |  |     |  +--ro value?   uint64
+       |  |     |  +--ro unit?    capacity-unit
+       |  |     +--ro peak-burst-size
+       |  |     |  +--ro value?   uint64
+       |  |     |  +--ro unit?    capacity-unit
+       |  |     +--ro color-aware?                  boolean
+       |  |     +--ro coupling-flag?                boolean
+       |  +--ro role?                       tapi-common:port-role
+       |  +--ro direction?                  tapi-common:port-direction
+       |  +--ro local-id                    string
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
+       +--ro routing-constraint
+       |  +--ro cost-characteristic* [cost-name]
+       |  |  +--ro cost-name         string
+       |  |  +--ro cost-value?       string
+       |  |  +--ro cost-algorithm?   string
+       |  +--ro latency-characteristic* [traffic-property-name]
+       |  |  +--ro traffic-property-name            string
+       |  |  +--ro fixed-latency-characteristic?    string
+       |  |  +--ro queing-latency-characteristic?   string
+       |  |  +--ro jitter-characteristic?           string
+       |  |  +--ro wander-characteristic?           string
+       |  +--ro risk-diversity-characteristic* [risk-characteristic-name]
+       |  |  +--ro risk-characteristic-name    string
+       |  |  +--ro risk-identifier-list*       string
+       |  +--ro diversity-policy?                diversity-policy
+       |  +--ro route-objective-function?        route-objective-function
+       |  +--ro route-direction?                 tapi-common:forwarding-direction
+       |  +--ro is-exclusive?                    boolean
+       |  +--ro max-allowed-cost
+       |  |  +--ro value?      uint64
+       |  |  +--ro priority?   uint64
+       |  +--ro max-allowed-hops
+       |  |  +--ro value?      uint64
+       |  |  +--ro priority?   uint64
+       |  +--ro max-allowed-delay
+       |     +--ro value?      uint64
+       |     +--ro priority?   uint64
+       +--ro topology-constraint
+       |  +--ro include-topology*            tapi-common:uuid
+       |  +--ro avoid-topology*              tapi-common:uuid
+       |  +--ro include-path*                tapi-common:uuid
+       |  +--ro exclude-path*                tapi-common:uuid
+       |  +--ro include-link*                tapi-common:uuid
+       |  +--ro exclude-link*                tapi-common:uuid
+       |  +--ro include-node*                tapi-common:uuid
+       |  +--ro exclude-node*                tapi-common:uuid
+       |  +--ro preferred-transport-layer*   tapi-common:layer-protocol-name
+       +--ro objective-function
+       |  +--ro bandwidth-optimization?   tapi-common:directive-value
+       |  +--ro concurrent-paths?         tapi-common:directive-value
+       |  +--ro cost-optimization?        tapi-common:directive-value
+       |  +--ro link-utilization?         tapi-common:directive-value
+       |  +--ro resource-sharing?         tapi-common:directive-value
+       |  +--ro local-id?                 string
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
+       +--ro optimization-constraint
+       |  +--ro traffic-interruption?   tapi-common:directive-value
+       |  +--ro local-id?               string
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
+       +--ro uuid?                      uuid
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
+    +--ro path-service-end-point
+       +--ro service-interface-point
+       |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+       +--ro layer-protocol-name?        tapi-common:layer-protocol-name
+       +--ro layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
+       +--ro capacity
+       |  +--ro total-size
+       |  |  +--ro value?   uint64
+       |  |  +--ro unit?    capacity-unit
+       |  +--ro bandwidth-profile
+       |     +--ro bw-profile-type?              bandwidth-profile-type
+       |     +--ro committed-information-rate
+       |     |  +--ro value?   uint64
+       |     |  +--ro unit?    capacity-unit
+       |     +--ro committed-burst-size
+       |     |  +--ro value?   uint64
+       |     |  +--ro unit?    capacity-unit
+       |     +--ro peak-information-rate
+       |     |  +--ro value?   uint64
+       |     |  +--ro unit?    capacity-unit
+       |     +--ro peak-burst-size
+       |     |  +--ro value?   uint64
+       |     |  +--ro unit?    capacity-unit
+       |     +--ro color-aware?                  boolean
+       |     +--ro coupling-flag?                boolean
+       +--ro role?                       tapi-common:port-role
+       +--ro direction?                  tapi-common:port-direction
+       +--ro local-id?                   string
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
+    +--ro path-optimization-constraint
+       +--ro traffic-interruption?   tapi-common:directive-value
+       +--ro local-id?               string
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
+    +--ro path-objective-function
+       +--ro bandwidth-optimization?   tapi-common:directive-value
+       +--ro concurrent-paths?         tapi-common:directive-value
+       +--ro cost-optimization?        tapi-common:directive-value
+       +--ro link-utilization?         tapi-common:directive-value
+       +--ro resource-sharing?         tapi-common:directive-value
+       +--ro local-id?                 string
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
 
   rpcs:
     +---x compute-p-2-p-path
@@ -165,6 +363,15 @@ module: tapi-path-computation
     |  |  |  +---w route-objective-function?        route-objective-function
     |  |  |  +---w route-direction?                 tapi-common:forwarding-direction
     |  |  |  +---w is-exclusive?                    boolean
+    |  |  |  +---w max-allowed-cost
+    |  |  |  |  +---w value?      uint64
+    |  |  |  |  +---w priority?   uint64
+    |  |  |  +---w max-allowed-hops
+    |  |  |  |  +---w value?      uint64
+    |  |  |  |  +---w priority?   uint64
+    |  |  |  +---w max-allowed-delay
+    |  |  |     +---w value?      uint64
+    |  |  |     +---w priority?   uint64
     |  |  +---w topology-constraint
     |  |  |  +---w include-topology*            tapi-common:uuid
     |  |  |  +---w avoid-topology*              tapi-common:uuid
@@ -238,6 +445,15 @@ module: tapi-path-computation
     |        |  +--ro route-objective-function?        route-objective-function
     |        |  +--ro route-direction?                 tapi-common:forwarding-direction
     |        |  +--ro is-exclusive?                    boolean
+    |        |  +--ro max-allowed-cost
+    |        |  |  +--ro value?      uint64
+    |        |  |  +--ro priority?   uint64
+    |        |  +--ro max-allowed-hops
+    |        |  |  +--ro value?      uint64
+    |        |  |  +--ro priority?   uint64
+    |        |  +--ro max-allowed-delay
+    |        |     +--ro value?      uint64
+    |        |     +--ro priority?   uint64
     |        +--ro topology-constraint
     |        |  +--ro include-topology*            tapi-common:uuid
     |        |  +--ro avoid-topology*              tapi-common:uuid
@@ -268,7 +484,7 @@ module: tapi-path-computation
     |        +--ro name* [value-name]
     |           +--ro value-name    string
     |           +--ro value?        string
-    +---x optimize-p-2-p-path
+    +---x optimize-p-2-ppath
     |  +---w input
     |  |  +---w path-id-or-name?           string
     |  |  +---w routing-constraint
@@ -289,6 +505,15 @@ module: tapi-path-computation
     |  |  |  +---w route-objective-function?        route-objective-function
     |  |  |  +---w route-direction?                 tapi-common:forwarding-direction
     |  |  |  +---w is-exclusive?                    boolean
+    |  |  |  +---w max-allowed-cost
+    |  |  |  |  +---w value?      uint64
+    |  |  |  |  +---w priority?   uint64
+    |  |  |  +---w max-allowed-hops
+    |  |  |  |  +---w value?      uint64
+    |  |  |  |  +---w priority?   uint64
+    |  |  |  +---w max-allowed-delay
+    |  |  |     +---w value?      uint64
+    |  |  |     +---w priority?   uint64
     |  |  +---w optimization-constraint
     |  |  |  +---w traffic-interruption?   tapi-common:directive-value
     |  |  |  +---w local-id?               string
@@ -358,6 +583,15 @@ module: tapi-path-computation
     |        |  +--ro route-objective-function?        route-objective-function
     |        |  +--ro route-direction?                 tapi-common:forwarding-direction
     |        |  +--ro is-exclusive?                    boolean
+    |        |  +--ro max-allowed-cost
+    |        |  |  +--ro value?      uint64
+    |        |  |  +--ro priority?   uint64
+    |        |  +--ro max-allowed-hops
+    |        |  |  +--ro value?      uint64
+    |        |  |  +--ro priority?   uint64
+    |        |  +--ro max-allowed-delay
+    |        |     +--ro value?      uint64
+    |        |     +--ro priority?   uint64
     |        +--ro topology-constraint
     |        |  +--ro include-topology*            tapi-common:uuid
     |        |  +--ro avoid-topology*              tapi-common:uuid
@@ -444,6 +678,15 @@ module: tapi-path-computation
              |  +--ro route-objective-function?        route-objective-function
              |  +--ro route-direction?                 tapi-common:forwarding-direction
              |  +--ro is-exclusive?                    boolean
+             |  +--ro max-allowed-cost
+             |  |  +--ro value?      uint64
+             |  |  +--ro priority?   uint64
+             |  +--ro max-allowed-hops
+             |  |  +--ro value?      uint64
+             |  |  +--ro priority?   uint64
+             |  +--ro max-allowed-delay
+             |     +--ro value?      uint64
+             |     +--ro priority?   uint64
              +--ro topology-constraint
              |  +--ro include-topology*            tapi-common:uuid
              |  +--ro avoid-topology*              tapi-common:uuid
