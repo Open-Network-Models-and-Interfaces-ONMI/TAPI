@@ -88,14 +88,16 @@ module tapi-topology {
         description "Augments the base TAPI Context with TopologyService information";
     }
     augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
-       when "tapi-streaming:record-content='LINK'";
-       container link {
-            uses link;
-            description "none";
+        if-feature tapi-streaming:tapi-streaming;
+        when "tapi-streaming:record-content='LINK'";
+        container link {
+             uses link;
+             description "none";
         }
         description "none";
     }
     augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
+        if-feature tapi-streaming:tapi-streaming;
         when "tapi-streaming:record-content='NODE'";
         container node {
             uses node;
@@ -104,6 +106,7 @@ module tapi-topology {
         description "none";
     }
     augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
+        if-feature tapi-streaming:tapi-streaming;
         when "tapi-streaming:record-content='TOPOLOGY'";
         container topology {
             uses topology;
@@ -112,6 +115,7 @@ module tapi-topology {
         description "none";
     }
     augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
+        if-feature tapi-streaming:tapi-streaming;
         when "tapi-streaming:record-content='NODE_EDGE_POINT'";
         container node-edge-point {
             uses node-edge-point;
@@ -120,6 +124,7 @@ module tapi-topology {
         description "none";
     }
     augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
+        if-feature tapi-streaming:tapi-streaming;
         when "tapi-streaming:record-content='RULE'";
         container rule {
             uses rule;
@@ -128,6 +133,7 @@ module tapi-topology {
         description "none";
     }
     augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
+        if-feature tapi-streaming:tapi-streaming;
         when "tapi-streaming:record-content='NODE_RULE_GROUP'";
         container node-rule-group {
             uses node-rule-group;
@@ -136,6 +142,7 @@ module tapi-topology {
         description "none";
     }
     augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
+        if-feature tapi-streaming:tapi-streaming;
         when "tapi-streaming:record-content='INTER_RULE_GROUP'";
         container inter-rule-group {
             uses inter-rule-group;
@@ -144,6 +151,7 @@ module tapi-topology {
         description "none";
     }
     augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
+        if-feature tapi-streaming:tapi-streaming;
         when "tapi-streaming:record-content='NETWORK_TOPOLOGY_SERVICE'";
         container network-topology-service {
             uses network-topology-service;
@@ -199,15 +207,6 @@ module tapi-topology {
         leaf node-rule-group-uuid {
             type leafref {
                 path '/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:node-rule-group/tapi-topology:uuid';
-            }
-            description "none";
-        }
-        description "none";
-    }
-    grouping connection-spc-ref {
-        leaf connection-spc-uuid {
-            type leafref {
-                path '/tapi-topology:connection-spec/tapi-topology:uuid';
             }
             description "none";
         }
@@ -623,16 +622,6 @@ module tapi-topology {
             Rules that are for different layerProtocolQualifiers or connectionSpecReferences are independent and provide options for connection in the rule group.
             Some rules may apply to multiple connectionSpecReferences and all cepPortRoles and all cepDirections.";
     }
-    grouping connection-spec {
-        uses tapi-common:resource-spec;
-        description "Placeholder for the connection spec.
-            This area will be developed in subsequent releases.";
-    }
-
-    container connection-spec {
-       uses connection-spec;
-       description "none";
-    }
 
     /**************************
     * package type-definitions
@@ -856,10 +845,11 @@ module tapi-topology {
             description "The name of the connection type spec.
                 This can be used as a reference to a paper document where full formal machine interpretable specs are not supported.";
         }
-        container connection-spec {
-            uses connection-spc-ref;
+        leaf connection-spec-id {
+            type tapi-common:uuid;
             config false;
-            description "The reference to the formal connection type spec.";
+            description "The reference to a formal spec. 
+                This reference need not be provided (e.g., where there is no formal machine interpretable spec for the type of connection).";
         }
         description "The definition of the type of connection.
             This definition will explain the flows in the connections and how they relate to the port roles.";
