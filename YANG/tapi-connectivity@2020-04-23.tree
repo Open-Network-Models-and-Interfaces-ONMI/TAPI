@@ -1,10 +1,5 @@
-module: tapi-connectivity
-  +--rw connection-spec
-     +--rw uuid?   uuid
-     +--rw name* [value-name]
-        +--rw value-name    string
-        +--rw value?        string
 
+module: tapi-connectivity
   augment /tapi-common:context:
     +--rw connectivity-context
        +--rw connectivity-service* [uuid]
@@ -215,8 +210,7 @@ module: tapi-connectivity
           +--ro direction?                   tapi-common:forwarding-direction
           +--ro layer-protocol-name?         tapi-common:layer-protocol-name
           +--ro connection-spec-reference
-          |  +--ro connection-spec
-          |  |  +--ro connection-spec-uuid?   -> /connection-spec/uuid
+          |  +--ro connection-spec-id?     tapi-common:uuid
           |  +--ro connection-spec-name?   string
           +--ro uuid                         uuid
           +--ro name* [value-name]
@@ -247,8 +241,7 @@ module: tapi-connectivity
           +--ro cep-role* []
           |  +--ro role-name?                   string
           |  +--ro connection-spec-reference
-          |     +--ro connection-spec
-          |     |  +--ro connection-spec-uuid?   -> /connection-spec/uuid
+          |     +--ro connection-spec-id?     tapi-common:uuid
           |     +--ro connection-spec-name?   string
           +--ro uuid                               uuid
           +--ro name* [value-name]
@@ -259,7 +252,7 @@ module: tapi-connectivity
           +--ro termination-direction?             termination-direction
           +--ro termination-state?                 termination-state
   augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
-    +--ro connection
+    +--ro connection {tapi-streaming:tapi-streaming}?
        +--ro connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
        |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
        |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
@@ -327,8 +320,7 @@ module: tapi-connectivity
        +--ro direction?                   tapi-common:forwarding-direction
        +--ro layer-protocol-name?         tapi-common:layer-protocol-name
        +--ro connection-spec-reference
-       |  +--ro connection-spec
-       |  |  +--ro connection-spec-uuid?   -> /connection-spec/uuid
+       |  +--ro connection-spec-id?     tapi-common:uuid
        |  +--ro connection-spec-name?   string
        +--ro uuid?                        uuid
        +--ro name* [value-name]
@@ -337,7 +329,7 @@ module: tapi-connectivity
        +--ro operational-state?           operational-state
        +--ro lifecycle-state?             lifecycle-state
   augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
-    +--ro connection-end-point
+    +--ro connection-end-point {tapi-streaming:tapi-streaming}?
        +--ro layer-protocol-name?               tapi-common:layer-protocol-name
        +--ro layer-protocol-qualifier?          tapi-common:layer-protocol-qualifier
        +--ro parent-node-edge-point
@@ -358,8 +350,7 @@ module: tapi-connectivity
        +--ro cep-role* []
        |  +--ro role-name?                   string
        |  +--ro connection-spec-reference
-       |     +--ro connection-spec
-       |     |  +--ro connection-spec-uuid?   -> /connection-spec/uuid
+       |     +--ro connection-spec-id?     tapi-common:uuid
        |     +--ro connection-spec-name?   string
        +--ro uuid?                              uuid
        +--ro name* [value-name]
@@ -370,13 +361,7 @@ module: tapi-connectivity
        +--ro termination-direction?             termination-direction
        +--ro termination-state?                 termination-state
   augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
-    +--ro connection-spec
-       +--ro uuid?   uuid
-       +--ro name* [value-name]
-          +--ro value-name    string
-          +--ro value?        string
-  augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
-    +--ro connectivity-service
+    +--ro connectivity-service {tapi-streaming:tapi-streaming}?
        +--ro end-point* [local-id]
        |  +--ro layer-protocol-name?                         tapi-common:layer-protocol-name
        |  +--ro layer-protocol-qualifier?                    tapi-common:layer-protocol-qualifier
@@ -517,7 +502,7 @@ module: tapi-connectivity
        +--ro operational-state?                    operational-state
        +--ro lifecycle-state?                      lifecycle-state
   augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
-    +--ro connectivity-service-end-point
+    +--ro connectivity-service-end-point {tapi-streaming:tapi-streaming}?
        +--ro layer-protocol-name?                         tapi-common:layer-protocol-name
        +--ro layer-protocol-qualifier?                    tapi-common:layer-protocol-qualifier
        +--ro service-interface-point
@@ -567,7 +552,7 @@ module: tapi-connectivity
        +--ro operational-state?                           operational-state
        +--ro lifecycle-state?                             lifecycle-state
   augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
-    +--ro route
+    +--ro route {tapi-streaming:tapi-streaming}?
        +--ro connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
        |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
        |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
@@ -585,7 +570,7 @@ module: tapi-connectivity
           +--ro value-name    string
           +--ro value?        string
   augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
-    +--ro switch
+    +--ro switch {tapi-streaming:tapi-streaming}?
        +--ro selected-connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
        |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
        |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
@@ -602,7 +587,7 @@ module: tapi-connectivity
           +--ro value-name    string
           +--ro value?        string
   augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
-    +--ro switch-control
+    +--ro switch-control {tapi-streaming:tapi-streaming}?
        +--ro sub-switch-control* [connection-uuid switch-control-uuid]
        |  +--ro connection-uuid        -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/uuid
        |  +--ro switch-control-uuid    -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/switch-control/uuid
@@ -713,8 +698,7 @@ module: tapi-connectivity
     |        +--ro direction?                   tapi-common:forwarding-direction
     |        +--ro layer-protocol-name?         tapi-common:layer-protocol-name
     |        +--ro connection-spec-reference
-    |        |  +--ro connection-spec
-    |        |  |  +--ro connection-spec-uuid?   -> /connection-spec/uuid
+    |        |  +--ro connection-spec-id?     tapi-common:uuid
     |        |  +--ro connection-spec-name?   string
     |        +--ro uuid?                        uuid
     |        +--ro name* [value-name]
@@ -1596,8 +1580,7 @@ module: tapi-connectivity
              +--ro cep-role* []
              |  +--ro role-name?                   string
              |  +--ro connection-spec-reference
-             |     +--ro connection-spec
-             |     |  +--ro connection-spec-uuid?   -> /connection-spec/uuid
+             |     +--ro connection-spec-id?     tapi-common:uuid
              |     +--ro connection-spec-name?   string
              +--ro uuid?                              uuid
              +--ro name* [value-name]

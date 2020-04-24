@@ -1,10 +1,5 @@
-module: tapi-topology
-  +--rw connection-spec
-     +--rw uuid?   uuid
-     +--rw name* [value-name]
-        +--rw value-name    string
-        +--rw value?        string
 
+module: tapi-topology
   augment /tapi-common:context:
     +--rw topology-context
        +--ro nw-topology-service
@@ -91,8 +86,7 @@ module: tapi-topology
           |  |  |  |  +--ro port-role-rule*   port-role-rule-option
           |  |  |  +--ro connection-spec-reference* []
           |  |  |  |  +--ro connection-spec-name?   string
-          |  |  |  |  +--ro connection-spec
-          |  |  |  |     +--ro connection-spc-uuid?   -> /connection-spec/uuid
+          |  |  |  |  +--ro connection-spec-id?     tapi-common:uuid
           |  |  |  +--ro layer-protocol-qualifier*    tapi-common:layer-protocol-qualifier
           |  |  |  +--ro signal-property
           |  |  |  |  +--ro signal-property-name?         string
@@ -123,8 +117,7 @@ module: tapi-topology
           |  |  |  |  |  +--ro port-role-rule*   port-role-rule-option
           |  |  |  |  +--ro connection-spec-reference* []
           |  |  |  |  |  +--ro connection-spec-name?   string
-          |  |  |  |  |  +--ro connection-spec
-          |  |  |  |  |     +--ro connection-spc-uuid?   -> /connection-spec/uuid
+          |  |  |  |  |  +--ro connection-spec-id?     tapi-common:uuid
           |  |  |  |  +--ro layer-protocol-qualifier*    tapi-common:layer-protocol-qualifier
           |  |  |  |  +--ro signal-property
           |  |  |  |  |  +--ro signal-property-name?         string
@@ -407,7 +400,7 @@ module: tapi-topology
              +--ro value-name    string
              +--ro value?        string
   augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
-    +--ro link
+    +--ro link {tapi-streaming:tapi-streaming}?
        +--ro node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
        |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
        |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
@@ -489,7 +482,7 @@ module: tapi-topology
        |  +--ro validation-robustness?                string
        +--ro transitioned-layer-protocol-name*          string
   augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
-    +--ro node
+    +--ro node {tapi-streaming:tapi-streaming}?
        +--ro owned-node-edge-point* [uuid]
        |  +--ro layer-protocol-name?                      tapi-common:layer-protocol-name
        |  +--ro supported-cep-layer-protocol-qualifier*   tapi-common:layer-protocol-qualifier
@@ -565,8 +558,7 @@ module: tapi-topology
        |  |  |  +--ro port-role-rule*   port-role-rule-option
        |  |  +--ro connection-spec-reference* []
        |  |  |  +--ro connection-spec-name?   string
-       |  |  |  +--ro connection-spec
-       |  |  |     +--ro connection-spc-uuid?   -> /connection-spec/uuid
+       |  |  |  +--ro connection-spec-id?     tapi-common:uuid
        |  |  +--ro layer-protocol-qualifier*    tapi-common:layer-protocol-qualifier
        |  |  +--ro signal-property
        |  |  |  +--ro signal-property-name?         string
@@ -597,8 +589,7 @@ module: tapi-topology
        |  |  |  |  +--ro port-role-rule*   port-role-rule-option
        |  |  |  +--ro connection-spec-reference* []
        |  |  |  |  +--ro connection-spec-name?   string
-       |  |  |  |  +--ro connection-spec
-       |  |  |  |     +--ro connection-spc-uuid?   -> /connection-spec/uuid
+       |  |  |  |  +--ro connection-spec-id?     tapi-common:uuid
        |  |  |  +--ro layer-protocol-qualifier*    tapi-common:layer-protocol-qualifier
        |  |  |  +--ro signal-property
        |  |  |  |  +--ro signal-property-name?         string
@@ -795,7 +786,7 @@ module: tapi-topology
           +--ro jitter-characteristic?           string
           +--ro wander-characteristic?           string
   augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
-    +--ro topology
+    +--ro topology {tapi-streaming:tapi-streaming}?
        +--ro node* [uuid]
        |  +--ro owned-node-edge-point* [uuid]
        |  |  +--ro layer-protocol-name?                      tapi-common:layer-protocol-name
@@ -872,8 +863,7 @@ module: tapi-topology
        |  |  |  |  +--ro port-role-rule*   port-role-rule-option
        |  |  |  +--ro connection-spec-reference* []
        |  |  |  |  +--ro connection-spec-name?   string
-       |  |  |  |  +--ro connection-spec
-       |  |  |  |     +--ro connection-spc-uuid?   -> /connection-spec/uuid
+       |  |  |  |  +--ro connection-spec-id?     tapi-common:uuid
        |  |  |  +--ro layer-protocol-qualifier*    tapi-common:layer-protocol-qualifier
        |  |  |  +--ro signal-property
        |  |  |  |  +--ro signal-property-name?         string
@@ -904,8 +894,7 @@ module: tapi-topology
        |  |  |  |  |  +--ro port-role-rule*   port-role-rule-option
        |  |  |  |  +--ro connection-spec-reference* []
        |  |  |  |  |  +--ro connection-spec-name?   string
-       |  |  |  |  |  +--ro connection-spec
-       |  |  |  |  |     +--ro connection-spc-uuid?   -> /connection-spec/uuid
+       |  |  |  |  |  +--ro connection-spec-id?     tapi-common:uuid
        |  |  |  |  +--ro layer-protocol-qualifier*    tapi-common:layer-protocol-qualifier
        |  |  |  |  +--ro signal-property
        |  |  |  |  |  +--ro signal-property-name?         string
@@ -1188,7 +1177,7 @@ module: tapi-topology
           +--ro value-name    string
           +--ro value?        string
   augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
-    +--ro node-edge-point
+    +--ro node-edge-point {tapi-streaming:tapi-streaming}?
        +--ro layer-protocol-name?                      tapi-common:layer-protocol-name
        +--ro supported-cep-layer-protocol-qualifier*   tapi-common:layer-protocol-qualifier
        +--ro aggregated-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
@@ -1249,7 +1238,7 @@ module: tapi-topology
              +--ro color-aware?                  boolean
              +--ro coupling-flag?                boolean
   augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
-    +--ro rule
+    +--ro rule {tapi-streaming:tapi-streaming}?
        +--ro rule-type?                   rule-type
        +--ro forwarding-rule?             forwarding-rule
        +--ro override-priority?           uint64
@@ -1259,8 +1248,7 @@ module: tapi-topology
        |  +--ro port-role-rule*   port-role-rule-option
        +--ro connection-spec-reference* []
        |  +--ro connection-spec-name?   string
-       |  +--ro connection-spec
-       |     +--ro connection-spc-uuid?   -> /connection-spec/uuid
+       |  +--ro connection-spec-id?     tapi-common:uuid
        +--ro layer-protocol-qualifier*    tapi-common:layer-protocol-qualifier
        +--ro signal-property
        |  +--ro signal-property-name?         string
@@ -1273,7 +1261,7 @@ module: tapi-topology
           +--ro value-name    string
           +--ro value?        string
   augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
-    +--ro node-rule-group
+    +--ro node-rule-group {tapi-streaming:tapi-streaming}?
        +--ro rule* [local-id]
        |  +--ro rule-type?                   rule-type
        |  +--ro forwarding-rule?             forwarding-rule
@@ -1284,8 +1272,7 @@ module: tapi-topology
        |  |  +--ro port-role-rule*   port-role-rule-option
        |  +--ro connection-spec-reference* []
        |  |  +--ro connection-spec-name?   string
-       |  |  +--ro connection-spec
-       |  |     +--ro connection-spc-uuid?   -> /connection-spec/uuid
+       |  |  +--ro connection-spec-id?     tapi-common:uuid
        |  +--ro layer-protocol-qualifier*    tapi-common:layer-protocol-qualifier
        |  +--ro signal-property
        |  |  +--ro signal-property-name?         string
@@ -1316,8 +1303,7 @@ module: tapi-topology
        |  |  |  +--ro port-role-rule*   port-role-rule-option
        |  |  +--ro connection-spec-reference* []
        |  |  |  +--ro connection-spec-name?   string
-       |  |  |  +--ro connection-spec
-       |  |  |     +--ro connection-spc-uuid?   -> /connection-spec/uuid
+       |  |  |  +--ro connection-spec-id?     tapi-common:uuid
        |  |  +--ro layer-protocol-qualifier*    tapi-common:layer-protocol-qualifier
        |  |  +--ro signal-property
        |  |  |  +--ro signal-property-name?         string
@@ -1448,7 +1434,7 @@ module: tapi-topology
           +--ro risk-characteristic-name    string
           +--ro risk-identifier-list*       string
   augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
-    +--ro inter-rule-group
+    +--ro inter-rule-group {tapi-streaming:tapi-streaming}?
        +--ro rule* [local-id]
        |  +--ro rule-type?                   rule-type
        |  +--ro forwarding-rule?             forwarding-rule
@@ -1459,8 +1445,7 @@ module: tapi-topology
        |  |  +--ro port-role-rule*   port-role-rule-option
        |  +--ro connection-spec-reference* []
        |  |  +--ro connection-spec-name?   string
-       |  |  +--ro connection-spec
-       |  |     +--ro connection-spc-uuid?   -> /connection-spec/uuid
+       |  |  +--ro connection-spec-id?     tapi-common:uuid
        |  +--ro layer-protocol-qualifier*    tapi-common:layer-protocol-qualifier
        |  +--ro signal-property
        |  |  +--ro signal-property-name?         string
@@ -1534,7 +1519,7 @@ module: tapi-topology
           +--ro risk-characteristic-name    string
           +--ro risk-identifier-list*       string
   augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
-    +--ro network-topology-service
+    +--ro network-topology-service {tapi-streaming:tapi-streaming}?
        +--ro topology* [topology-uuid]
        |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
        +--ro uuid?       uuid
@@ -1624,8 +1609,7 @@ module: tapi-topology
     |        |  |  |  |  +--ro port-role-rule*   port-role-rule-option
     |        |  |  |  +--ro connection-spec-reference* []
     |        |  |  |  |  +--ro connection-spec-name?   string
-    |        |  |  |  |  +--ro connection-spec
-    |        |  |  |  |     +--ro connection-spc-uuid?   -> /connection-spec/uuid
+    |        |  |  |  |  +--ro connection-spec-id?     tapi-common:uuid
     |        |  |  |  +--ro layer-protocol-qualifier*    tapi-common:layer-protocol-qualifier
     |        |  |  |  +--ro signal-property
     |        |  |  |  |  +--ro signal-property-name?         string
@@ -1656,8 +1640,7 @@ module: tapi-topology
     |        |  |  |  |  |  +--ro port-role-rule*   port-role-rule-option
     |        |  |  |  |  +--ro connection-spec-reference* []
     |        |  |  |  |  |  +--ro connection-spec-name?   string
-    |        |  |  |  |  |  +--ro connection-spec
-    |        |  |  |  |  |     +--ro connection-spc-uuid?   -> /connection-spec/uuid
+    |        |  |  |  |  |  +--ro connection-spec-id?     tapi-common:uuid
     |        |  |  |  |  +--ro layer-protocol-qualifier*    tapi-common:layer-protocol-qualifier
     |        |  |  |  |  +--ro signal-property
     |        |  |  |  |  |  +--ro signal-property-name?         string
@@ -2020,8 +2003,7 @@ module: tapi-topology
     |        |  |  |  +--ro port-role-rule*   port-role-rule-option
     |        |  |  +--ro connection-spec-reference* []
     |        |  |  |  +--ro connection-spec-name?   string
-    |        |  |  |  +--ro connection-spec
-    |        |  |  |     +--ro connection-spc-uuid?   -> /connection-spec/uuid
+    |        |  |  |  +--ro connection-spec-id?     tapi-common:uuid
     |        |  |  +--ro layer-protocol-qualifier*    tapi-common:layer-protocol-qualifier
     |        |  |  +--ro signal-property
     |        |  |  |  +--ro signal-property-name?         string
@@ -2052,8 +2034,7 @@ module: tapi-topology
     |        |  |  |  |  +--ro port-role-rule*   port-role-rule-option
     |        |  |  |  +--ro connection-spec-reference* []
     |        |  |  |  |  +--ro connection-spec-name?   string
-    |        |  |  |  |  +--ro connection-spec
-    |        |  |  |  |     +--ro connection-spc-uuid?   -> /connection-spec/uuid
+    |        |  |  |  |  +--ro connection-spec-id?     tapi-common:uuid
     |        |  |  |  +--ro layer-protocol-qualifier*    tapi-common:layer-protocol-qualifier
     |        |  |  |  +--ro signal-property
     |        |  |  |  |  +--ro signal-property-name?         string
@@ -2480,8 +2461,7 @@ module: tapi-topology
              |  |  |  |  +--ro port-role-rule*   port-role-rule-option
              |  |  |  +--ro connection-spec-reference* []
              |  |  |  |  +--ro connection-spec-name?   string
-             |  |  |  |  +--ro connection-spec
-             |  |  |  |     +--ro connection-spc-uuid?   -> /connection-spec/uuid
+             |  |  |  |  +--ro connection-spec-id?     tapi-common:uuid
              |  |  |  +--ro layer-protocol-qualifier*    tapi-common:layer-protocol-qualifier
              |  |  |  +--ro signal-property
              |  |  |  |  +--ro signal-property-name?         string
@@ -2512,8 +2492,7 @@ module: tapi-topology
              |  |  |  |  |  +--ro port-role-rule*   port-role-rule-option
              |  |  |  |  +--ro connection-spec-reference* []
              |  |  |  |  |  +--ro connection-spec-name?   string
-             |  |  |  |  |  +--ro connection-spec
-             |  |  |  |  |     +--ro connection-spc-uuid?   -> /connection-spec/uuid
+             |  |  |  |  |  +--ro connection-spec-id?     tapi-common:uuid
              |  |  |  |  +--ro layer-protocol-qualifier*    tapi-common:layer-protocol-qualifier
              |  |  |  |  +--ro signal-property
              |  |  |  |  |  +--ro signal-property-name?         string
