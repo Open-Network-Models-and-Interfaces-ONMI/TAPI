@@ -35,6 +35,18 @@ module tapi-photonic-media {
         License: This module is distributed under the Apache License 2.0";
     revision 2020-04-23 {
         description "ONF Transport API version 2.1.3.
+                   - OtsiConnectivityServiceEndPointSpec class, deprecated
+                   - New OtsiAConnectivityServiceEndPointSpec, with numberOfOTSi property (integer).
+                   - OtsiCsepHasOtsiConfigPac association, move from 1-1 to 0-*, i.e. allowing more OtsiTerminationConfigPac instances per OTSi CSEP
+                     This allows to move from one OTSi CSEP instance per OTSi signal to one OTSi CSEP instance including the information related to
+                     + zero (full delegation),
+                     + 1 or more (constrained provisioning) OTSi signals.
+                   - OtsiTerminationConfigPac class, make all properties as optional (0..1)
+                     + This allows delegation or specification of selected properties
+                   - Similar modification for Media Channel: MediaChannelConnectivityServiceEndPointSpec deprecated
+                   - New MediaChannelAssemblyConnectivityServiceEndPointSpec, add capacity property.
+                   - SmcCsepHasMcConfigPac association, move from 1-1 to 1-*
+                   - MediaChannelConfigPac, set spectrum attribute as optional [0..1].
                    Changes included in this TAPI release (v2.1.3) are listed in
                    <https://urldefense.com/v3/__https://github.com/OpenNetworkingFoundation/TAPI/blob/develop_v2_1/CHANGE_LOG/change-log.2.1.3.md__;!!OSsGDw!d_dJlNtYLmD585It0DKukzB2TS5KZqBZQ-pdI1D-6c6c5hRDotd6G7tqhxFK$ >";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
@@ -292,6 +304,20 @@ module tapi-photonic-media {
         }
         description "none";
     }
+    augment "/tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point" {
+        container otsi-aconnectivity-service-end-point-spec {
+            uses otsi-aconnectivity-service-end-point-spec;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point" {
+        container media-channel-aconnectivity-service-end-point-spec {
+            uses media-channel-aconnectivity-service-end-point-spec;
+            description "none";
+        }
+        description "none";
+    }
     /**************************
     * package object-classes
     **************************/ 
@@ -502,7 +528,9 @@ module tapi-photonic-media {
             }
             description "Allows to configure the Lowerpower threshold which is expected to be different from Default, but within the Min and Max values specified as OTSi SIP capability.";
         }
-        description "none";
+        uses tapi-common:local-class;
+        description "This class allows the provisioning of the parameters of a single OTSi.
+            In case it is not instantiated (see [0..*] with OtsiAConnectivityServiceEndPointSpec), it is intended that the choice of the parameter values is fully delegated to the server controller.";
     }
     grouping fec-properties-pac {
         leaf pre-fec-ber {
@@ -565,7 +593,13 @@ module tapi-photonic-media {
             uses spectrum-band;
             description "none";
         }
-        description "none";
+        container power-management-config-pac {
+            uses power-management-config-pac;
+            description "none";
+        }
+        uses tapi-common:local-class;
+        description "This class allows the provisioning of the parameters of a single MC / OTSiMC.
+            The [1..*] with MediaChannelAConnectivityServiceEndPointSpec allows the configuration of power properties (PowerManagementConfigPac) even in case of no spectrum specified, i.e. 'empty' MediaChannelConfigPac.";
     }
     grouping media-channel-connection-end-point-spec {
         container media-channel {
@@ -713,6 +747,49 @@ module tapi-photonic-media {
                 at the Logical-Termination-Point (LTP) associated to the SIP.";
         }
         description "none";
+    }
+    grouping media-channel-aconnectivity-service-end-point-spec {
+        list mc-config {
+            key 'local-id';
+            uses media-channel-config-pac;
+            description "none";
+        }
+        leaf number-of-mc {
+            type uint64;
+            default "1";
+            description "none";
+        }
+        container capacity {
+            uses tapi-common:capacity-value;
+            description "Total capacity of an MCA/OTSiMCA.
+                Capacity may be omitted if spectrum is specified.
+                Capacity cannot be omitted if spectrum is not specified.";
+        }
+        description "This class allows the provisioning of MCA/OTSiMCA (*) ConnectivityService.
+            It is possible to provision either
+            1) MC/OTSiMC bandwidth/capacity or
+            2) MC/OTSiMC spectrum.
+            For the provisioning of 'OTSiMCA' ConnectivityService the MediaChannelAConnectivityServiceEndPointSpec is used,
+            leveraging the Layer Protocol Qualifier of CSEP (*) and the CSEPHasServerCSEP recursive association in case of combined provisioning, i.e.
+            when OTSiMCA' ConnectivityService provisioning drives also creation of 'supporting' MCs.
+            (*) Note that that assembly related Layer Protocol Qualifiers (OTSiA, MCA, OTSiMCA) are not used, as the assembly is modeled through associations between objects.";
+    }
+    grouping otsi-aconnectivity-service-end-point-spec {
+        list otsi-config {
+            key 'local-id';
+            uses otsi-termination-config-pac;
+            description "none";
+        }
+        leaf number-of-otsi {
+            type uint64;
+            default "1";
+            description "none";
+        }
+        description "This class allows the provisioning of OTSiA (*) ConnectivityService.
+            It is possible to either 
+            1) delegate the choice of all OTSi characteristics to the server controller (zero OtsiTerminationConfigPac instances), or
+            2) specify one, more or all OtsiTerminationConfigPac parameters.
+            (*) Note that that assembly related Layer Protocol Qualifiers (OTSiA, MCA, OTSiMCA) are not used, as the assembly is modeled through associations between objects.";
     }
 
     /**************************
