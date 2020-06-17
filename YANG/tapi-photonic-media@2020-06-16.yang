@@ -33,7 +33,7 @@ module tapi-photonic-media {
           YANG models included in this release may not be backward compatible with previous TAPI releases.
         Copyright (c) 2018 Open Networking Foundation (ONF). All rights reserved.
         License: This module is distributed under the Apache License 2.0";
-    revision 2020-04-23 {
+    revision 2020-06-16 {
         description "ONF Transport API version 2.1.3.
                    - OtsiConnectivityServiceEndPointSpec class, deprecated
                    - New OtsiAConnectivityServiceEndPointSpec, with numberOfOTSi property (integer).
@@ -305,15 +305,15 @@ module tapi-photonic-media {
         description "none";
     }
     augment "/tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point" {
-        container otsi-aconnectivity-service-end-point-spec {
-            uses otsi-aconnectivity-service-end-point-spec;
+        container otsia-connectivity-service-end-point-spec {
+            uses otsia-connectivity-service-end-point-spec;
             description "none";
         }
         description "none";
     }
     augment "/tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point" {
-        container media-channel-aconnectivity-service-end-point-spec {
-            uses media-channel-aconnectivity-service-end-point-spec;
+        container mca-connectivity-service-end-point-spec {
+            uses mca-connectivity-service-end-point-spec;
             description "none";
         }
         description "none";
@@ -442,17 +442,14 @@ module tapi-photonic-media {
         description "none";
     }
     grouping otsi-capability-pac {
-        list supportable-lower-central-frequency {
-            key 'central-frequency';
+        list supportable-central-frequency-spectrum-band {
+            key 'lower-central-frequency upper-central-frequency';
             config false;
-            uses central-frequency;
-            description "The lower frequency of the channel spectrum";
-        }
-        list supportable-upper-central-frequency {
-            key 'central-frequency';
-            config false;
-            uses central-frequency;
-            description "The Upper frequency of the channel spectrum";
+            uses central-frequency-band;
+            description "Each spectrum band supported for otsi trasmitter to be tuned on,
+                is specified as per it's lower and upper central frequencies supported and its frequency constraints,
+                consisting in the frequency Grid and the AdjustmentGranularity,
+                used to uniquely identify all central frequencies supported within the band.";
         }
         list supportable-application-identifier {
             key 'application-code';
@@ -580,10 +577,6 @@ module tapi-photonic-media {
     grouping media-channel-connectivity-service-end-point-spec {
         container mc-config {
             uses media-channel-config-pac;
-            description "none";
-        }
-        container power-management-config {
-            uses power-management-config-pac;
             description "none";
         }
         description "none";
@@ -748,7 +741,7 @@ module tapi-photonic-media {
         }
         description "none";
     }
-    grouping media-channel-aconnectivity-service-end-point-spec {
+    grouping mca-connectivity-service-end-point-spec {
         list mc-config {
             key 'local-id';
             uses media-channel-config-pac;
@@ -774,7 +767,7 @@ module tapi-photonic-media {
             when OTSiMCA' ConnectivityService provisioning drives also creation of 'supporting' MCs.
             (*) Note that that assembly related Layer Protocol Qualifiers (OTSiA, MCA, OTSiMCA) are not used, as the assembly is modeled through associations between objects.";
     }
-    grouping otsi-aconnectivity-service-end-point-spec {
+    grouping otsia-connectivity-service-end-point-spec {
         list otsi-config {
             key 'local-id';
             uses otsi-termination-config-pac;
@@ -1106,6 +1099,24 @@ module tapi-photonic-media {
             description "This describes how power of a signal  is distributed over frequency specified in nW/MHz";
         }
         description "none";
+    }
+    grouping central-frequency-band {
+        leaf lower-central-frequency {
+            type uint64;
+            description "The lower central frequency that can be tuned in the laser specified in MHz.
+                It is the oscillation frequency of the corresponding electromagnetic wave. ";
+        }
+        leaf upper-central-frequency {
+            type uint64;
+            description "The upper central frequency that can be tuned in the laser specified in MHz.
+                It is the oscillation frequency of the corresponding electromagnetic wave. ";
+        }
+        container frequency-constraint {
+            uses frequency-constraint;
+            description "none";
+        }
+        description "This data-type represents a range of central frequency spectrum band specified as lower and upper bounds, inclusive of the bound values.
+            It also holds frequency constraints in terms of GridType ( FIXED grid (DWDM or CWDM) or FLEX grid) and AdjustmentGranularity.";
     }
 
 }
