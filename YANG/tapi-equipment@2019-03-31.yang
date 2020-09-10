@@ -73,14 +73,14 @@ module tapi-equipment {
         }
         description "none";
     }
-    augment "/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node" {
+    augment "/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:link" {
         container supporting-physical-span {
             uses supporting-physical-span;
             description "none";
         }
         description "none";
     }
-    augment "/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:node-edge-point" {
+    augment "/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point" {
         container supporting-access-port {
             uses supporting-access-port;
             description "none";
@@ -255,16 +255,23 @@ module tapi-equipment {
     grouping connector-pin-address {
         leaf connector-identification {
             type string;
-            description "Identification of the Connector in the conetxt of the referenced Equipment.";
+            description "Identification of the Connector in the context of the referenced Equipment.";
         }
         leaf pin-identification {
             type string;
-            description "Where relevant, identification of the Pin in the contect of the connector.
-                Where the whole connector is used, then individual Pins need not be identified.";
+            description "Where relevant, identification of the Pin in the context of the connector.
+                Where the whole connector is used, then individual Pins need not be identified.
+                Simple alternative to pinAndRole.";
         }
         leaf equipment-uuid {
             type tapi-common:uuid;
             description "Reference to the Equipment that is fitted with the Connector/Pin.";
+        }
+        list pin-and-role {
+            config false;
+            uses pin-and-role;
+            description "If there is more than one pin used in a connector and/or there is a need to identify the role of one or more pins then this property can be used.
+                For simple cases pinIdentification can be used instead.";
         }
         description "The identification of the location of the Connector and/or Pin.";
     }
@@ -430,6 +437,33 @@ module tapi-equipment {
             base EQUIPMENT_OBJECT_TYPE;
         }
         description "The list of TAPI Equipment Object types/classes.";
+    }
+    grouping pin-and-role {
+        leaf location-in-connector {
+            type string;
+            config false;
+            description "The named location of the pin in the context of the connector.
+                This is likely to be the normal numbering/naming for the type of connetor, e.g. '7', '6-GND', 'Common' etc.";
+        }
+        leaf-list pin-role {
+            type string;
+            config false;
+            description "It is not always necessary to specify a role (or list of roles) as the connector locationInConnector may be sufficient (as these are sometimes clearly role based.
+                Each entry represents a role in the context of the specific access port.
+                Each entry ties the pin to a functional element in the associated NEP(s) etc.
+                For example:
+                - a pin might carry several distinct signals where each signal is idenitified in the list
+                - a pin may carry a signal and power
+                - a signal carried by a pin may be the receive flow (INPUT) to a bidirectional NEP or the transmit flow (OUTPUT) or indeed both (BIDIRECTIONAL).";
+        }
+        leaf pin-name {
+            type string;
+            config false;
+            description "Where the pin has a distinct location identifier and a distinct name this field can be used for the name.
+                For example:
+                - locationInConnector = 6, pinName = GND";
+        }
+        description "Provides an opportunity, for a pin, to give the location of the pin and the role of the pin.";
     }
 
     /**************************

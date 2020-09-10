@@ -116,7 +116,7 @@ module tapi-path-computation {
             config false;
             description "none";
         }
-        uses tapi-common:resource-spec;
+        uses tapi-common:global-class;
         description "Path is described by an ordered list of TE Links. A TE Link is defined by a pair of Node/NodeEdgePoint IDs. A Connection is realized by concatenating link resources (associated with a Link) and the lower-level connections (cross-connections) in the different nodes";
     }
     grouping path-service-end-point {
@@ -193,7 +193,7 @@ module tapi-path-computation {
             type tapi-common:layer-protocol-name;
             description "none";
         }
-        uses tapi-common:service-spec;
+        uses tapi-common:global-class;
         description "none";
     }
     grouping path-objective-function {
@@ -266,6 +266,18 @@ module tapi-path-computation {
         leaf tolerable-impact {
             type grades-of-impact;
             description "Grades of maximum tolerable disruption to traffic.";
+        }
+        container max-allowed-cost {
+            uses value-or-priority;
+            description "none";
+        }
+        container max-allowed-hops {
+            uses value-or-priority;
+            description "none";
+        }
+        container max-allowed-delay {
+            uses value-or-priority;
+            description "Delay unit is microseconds.";
         }
         description "none";
     }
@@ -437,6 +449,18 @@ module tapi-path-computation {
             base PATH_COMPUTATION_OBJECT_TYPE;
         }
         description "The list of TAPI Path Computation Object types/classes.";
+    }
+    grouping value-or-priority {
+        leaf value {
+            type uint64;
+            description "none";
+        }
+        leaf priority {
+            type uint64;
+            description "none";
+        }
+        description "Quantitative target: when a value is specified it is intended as mandatory for fulfilment. If value is specified, priority is not considered.
+            Qualitative target: when priority is specified. Zero means 'unspecified', 1 is highest priority, then 2 has lower priority than 1, 3 has lower priority than 2, etc.";
     }
 
     /**************************

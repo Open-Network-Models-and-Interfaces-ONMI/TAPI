@@ -73,21 +73,21 @@ module tapi-photonic-media {
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 6020, RFC 6087 and ONF TAPI UML model
                   <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.0.0/UML>";
     }
-    augment "/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point" {
+    augment "/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point" {
         container otsi-connection-end-point-spec {
             uses otsi-connection-end-point-spec;
             description "Augments the base LayerProtocol information in ConnectionEndPoint with OCH-specific information";
         }
         description "Augments the base LayerProtocol information in ConnectionEndPoint with OCH-specific information";
     }
-    augment "/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:node-edge-point" {
+    augment "/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point" {
         container media-channel-node-edge-point-spec {
             uses media-channel-node-edge-point-spec;
             description "Augments the base LayerProtocol information in NodeEdgePoint with OCH-specific information";
         }
         description "Augments the base LayerProtocol information in NodeEdgePoint with OCH-specific information";
     }
-    augment "/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point" {
+    augment "/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point" {
         container otsi-assembly-connection-end-point-spec {
             uses otsi-assembly-connection-end-point-spec;
             description "none";
@@ -122,7 +122,7 @@ module tapi-photonic-media {
         }
         description "none";
     }
-    augment "/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point" {
+    augment "/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point" {
         container media-channel-connection-end-point-spec {
             uses media-channel-connection-end-point-spec;
             description "none";
@@ -393,7 +393,8 @@ module tapi-photonic-media {
         description "none";
     }
     grouping otsi-capability-pac {
-        list supportable-central-frequency-band {
+        list supportable-central-frequency-spectrum-band {
+            key 'lower-central-frequency upper-central-frequency';
             config false;
             uses central-frequency-band;
             description "Each spectrum band supported for otsi trasmitter to be tuned on, is specified
@@ -612,6 +613,7 @@ module tapi-photonic-media {
     * package type-definitions
     **************************/ 
     identity PHOTONIC_LAYER_QUALIFIER {
+        base tapi-common:LAYER_PROTOCOL_QUALIFIER;
         description "none";
     }
     identity PHOTONIC_LAYER_QUALIFIER_OTSi {
@@ -624,19 +626,19 @@ module tapi-photonic-media {
     }
     identity PHOTONIC_LAYER_QUALIFIER_OTSiMC {
         base PHOTONIC_LAYER_QUALIFIER;
-        description "none";
+        description "OTSiMC represents the bw portion dedicated to an OTSi.";
     }
     identity PHOTONIC_LAYER_QUALIFIER_OTSiMCA {
         base PHOTONIC_LAYER_QUALIFIER;
-        description "none";
+        description "OTSiMCA is the set of OTSiMC supporting an OTSiA.";
     }
     identity PHOTONIC_LAYER_QUALIFIER_MC {
         base PHOTONIC_LAYER_QUALIFIER;
-        description "none";
+        description "The continuous optical spectrum between end points in the photonic layer obtained through optical filter configurations where it is expected one (or more – super channel case) OTSi(s).";
     }
     identity PHOTONIC_LAYER_QUALIFIER_MCA {
         base PHOTONIC_LAYER_QUALIFIER;
-        description "none";
+        description "Media Channel Assembly: the set of one or more MCs supporting one (or more) OTSiA(s).";
     }
     identity PHOTONIC_LAYER_QUALIFIER_OMSA {
         base PHOTONIC_LAYER_QUALIFIER;
@@ -647,6 +649,14 @@ module tapi-photonic-media {
         description "none";
     }
     identity PHOTONIC_LAYER_QUALIFIER_OCH {
+        base PHOTONIC_LAYER_QUALIFIER;
+        description "none";
+    }
+    identity PHOTONIC_LAYER_QUALIFIER_OMS {
+        base PHOTONIC_LAYER_QUALIFIER;
+        description "none";
+    }
+    identity PHOTONIC_LAYER_QUALIFIER_OTS {
         base PHOTONIC_LAYER_QUALIFIER;
         description "none";
     }
