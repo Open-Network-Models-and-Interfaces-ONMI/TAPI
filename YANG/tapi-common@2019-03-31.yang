@@ -83,17 +83,17 @@ module tapi-common {
     grouping admin-state-pac {
         leaf administrative-state {
             type administrative-state;
-            description "none";
+            description "The administration of managed objects operates independently of the operability and usage of managed objects and is described by the administrative state attribute. The administrative state is used by the operator to make a resource available for service, or to remove a resource from service.";
         }
         leaf operational-state {
             type operational-state;
             config false;
-            description "none";
+            description "The operational state gives the information about the real capability of a resource to provide or not provide service.";
         }
         leaf lifecycle-state {
             type lifecycle-state;
             config false;
-            description "none";
+            description "Used to track the planned deployment, allocation to clients and withdrawal of resources.";
         }
         description "Provides state attributes that are applicable to an entity that can be administered. Such an entity also has operational and lifecycle aspects.";
     }
@@ -112,20 +112,20 @@ module tapi-common {
             description "List of names. This value is unique in some namespace but may change during the life of the entity.
                 A name carries no semantics with respect to the purpose of the entity.";
         }
-        description "The TAPI GlobalComponent serves as the super class for all TAPI entities that can be directly retrieved by their ID. As such, these are first class entities and their ID is expected to be globally unique. ";
+        description "This class serves as the super class for all TAPI entities that can be directly retrieved by their ID. As such, these are first class entities and their ID is expected to be globally unique. ";
     }
     grouping lifecycle-state-pac {
         leaf lifecycle-state {
             type lifecycle-state;
             config false;
-            description "none";
+            description "Used to track the planned deployment, allocation to clients and withdrawal of resources.";
         }
-        description "Provides state attributes for an entity that has lifeccycle aspects only.";
+        description "Provides state attributes for an entity that has lifecycle aspects only.";
     }
     grouping local-class {
         leaf local-id {
             type string;
-            description "none";
+            description "An identifier that is unique in the context of the GlobalClass from which it is inseparable.";
         }
         list name {
             key 'value-name';
@@ -133,18 +133,18 @@ module tapi-common {
             description "List of names. This value is unique in some namespace but may change during the life of the entity.
                 A name carries no semantics with respect to the purpose of the entity.";
         }
-        description "The TAPI GlobalComponent serves as the super class for all TAPI entities that can be directly retrieved by their ID. As such, these are first class entities and their ID is expected to be globally unique. ";
+        description "This class serves as the super class for all TAPI entities that are ancillary of first class entities, i.e. their ID is not expected to be globally unique. ";
     }
     grouping operational-state-pac {
         leaf operational-state {
             type operational-state;
             config false;
-            description "none";
+            description "The operational state gives the information about the real capability of a resource to provide or not provide service.";
         }
         leaf lifecycle-state {
             type lifecycle-state;
             config false;
-            description "none";
+            description "Used to track the planned deployment, allocation to clients and withdrawal of resources.";
         }
         description "Provides state attributes that are applicable to an entity that reflects operational aspects. Such an entity is expected to also have lifecycle aspects.";
     }
@@ -160,15 +160,8 @@ module tapi-common {
             description "none";
         }
         uses global-class;
-        description "The Network Control Domain (NCD) object class represents the scope of control that a particular SDN controller has with respect to a particular network, (i.e., encompassing a designated set of interconnected (virtual) network elements).";
-    }
-    grouping resource-spec {
-        uses global-class;
-        description "none";
-    }
-    grouping service-spec {
-        uses global-class;
-        description "none";
+        description "This object class represents the scope of control that a particular SDN controller has with re-spect to a particular network, (i.e., encompassing a designated set of interconnected (virtual) network elements).
+            This class includes the list of Service Interface Points.";
     }
     grouping service-interface-point {
         leaf layer-protocol-name {
@@ -180,55 +173,55 @@ module tapi-common {
             type layer-protocol-qualifier;
             config false;
             min-elements 1;
-            description "none";
+            description "The supported sub-layer(s) or rate(s) of Layer Protocol.";
         }
-        uses resource-spec;
+        leaf direction {
+            type port-direction;
+            description "If direction attribute is missing the SIP instance is to be intended as 'BIDIRECTIONAL'";
+        }
+        uses global-class;
         uses admin-state-pac;
         uses capacity-pac;
-        description "The LogicalTerminationPoint (LTP) object class encapsulates the termination and adaptation functions of one or more transport layers. 
-            The structure of LTP supports all transport protocols including circuit and packet forms.";
+        description "A Service Interface Point represents the network-interface-facing aspects of the edge-port functions that access the forwarding capabilities provided by the Node. Hence it provides a limited, simplified view of interest to external clients (e.g. shared addressing, capacity, resource availability, etc.), that enable the clients to request connectivity without the need to understand the provider network internals.";
     }
     grouping capacity-pac {
         container total-potential-capacity {
             config false;
             uses capacity;
-            description "An optimistic view of the capacity of the TopologicalEntity assuming that any shared capacity is available to be taken.";
+            description "An optimistic view of the capacity of the entity assuming that any shared capacity is available to be taken.";
         }
         container available-capacity {
             config false;
             uses capacity;
             description "Capacity available to be assigned.";
         }
-        description "The TopologicalEntity derives capacity from the underlying realization. 
-            A TopologicalEntity may be an abstraction and virtualization of a subset of the underlying capability offered in a view or may be directly reflecting the underlying realization.
-            A TopologicalEntity may be directly used in the view or may be assigned to another view for use.
-            The clients supported by a multi-layer TopologicalEntity may interact such that the resources used by one client may impact those available to another. This is derived from the LTP spec details.
-            Represents the capacity available to user (client) along with client interaction and usage. 
-            A TopologicalEntity may reflect one or more client protocols and one or more members for each profile.";
+        description "Provides capacity related attributes.";
     }
     grouping termination-pac {
         leaf termination-direction {
             type termination-direction;
             config false;
-            description "The overall directionality of the LP. 
-                - A BIDIRECTIONAL LP will have some SINK and/or SOURCE flowss.
-                - A SINK LP can only contain elements with SINK flows or CONTRA_DIRECTION_SOURCE flows
-                - A SOURCE LP can only contain SOURCE flows or CONTRA_DIRECTION_SINK flows";
+            description "The overall directionality of the entity. 
+                - A BIDIRECTIONAL entity will have some SINK and/or SOURCE flows.
+                - A SINK entity can only contain elements with SINK flows or CONTRA_DIRECTION_SOURCE flows.
+                - A SOURCE entity can only contain SOURCE flows or CONTRA_DIRECTION_SINK flows.";
         }
         leaf termination-state {
             type termination-state;
             config false;
             description "Indicates whether the layer is terminated and if so how.";
         }
-        description "Each transport layer is represented by a LayerProtocol (LP) instance. The LayerProtocol instances it can be used for controlling termination and monitoring functionality. 
-            It can also be used for controlling the adaptation (i.e. encapsulation and/or multiplexing of client signal), tandem connection monitoring, traffic conditioning and/or shaping functionality at an intermediate point along a connection. 
-            Where the client – server relationship is fixed 1:1 and immutable, the layers can be encapsulated in a single LTP instance. Where the is a n:1 relationship between client and server, the layers must be split over two separate instances of LTP. ";
+        description "This object class is associated to a Connection End Point to specify its direction and layer termination function.";
     }
 
     /**************************
     * package type-definitions
     **************************/ 
     identity LAYER_PROTOCOL_QUALIFIER {
+        description "none";
+    }
+    identity LAYER_PROTOCOL_QUALIFIER_UNSPECIFIED {
+        base LAYER_PROTOCOL_QUALIFIER;
         description "none";
     }
     identity OBJECT_TYPE {
@@ -328,13 +321,11 @@ module tapi-common {
             }
             enum POTENTIAL_AVAILABLE {
                 description "The supporting resources are present in the network but are shared with other clients; or require further configuration before they can be used; or both.
-                    o    When a potential resource is configured and allocated to a client it is moved to the installed state for that client.
-                    o    If the potential resource has been consumed (e.g. allocated to another client) it is moved to the planned state for all other clients.";
+                    o    When a potential resource is configured and allocated to a client it is moved to the INSTALLED state for that client.
+                    o    If the potential resource has been consumed (e.g. allocated to another client) it is moved to the POTENTIAL_BUSY state for all other clients.";
             }
             enum POTENTIAL_BUSY {
-                description "The supporting resources are present in the network but are shared with other clients; or require further configuration before they can be used; or both.
-                    o    When a potential resource is configured and allocated to a client it is moved to the installed state for that client.
-                    o    If the potential resource has been consumed (e.g. allocated to another client) it is moved to the planned state for all other clients.";
+                description "The supporting resources are present in the network but have been allocated to other clients.";
             }
             enum INSTALLED {
                 description "The resource is present in the network and is capable of providing the service expected.";
@@ -354,7 +345,7 @@ module tapi-common {
             type string;
             description "The value";
         }
-        description "A scoped name-value pair";
+        description "A scoped name-value pair.";
     }
     typedef operational-state {
         type enumeration {
@@ -362,7 +353,7 @@ module tapi-common {
                 description "The resource is unable to meet the SLA of the user of the resource. If no (explicit) SLA is defined the resource is disabled if it is totally inoperable and unable to provide service to the user.";
             }
             enum ENABLED {
-                description "The resource is partially or fully operable and available for use";
+                description "The resource is partially or fully operable and available for use.";
             }
         }
         description "The possible values of the operationalState.";
@@ -373,10 +364,10 @@ module tapi-common {
                 description "The Port has both an INPUT flow and an OUTPUT flow defined.";
             }
             enum INPUT {
-                description "The Port only has definition for a flow into the Forwarding entity (i.e. an ingress flow).";
+                description "The Port only has definition for a flow into the Forwarding entity, (i.e. an ingress flow of the Link or Connection, hence egress flow of NEP or CEP, CSEP etc.).";
             }
             enum OUTPUT {
-                description "The Port only has definition for a flow out of the Forwarding entity (i.e. an egress flow).";
+                description "The Port only has definition for a flow out of the Forwarding entity ((i.e. an egress flow of the Link or Connection, hence ingress flow of NEP or CEP, CSEP etc.)";
             }
             enum UNIDENTIFIED_OR_UNKNOWN {
                 description "Not a normal state. The system is unable to determine the correct value.";
@@ -470,9 +461,9 @@ module tapi-common {
     grouping capacity {
         container total-size {
             uses capacity-value;
-            description "Total capacity of the TopologicalEntity in MB/s. In case of bandwidthProfile, this is expected to same as the committedInformationRate.";
+            description "Total capacity of the entity. In case of bandwidthProfile, this is expected to same as the committedInformationRate.";
         }
-        description "Information on capacity of a particular TopologicalEntity.";
+        description "Information on capacity of a particular entity.";
     }
     grouping capacity-value {
         leaf value {
@@ -601,6 +592,24 @@ module tapi-common {
             - LayerProtocolName := PHOTONIC_MEDIA
             LayerProtocolQualifier := OCH, OTSi, OTSiA, NMC, NMCA, SMC, SMCA, OMS, OTS
             ";
+    }
+    typedef mac-address {
+        type string;
+        description "pattern '[0-9a-fA-F]{2}(-[0-9a-fA-F]{2}){5}'
+            description
+            'The mac-address type represents a MAC address in the canonical
+            format and hexadecimal format specified by IEEE Std 802. The
+            hexidecimal representation uses uppercase characters.'";
+    }
+    typedef binary-type {
+        type string;
+        description "Represents any binary data, i.e., a sequence of octets.
+            A binary type can be restricted by a length which defines the number of octets it contains.";
+    }
+    typedef timeticks {
+        type string;
+        description "type uint32
+            The timeticks type represents a non-negative integer that represents the time, modulo 2^32 (4294967296 decimal), in hundredths of a second between two epochs.";
     }
     typedef object-type {
         type identityref {
