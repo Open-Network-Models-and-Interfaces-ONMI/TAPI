@@ -152,11 +152,6 @@ module tapi-odu {
                 This attribute is a 2-digit Hex code that indicates the new accepted payload type.
                 Valid values are defined in Table 15-8 of ITU-T Recommendation G.709 with one additional value UN_INTERPRETABLE.";
         }
-        container fec-parameters {
-            config false;
-            uses fec-properties;
-            description "none";
-        }
         leaf-list odu-cn-effective-time-slot-list {
             type uint64;
             description "This attribute contains a set of distinct (i.e. unique) integers (e.g. 2, 3, 5, 9, 15, 34 representing the tributary slots TS#1.2, TS#1.3, TS#1.5, TS#1.9, TS#1.15, and TS#2.14)
@@ -253,25 +248,16 @@ module tapi-odu {
     }
     grouping odu-mep-spec {
         container odu-mep {
-            uses odu-mep-pac;
+            uses odu-mep;
             description "none";
         }
-        container odu-ncm {
+        container otu-mep {
+            uses otu-mep;
+            description "none";
+        }
+        container odu-tcm-mep {
             config false;
-            uses odu-ncm-pac;
-            description "none";
-        }
-        container odu-tcm {
-            config false;
-            uses odu-tcm-mep-pac;
-            description "none";
-        }
-        container odu-defect {
-            uses odu-defect-pac;
-            description "none";
-        }
-        container odu-pm {
-            uses odu-pm-pac;
+            uses odu-tcm-mep;
             description "none";
         }
         description "none";
@@ -288,15 +274,11 @@ module tapi-odu {
         }
         description "none";
     }
-    grouping odu-ncm-pac {
-        leaf-list tcm-fields-in-use {
-            type uint64;
-            config false;
-            description "This attribute indicates the used TCM fields of the ODU OH.";
+    grouping odu-tcm-mep {
+        leaf codirectional {
+            type boolean;
+            description "This attribute specifies the directionality of the ODUT MEP with respect to the associated ODU CEP. The value of TRUE means that the sink part of the ODUT MEP terminates the same signal direction as the sink part of the ODU CEP. The Source part behaves similarly. This attribute is meaningful only on objects instantiated under ODU CEP, and at least one among ODU CEP and the subordinate object is bidirectional.";
         }
-        description "none";
-    }
-    grouping odu-tcm-mep-pac {
         leaf tcm-extension {
             type tcm-extension;
             description "none";
@@ -304,20 +286,6 @@ module tapi-odu {
         leaf tcm-mode {
             type tcm-mode;
             description "This attribute specifies the TCM mode at the entity. Valid values are: Operational, Monitor, and Transparent.";
-        }
-        leaf codirectional {
-            type boolean;
-            description "This attribute specifies the directionality of the ODUT MEP with respect to the associated ODU CEP. The value of TRUE means that the sink part of the ODUT MEP terminates the same signal direction as the sink part of the ODU CEP. The Source part behaves similarly. This attribute is meaningful only on objects instantiated under ODU CEP, and at least one among ODU CEP and the subordinate object is bidirectional.";
-        }
-        leaf ac-status-source {
-            type tcm-status;
-            config false;
-            description "This attribute indicates the status of the accepted TCM. ";
-        }
-        leaf ac-status-sink {
-            type tcm-status;
-            config false;
-            description "This attribute indicates the status of the accepted TCM. ";
         }
         leaf admin-state-source {
             type tapi-common:administrative-state;
@@ -327,98 +295,86 @@ module tapi-odu {
             type tapi-common:administrative-state;
             description "This attribute provides the capability to provision the LOCK signal at the sink, which is one of the ODU maintenance signals. When a Tandem Connection endpoint is set to admin state locked, it will insert the ODU-LCK signal in the downstream direction.";
         }
-        leaf tcm-field {
+        leaf txti {
+            type string;
+            description "The Trail Trace Identifier (TTI) information, provisioned by the managing system at the termination source, to be placed in the TTI overhead position of the source of a trail for transmission.
+                ";
+        }
+        leaf position-sequence {
             type uint64;
-            description "This attribute indicates the tandem connection monitoring field of the ODU OH.";
+            description "none";
+        }
+        container odu-oam-common {
+            uses odu-oam-common;
+            description "none";
+        }
+        container odu-tcm-mep-status {
+            uses odu-tcm-mep-status;
+            description "none";
         }
         description "none";
     }
     grouping odu-mip-spec {
         container odu-mip {
             config false;
-            uses odu-mip-pac;
+            uses odu-mip;
             description "none";
         }
-        container odu-ncm {
+        container odu-tcm-mip {
             config false;
-            uses odu-ncm-pac;
-            description "none";
-        }
-        container odu-tcm {
-            config false;
-            uses odu-tcm-mip-pac;
-            description "none";
-        }
-        container odu-pm {
-            uses odu-pm-pac;
-            description "none";
-        }
-        container odu-defect {
-            uses odu-defect-pac;
+            uses odu-tcm-mip;
             description "none";
         }
         description "none";
     }
-    grouping odu-mip-pac {
-        leaf acti {
-            type string;
-            config false;
-            description "The Trail Trace Identifier (TTI) information recovered (Accepted) from the TTI overhead position at the sink of a trail.";
+    grouping odu-mip {
+        container odu-oam-common {
+            uses odu-oam-common;
+            description "none";
         }
-        leaf ex-dapi {
-            type string;
-            description "The Expected Destination Access Point Identifier (ExDAPI), provisioned by the managing system, to be compared with the TTI accepted at the overhead position of the sink for the purpose of checking the integrity of connectivity.";
-        }
-        leaf ex-sapi {
-            type string;
-            description "The Expected Source Access Point Identifier (ExSAPI), provisioned by the managing system, to be compared with the TTI accepted at the overhead position of the sink for the purpose of checking the integrity of connectivity.
-                ";
-        }
-        leaf tim-act-disabled {
+        leaf codirectional {
             type boolean;
-            default "true";
-            description "This attribute provides the control capability for the managing system to enable or disable the Consequent Action function when detecting Trace Identifier Mismatch (TIM) at the trail termination sink.";
+            description "This attribute specifies the directionality of the ODUT MEP with respect to the associated ODU CEP. The value of TRUE means that the sink part of the ODUT MEP terminates the same signal direction as the sink part of the ODU CEP. The Source part behaves similarly. This attribute is meaningful only on objects instantiated under ODU CEP, and at least one among ODU CEP and the subordinate object is bidirectional.";
         }
-        leaf tim-det-mode {
-            type tim-det-mo;
-            description "This attribute indicates the mode of the Trace Identifier Mismatch (TIM) Detection function allowed values: OFF, SAPIonly, DAPIonly, SAPIandDAPI";
-        }
-        leaf deg-m {
-            type uint64;
-            description "This attribute indicates the threshold level for declaring a Degraded Signal defect (dDEG). A dDEG shall be declared if DegM consecutive bad PM Seconds are detected.";
-        }
-        container deg-thr {
-            uses deg-thr;
-            description "This attribute indicates the threshold level for declaring a performance monitoring (PM) Second to be bad. The value of the threshold can be provisioned in terms of number of errored blocks or in terms of percentage of errored blocks. For percentage-based specification, in order to support provision of less than 1%, the specification consists of two fields. The first field indicates the granularity of percentage. For examples, in 1%, in 0.1%, or in 0.01%, etc. The second field indicates the multiple of the granularity. For number of errored block based, the value is a positive integer.";
+        container odu-mip-status {
+            uses odu-mip-status;
+            description "none";
         }
         description "none";
     }
-    grouping odu-tcm-mip-pac {
-        leaf tcm-field {
-            type uint64;
-            description "This attribute indicates the tandem connection monitoring field of the ODU OH.";
-        }
+    grouping odu-tcm-mip {
         leaf codirectional {
             type boolean;
             description "This attribute specifies the directionality of the ODU MIP with respect to the associated ODU CEP. The value of TRUE means that the (half MIP/sink part of the) ODU MIP receives the same signal direction as the sink part of the ODU CEP. The Source part behaves similarly. This attribute is meaningful only on objects instantiated under ODU CEP, and at least one among ODU CEP and the subordinate object is bidirectional.";
         }
+        container odu-oam-common {
+            uses odu-oam-common;
+            description "none";
+        }
+        container odu-tcm-mip-status {
+            uses odu-tcm-mip-status;
+            description "none";
+        }
+        leaf position-sequence {
+            type uint64;
+            description "none";
+        }
         description "none";
     }
-    grouping odu-mep-pac {
-        leaf dm-source {
-            type boolean;
-            description "This attribute is for configuring the delay measurement process at the trail termination function represented by the subject TTP object class. It models the MI_DM_Source MI signal. If MI_DM_Source is false, then the value of the DMp bit is determined by the RI_DM. If MI_DM_Source is true, then the value of the DMp bit is set to MI_DMValue.";
-        }
-        leaf dm-value {
-            type boolean;
-            description "This attribute is for setting the DMp and DMti bits of the delay measurement process. The value of 'true' sets the DMp and DMti bits to 0 and the value of 'false' to 1.";
-        }
+    grouping odu-mep {
         leaf txti {
             type string;
             description "The Trail Trace Identifier (TTI) information, provisioned by the managing system at the termination source, to be placed in the TTI overhead position of the source of a trail for transmission.
                 ";
         }
-        uses odu-mip-pac;
+        container odu-oam-common {
+            uses odu-oam-common;
+            description "none";
+        }
+        container odu-mep-status {
+            uses odu-mep-status;
+            description "none";
+        }
         description "none";
     }
     grouping odu-common-pac {
@@ -447,70 +403,7 @@ module tapi-odu {
                 Valid values are real value in the unit of ppm. 
                 Standardized values are defined in Table 7-2/G.709.";
         }
-        leaf number-of-odu-c {
-            type uint64;
-            default "1";
-            description "This attribute specifies the number of ODUC instances of the ODUCn.";
-        }
         description "none";
-    }
-    grouping odu-pm-pac {
-        leaf n-bbe {
-            type uint64;
-            description "Near-end Background Block Error";
-        }
-        leaf f-bbe {
-            type uint64;
-            config false;
-            description "Far-end Background Block Error";
-        }
-        leaf n-ses {
-            type uint64;
-            description "Near-end Severely Errored Second";
-        }
-        leaf f-ses {
-            type uint64;
-            description "Far-end Severely Errored Second";
-        }
-        container uas {
-            uses uas-choice;
-            description "UnAvailable Second";
-        }
-        description "Instance of this object class contains the ODUP layer-specific Current Data. This object class is a subclass of the OTN_CurrentData object class.
-            PM data attributes: fBbe, fSes, nBbe, nSes. uas";
-    }
-    grouping odu-defect-pac {
-        leaf bdi {
-            type boolean;
-            config false;
-            description "Backward Defect Indication";
-        }
-        leaf deg {
-            type boolean;
-            config false;
-            description "Signal Degraded";
-        }
-        leaf lck {
-            type boolean;
-            config false;
-            description "Locked";
-        }
-        leaf oci {
-            type boolean;
-            config false;
-            description "Open Connection Indicator";
-        }
-        leaf ssf {
-            type boolean;
-            config false;
-            description "Server Signal Failure";
-        }
-        leaf tim {
-            type boolean;
-            config false;
-            description "Trail Trace Identifier Mismatch";
-        }
-        description "The valid list of defects raised on the entity. If the value of any attribute is true, then the corresponding defect is raised.";
     }
     grouping odu-connectivity-service-end-point-spec {
         container odu-csep-common-pac {
@@ -564,23 +457,31 @@ module tapi-odu {
         description "none";
     }
     grouping odu-oam-mep-service-point {
-        container odu-mep-pac {
-            uses odu-mep-pac;
+        container odu-mep {
+            uses odu-mep;
             description "none";
         }
-        container odu-tcm-mep-pac {
-            uses odu-tcm-mep-pac;
+        list odu-tcm-mep {
+            key 'position-sequence';
+            max-elements 12;
+            uses odu-tcm-mep;
+            description "none";
+        }
+        container otu-mep {
+            uses otu-mep;
             description "none";
         }
         description "none";
     }
     grouping odu-oam-mip-service-point {
-        container odu-mip-pac {
-            uses odu-mip-pac;
+        container odu-mip {
+            uses odu-mip;
             description "none";
         }
-        container odu-tcm-mip-pac {
-            uses odu-tcm-mip-pac;
+        list odu-tcm-mip {
+            key 'position-sequence';
+            max-elements 12;
+            uses odu-tcm-mip;
             description "none";
         }
         description "none";
@@ -630,11 +531,6 @@ module tapi-odu {
             type odu-slot-size;
             description "This attribute is applicable for ODU2 and ODU3 CTP only. It indicates the slot size of the ODU CTP.";
         }
-        leaf number-of-odu-c {
-            type uint64;
-            default "1";
-            description "This attribute specifies the number of ODUC instances of the ODUCn.";
-        }
         description "none";
     }
     grouping odu-csep-ctp-pac {
@@ -669,6 +565,191 @@ module tapi-odu {
     grouping odu-oam-service {
         container odu-meg-spec {
             uses odu-meg-spec;
+            description "none";
+        }
+        description "none";
+    }
+    grouping odu-oam-common {
+        leaf ex-dapi {
+            type string;
+            description "The Expected Destination Access Point Identifier (ExDAPI), provisioned by the managing system, to be compared with the TTI accepted at the overhead position of the sink for the purpose of checking the integrity of connectivity.";
+        }
+        leaf ex-sapi {
+            type string;
+            description "The Expected Source Access Point Identifier (ExSAPI), provisioned by the managing system, to be compared with the TTI accepted at the overhead position of the sink for the purpose of checking the integrity of connectivity.
+                ";
+        }
+        container deg-thr {
+            uses deg-thr;
+            description "This attribute indicates the threshold level for declaring a performance monitoring (PM) Second to be bad. The value of the threshold can be provisioned in terms of number of errored blocks or in terms of percentage of errored blocks. For percentage-based specification, in order to support provision of less than 1%, the specification consists of two fields. The first field indicates the granularity of percentage. For examples, in 1%, in 0.1%, or in 0.01%, etc. The second field indicates the multiple of the granularity. For number of errored block based, the value is a positive integer.";
+        }
+        leaf tim-det-mode {
+            type tim-det-mo;
+            description "This attribute indicates the mode of the Trace Identifier Mismatch (TIM) Detection function allowed values: OFF, SAPIonly, DAPIonly, SAPIandDAPI";
+        }
+        leaf tim-act-disabled {
+            type boolean;
+            default "true";
+            description "This attribute provides the control capability for the managing system to enable or disable the Consequent Action function when detecting Trace Identifier Mismatch (TIM) at the trail termination sink.";
+        }
+        leaf deg-m {
+            type uint64;
+            description "This attribute indicates the threshold level for declaring a Degraded Signal defect (dDEG). A dDEG shall be declared if DegM consecutive bad PM Seconds are detected.";
+        }
+        description "none";
+    }
+    grouping odu-tcm-mep-status {
+        leaf tcm-field {
+            type uint64;
+            description "This attribute indicates the tandem connection monitoring field of the ODU OH.";
+        }
+        leaf ac-status-source {
+            type tcm-status;
+            config false;
+            description "This attribute indicates the status of the accepted TCM. ";
+        }
+        leaf ac-status-sink {
+            type tcm-status;
+            config false;
+            description "This attribute indicates the status of the accepted TCM. ";
+        }
+        leaf operational-state {
+            type tapi-common:operational-state;
+            description "none";
+        }
+        leaf acti {
+            type string;
+            config false;
+            description "The Trail Trace Identifier (TTI) information recovered (Accepted) from the TTI overhead position at the sink of a trail.";
+        }
+        description "none";
+    }
+    grouping odu-tcm-mip-status {
+        leaf tcm-field {
+            type uint64;
+            config false;
+            description "This attribute indicates the tandem connection monitoring field of the ODU OH.";
+        }
+        leaf operational-state {
+            type tapi-common:operational-state;
+            config false;
+            description "none";
+        }
+        leaf acti {
+            type string;
+            config false;
+            description "The Trail Trace Identifier (TTI) information recovered (Accepted) from the TTI overhead position at the sink of a trail.";
+        }
+        description "none";
+    }
+    grouping otu-mep {
+        leaf txti {
+            type string;
+            description "The Trail Trace Identifier (TTI) information, provisioned by the managing system at the termination source, to be placed in the TTI overhead position of the source of a trail for transmission.
+                ";
+        }
+        container odu-oam-common {
+            uses odu-oam-common;
+            description "none";
+        }
+        container otu-mep-status {
+            uses otu-mep-status;
+            description "none";
+        }
+        description "none";
+    }
+    grouping otu-mep-status {
+        leaf acti {
+            type string;
+            config false;
+            description "The Trail Trace Identifier (TTI) information recovered (Accepted) from the TTI overhead position at the sink of a trail.";
+        }
+        description "none";
+    }
+    grouping odu-mep-status {
+        leaf acti {
+            type string;
+            config false;
+            description "The Trail Trace Identifier (TTI) information recovered (Accepted) from the TTI overhead position at the sink of a trail.";
+        }
+        leaf-list tcm-fields-in-use {
+            type uint64;
+            config false;
+            description "This attribute indicates the used TCM fields of the ODU OH.";
+        }
+        description "none";
+    }
+    grouping odu-mip-status {
+        leaf acti {
+            type string;
+            config false;
+            description "The Trail Trace Identifier (TTI) information recovered (Accepted) from the TTI overhead position at the sink of a trail.";
+        }
+        leaf-list tcm-fields-in-use {
+            type uint64;
+            config false;
+            description "This attribute indicates the used TCM fields of the ODU OH.";
+        }
+        leaf odu-current-number-of-tributary-slots {
+            type uint64;
+            config false;
+            description "This attribute applies only to ODUflex(GFP) connections. It represents the current number of tributary slots allocated to this ODUflex(GFP) connection in the HO-ODU server layer.";
+        }
+        description "none";
+    }
+    grouping otu-csep-ttp-pac {
+        leaf otu-type {
+            type otu-type;
+            description "none";
+        }
+        description "none";
+    }
+    grouping odu-cn-csep-ttp-pac {
+        leaf number-of-odu-c {
+            type uint64;
+            default "1";
+            description "This attribute specifies the number of ODUC instances of the ODUCn.";
+        }
+        description "none";
+    }
+    grouping otu-connection-end-point-spec {
+        container otu-ttp-pac {
+            uses otu-ttp-pac;
+            description "none";
+        }
+        container odu-cn-ttp-pac {
+            uses odu-cn-ttp-pac;
+            description "none";
+        }
+        description "none";
+    }
+    grouping otu-ttp-pac {
+        container fec-parameters {
+            config false;
+            uses fec-properties;
+            description "none";
+        }
+        leaf otu-type {
+            type otu-type;
+            description "none";
+        }
+        description "none";
+    }
+    grouping odu-cn-ttp-pac {
+        leaf number-of-odu-c {
+            type uint64;
+            default "1";
+            description "This attribute specifies the number of ODUC instances of the ODUCn.";
+        }
+        description "none";
+    }
+    grouping otu-connectivity-service-end-point-spec {
+        container odu-cn-csep-ttp-pac {
+            uses odu-cn-csep-ttp-pac;
+            description "none";
+        }
+        container otu-csep-ttp-pac {
+            uses otu-csep-ttp-pac;
             description "none";
         }
         description "none";
@@ -907,6 +988,56 @@ module tapi-odu {
     }
     identity ODU_OAM_JOB_TYPE_NCM {
         base ODU_OAM_JOB_TYPE;
+        description "none";
+    }
+    identity ODU_OAM_JOB_TYPE_NCM_DELAY {
+        base ODU_OAM_JOB_TYPE;
+        description "none";
+    }
+    identity ODU_PM_PARAMETER_NAME {
+        description "none";
+    }
+    identity ODU_PM_PARAMETER_NAME_BBE {
+        base ODU_PM_PARAMETER_NAME;
+        description "none";
+    }
+    identity ODU_PM_PARAMETER_NAME_ES {
+        base ODU_PM_PARAMETER_NAME;
+        description "none";
+    }
+    identity ODU_PM_PARAMETER_NAME_SES {
+        base ODU_PM_PARAMETER_NAME;
+        description "none";
+    }
+    identity ODU_PM_PARAMETER_NAME_UAS_BID {
+        base ODU_PM_PARAMETER_NAME;
+        description "none";
+    }
+    identity ODU_PM_PARAMETER_NAME_DELAY {
+        base ODU_PM_PARAMETER_NAME;
+        description "none";
+    }
+    identity OTU_TYPE {
+        description "none";
+    }
+    identity OTU_TYPE_OTU1 {
+        base OTU_TYPE;
+        description "none";
+    }
+    identity OTU_TYPE_OTU2 {
+        base OTU_TYPE;
+        description "none";
+    }
+    identity OTU_TYPE_OTU3 {
+        base OTU_TYPE;
+        description "none";
+    }
+    identity OTU_TYPE_OTU4 {
+        base OTU_TYPE;
+        description "none";
+    }
+    identity OTU_TYPE_OTU_CN {
+        base OTU_TYPE;
         description "none";
     }
     typedef otn-alarm-condition-name {
@@ -1183,6 +1314,18 @@ module tapi-odu {
         leaf uncorrectable-bits {
             type uint64;
             description "Bits that could not be corrected by FEC";
+        }
+        description "none";
+    }
+    typedef odu-pm-parameter-name {
+        type identityref {
+            base ODU_PM_PARAMETER_NAME;
+        }
+        description "none";
+    }
+    typedef otu-type {
+        type identityref {
+            base OTU_TYPE;
         }
         description "none";
     }

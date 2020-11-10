@@ -269,6 +269,41 @@ module tapi-photonic-media {
         }
         description "none";
     }
+    augment "/tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point" {
+        container otsia-connectivity-service-end-point-spec {
+            uses otsia-connectivity-service-end-point-spec;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point" {
+        container mca-connectivity-service-end-point-spec {
+            uses mca-connectivity-service-end-point-spec;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point" {
+        container otsi-mca-connectivity-service-end-point-spec {
+            uses otsi-mca-connectivity-service-end-point-spec;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point" {
+        container ots-connection-end-point-spec {
+            uses ots-connection-end-point-spec;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point" {
+        container otsi-mc-connection-end-point-spec {
+            uses otsi-mc-connection-end-point-spec;
+            description "none";
+        }
+        description "none";
+    }
     /**************************
     * package object-classes
     **************************/ 
@@ -321,6 +356,7 @@ module tapi-photonic-media {
             description "Measured power at the Transmitter.";
         }
         container received-power {
+            config false;
             uses power-properties;
             description "none";
         }
@@ -476,6 +512,7 @@ module tapi-photonic-media {
             }
             description "Allows to configure the Lowerpower threshold which is expected to be different from Default, but within the Min and Max values specified as OTSi SIP capability.";
         }
+        uses tapi-common:local-class;
         description "none";
     }
     grouping media-channel-service-interface-point-spec {
@@ -495,13 +532,6 @@ module tapi-photonic-media {
             uses media-channel-config-pac;
             description "none";
         }
-        container power-management-config {
-            uses power-management-config-pac;
-            description "This parameters shall be used to configure the expected
-                and intended (desired) power levels at the endpoints of the media
-                Channel connectivity service. These parameters are dependent of the
-                related OTSi power-management capabilities exposed at the SIPs";
-        }
         description "none";
     }
     grouping media-channel-config-pac {
@@ -509,12 +539,22 @@ module tapi-photonic-media {
             uses spectrum-band;
             description "none";
         }
+        container power-management-config-pac {
+            uses power-management-config-pac;
+            description "none";
+        }
+        uses tapi-common:local-class;
         description "none";
     }
     grouping media-channel-connection-end-point-spec {
         container media-channel {
             config false;
             uses media-channel-properties-pac;
+            description "none";
+        }
+        list otsi-mc-properties-pac {
+            key 'local-id';
+            uses otsi-mc-properties-pac;
             description "none";
         }
         description "none";
@@ -607,6 +647,150 @@ module tapi-photonic-media {
         description "This pac includes power management constrains which can be included
             as part of the characterization of the Connectivity-Service-End-Points
             associated to Logical-Termination-Points (LTPs) at the PHOTONIC_MEDIA layer.";
+    }
+    grouping ots-connection-end-point-spec {
+        container media-channel-properties-pac {
+            uses media-channel-properties-pac;
+            description "none";
+        }
+        description "none";
+    }
+    grouping otsi-mc-config-pac {
+        container spectrum {
+            uses spectrum-band;
+            description "none";
+        }
+        container central-frequency {
+            uses central-frequency;
+            description "The central frequency of the laser. It is the oscillation frequency of the corresponding electromagnetic wave";
+        }
+        leaf spectrum-bandwidth {
+            type uint64;
+            description "none";
+        }
+        container power-management-config-pac {
+            uses power-management-config-pac;
+            description "none";
+        }
+        uses tapi-common:local-class;
+        description "none";
+    }
+    grouping otsi-mc-bw-config-pac {
+        container capacity {
+            uses tapi-common:capacity-value;
+            description "none";
+        }
+        leaf center-frequency-offset {
+            type uint64;
+            description "none";
+        }
+        container center-frequency-constraint {
+            uses frequency-constraint;
+            description "none";
+        }
+        leaf non-adjacent-spectrum {
+            type uint64;
+            description "none";
+        }
+        container edge-frequency-constraint {
+            uses frequency-constraint;
+            description "none";
+        }
+        container power-management-config-pac {
+            uses power-management-config-pac;
+            description "none";
+        }
+        uses tapi-common:local-class;
+        description "none";
+    }
+    grouping otsi-mca-connectivity-service-end-point-spec {
+        list otsi-mc-bw-config-pac {
+            key 'local-id';
+            uses otsi-mc-bw-config-pac;
+            description "none";
+        }
+        list otsi-mc-config-pac {
+            key 'local-id';
+            uses otsi-mc-config-pac;
+            description "none";
+        }
+        description "none";
+    }
+    grouping media-channel-bw-config-pac {
+        container capacity {
+            uses tapi-common:capacity-value;
+            description "none";
+        }
+        container edge-frequency-constraint {
+            uses frequency-constraint;
+            description "none";
+        }
+        container power-management-config-pac {
+            uses power-management-config-pac;
+            description "none";
+        }
+        uses tapi-common:local-class;
+        description "none";
+    }
+    grouping mca-connectivity-service-end-point-spec {
+        leaf number-of-mc {
+            type uint64;
+            default "1";
+            description "none";
+        }
+        list mc-config {
+            key 'local-id';
+            uses media-channel-config-pac;
+            description "none";
+        }
+        list media-channel-bw-config-pac {
+            key 'local-id';
+            uses media-channel-bw-config-pac;
+            description "none";
+        }
+        description "none";
+    }
+    grouping otsia-connectivity-service-end-point-spec {
+        leaf number-of-otsi {
+            type uint64;
+            default "1";
+            description "none";
+        }
+        list otsi-config {
+            key 'local-id';
+            uses otsi-termination-config-pac;
+            description "none";
+        }
+        description "none";
+    }
+    grouping otsi-mc-connection-end-point-spec {
+        container otsi-mc-properties-pac {
+            uses otsi-mc-properties-pac;
+            description "none";
+        }
+        description "none";
+    }
+    grouping otsi-mc-properties-pac {
+        container occupied-spectrum {
+            config false;
+            uses spectrum-band;
+            description "none";
+        }
+        container central-frequency {
+            uses central-frequency;
+            description "The central frequency of the laser. It is the oscillation frequency of the corresponding electromagnetic wave";
+        }
+        container measured-power-ingress {
+            config false;
+            uses power-properties;
+            description "none";
+        }
+        container measured-power-egress {
+            uses power-properties;
+            description "none";
+        }
+        uses tapi-common:local-class;
+        description "none";
     }
 
     /**************************
