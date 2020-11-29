@@ -291,8 +291,8 @@ module tapi-photonic-media {
         description "none";
     }
     augment "/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point" {
-        container ots-connection-end-point-spec {
-            uses ots-connection-end-point-spec;
+        container ots-oms-connection-end-point-spec {
+            uses ots-oms-connection-end-point-spec;
             description "none";
         }
         description "none";
@@ -504,13 +504,13 @@ module tapi-photonic-media {
             type decimal64 {
                 fraction-digits 7;
             }
-            description "Allows to configure the Upper power threshold which is expected to be different from Default, but within the Min and Max values specified as OTSi SIP capability.";
+            description "Allows to configure the upper power threshold which is expected to be different from Default, but within the Min and Max values specified as OTSi SIP capability.";
         }
         leaf total-power-warn-threshold-lower {
             type decimal64 {
                 fraction-digits 7;
             }
-            description "Allows to configure the Lowerpower threshold which is expected to be different from Default, but within the Min and Max values specified as OTSi SIP capability.";
+            description "Allows to configure the lower power threshold which is expected to be different from Default, but within the Min and Max values specified as OTSi SIP capability.";
         }
         uses tapi-common:local-class;
         description "none";
@@ -537,6 +537,10 @@ module tapi-photonic-media {
     grouping media-channel-config-pac {
         container spectrum {
             uses spectrum-band;
+            description "none";
+        }
+        container edge-frequency-constraint {
+            uses frequency-constraint;
             description "none";
         }
         container power-management-config-pac {
@@ -648,9 +652,17 @@ module tapi-photonic-media {
             as part of the characterization of the Connectivity-Service-End-Points
             associated to Logical-Termination-Points (LTPs) at the PHOTONIC_MEDIA layer.";
     }
-    grouping ots-connection-end-point-spec {
+    grouping ots-oms-connection-end-point-spec {
         container media-channel-properties-pac {
             uses media-channel-properties-pac;
+            description "none";
+        }
+        container ots-cep-pac {
+            uses ots-cep-pac;
+            description "none";
+        }
+        container oms-cep-pac {
+            uses oms-cep-pac;
             description "none";
         }
         description "none";
@@ -660,13 +672,18 @@ module tapi-photonic-media {
             uses spectrum-band;
             description "none";
         }
-        container central-frequency {
-            uses central-frequency;
-            description "The central frequency of the laser. It is the oscillation frequency of the corresponding electromagnetic wave";
-        }
-        leaf spectrum-bandwidth {
-            type uint64;
+        container center-frequency-constraint {
+            uses frequency-constraint;
             description "none";
+        }
+        container edge-frequency-constraint {
+            uses frequency-constraint;
+            description "none";
+        }
+        leaf center-frequency-offset {
+            type uint64;
+            description "Offset where it is expected to find the signal in the MC.
+                (unidimensional in MHz).";
         }
         container power-management-config-pac {
             uses power-management-config-pac;
@@ -680,10 +697,6 @@ module tapi-photonic-media {
             uses tapi-common:capacity-value;
             description "none";
         }
-        leaf center-frequency-offset {
-            type uint64;
-            description "none";
-        }
         container center-frequency-constraint {
             uses frequency-constraint;
             description "none";
@@ -695,6 +708,15 @@ module tapi-photonic-media {
         container edge-frequency-constraint {
             uses frequency-constraint;
             description "none";
+        }
+        leaf spectrum-bandwidth {
+            type uint64;
+            description "Unidimensional in MHz";
+        }
+        leaf center-frequency-offset {
+            type uint64;
+            description "Offset where it is expected to find the signal in the MC.
+                (unidimensional in MHz).";
         }
         container power-management-config-pac {
             uses power-management-config-pac;
@@ -714,6 +736,10 @@ module tapi-photonic-media {
             uses otsi-mc-config-pac;
             description "none";
         }
+        container otsi-mc-freq-config-pac {
+            uses otsi-mc-freq-config-pac;
+            description "none";
+        }
         description "none";
     }
     grouping media-channel-bw-config-pac {
@@ -724,6 +750,10 @@ module tapi-photonic-media {
         container edge-frequency-constraint {
             uses frequency-constraint;
             description "none";
+        }
+        leaf spectrum-bandwidth {
+            type uint64;
+            description "Unidimensional in MHz";
         }
         container power-management-config-pac {
             uses power-management-config-pac;
@@ -787,6 +817,41 @@ module tapi-photonic-media {
         }
         container measured-power-egress {
             uses power-properties;
+            description "none";
+        }
+        uses tapi-common:local-class;
+        description "none";
+    }
+    grouping ots-cep-pac {
+        description "none";
+    }
+    grouping oms-cep-pac {
+        description "none";
+    }
+    grouping otsi-mc-freq-config-pac {
+        container central-frequency {
+            uses central-frequency;
+            description "The central frequency of the laser. It is the oscillation frequency of the corresponding electromagnetic wave";
+        }
+        leaf spectrum-bandwidth {
+            type uint64;
+            description "Unidimensional in MHz";
+        }
+        container center-frequency-constraint {
+            uses frequency-constraint;
+            description "none";
+        }
+        container edge-frequency-constraint {
+            uses frequency-constraint;
+            description "none";
+        }
+        leaf center-frequency-offset {
+            type uint64;
+            description "Offset where it is expected to find the signal in the MC.
+                (unidimensional in MHz).";
+        }
+        container power-management-config-pac {
+            uses power-management-config-pac;
             description "none";
         }
         uses tapi-common:local-class;

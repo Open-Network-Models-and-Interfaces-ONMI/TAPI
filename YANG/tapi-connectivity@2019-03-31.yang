@@ -109,6 +109,16 @@ module tapi-connectivity {
         }
         description "none";
     }
+    grouping connectivity-service-internal-point-ref {
+        uses connectivity-service-ref;
+        leaf connectivity-service-internal-point-local-id {
+            type leafref {
+                path '/tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:internal-point/tapi-connectivity:local-id';
+            }
+            description "none";
+        }
+        description "none";
+    }
     grouping connection-end-point-ref {
         uses tapi-topology:node-edge-point-ref;
         leaf connection-end-point-uuid {
@@ -333,7 +343,11 @@ module tapi-connectivity {
         list connectivity-service {
             uses connectivity-service-ref;
             key 'connectivity-service-uuid';
-            config false;
+            description "none";
+        }
+        list internal-point {
+            key 'local-id';
+            uses connectivity-service-internal-point;
             description "none";
         }
         uses tapi-common:global-class;
@@ -387,6 +401,11 @@ module tapi-connectivity {
         leaf protection-role {
             type protection-role;
             description "To specify the protection role of this Port when create or update ConnectivityService.";
+        }
+        list assembled-connectivity-service-end-point {
+            uses connectivity-service-end-point-ref;
+            key 'connectivity-service-uuid connectivity-service-end-point-local-id';
+            description "none";
         }
         uses tapi-common:local-class;
         uses tapi-common:admin-state-pac;
@@ -585,6 +604,24 @@ module tapi-connectivity {
         }
         container routing-constraint {
             uses tapi-path-computation:routing-constraint;
+            description "none";
+        }
+        uses tapi-common:local-class;
+        description "none";
+    }
+    grouping connectivity-service-internal-point {
+        leaf layer-protocol-name {
+            type tapi-common:layer-protocol-name;
+            description "none";
+        }
+        leaf layer-protocol-qualifier {
+            type tapi-common:layer-protocol-qualifier;
+            description "none";
+        }
+        list connection-end-point {
+            uses connection-end-point-ref;
+            key 'topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid';
+            config false;
             description "none";
         }
         uses tapi-common:local-class;
