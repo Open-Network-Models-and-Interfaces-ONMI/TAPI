@@ -136,24 +136,24 @@ module tapi-topology {
             key 'topology-uuid node-uuid node-edge-point-uuid';
             config false;
             min-elements 2;
-            description "none";
+            description "The NEPs connected by the Link.";
         }
         leaf-list layer-protocol-name {
             type tapi-common:layer-protocol-name;
             config false;
             min-elements 1;
-            description "none";
+            description "The layer protocol of the Link.";
         }
         leaf direction {
             type tapi-common:forwarding-direction;
             config false;
-            description "The directionality of the Link. 
-                Is applicable to simple Links where all LinkEnds are BIDIRECTIONAL (the Link will be BIDIRECTIONAL) or UNIDIRECTIONAL (the Link will be UNIDIRECTIONAL). 
+            description "The directionality of the Link.
+                Is applicable to simple Links where all (conceptual) ports are BIDIRECTIONAL (the Link will be BIDIRECTIONAL) or UNIDIRECTIONAL (the Link will be UNIDIRECTIONAL).
                 Is not present in more complex cases.";
         }
         container resilience-type {
             uses resilience-type;
-            description "none";
+            description "The underlying resilience type of the Link.";
         }
         uses tapi-common:global-class;
         uses tapi-common:admin-state-pac;
@@ -164,36 +164,40 @@ module tapi-topology {
         uses risk-parameter-pac;
         uses validation-pac;
         uses layer-protocol-transition-pac;
-        description "The Link object class models effective adjacency between two or more ForwardingDomains (FD). ";
+        description "A Link is a topological entity which is an abstract representation of the effective adjacency between two or more Node instances (specifically NodeEdgePoint instances) in a Topology.";
     }
     grouping node {
         list owned-node-edge-point {
             key 'uuid';
             config false;
             uses node-edge-point;
-            description "none";
+            description "The NEPs belonging to / owned by this Node.
+                By convention, only the Node instances at the lowest partitioning level 'own' the NEPs.
+                In other words, each and every NEP instance is owned by a Node at the lowest partitioning level.";
         }
         list aggregated-node-edge-point {
             uses node-edge-point-ref;
             key 'topology-uuid node-uuid node-edge-point-uuid';
             config false;
-            description "none";
+            description "The NEPs aggregated by this Node.
+                By convention, only the Node instances which are not at the lowest partitioning level 'aggregate' the NEPs.
+                In other words, each and every NEP instance is owned by a Node at the lowest partitioning level. A subset of NEP instances may be aggregated by Nodes at higher partitioning levels.";
         }
         list node-rule-group {
             key 'uuid';
             uses node-rule-group;
-            description "none";
+            description "The Node rules applicable to this Node.";
         }
         container encap-topology {
             uses topology-ref;
             config false;
-            description "none";
+            description "A Node may encapsulate one Topology instance, which in turn encompasses Nodes at lower partitioning level.";
         }
         leaf-list layer-protocol-name {
             type tapi-common:layer-protocol-name;
             config false;
             min-elements 1;
-            description "none";
+            description "The layer protocol(s) of the (multi-layer) Node.";
         }
         uses tapi-common:global-class;
         uses tapi-common:admin-state-pac;
@@ -201,92 +205,95 @@ module tapi-topology {
         uses transfer-cost-pac;
         uses transfer-integrity-pac;
         uses transfer-timing-pac;
-        description "The ForwardingDomain (FD) object class models the ForwardingDomain topological component which is used to effect forwarding of transport characteristic information and offers the potential to enable forwarding. 
-            At the lowest level of recursion, an FD (within a network element (NE)) represents a switch matrix (i.e., a fabric). Note that an NE can encompass multiple switch matrices (FDs). ";
+        description "The Node is a topological entity which is an abstract representation of the forwarding capabilities (of transport characteristic information) of a particular set of network resources.
+            It is described in terms of the aggregation of set of ports (NodeEdgePoint) belonging to those network resources and the potential to enable forwarding of information between those edge ports.
+            At the lowest level of recursion, a Node may represent a switch matrix (i.e., a fabric) in an equipment.";
     }
     grouping topology {
         list node {
             key 'uuid';
             config false;
             uses node;
-            description "none";
+            description "The list of Nodes which the Topology encompass.";
         }
         list link {
             key 'uuid';
             config false;
             uses link;
-            description "none";
+            description "The list of Links which the Topology encompass.";
         }
         leaf-list layer-protocol-name {
             type tapi-common:layer-protocol-name;
             config false;
             min-elements 1;
-            description "none";
+            description "The layer protocol(s) of the (multi-layer) Topology.";
         }
         list boundary-node-edge-point {
             uses node-edge-point-ref;
             key 'topology-uuid node-uuid node-edge-point-uuid';
             config false;
-            description "none";
+            description "This list is applicable only in case of a 'top' Topology (i.e. a Topology which is not encapsulated in a Node) which does not encompass a single Node.
+                In this case, the list identifies the NEPs which are at the boundary of the Topology, which can be a subset of all the NEPs belonging to encompassed Nodes.
+                It is expected that these boundary NEPs have an associated SIP to allow the provisioning of ConnectivityServices spanning the whole Topology.";
         }
         uses tapi-common:global-class;
-        description "The ForwardingDomain (FD) object class models the ForwardingDomain topological component which is used to effect forwarding of transport characteristic information and offers the potential to enable forwarding. 
-            At the lowest level of recursion, an FD (within a network element (NE)) represents a switch matrix (i.e., a fabric). Note that an NE can encompass multiple switch matrices (FDs). ";
+        description "The Topology is an abstract representation of the topological aspects of a particular set of network resources. It is described in terms of the underlying topological network of Node and Link instances that enable the forwarding capabilities of that particular set of network resources.";
     }
     grouping layer-protocol-transition-pac {
         leaf-list transitioned-layer-protocol-name {
             type string;
             min-elements 2;
-            description "Provides the ordered structure of layer protocol transitions encapsulated in the TopologicalEntity.
+            description "Provides the ordered structure of layer protocol transitions encapsulated in the Link.
                 The list starts with the client side as the first entry and includes all layer-protocol names (hence the smallest number is 2 as otherwise the Link is not transitional).
-                The ordering relates also to the LinkPort role (which emphasizes the orientation).";
+                The ordering relates also to the (conceptual) port role (which emphasizes the orientation).";
         }
-        description "Relevant for a Link that is formed by abstracting one or more LTPs (in a stack) to focus on the flow and deemphasize the protocol transformation. 
-            This abstraction is relevant when considering multi-layer routing. 
-            The layer protocols of the LTP and the order of their application to the signal is still relevant and need to be accounted for. This is derived from the LTP spec details.
-            This Pac provides the relevant abstractions of the LTPs and provides the necessary association to the LTPs involved.
+        description "Relevant for a Link that is formed by abstracting one or more termination entities (in a stack) to focus on the flow and deemphasize the protocol transformation.
+            This abstraction is relevant when considering multi-layer routing and the protocol transformation is not too complex, e.g. there is not multiplexing.
+            This Pac provides the relevant abstractions of the embedded termination entities: The layer protocols of the embedded termination entities and the order of their application to the signal is still relevant and need to be accounted for.
             Links that included details in this Pac are often referred to as Transitional Links.";
     }
     grouping node-edge-point {
         leaf layer-protocol-name {
             type tapi-common:layer-protocol-name;
             config false;
-            description "none";
+            description "The layer protocol of the NodeEdgePoint (NEP).";
         }
         list available-cep-layer-protocol {
             key 'layer-protocol-qualifier';
             min-elements 1;
             uses nep-layer-protocol-capability;
-            description "none";
+            description "The potentially supported protocols and flows.
+                In ITU-T terms, the potentially supported adaptation and termination functions. ";
         }
         list aggregated-node-edge-point {
             uses node-edge-point-ref;
             key 'topology-uuid node-uuid node-edge-point-uuid';
             config false;
-            description "none";
+            description "A NodeEdgePoint (NEP) instance may aggregate one or more other NEP instances for e.g. pooling purposes, when a set of NEP instances are equivalent for usage.";
         }
         list mapped-service-interface-point {
             uses tapi-common:service-interface-point-ref;
             key 'service-interface-point-uuid';
             config false;
-            description "NodeEdgePoint mapped to more than ServiceInterfacePoint (slicing/virtualizing) or a ServiceInterfacePoint mapped to more than one NodeEdgePoint (load balancing/Resilience) should be considered experimental";
+            description "A NodeEdgePoint (NEP) may be associated to a ServiceInterfacePoint (SIP), i.e. when the NEP is the resource oriented view of a SIP.
+                NEP mapped to more than one SIP (slicing/virtualizing) or a SIP mapped to more than one NEP (load balancing/resilience) should be considered experimental.";
         }
         leaf link-port-direction {
             type tapi-common:port-direction;
             config false;
-            description "The orientation of defined flow at the LinkEnd.";
+            description "The orientation of flow at the (conceptual) port of the associated Link.";
         }
         leaf link-port-role {
             type tapi-common:port-role;
             config false;
-            description "Each LinkEnd of the Link has a role (e.g., symmetric, hub, spoke, leaf, root)  in the context of the Link with respect to the Link function. ";
+            description "The role of the (conceptual) port of the associated Link.";
         }
         uses tapi-common:global-class;
         uses tapi-common:admin-state-pac;
         uses tapi-common:termination-pac;
         uses tapi-common:capacity-pac;
-        description "The LogicalTerminationPoint (LTP) object class encapsulates the termination and adaptation functions of one or more transport layers. 
-            The structure of LTP supports all transport protocols including circuit and packet forms.";
+        description "The NodeEdgePoint (NEP) is a topological entity which represents the ingress-egress edge-port functions that access the forwarding capabilities provided by the Node.
+            Hence it provides an encapsulation of addressing, mapping, termination, adaptation and OAM functions of one or more transport layers (including circuit and packet forms) performed at the entry and exit points of the Node.";
     }
     grouping risk-parameter-pac {
         list risk-characteristic {
@@ -296,18 +303,18 @@ module tapi-topology {
             uses risk-characteristic;
             description "A list of risk characteristics for consideration in an analysis of shared risk. Each element of the list represents a specific risk consideration.";
         }
-        description "The risk characteristics of a TopologicalEntity come directly from the underlying physical realization. 
+        description "The risk characteristics of a topological entity (e.g. the Link) come directly from the underlying physical realization. 
             The risk characteristics propagate from the physical realization to the client and from the server layer to the client layer, this propagation may be modified by protection.
-            A TopologicalEntity may suffer degradation or failure as a result of a problem in a part of the underlying realization.
+            A topological entity may suffer degradation or failure as a result of a problem in a part of the underlying realization.
             The realization can be partitioned into segments which have some relevant common failure modes.
             There is a risk of failure/degradation of each segment of the underlying realization.
             Each segment is a part of a larger physical/geographical unit that behaves as one with respect to failure (i.e. a failure will have a high probability of impacting the whole unit (e.g. all cables in the same duct).
-            Disruptions to that larger physical/geographical unit will impact (cause failure/errors to) all TopologicalEntities that use any part of that larger physical/geographical entity.
-            Any TopologicalEntity that uses any part of that larger physical/geographical unit will suffer impact and hence each TopologicalEntity shares risk.
-            The identifier of each physical/geographical unit that is involved in the realization of each segment of a Topological entity can be listed in the RiskParameter_Pac of that TopologicalEntity.
+            Disruptions to that larger physical/geographical unit will impact (cause failure/errors to) all topological entities that use any part of that larger physical/geographical entity.
+            Any topological entity that uses any part of that larger physical/geographical unit will suffer impact and hence each topological entity shares risk.
+            The identifier of each physical/geographical unit that is involved in the realization of each segment of a topological entity can be listed in the RiskParameter_Pac of that topological entity.
             A segment has one or more risk characteristic.
-            Shared risk between two TopologicalEntities compromises the integrity of any solution that use one of those TopologicalEntity as a backup for the other.
-            Where two TopologicalEntities have a common risk characteristic they have an elevated probability of failing simultaneously compared to two TopologicalEntities that do not share risk characteristics.";
+            Shared risk between two topological entities compromises the integrity of any solution that use one of those topological entity as a backup for the other.
+            Where two topological entities have a common risk characteristic they have an elevated probability of failing simultaneously compared to two topological entities that do not share risk characteristics.";
     }
     grouping transfer-cost-pac {
         list cost-characteristic {
@@ -315,25 +322,25 @@ module tapi-topology {
             config false;
             min-elements 1;
             uses cost-characteristic;
-            description "The list of costs where each cost relates to some aspect of the TopologicalEntity.";
+            description "The list of costs where each cost relates to some aspect of the topological entity.";
         }
-        description "The cost characteristics of a TopologicalEntity not necessarily correlated to the cost of the underlying physical realization. 
-            They may be quite specific to the individual TopologicalEntity e.g. opportunity cost. Relates to layer capacity
-            There may be many perspectives from which cost may be considered  for a particular TopologicalEntity and hence many specific costs and potentially cost algorithms. 
-            Using an entity will incur a cost. ";
+        description "The cost characteristics of a topological entity (e.g. a Link or a Node) not necessarily correlated to the cost of the underlying physical realization. 
+            They may be quite specific to the individual topological entity e.g. opportunity cost. Relates to layer capacity.
+            There may be many perspectives from which cost may be considered  for a particular topological entity and hence many specific costs and potentially cost algorithms. 
+            Using an entity will incur a cost.";
     }
     grouping transfer-integrity-pac {
         leaf error-characteristic {
             type string;
             config false;
             description "Describes the degree to which the signal propagated can be errored. 
-                Applies to TDM systems as the errored signal will be propagated and not packet as errored packets will be discarded.";
+                Applies to TDM systems as the errored signal will be propagated and not to packet as errored packets will be discarded.";
         }
         leaf loss-characteristic {
             type string;
             config false;
             description "Describes the acceptable characteristic of lost packets where loss may result from discard due to errors or overflow.
-                Applies to packet systems and not TDM (as for TDM errored signals are propagated unless grossly errored and overflow/underflow turns into timing slips).";
+                Applies to packet systems and not to TDM (as for TDM errored signals are propagated unless grossly errored and overflow/underflow turns into timing slips).";
         }
         leaf repeat-delivery-characteristic {
             type string;
@@ -355,11 +362,11 @@ module tapi-topology {
         leaf server-integrity-process-characteristic {
             type string;
             config false;
-            description "Describes the effect of any server integrity enhancement process on the characteristics of the TopologicalEntity.";
+            description "Describes the effect of any server integrity enhancement process on the characteristics of the topological entity.";
         }
-        description "Transfer intergrity characteristic covers expected/specified/acceptable characteristic of degradation of the transfered signal.
-            It includes all aspects of possible degradation of signal content as well as any damage of any form to the total TopologicalEntity and to the carried signals.
-            Note that the statement is of total impact to the TopologicalEntity so any partial usage of the TopologicalEntity (e.g. a signal that does not use full capacity) will only suffer its portion of the impact.";
+        description "Transfer integrity characteristic covers expected/specified/acceptable characteristic of degradation of the transfered signal.
+            It includes all aspects of possible degradation of signal content as well as any damage of any form to the total topological entity and to the carried signals.
+            Note that the statement is of total impact to the topological entity so any partial usage of the topological entity (e.g. a signal that does not use full capacity) will only suffer its portion of the impact.";
     }
     grouping transfer-timing-pac {
         list latency-characteristic {
@@ -369,7 +376,7 @@ module tapi-topology {
             uses latency-characteristic;
             description "The effect on the latency of a queuing process. This only has significant effect for packet based systems and has a complex characteristic.";
         }
-        description "A TopologicalEntity will suffer effects from the underlying physical realization related to the timing of the information passed by the TopologicalEntity.";
+        description "A topological entity (e.g. a Link or a Node) will suffer effects from the underlying physical realization related to the timing of the information passed by the topological entity.";
     }
     grouping validation-pac {
         list validation-mechanism {
@@ -377,33 +384,35 @@ module tapi-topology {
             config false;
             min-elements 1;
             uses validation-mechanism;
-            description "Provides details of the specific validation mechanism(s) used to confirm the presence of an intended topologicalEntity.";
+            description "Provides details of the specific validation mechanism(s) used to confirm the presence of an intended topological entity.";
         }
-        description "Validation covers the various adjacenct discovery and reachability verification protocols. Also may cover Information source and degree of integrity.";
+        description "Validation covers the various adjacenct discovery and reachability verification protocols. Also may cover information source and degree of integrity.";
     }
     grouping network-topology-service {
         list topology {
             uses topology-ref;
             key 'topology-uuid';
             config false;
-            description "none";
+            description "The Topology instance(s) tracking the state of the allocated resources for the support of the NetworkTopologyService.";
         }
         uses tapi-common:global-class;
-        description "none";
+        description "A NetworkTopologyService represents an 'intent-like' request for topology related provisioning, for future developments.
+            The NetworkTopologyService is a container for topology request details and is distinct from the Topology that realize the request.";
     }
     grouping topology-context {
         container nw-topology-service {
             config false;
             uses network-topology-service;
-            description "none";
+            description "The defined operations.";
         }
         list topology {
             key 'uuid';
             config false;
             uses topology;
-            description "none";
+            description "The included Topology instances.";
         }
-        description "none";
+        description "This object class represents the scope of control that a particular SDN controller has with respect to a particular network, specifically regarding the topology description.
+            An instance of this class includes its Topology object instances.";
     }
     grouping inter-rule-group {
         list rule {
@@ -426,7 +435,7 @@ module tapi-topology {
         uses transfer-cost-pac;
         uses transfer-timing-pac;
         uses risk-parameter-pac;
-        description "Rules that apply between groups of NEPs.";
+        description "Rules that apply between groups of NodeEdgePoint (NEP) instances.";
     }
     grouping node-rule-group {
         list rule {
@@ -462,7 +471,7 @@ module tapi-topology {
         uses transfer-cost-pac;
         uses transfer-timing-pac;
         uses risk-parameter-pac;
-        description "Rules that apply to a group of NEPs.";
+        description "Rules that apply to a group of NodeEdgePoint (NEP) instances.";
     }
     grouping rule {
         leaf rule-type {
@@ -473,7 +482,7 @@ module tapi-topology {
         leaf forwarding-rule {
             type forwarding-rule;
             config false;
-            description "Rule that restricts the creation/deletion of a Connection between points in the node rule group or related by the inter rule group between node rule groups.";
+            description "Rule that restricts the creation/deletion of a Connection between points in the NodeRuleGroup or related by the InterRuleGroup between NodeRuleGroups.";
         }
         leaf override-priority {
             type uint64;
@@ -481,43 +490,44 @@ module tapi-topology {
             description "The overridePriority allows for one rule in a rule group to override another.
                 Priority n rules override priority n+1 rules.
                 Rules of the same priority override as follows (n overrides n+1):
-                1 - MustNot
-                2 - Must
-                3 - May
-                4 - Null
-                Within a rule the flexibility rules (signal, port role...) override as follows (n overriedes n+1):
-                1 - Any
-                2 - Same
-                3 - Different
+                1 - MustNot,
+                2 - Must,
+                3 - May,
+                4 - Null.
+                Within a rule the flexibility rules (signal, port role...) override as follows (n overrides n+1):
+                1 - Any,
+                2 - Same,
+                3 - Different.
                 Where there are two or more 'Same' rules, they will form an intersection where all must be met.
                 ";
         }
         leaf-list cep-direction {
             type tapi-common:port-direction;
             config false;
-            description "cep direction is a list of port directions that the rule applies to.
-                No entry means all cep directions.";
+            description "The list of CEP directions that the rule applies to, where the CEP direction is the orientation of flow at the (conceptual) port of the associated Connection.
+                No entry means all CEP directions.";
         }
         list cep-port-role {
             config false;
             uses port-role-rule;
             description "Indicates the port role to which the rule applies. 
-                The port role is interpreted in the context of the connection type which is identified by the connection spec. 
+                The port role is interpreted in the context of the connection type which is identified by the connection spec, if any.
                 The port role is not meaningful in the absence of a connection spec reference.
-                If a node rule group carries a port role, that role applies also to the associated inter rule where the combination of the roles in the node rule groups at the ends of the inter group rule define the connection orientation.
-                For example a root-and-leaf connection may be used in a node where a node rule group collects one set of NEPs has the port role 'root' and another node rule group collects another set of NEPs has the port role 'leaf' where these are joined by an inter rule group. This combination specifies an allowed orientation of the root-and-leaf connection.
+                If a NodeRuleGroup carries a port role, that role applies also to the associated InterRuleGroup where the combination of the roles in the NodeRuleGroups at the ends of the InterGroupRule define the Connection orientation.
+                For example a root-and-leaf Connection may be used in a Node where a NodeRuleGroup collects one set of NEPs has the port role 'root' and another NodeRuleGroup collects another set of NEPs has the port role 'leaf' where these are joined by an InterRuleGroup.
+                This combination specifies an allowed orientation of the root-and-leaf Connection.
                 No port role statement means all port roles are allowed.";
         }
         list connection-spec-reference {
             config false;
             uses connection-spec-reference;
-            description "Identifies the type of connection that the rule applies to. 
-                If the attribute is not present then the rule applies to all types of connection supported by the device.";
+            description "Identifies the type of Connection that the rule applies to. 
+                If the attribute is not present then the rule applies to all types of Connection supported by the device.";
         }
         leaf-list layer-protocol-qualifier {
             type tapi-common:layer-protocol-qualifier;
             config false;
-            description "Qualifies a rule for a particular layerProtocol identifying the qualifiers that the rule apples to.
+            description "Qualifies a rule for a particular layer protocol identifying the qualifiers that the rule applies to.
                 If the attribute is not present then the rule applies to all relevant qualifiers of the layer protocol of the parent entity.";
         }
         container signal-property {
@@ -532,16 +542,15 @@ module tapi-topology {
             description "Allows for more complex rules where the basic rule system is not sufficient.";
         }
         uses tapi-common:local-class;
-        description "Single complex rule statememt.
-            A Node with no rule group has no restrictions and is essentially May/Any
-            A node rule group constrain the CEP connectability in the Node.
-            A connection from a NEP must abide by all rules that relate to that NEP
+        description "Single complex rule statement.
+            A Node with no rule group has no restrictions and is essentially May/Any.
+            A NodeRuleGroup constrains the CEP connectability in the Node.
+            A Connection from a CEP/NEP must abide by all rules that relate to that CEP/NEP.
             Rules that are for a particular layerProtocolQualifier, connectionSpecReference, cepPortRole and cepDirection combination must be abided by in combination as dictated by overridePriority.
-            If a particular
-            - connectionSpecReference does not have any rule statements then it is not supported and connections of that type are not possible within the rule group.
-            - cepPortRole of a particular connectionSpecReference does not have any rule statements then it is not supported and connections of that connectionSpecReference (type) cannot have that cepPortRole for CEPs from NEPs in that rule group.
-            - cepDirection for a particular connectionSpecReference does not have any rule statements then it is not supported and connections of that connectionSpecReference (type) cannot have that cepPortDirection for CEPs from NEPs in that rule group.
-            Rules that are for different layerProtocolQualifiers or connectionSpecReferences are independent and provide options for connection in the rule group.
+            If a particular connectionSpecReference does not have any rule statements then it is not supported and connections of that type are not possible within the rule group.
+            If a particular cepPortRole of a particular connectionSpecReference does not have any rule statements then it is not supported and connections of that connectionSpecReference (type) cannot have that cepPortRole for CEPs from NEPs in that rule group.
+            If a particular cepDirection for a particular connectionSpecReference does not have any rule statements then it is not supported and connections of that connectionSpecReference (type) cannot have that cepPortDirection for CEPs from NEPs in that rule group.
+            Rules that are for different layerProtocolQualifiers or connectionSpecReferences are independent and provide options for Connection in the NodeRuleGroup.
             Some rules may apply to multiple connectionSpecReferences and all cepPortRoles and all cepDirections.";
     }
 
@@ -554,74 +563,74 @@ module tapi-topology {
     }
     identity TOPOLOGY_OBJECT_TYPE_TOPOLOGY {
         base TOPOLOGY_OBJECT_TYPE;
-        description "none";
+        description "The Topology class.";
     }
     identity TOPOLOGY_OBJECT_TYPE_NODE {
         base TOPOLOGY_OBJECT_TYPE;
-        description "none";
+        description "The Node class.";
     }
     identity TOPOLOGY_OBJECT_TYPE_LINK {
         base TOPOLOGY_OBJECT_TYPE;
-        description "none";
+        description "The Link class.";
     }
     identity TOPOLOGY_OBJECT_TYPE_NODE_EDGE_POINT {
         base TOPOLOGY_OBJECT_TYPE;
-        description "none";
+        description "The NodeEdgePoint (NEP) class.";
     }
     identity TOPOLOGY_OBJECT_TYPE_NODE_RULE_GROUP {
         base TOPOLOGY_OBJECT_TYPE;
-        description "none";
+        description "The NodeRuleGroup class.";
     }
     identity TOPOLOGY_OBJECT_TYPE_INTER_RULE_GROUP {
         base TOPOLOGY_OBJECT_TYPE;
-        description "none";
+        description "The InterRuleGroup class.";
     }
     identity TOPOLOGY_OBJECT_TYPE_RULE {
         base TOPOLOGY_OBJECT_TYPE;
-        description "none";
+        description "The Rule class.";
     }
     identity PORT_ROLE_RULE_OPTION {
         description "none";
     }
     identity PORT_ROLE_RULE_OPTION_SAME_ROLE {
         base PORT_ROLE_RULE_OPTION;
-        description "The ports of the connection to which the rule applies must have the same role from the list in port role.";
+        description "The (conceptual) ports of the Connection to which the rule applies must have the same role from the list in port role.";
     }
     identity PORT_ROLE_RULE_OPTION_DIFFERENT_ROLE {
         base PORT_ROLE_RULE_OPTION;
-        description "The ports of the connection to which the rule applies must have different roles from the list in port role.";
+        description "The (conceptual) ports of the Connection to which the rule applies must have different roles from the list in port role.";
     }
     identity PORT_ROLE_RULE_OPTION_ANY_ROLE {
         base PORT_ROLE_RULE_OPTION;
-        description "The ports of the connection to which the rule applies may take any identified role.";
+        description "The (conceptual) ports of the Connection to which the rule applies may take any identified role.";
     }
     identity PORT_ROLE_RULE_OPTION_NOT_ROLE {
         base PORT_ROLE_RULE_OPTION;
-        description "The ports of the connection to which the rule applies must not have any of the listed roles.";
+        description "The (conceptual) ports of the Connection to which the rule applies must not have any of the listed roles.";
     }
     identity SIGNAL_PROPERTY_VALUE_RULE {
         description "none";
     }
     identity SIGNAL_PROPERTY_VALUE_RULE_SAME_VALUE {
         base SIGNAL_PROPERTY_VALUE_RULE;
-        description "The signal property of the cep to which the rule applies must have the same value from the identied list.";
+        description "The signal property of the CEP to which the rule applies must have the same value from the identied list.";
     }
     identity SIGNAL_PROPERTY_VALUE_RULE_ANY_VALUE {
         base SIGNAL_PROPERTY_VALUE_RULE;
-        description "The signal property of the cep to which the rule applies may take any identified value.";
+        description "The signal property of the CEP to which the rule applies may take any identified value.";
     }
     identity SIGNAL_PROPERTY_VALUE_RULE_DIFFERENT_VALUE {
         base SIGNAL_PROPERTY_VALUE_RULE;
-        description "The signal property of the cep to which the rule applies each must have different values from the identified list.";
+        description "The signal property of the CEP to which the rule applies each must have different values from the identified list.";
     }
     identity SIGNAL_PROPERTY_VALUE_RULE_NOT_VALUE {
         base SIGNAL_PROPERTY_VALUE_RULE;
-        description "The signal property of the cep to which the rule applies must not have any of the identified values.";
+        description "The signal property of the CEP to which the rule applies must not have any of the identified values.";
     }
     grouping cost-characteristic {
         leaf cost-name {
             type string;
-            description "The cost characteristic will related to some aspect of the TopologicalEntity (e.g. $ cost, routing weight). This aspect will be conveyed by the costName.";
+            description "The cost characteristic will be related to some aspect of the topological entity (e.g. $ cost, routing weight). This aspect will be conveyed by the costName.";
         }
         leaf cost-value {
             type string;
@@ -629,9 +638,9 @@ module tapi-topology {
         }
         leaf cost-algorithm {
             type string;
-            description "The cost may vary based upon some properties of the TopologicalEntity. The rules for the variation are conveyed by the costAlgorithm.";
+            description "The cost may vary based upon some properties of the topological entity. The rules for the variation are conveyed by the costAlgorithm.";
         }
-        description "The information for a particular cost characteristic.";
+        description "The cost characteristic related to some aspect of a topological entity.";
     }
     grouping latency-characteristic {
         leaf traffic-property-name {
@@ -641,7 +650,8 @@ module tapi-topology {
         leaf fixed-latency-characteristic {
             type string;
             config false;
-            description "A TopologicalEntity suffers delay caused by the realization of the servers (e.g. distance related; FEC encoding etc.) along with some client specific processing. This is the total average latency effect of the TopologicalEntity";
+            description "A topological entity suffers delay caused by the realization of the servers (e.g. distance related; FEC encoding etc.) along with some client specific processing.
+                This is the total average latency effect of the topological entity.";
         }
         leaf queing-latency-characteristic {
             type string;
@@ -671,60 +681,60 @@ module tapi-topology {
         leaf-list risk-identifier-list {
             type string;
             min-elements 1;
-            description "A list of the identifiers of each physical/geographic unit (with the specific risk characteristic) that is related to a segment of the TopologicalEntity.";
+            description "A list of the identifiers of each physical/geographic unit (with the specific risk characteristic) that is related to a segment of the topological entity.";
         }
         description "The information for a particular risk characteristic where there is a list of risk identifiers related to that characteristic.";
     }
     grouping validation-mechanism {
         leaf validation-mechanism {
             type string;
-            description "Name of mechanism used to validate adjacency";
+            description "Name of mechanism used to validate adjacency.";
         }
         leaf layer-protocol-adjacency-validated {
             type string;
-            description "State of validatiion";
+            description "State of validation.";
         }
         leaf validation-robustness {
             type string;
-            description "Quality of validation (i.e. how likely is the stated validation to be invalid)";
+            description "Quality of validation (i.e. how likely is the stated validation to be invalid).";
         }
-        description "Identifies the validation mechanism and describes the characteristics of that mechanism";
+        description "Identifies the validation mechanism and describes the characteristics of that mechanism.";
     }
     typedef forwarding-rule {
         type enumeration {
             enum MAY_FORWARD_ACROSS_GROUP {
-                description "NEPs referenced by the node rule group (or indirectly by the inter rule group between node rule groups) may have connections created between them unless some other rule overrides this.
-                    For an inter rule group points in a node rule group at one end of the inter rule group may be connected to points in an node rule group at an other end of the inter rule group.";
+                description "NEPs referenced by the NodeRuleGroup (or indirectly by the InterRuleGroup between NodeRuleGroups) may have Connections created between them unless some other rule overrides this.
+                    For an InterRuleGroup points in a NodeRuleGroup at one end of the InterRuleGroup may be connected to points in a NodeRuleGroup at an other end of the InterRuleGroup.";
             }
             enum MUST_FORWARD_ACROSS_GROUP {
-                description "NEPs referenced by the node rule group (or indirectly by the inter rule group between node rule groups) MUST have connections created between them unless some other rule overrides this.
-                    For an inter rule group points in a node rule group at one end of the inter rule group MUST be connected to points in an node rule group at an other end of the inter rule group.";
+                description "NEPs referenced by the NodeRuleGroup (or indirectly by the InterRuleGroup between NodeRuleGroups) MUST have Connections created between them unless some other rule overrides this.
+                    For an InterRuleGroup points in a NodeRuleGroup at one end of the InterRuleGroup MUST be connected to points in a NodeRuleGroup at an other end of the InterRuleGroup.";
             }
             enum CANNOT_FORWARD_ACROSS_GROUP {
-                description "NEPs referenced by the node rule group (or indirectly by the inter rule group between node rule groups) MUST NOT have connections created between them.
-                    For an inter rule group points in a node rule group at one end of the inter rule group MUST NOT be connected to points in an node rule group at an other end of the inter rule group.";
+                description "NEPs referenced by the NodeRuleGroup (or indirectly by the InterRuleGroup between NodeRuleGroups) MUST NOT have Connections created between them.
+                    For an InterRuleGroup points in a NodeRuleGroup at one end of the InterRuleGroup MUST NOT be connected to points in an NodeRuleGroup at an other end of the InterRuleGroup.";
             }
             enum NO_STATEMENT_ON_FORWARDING {
                 description "The rule group makes no statement on forwarding.";
             }
             enum INTER_CONNECTION_CONTENTION {
-                description "Connections to NEPs in the rule group contend for resources based upon a constraint of some signal property.
-                    For example, each connection to a NEP in the group must use a different value of the signal property from all other connections to NEPs in the rule group.
-                    For example, each connection to a NEP in the group must use a same value of the signal property as all other connections to NEPs in the rule group. In this case the first connection created in the rule group sets the value and the group constraint is freed when the last connection is deleted.";
+                description "Connections to NEPs in the Rule Group contend for resources based upon a constraint of some signal property.
+                    For example, each Connection to a NEP in the Group must use a different value of the signal property from all other Connections to NEPs in the Rule Group.
+                    For example, each Connection to a NEP in the Group must use a same value of the signal property as all other Connections to NEPs in the Rule Group. In this case the first Connection created in the Rule Group sets the value and the Group constraint is freed when the last Connection is deleted.";
             }
         }
-        description "Rule that restricts the creation/deletion of an connection between points referenced by rule groups.";
+        description "Rule that restricts the creation/deletion of a Connection between points referenced by rule groups.";
     }
     typedef rule-type {
         type enumeration {
             enum FORWARDING {
-                description "The rule applies to the creation of connections.";
+                description "The rule applies to the creation of Connections.";
             }
             enum CAPACITY {
                 description "The rule applies to capacity limitations.";
             }
             enum COST {
-                description "The rule applies to the cost of the creation of connections.";
+                description "The rule applies to the cost of the creation of Connections.";
             }
             enum TIMING {
                 description "The rule applies to timing constraints across the group.";
@@ -741,16 +751,16 @@ module tapi-topology {
     typedef restoration-policy {
         type enumeration {
             enum PER_DOMAIN_RESTORATION {
-                description "none";
+                description "Restoration is expected to be performed independently within each (restoration) domain scope.";
             }
             enum END_TO_END_RESTORATION {
-                description "none";
+                description "Restoration is expected to be performed on end to end basis across all domain(s).";
             }
             enum NA {
-                description "none";
+                description "Not Applicable.";
             }
         }
-        description "none";
+        description "The restoration policy.";
     }
     typedef protection-type {
         type enumeration {
@@ -758,54 +768,60 @@ module tapi-topology {
                 description "none";
             }
             enum ONE_PLUS_ONE_PROTECTION {
-                description "none";
+                description "Protection scheme where the switches are not required to be coordinated (typically the signal is always bridged).";
             }
             enum ONE_PLUS_ONE_PROTECTION_WITH_DYNAMIC_RESTORATION {
-                description "none";
+                description "Protection scheme where the switches are not required to be coordinated (typically the signal is always bridged).
+                    In addition a new protection route is dynamically computed and implemented to restore resiliency level (e.g. when a failure affects previously working route).";
             }
             enum PERMANENT_ONE_PLUS_ONE_PROTECTION {
-                description "none";
+                description "Non-revertive scheme, a route which is impaired (by a failure or maintenance command) is forgotten.
+                    If the current route fails, the control plane will commute to a protection route. The role, or priority of this route changes from protected to working and the control plane will compute and provision a new protection route.
+                    If the protection route fails, the control plane will compute and restore it through a new protection route.";
             }
             enum ONE_FOR_ONE_PROTECTION {
-                description "none";
+                description "Protection scheme where the switches are coordinated (e.g. by signalling).";
             }
             enum DYNAMIC_RESTORATION {
-                description "none";
+                description "Restoration scheme where the protection route is computed and implemented only when the current (and only) route is impaired (e.g. by a failure or maintenance command).";
             }
             enum PRE_COMPUTED_RESTORATION {
-                description "none";
+                description "Restoration scheme where the protection route is pre-computed.
+                    When the current (and only) route is impaired (e.g. by a failure or maintenance command) the pre-computed route is implemented.";
             }
             enum ONE_PLUS_ONE_PROTECTION_WITH_PRE_COMPUTED_RESTORATION {
-                description "none";
+                description "Protection scheme where the switches are not required to be coordinated (typically the signal is always bridged).
+                    In addition a further protection route is pre-computed.
+                    When either the current or protection route is impaired (e.g. by a failure or maintenance command), the pre-computed route is implemented to restore resiliency level.";
             }
             enum ONE_FOR_N_PROTECTION {
-                description "none";
+                description "N routes share one protection route. Switches need coordination (e.g. by signalling).";
             }
             enum M_FOR_N_PROTECTION {
-                description "none";
+                description "N routes share M protection routes. Switches need coordination (e.g. by signalling).";
             }
             enum ONE_FOR_ONE_BY_N {
-                description "none";
+                description "N parallel one-for-one schemes.";
             }
         }
-        description "none";
+        description "The types of protection and restoration.";
     }
     grouping nep-layer-protocol-capability {
         leaf layer-protocol-qualifier {
             type tapi-common:layer-protocol-qualifier;
-            description "none";
+            description "The layer protocol qualifier value.";
         }
         leaf number-of-cep-instances {
             type uint64;
-            description "none";
+            description "The number of CEP instances.";
         }
-        description "none";
+        description "Number of CEP instances at the layer protocol qualifier.";
     }
     typedef topology-object-type {
         type identityref {
             base TOPOLOGY_OBJECT_TYPE;
         }
-        description "The list of TAPI Topology Object types/classes.";
+        description "The list of TAPI Topology Global Object Class types on which Notification signals can be raised.";
     }
     grouping port-role-rule {
         leaf-list port-role {
@@ -816,15 +832,15 @@ module tapi-topology {
         leaf-list port-role-rule {
             type port-role-rule-option;
             config false;
-            description "Where the rule references more than one port role or where there are rule intersections either as a result of overlay of rules or inter rule group usage indicates role matching criteria for a connection following the rules.
-                For example if two port roles, 'a' and 'b', are listed and the port role rule is 'different', this means that a connection connecting points in that group must have port roles that are different for each CEP in that group.
-                In the example if a connection can have n ports of role 'a' and m ports of role 'b' then a maximum of two ports can be drawn from the NEPs of the group and where there are two, one must be role 'a' and one must be role 'b'.";
+            description "Where the rule references more than one (conceptual) port role or where there are rule intersections either as a result of overlay of rules or InterRuleGroup usage indicates role matching criteria for a Connection following the rules.
+                For example if two port roles, 'a' and 'b', are listed and the port role rule is 'different', this means that a Connection connecting CEPs in that group must have port roles that are different for each CEP in that group.
+                In the example if a Connection can have n ports of role 'a' and m ports of role 'b' then a maximum of two ports can be drawn from the NEPs of the group and where there are two, one must be role 'a' and one must be role 'b'.";
         }
-        description "Constrains which port roles the rule applies to.";
+        description "Constrains which (conceptual) port roles the rule applies to.";
     }
     typedef port-role {
         type string;
-        description "The role of a port in the context of the connection spec referenced in the rule.";
+        description "The role of a (conceptual) port in the context of the Connection spec referenced in the rule.";
     }
     typedef port-role-rule-option {
         type identityref {
@@ -836,15 +852,15 @@ module tapi-topology {
         leaf connection-spec-name {
             type string;
             config false;
-            description "The name of the connection type spec.
+            description "The name of the Connection type spec.
                 This can be used as a reference to a paper document where full formal machine interpretable specs are not supported.";
         }
         leaf connection-spec {
             type tapi-common:uuid;
-            description "The reference to the formal connection type spec.";
+            description "The reference to the formal Connection type spec.";
         }
-        description "The definition of the type of connection.
-            This definition will explain the flows in the connections and how they relate to the port roles.";
+        description "The definition of the type of Connection.
+            This definition will explain the flows in the Connection and how they relate to the roles of (conceptual) ports.";
     }
     typedef signal-property-value-rule {
         type identityref {
@@ -878,13 +894,13 @@ module tapi-topology {
     grouping resilience-type {
         leaf restoration-policy {
             type restoration-policy;
-            description "none";
+            description "The restoration policy.";
         }
         leaf protection-type {
             type protection-type;
-            description "none";
+            description "The protection type.";
         }
-        description "none";
+        description "The type of resiliency (protection/restoration).";
     }
 
     /**************************
@@ -895,7 +911,8 @@ module tapi-topology {
         input {
             leaf topology-id {
                 type tapi-common:uuid;
-                description "UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the Topology instance.
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -905,7 +922,7 @@ module tapi-topology {
         output {
             container topology {
                 uses topology;
-                description "none";
+                description "The requested Topology instance.";
             }
         }
     }
@@ -914,7 +931,8 @@ module tapi-topology {
         input {
             leaf topology-id {
                 type tapi-common:uuid;
-                description "UUID of the parent Topology: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the parent Topology instance.
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -922,7 +940,8 @@ module tapi-topology {
             }
             leaf node-id {
                 type tapi-common:uuid;
-                description "UUID of the Node: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the Node instance.
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -932,7 +951,7 @@ module tapi-topology {
         output {
             container node {
                 uses node;
-                description "none";
+                description "The requested Node instance.";
             }
         }
     }
@@ -941,7 +960,8 @@ module tapi-topology {
         input {
             leaf topology-id {
                 type tapi-common:uuid;
-                description "UUID of the parent Node's Topology: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the parent Node's Topology instance.
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -949,7 +969,8 @@ module tapi-topology {
             }
             leaf node-id {
                 type tapi-common:uuid;
-                description "UUID of the parent Node: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the parent Node instance.
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -957,7 +978,8 @@ module tapi-topology {
             }
             leaf node-edge-point-id {
                 type tapi-common:uuid;
-                description "UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the NodeEdgePoint (NEP) instance.
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -967,7 +989,7 @@ module tapi-topology {
         output {
             container node-edge-point {
                 uses node-edge-point;
-                description "none";
+                description "The requested NodeEdgePoint (NEP) instance.";
             }
         }
     }
@@ -976,7 +998,8 @@ module tapi-topology {
         input {
             leaf topology-id {
                 type tapi-common:uuid;
-                description "UUID of the parent Topology: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the parent Topology instance.
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -984,7 +1007,8 @@ module tapi-topology {
             }
             leaf link-id {
                 type tapi-common:uuid;
-                description "UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the Link instance.
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -994,7 +1018,7 @@ module tapi-topology {
         output {
             container link {
                 uses link;
-                description "none";
+                description "The requested Link instance.";
             }
         }
     }
@@ -1004,7 +1028,7 @@ module tapi-topology {
             list topology {
                 key 'uuid';
                 uses topology;
-                description "none";
+                description "The requested list of Topology instances.";
             }
         }
     }

@@ -150,24 +150,26 @@ module tapi-common {
     }
     container context {
         uses tapi-context;
-        presence "Root container for all TAPI interaction";
+/*        presence "Root container for all TAPI interaction";*/
         description "none";
     }
     grouping tapi-context {
         list service-interface-point {
             key 'uuid';
             uses service-interface-point;
-            description "none";
+            description "The ServiceInterfacePoint (SIP) instances belonging to this context.";
         }
         uses global-class;
-        description "This object class represents the scope of control that a particular SDN controller has with re-spect to a particular network, (i.e., encompassing a designated set of interconnected (virtual) network elements).
-            This class includes the list of Service Interface Points.";
+        description "This object class represents the scope of control that a particular SDN controller has with respect to a particular network, (i.e., encompassing a designated set of interconnected (virtual) network elements).
+            This class includes the list of Service Interface Points.
+            This class can be augmented by specific contexts, e.g. topology context.";
     }
     grouping service-interface-point {
         leaf layer-protocol-name {
             type layer-protocol-name;
             config false;
-            description "Usage of layerProtocolName [>1]  in the ServiceInterfacePoint should be considered experimental";
+            description "The layer protocol of the ServiceInterfacePoint (SIP).
+                Usage of layerProtocolName [>1]  in the ServiceInterfacePoint should be considered experimental.";
         }
         leaf-list supported-layer-protocol-qualifier {
             type layer-protocol-qualifier;
@@ -177,7 +179,8 @@ module tapi-common {
         }
         leaf direction {
             type port-direction;
-            description "If direction attribute is missing the SIP instance is to be intended as 'BIDIRECTIONAL'";
+            description "The orientation of flow at the (conceptual) port of the potentially supported ConnectivityService(s).
+                If direction attribute is missing the ServiceInterfacePoint (SIP) instance is to be intended as 'BIDIRECTIONAL'";
         }
         uses global-class;
         uses admin-state-pac;
@@ -201,17 +204,14 @@ module tapi-common {
         leaf termination-direction {
             type termination-direction;
             config false;
-            description "The overall directionality of the entity. 
-                - A BIDIRECTIONAL entity will have some SINK and/or SOURCE flows.
-                - A SINK entity can only contain elements with SINK flows or CONTRA_DIRECTION_SOURCE flows.
-                - A SOURCE entity can only contain SOURCE flows or CONTRA_DIRECTION_SINK flows.";
+            description "The overall directionality of the termination entity.";
         }
         leaf termination-state {
             type termination-state;
             config false;
             description "Indicates whether the layer is terminated and if so how.";
         }
-        description "This object class is associated to a Connection End Point to specify its direction and layer termination function.";
+        description "Specifies the direction and layer termination state of a termination entity, e.g. CEP, NEP.";
     }
 
     /**************************
@@ -222,14 +222,14 @@ module tapi-common {
     }
     identity LAYER_PROTOCOL_QUALIFIER_UNSPECIFIED {
         base LAYER_PROTOCOL_QUALIFIER;
-        description "none";
+        description "No sub-layer is specified.";
     }
     identity OBJECT_TYPE {
         description "none";
     }
     identity OBJECT_TYPE_SERVICE_INTERFACE_POINT {
         base OBJECT_TYPE;
-        description "none";
+        description "The ServiceInterfacePoint (SIP) class.";
     }
     typedef administrative-state {
         type enumeration {
@@ -237,7 +237,7 @@ module tapi-common {
                 description "Users are administratively prohibited from making use of the resource.";
             }
             enum UNLOCKED {
-                description "Users are allowed to use the resource";
+                description "Users are allowed to use the resource.";
             }
         }
         description "The possible values of the administrativeState.";
@@ -261,36 +261,36 @@ module tapi-common {
     typedef directive-value {
         type enumeration {
             enum MINIMIZE {
-                description "none";
+                description "Directive to minimize.";
             }
             enum MAXIMIZE {
-                description "none";
+                description "Directive to maximize.";
             }
             enum ALLOW {
-                description "none";
+                description "Directive to allow.";
             }
             enum DISALLOW {
-                description "none";
+                description "Directive to disallow";
             }
             enum DONT_CARE {
-                description "none";
+                description "Directive is do not care.";
             }
         }
-        description "none";
+        description "Types of directives.";
     }
     typedef forwarding-direction {
         type enumeration {
             enum BIDIRECTIONAL {
-                description "The Fowarding entity supports both BIDIRECTIONAL flows at all Ports (i.e. all Ports have both an INPUT flow and an OUTPUT flow defined)";
+                description "The fowarding entity supports BIDIRECTIONAL flows at all its (conceptual) ports (i.e. all ports have both an INPUT flow and an OUTPUT flow defined).";
             }
             enum UNIDIRECTIONAL {
-                description "The Forwarding entity has Ports that are either INPUT or OUTPUT. It has no BIDIRECTIONAL Ports.";
+                description "The forwarding entity has (conceptual) ports that are either INPUT or OUTPUT. It has no BIDIRECTIONAL (conceptual) ports.";
             }
             enum UNDEFINED_OR_UNKNOWN {
                 description "Not a normal state. The system is unable to determine the correct value.";
             }
         }
-        description "The directionality of a Forwarding entity.";
+        description "The directionality of a forwarding entity, e.g. Link, ConnectivityService, Connection, PathComputationService, Path.";
     }
     typedef layer-protocol-name {
         type enumeration {
@@ -301,17 +301,14 @@ module tapi-common {
                 description "Models the ETH layer as per ITU-T G.8010";
             }
             enum DSR {
-                description "Models a Digital Signal of an unspecified rate. This value can be used when the intent is to respresent an generic digital layer signal without making any statement on its format or overhead (processing) capabilities.";
+                description "Models a Digital Signal of an unspecified rate (Layer 1 coding functions). This value can be used when the intent is to represent a generic digital layer signal without making any statement on its format or overhead (processing) capabilities.";
             }
             enum PHOTONIC_MEDIA {
-                description "Models the OCH, OTSi, OTSiA, OTSiG, OMS, OTS and Media channels as per ITU-T G.872 (2017) version 4";
+                description "Models the optical signal and media channel layer as per ITU-T G.807";
             }
         }
         description "Provides a controlled list of layer protocol names and indicates the naming authority.
             Note that it is expected that attributes will be added to this structure to convey the naming authority name, the name of the layer protocol using a human readable string and any particular standard reference.
-            Layer protocol names include:
-            -    Layer 1 (L1): OTU, ODU
-            -    Layer 2 (L2): Carrier Grade Ethernet (ETY, ETH), MPLS-TP (MT)
             ";
     }
     typedef lifecycle-state {
@@ -321,8 +318,8 @@ module tapi-common {
             }
             enum POTENTIAL_AVAILABLE {
                 description "The supporting resources are present in the network but are shared with other clients; or require further configuration before they can be used; or both.
-                    o    When a potential resource is configured and allocated to a client it is moved to the INSTALLED state for that client.
-                    o    If the potential resource has been consumed (e.g. allocated to another client) it is moved to the POTENTIAL_BUSY state for all other clients.";
+                    When a potential resource is configured and allocated to a client it is moved to the INSTALLED state for that client.
+                    If the potential resource has been consumed (e.g. allocated to another client) it is moved to the POTENTIAL_BUSY state for all other clients.";
             }
             enum POTENTIAL_BUSY {
                 description "The supporting resources are present in the network but have been allocated to other clients.";
@@ -331,7 +328,7 @@ module tapi-common {
                 description "The resource is present in the network and is capable of providing the service expected.";
             }
             enum PENDING_REMOVAL {
-                description "The resource has been marked for removal";
+                description "The resource has been marked for removal.";
             }
         }
         description "The possible values of the lifecycleState.";
@@ -339,11 +336,11 @@ module tapi-common {
     grouping name-and-value {
         leaf value-name {
             type string;
-            description "The name of the value. The value need not have a name.";
+            description "The name of the value. Optional, the value need not to have a name.";
         }
         leaf value {
             type string;
-            description "The value";
+            description "The specific value.";
         }
         description "A scoped name-value pair.";
     }
@@ -364,72 +361,75 @@ module tapi-common {
                 description "The Port has both an INPUT flow and an OUTPUT flow defined.";
             }
             enum INPUT {
-                description "The Port only has definition for a flow into the Forwarding entity, (i.e. an ingress flow of the Link or Connection, hence egress flow of NEP or CEP, CSEP etc.).";
+                description "The port only has definition for a flow into the forwarding entity, (i.e. an ingress flow of e.g Link or Connection, hence an egress flow of NEP or CEP, CSEP etc.).";
             }
             enum OUTPUT {
-                description "The Port only has definition for a flow out of the Forwarding entity ((i.e. an egress flow of the Link or Connection, hence ingress flow of NEP or CEP, CSEP etc.)";
+                description "The port only has definition for a flow out of the forwarding entity (i.e. an egress flow of e.g. Link or Connection, hence an ingress flow of NEP or CEP, CSEP etc.).";
             }
             enum UNIDENTIFIED_OR_UNKNOWN {
                 description "Not a normal state. The system is unable to determine the correct value.";
             }
         }
-        description "The orientation of flow at the Port of a Forwarding entity";
+        description "The orientation of flow at the (conceptual) port of a forwarding entity, e.g. Link, ConnectivityService, Connection, PathComputationService, Path, VirtualNetworkService.";
     }
     typedef port-role {
         type enumeration {
             enum SYMMETRIC {
-                description "none";
+                description "A port that can exchange flows (e.g. distinct packet flows) with any other port(s) in a forwarding entity.
+                    The SYMMETRIC role applies to point to point and multipoint to multipoint connection schemes.";
             }
             enum ROOT {
-                description "none";
+                description "A port that can exchange flows (e.g. distinct packet flows) with any other port(s) in a forwarding entity.
+                    The ROOT role is unique to the Rooted Multipoint connection scheme.";
             }
             enum LEAF {
-                description "none";
+                description "A port that can only exchange flows (e.g. distinct packet flows) with any other ROOT or TRUNK port(s) in a forwarding entity.
+                    The LEAF role is unique to the Rooted Multipoint connection scheme.";
             }
             enum TRUNK {
-                description "none";
+                description "The TRUNK role is unique to the ENNI involved in a Rooted Multipoint connection scheme. It provides a way to extend the concept of ROOT and LEAF bidirectionally across the ENNI without having to create multiple ports (Leaves and Roots) and hairpinning from one to the other.";
             }
             enum UNKNOWN {
-                description "none";
+                description "Not a normal state. The system is unable to determine the correct value.";
             }
         }
-        description "The role of an end in the context of the function of the forwarding entity that it bounds";
+        description "The role of a (conceptual) port of a forwarding entity, e.g. Link, ConnectivityService, Connection, PathComputationService, Path, VirtualNetworkService.";
     }
     typedef termination-direction {
         type enumeration {
             enum BIDIRECTIONAL {
-                description "A Termination with both SINK and SOURCE flows.";
+                description "A termination entity with both SINK and SOURCE flows.";
             }
             enum SINK {
                 description "The flow is up the layer stack from the server side to the client side. 
-                    Considering an example of a Termination function within the termination entity, a SINK flow:
-                    - will arrive at at the base of the termination function (the server side) where it is essentially at an INPUT to the termination component
-                    - then will be decoded and deconstructed 
-                    - then relevant parts of the flow will be sent out of the termination function (the client side) where it is essentially at an OUTPUT from the termination component
-                    A SINK termination is one that only supports a SINK flow.
-                    A SINK termiation can be bound to an OUTPUT Port of a Forwarding entity";
+                    Considering an example of a termination function within the termination entity, a SINK flow:
+                    1) will arrive at the base of the termination function (the server side) where it is essentially at an INPUT to the termination function,
+                    2) then will be decoded and deconstructed, 
+                    3) then the relevant parts of the flow will be sent out of the termination function (the client side) where it is essentially at an OUTPUT from the termination function.
+                    A SINK termination function is one that only supports a SINK flow.
+                    A SINK termination function can be bound to an OUTPUT (conceptual) port of a forwarding entity, e.g. Link, ConnectivityService, Connection, PathComputationService, Path.";
             }
             enum SOURCE {
                 description "The flow is down the layer stack from the server side to the client side. 
-                    Considering an example of a Termination function within the termination entity, a SOURCE flow:
-                    - will arrive at at the top of the termination function (the client side) where it is essentially at an INPUT to the termination component
-                    - then will be assembled with various overheads etc and will be coded 
-                    - then coded form of the assembly of flow will be sent out of the termination function (the server side) where it is essentially at an OUTPUT from the termination component
+                    Considering an example of a termination function within the termination entity, a SOURCE flow:
+                    1) will arrive at at the top of the termination function (the client side) where it is essentially at an INPUT to the termination function,
+                    2) then will be assembled with various overheads etc and will be coded,
+                    3) then the coded form of the assembly of flow will be sent out of the termination function (the server side) where it is essentially at an OUTPUT from the termination function.
                     A SOURCE termination is one that only supports a SOURCE flow.
-                    A SOURCE termiation can be bound to an INPUT Port of a Forwarding entity";
+                    A SOURCE termination can be bound to an INPUT (conceptual) port of a forwarding entity, e.g. Link, ConnectivityService, Connection, PathComputationService, Path.";
             }
             enum UNDEFINED_OR_UNKNOWN {
                 description "Not a normal state. The system is unable to determine the correct value.";
             }
         }
-        description "The directionality of a termination entity";
+        description "The directionality of a termination entity, e.g. CEP, NEP.";
     }
     typedef termination-state {
         type enumeration {
-            enum LP_CAN_NEVER_TERMINATE {
+            enum CAN_NEVER_TERMINATE {
                 description "A non-flexible case that can never be terminated.";
             }
-            enum LT_NOT_TERMINATED {
+            enum NOT_TERMINATED {
                 description "A flexible termination that can terminate but is currently not terminated.";
             }
             enum TERMINATED_SERVER_TO_CLIENT_FLOW {
@@ -441,15 +441,14 @@ module tapi-common {
             enum TERMINATED_BIDIRECTIONAL {
                 description "A flexible termination that is currently terminated in both directions of flow.";
             }
-            enum LT_PERMENANTLY_TERMINATED {
+            enum PERMANENTLY_TERMINATED {
                 description "A non-flexible termination that is always terminated (in both directions of flow for a bidirectional case and in the one direction of flow for both unidirectional cases).";
             }
             enum TERMINATION_STATE_UNKNOWN {
-                description "There TerminationState cannot be determined.";
+                description "Not a normal state. The system is unable to determine the correct value.";
             }
         }
-        description "Provides support for the range of behaviours and specific states that an LP can take with respect to termination of the signal.
-            Indicates to what degree the LayerTermination is terminated.";
+        description "Provides support for the range of behaviours and specific states that the termination function of a termination entity can take with respect to the termination of the signal.";
     }
     typedef uuid {
         type string;
@@ -461,18 +460,18 @@ module tapi-common {
     grouping capacity {
         container total-size {
             uses capacity-value;
-            description "Total capacity of the entity. In case of bandwidthProfile, this is expected to same as the committedInformationRate.";
+            description "Total capacity of the entity. In case of bandwidthProfile, this is expected to be the same as the committedInformationRate.";
         }
         description "Information on capacity of a particular entity.";
     }
     grouping capacity-value {
         leaf value {
             type uint64;
-            description "none";
+            description "The specific value of the capacity.";
         }
         leaf unit {
             type capacity-unit;
-            description "none";
+            description "The specific unit of measurement of the capacity.";
         }
         description "The Capacity (Bandwidth) values that are applicable for digital layers.";
     }
@@ -503,35 +502,35 @@ module tapi-common {
                 description "Indicates that the integer CapacityValue is in Kilobit-per-second";
             }
             enum GHz {
-                description "none";
+                description "Indicates that the integer CapacityValue is in gigahertz (spectrum)";
             }
             enum MHz {
-                description "none";
+                description "Indicates that the integer CapacityValue is in megahertz (spectrum)";
             }
         }
-        description "none";
+        description "Units of measurement of the capacity.";
     }
     grouping time-range {
-        leaf end-time {
-            type date-and-time;
-            description "none";
-        }
         leaf start-time {
             type date-and-time;
-            description "none";
+            description "Date and time of the range start.";
         }
-        description "none";
+        leaf end-time {
+            type date-and-time;
+            description "Date and time of the range end.";
+        }
+        description "Range of time.";
     }
     grouping time-period {
         leaf value {
             type uint64;
-            description "none";
+            description "The specific value of the time period.";
         }
         leaf unit {
             type time-unit;
-            description "none";
+            description "The unit of measurement of the time period.";
         }
-        description "none";
+        description "Period of time.";
     }
     typedef time-unit {
         type enumeration {
@@ -566,7 +565,7 @@ module tapi-common {
                 description "none";
             }
         }
-        description "none";
+        description "Units of measurement of the time.";
     }
     grouping time-interval {
         list period {
@@ -574,32 +573,28 @@ module tapi-common {
             min-elements 1;
             max-elements 5;
             uses time-period;
-            description "none";
+            description "The specific interval of time.
+                ITU-T Q.821 (02/2000):
+                TimeInterval ::= SEQUENCE {
+                day [0] INTEGER (0..31) DEFAULT 0,
+                hour [1] INTEGER (0..23) DEFAULT 0,
+                minute [2] INTEGER (0..59) DEFAULT 0,
+                second [3] INTEGER (0..59) DEFAULT 0,
+                msec [4] INTEGER (0..999) DEFAULT 0 }";
         }
-        description "none";
+        description "Interval of time.";
     }
     typedef layer-protocol-qualifier {
         type identityref {
             base LAYER_PROTOCOL_QUALIFIER;
         }
         description "This enumeration is used to qualify the sub-layers (if applicable) for a specific LayerProtocol.
-            This extensible enumeration is intentionally empty in the common module and will be augmented with layer-specific values in the respective technology-specific modules.
-            Examples:
-            - LayerProtocolName := OPTICAL_DATA_UNIT
-            LayerProtocolQualifier := 'ODU_FLEX', 'ODU_0', 'ODU_1', 'ODU_2', 'ODU_2E', 'ODU_3', 'ODU_4'', 'ODU_CBR'', 'ODU_GFP'', 'ODU_GFP_HAO', etc
-            - LayerProtocolName := DIGITAL_SIGNAL_RATE
-            LayerProtocolQualifier := 'GBE', '10_GBE_WAN', '10_GBE_LAN', '100_GBE', 'FC_100', 'FC_200', 'FC_400', 'FC_800', 'FC_1200', 'FC_1600', 'FC_3200', 'STM_1', 'STM_4', 'STM_16', 'STM_64', 'STM_256', 'OC_3', 'OC_12', 'OC_48', 'OC_192', 'OC_768', 'OTU_1', 'OTU_2', 'OTU_2E', 'OTU_3', 'OTU_4', 'GPON', 'XGPON', 'IB_SDR', 'IB_DDR', 'IB_QDR', 'SBCON_ESCON', 'DVB_ASI', 'SDI', 'SDI_1G5', 'SDI_3G', etc
-            - LayerProtocolName := PHOTONIC_MEDIA
-            LayerProtocolQualifier := OCH, OTSi, OTSiA, NMC, NMCA, SMC, SMCA, OMS, OTS
-            ";
+            This extensible enumeration includes only the 'UNSPECIFIED' entry in the common module and can be augmented with layer-specific values in the respective technology-specific modules.";
     }
     typedef mac-address {
         type string;
-        description "pattern '[0-9a-fA-F]{2}(-[0-9a-fA-F]{2}){5}'
-            description
-            'The mac-address type represents a MAC address in the canonical
-            format and hexadecimal format specified by IEEE Std 802. The
-            hexidecimal representation uses uppercase characters.'";
+        description "Pattern: '[0-9a-fA-F]{2}(-[0-9a-fA-F]{2}){5}'
+            Description: 'The mac-address type represents a MAC address in the canonical format and hexadecimal format specified by IEEE Std 802. The canonical representation uses lowercase characters. The hexadecimal representation uses uppercase characters.'";
     }
     typedef binary-type {
         type string;
@@ -608,14 +603,15 @@ module tapi-common {
     }
     typedef timeticks {
         type string;
-        description "type uint32
-            The timeticks type represents a non-negative integer that represents the time, modulo 2^32 (4294967296 decimal), in hundredths of a second between two epochs.";
+        description "Type uint32.
+            This type represents a non-negative integer that represents the time, modulo 2^32 (4294967296 decimal), in hundredths of a second between two epochs.";
     }
     typedef object-type {
         type identityref {
             base OBJECT_TYPE;
         }
-        description "The list of TAPI Common Object types/classes.";
+        description "The list of TAPI Global Object Class types on which Notification signals can be raised.
+            This extensible enumeration includes only the 'SERVICE_INTERFACE_POINT' entry in the common module and can be augmented with specific object types/classes in the other modules.";
     }
 
     /**************************
@@ -626,7 +622,8 @@ module tapi-common {
         input {
             leaf uuid {
                 type uuid;
-                description "UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the ServiceInterfacePoint (SIP) instance.
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -636,7 +633,7 @@ module tapi-common {
         output {
             container sip {
                 uses service-interface-point;
-                description "none";
+                description "The requested SIP instance.";
             }
         }
     }
@@ -646,7 +643,7 @@ module tapi-common {
             list sip {
                 key 'uuid';
                 uses service-interface-point;
-                description "none";
+                description "The requested list of SIP instances.";
             }
         }
     }
@@ -655,7 +652,8 @@ module tapi-common {
         input {
             leaf uuid {
                 type uuid;
-                description "UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the ServiceInterfacePoint (SIP) instance.
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -663,7 +661,7 @@ module tapi-common {
             }
             leaf state {
                 type administrative-state;
-                description "none";
+                description "The requested update of Administrative State.";
             }
         }
     }
