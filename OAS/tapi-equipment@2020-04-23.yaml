@@ -2858,7 +2858,7 @@ paths:
     get:
       tags:
       - "tapi-topology"
-      summary: "returns tapi.topology.Link"
+      summary: "returns tapi.topology.topology.Link"
       description: "none"
       parameters:
       - name: "uuid"
@@ -2873,9 +2873,9 @@ paths:
         type: "string"
       responses:
         200:
-          description: "tapi.topology.Link"
+          description: "tapi.topology.topology.Link"
           schema:
-            $ref: "#/definitions/tapi.topology.LinkWrapper"
+            $ref: "#/definitions/tapi.topology.topology.LinkWrapper"
         400:
           description: "Internal error"
   /data/tapi-common:context/tapi-topology:topology-context/topology={uuid}/link={link-uuid}/available-capacity/:
@@ -3229,6 +3229,54 @@ paths:
           description: "tapi.topology.RiskCharacteristic"
           schema:
             $ref: "#/definitions/tapi.topology.RiskCharacteristicWrapper"
+        400:
+          description: "Internal error"
+  ? /data/tapi-common:context/tapi-topology:topology-context/topology={uuid}/link={link-uuid}/tapi-equipment:supporting-physical-span/
+  : get:
+      tags:
+      - "tapi-equipment"
+      summary: "returns tapi.equipment.SupportingPhysicalSpan"
+      description: "none"
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of topology"
+        required: true
+        type: "string"
+      - name: "link-uuid"
+        in: "path"
+        description: "Id of link"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.equipment.SupportingPhysicalSpan"
+          schema:
+            $ref: "#/definitions/tapi.equipment.SupportingPhysicalSpanWrapper"
+        400:
+          description: "Internal error"
+  ? /data/tapi-common:context/tapi-topology:topology-context/topology={uuid}/link={link-uuid}/tapi-equipment:supporting-physical-span/physical-span/
+  : get:
+      tags:
+      - "tapi-equipment"
+      summary: "returns tapi.equipment.PhysicalSpanRef"
+      description: "none"
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of topology"
+        required: true
+        type: "string"
+      - name: "link-uuid"
+        in: "path"
+        description: "Id of link"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.equipment.PhysicalSpanRef"
+          schema:
+            $ref: "#/definitions/tapi.equipment.PhysicalSpanRefWrapper"
         400:
           description: "Internal error"
   /data/tapi-common:context/tapi-topology:topology-context/topology={uuid}/link={link-uuid}/total-potential-capacity/:
@@ -6224,54 +6272,6 @@ paths:
             $ref: "#/definitions/tapi.common.CapacityValueWrapper"
         400:
           description: "Internal error"
-  ? /data/tapi-common:context/tapi-topology:topology-context/topology={uuid}/node={node-uuid}/tapi-equipment:supporting-physical-span/
-  : get:
-      tags:
-      - "tapi-equipment"
-      summary: "returns tapi.equipment.SupportingPhysicalSpan"
-      description: "none"
-      parameters:
-      - name: "uuid"
-        in: "path"
-        description: "Id of topology"
-        required: true
-        type: "string"
-      - name: "node-uuid"
-        in: "path"
-        description: "Id of node"
-        required: true
-        type: "string"
-      responses:
-        200:
-          description: "tapi.equipment.SupportingPhysicalSpan"
-          schema:
-            $ref: "#/definitions/tapi.equipment.SupportingPhysicalSpanWrapper"
-        400:
-          description: "Internal error"
-  ? /data/tapi-common:context/tapi-topology:topology-context/topology={uuid}/node={node-uuid}/tapi-equipment:supporting-physical-span/physical-span/
-  : get:
-      tags:
-      - "tapi-equipment"
-      summary: "returns tapi.equipment.PhysicalSpanRef"
-      description: "none"
-      parameters:
-      - name: "uuid"
-        in: "path"
-        description: "Id of topology"
-        required: true
-        type: "string"
-      - name: "node-uuid"
-        in: "path"
-        description: "Id of node"
-        required: true
-        type: "string"
-      responses:
-        200:
-          description: "tapi.equipment.PhysicalSpanRef"
-          schema:
-            $ref: "#/definitions/tapi.equipment.PhysicalSpanRefWrapper"
-        400:
-          description: "Internal error"
   /data/tapi-common:context/tapi-topology:topology-context/topology={uuid}/node={node-uuid}/total-potential-capacity/:
     get:
       tags:
@@ -7564,7 +7564,7 @@ definitions:
     properties:
       contained-holder:
         $ref: "#/definitions/tapi.equipment.Holder"
-  tapi.equipment.NodeAugmentation1:
+  tapi.equipment.LinkAugmentation1:
     type: "object"
     properties:
       supporting-physical-span:
@@ -8192,16 +8192,16 @@ definitions:
   tapi.topology.ConnectionSpecReference:
     type: "object"
     properties:
+      connection-spec:
+        type: "string"
+        description: "The reference to a formal spec. \r\n                This reference\
+          \ need not be provided (e.g., where there is no formal machine interpretable\
+          \ spec for the type of connection)."
       connection-spec-name:
         type: "string"
         description: "The name of the connection type spec.\r\n                This\
           \ can be used as a reference to a paper document where full formal machine\
           \ interpretable specs are not supported."
-      connection-spec-id:
-        type: "string"
-        description: "The reference to a formal spec. \r\n                This reference\
-          \ need not be provided (e.g., where there is no formal machine interpretable\
-          \ spec for the type of connection)."
   tapi.topology.ConnectionSpecReferenceWrapper:
     properties:
       connection-spec-reference:
@@ -8367,10 +8367,6 @@ definitions:
           $ref: "#/definitions/tapi.common.ForwardingDirection"
       description: "The Link object class models effective adjacency between two or\
         \ more ForwardingDomains (FD). "
-  tapi.topology.LinkWrapper:
-    properties:
-      link:
-        $ref: "#/definitions/tapi.topology.Link"
   tapi.topology.NetworkTopologyService:
     allOf:
     - $ref: "#/definitions/tapi.common.GlobalClass"
@@ -8968,12 +8964,19 @@ definitions:
     properties:
       owned-node-edge-point:
         $ref: "#/definitions/tapi.topology.node.OwnedNodeEdgePoint"
+  tapi.topology.topology.Link:
+    allOf:
+    - $ref: "#/definitions/tapi.equipment.LinkAugmentation1"
+    - $ref: "#/definitions/tapi.topology.Link"
+  tapi.topology.topology.LinkWrapper:
+    properties:
+      link:
+        $ref: "#/definitions/tapi.topology.topology.Link"
   tapi.topology.topology.Node:
     allOf:
     - $ref: "#/definitions/tapi.common.AdminStatePac"
     - $ref: "#/definitions/tapi.common.CapacityPac"
     - $ref: "#/definitions/tapi.common.GlobalClass"
-    - $ref: "#/definitions/tapi.equipment.NodeAugmentation1"
     - $ref: "#/definitions/tapi.topology.TransferCostPac"
     - $ref: "#/definitions/tapi.topology.TransferIntegrityPac"
     - $ref: "#/definitions/tapi.topology.TransferTimingPac"
@@ -9021,7 +9024,7 @@ definitions:
           type: "array"
           description: "none"
           items:
-            $ref: "#/definitions/tapi.topology.Link"
+            $ref: "#/definitions/tapi.topology.topology.Link"
         node:
           type: "array"
           description: "none"
