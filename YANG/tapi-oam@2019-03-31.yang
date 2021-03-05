@@ -238,153 +238,164 @@ module tapi-oam {
         leaf layer-protocol-name {
             type tapi-common:layer-protocol-name;
             config false;
-            description "none";
+            description "The Mep layer protocol.";
         }
         uses tapi-common:local-class;
         uses tapi-common:operational-state-pac;
-        description "none";
+        description "The Maintenance Entity group end Point.
+            ITU-T G.8001: maintenance entity group end point compound sink function: A compound transport processing function that accepts the characteristic information of the layer network at its input,
+            extracts and processes the OAM information related to the monitoring of the maintenance entity group, filters the OAM information from within to the maintenance entity group,
+            adapts the information and presents it as the characteristic information of the layer or a client layer at its output, potentially as a (client) layer maintenance signal (e.g., AIS).
+            ITU-T G.8001: maintenance entity group end point compound source function: A compound transport processing function that accepts the characteristic information of the layer or a client layer network at its input,
+            adapts that information, filters it for OAM information interfering with its own OAM information, adds OAM information to allow the maintenance entity group to be monitored and presents the resulting information at its output.";
     }
     grouping oam-job {
         list oam-service-point {
             uses oam-service-point-ref;
             key 'oam-service-uuid oam-service-point-local-id';
             min-elements 1;
-            description "none";
+            description "The OamServicePoint (OSP) instances involved in the OamJob.";
         }
         container oam-profile {
             uses oam-profile-ref;
-            description "none";
+            description "The OamProfile instance referred by the OamJob.";
         }
         list current-data {
             key 'local-id';
             config false;
             uses current-data;
-            description "Granularity period of the CurrentData identifies the specific CurrentData instance in the scope of this OamJob.
-                For example, typically at least
-                one 15min and
-                one 24hr;
-                optionally one additional configurable (< 15min)";
+            description "The CurrentData instances in the scope of the OamJob.";
         }
         leaf oam-job-type {
             type oam-job-type;
-            description "none";
+            description "The OamJob type.";
         }
         container schedule {
             uses tapi-common:time-range;
-            description "none";
+            description "The OamJob schedule.";
         }
         leaf creation-time {
             type tapi-common:date-and-time;
             config false;
-            description "none";
+            description "The OamJob creation time.";
         }
         uses tapi-common:global-class;
         uses tapi-common:admin-state-pac;
-        description "none";
+        description "Thic class allows the provisioning of performance monitoring functions on specified resources.";
     }
     grouping meg {
         list mep {
             key 'local-id';
             config false;
             uses mep;
-            description "1. ME may have 0 MEPs (case of transit domains where at least 1 MIP is present)
-                2. ME may have 1 MEP (case of edge domains, where the peer MEP is ouside the managed domain)
-                3. ME may have 2 MEPs";
+            description "The maintenance entity group consists of one or more maintenance entities. There are the following cases:
+                1. A maintenance entity may have 0 MEPs (case of transit domains where at least 1 MIP is present).
+                2. A maintenance entity may have 1 MEP (case of edge domains, where the peer MEP is ouside the managed domain).
+                3. A maintenance entity may have 2 MEPs.";
         }
         list mip {
             key 'local-id';
             config false;
             uses mip;
-            description "ME may 0, 1, or more MIPs";
+            description "The maintenance entity group may have 0, 1, or more MIPs.";
         }
         leaf layer-protocol-name {
             type tapi-common:layer-protocol-name;
             config false;
-            description "none";
+            description "The MEG layer protocol.";
         }
         uses tapi-common:global-class;
         uses tapi-common:operational-state-pac;
-        description "none";
+        description "The Maintenance Entity Group.
+            ITU-T G.8001: A group defined, for the purpose of fragment or connection monitoring, between a set of flow or connection points within a fragment/connection.
+            This set of flow or connection points may be located at the boundary of one administrative domain or a protection domain, or at the boundaries of two adjacent administrative domains.
+            The maintenance entity group consists of one or more maintenance entities (the entity between two of the flow/connection points in a maintenance entity group).";
     }
     grouping mip {
         leaf layer-protocol-name {
             type tapi-common:layer-protocol-name;
             config false;
-            description "none";
+            description "The Mip layer protocol.";
         }
         uses tapi-common:local-class;
-        description "none";
+        description "The Maintenance entity group Intermediate Point.
+            ITU-T G.8001: maintenance entity group intermediate point compound function: A compound transport processing function that accepts the characteristic information of the layer network at its input,
+            reacts to OAM information related to on-demand monitoring of a maintenance entity group and presents the characteristic information without the OAM to which it reacted at its output.";
     }
     grouping oam-service {
         leaf layer-protocol-name {
             type tapi-common:layer-protocol-name;
-            description "none";
+            description "The OamService layer protocol.";
         }
         list oam-service-point {
             key 'local-id';
             min-elements 2;
             uses oam-service-point;
-            description "none";
+            description "The OamServicePoint (OSP) instances of the OamService.";
         }
         container meg {
             uses meg-ref;
             config false;
-            description "none";
+            description "The Meg instance tracking the state of the allocated resources for the support of the OamService.";
         }
         uses tapi-common:global-class;
         uses tapi-common:admin-state-pac;
-        description "none";
+        description "An OamService represents an 'intent-like' request for OAM functions between two or more OamServicePoint (OSP) instances. The OamService is a container for OAM request details and is distinct from the Meg that realize the request.";
     }
     grouping oam-context {
         list oam-service {
             key 'uuid';
             uses oam-service;
-            description "none";
+            description "The included OamService instances.";
+        }
+        list oam-profile {
+            key 'uuid';
+            uses oam-profile;
+            description "The included OamProfile instances.";
+        }
+        list oam-job {
+            key 'uuid';
+            uses oam-job;
+            description "The included OamJob instances.";
         }
         list meg {
             key 'uuid';
             config false;
             uses meg;
-            description "none";
+            description "The included Meg instances.";
         }
-        list oam-job {
-            key 'uuid';
-            uses oam-job;
-            description "none";
-        }
-        list oam-profile {
-            key 'uuid';
-            uses oam-profile;
-            description "none";
-        }
-        description "none";
+        description "This object class represents the scope of control that a particular SDN controller has with respect to a particular network, specifically regarding the OAM description.
+            An instance of this class includes its OamService, OamProfile, OamJob and Meg object instances.";
     }
     grouping oam-service-point {
         container service-interface-point {
             uses tapi-common:service-interface-point-ref;
-            description "none";
+            description "The supporting ServiceInterfacePoint (SIP) instance.
+                If neither ConnectivityServiceEndPoint (CSEP) nor ConnectionEndPoint (CEP) are specified, the OamServicePoint (OSP) is intended for SIP monitoring.";
         }
         container connectivity-service-end-point {
             uses tapi-connectivity:connectivity-service-end-point-ref;
-            description "none";
+            description "The ConnectivityServiceEndPoint (CSEP) instance monitored by the OamServicePoint (OSP).
+                If not specified (and neither CEP is specified), the OamServicePoint (OSP) is intended for SIP monitoring.";
         }
         container connection-end-point {
             uses tapi-connectivity:connection-end-point-ref;
-            description "none";
+            description "The ConnectionEndPoint (CEP) instance monitored by the OamServicePoint (OSP).
+                If not specified (and neither CSEP is specified), the OamServicePoint (OSP) is intended for SIP monitoring.";
         }
         container mep {
             uses mep-ref;
             config false;
-            description "none";
+            description "The associated Mep instance, mutually exclusive wrt Mip instance.";
         }
         container mip {
             uses mip-ref;
             config false;
-            description "none";
+            description "The associated Mip instance, mutually exclusive wrt Mep instance.";
         }
         leaf layer-protocol-name {
             type tapi-common:layer-protocol-name;
-            description "none";
+            description "The OamServicePoint (OSP) layer protocol.";
         }
         leaf is-mip {
             type boolean;
@@ -393,99 +404,113 @@ module tapi-oam {
         }
         uses tapi-common:local-class;
         uses tapi-common:admin-state-pac;
-        description "none";
+        description "The OamServicePoint (OSP) is a container for OAM request details and is distinct from the Mep and/or Mip instances that realize the request.";
     }
     grouping mep-mip-list {
-        list mip {
-            uses mip-ref;
-            key 'meg-uuid mip-local-id';
-            description "none";
-        }
         list mep {
             uses mep-ref;
             key 'meg-uuid mep-local-id';
-            description "none";
+            description "The list of associated Mep instances.";
         }
-        description "none";
+        list mip {
+            uses mip-ref;
+            key 'meg-uuid mip-local-id';
+            description "The list of associated Mip instances.";
+        }
+        description "This class provides the linkage between the ConnectionEndPoint (CEP) instance and its associated Mep and Mip instances.
+            The CEP class, which is defined in TapiConnectivity module, cannot directly include the reference to its Mep/Mip, because Mep/Mip classes are defined in another module, TapiOam.";
     }
     grouping current-data {
         leaf period-start-time {
             type tapi-common:date-and-time;
             config false;
-            description "This attribute indicates the start of the current monitoring interval.
+            description "This attribute indicates the start time of the current monitoring interval / granularity period.
                 The value is bound to the quarter of an hour in case of a 15 minute interval and bound to the hour in case of a 24 hour interval.";
         }
         container elapsed-time {
             uses tapi-common:time-interval;
-            description "none";
+            description "Q822: This attribute represents the difference between the current time and the start of the present interval.";
         }
         container pm-data-pac {
             uses pm-data-pac;
-            description "none";
+            description "Parameters specific to Performance Monitoring functions.";
         }
         list history-data {
             key 'local-id';
             config false;
             uses history-data;
-            description "in case of 24hr Current Data, at least 1 History Data.
-                In case of 15min Current Data, at least 16 History Data.
-                In case of <15min, the number of History Data shall be able to cover a span of 4 hours.";
+            description "The associated HistoryData instances.
+                In case of 24hr CurrentData, at least 1 HistoryData instance shall be maintained.
+                In case of 15min CurrentData, at least 16 HistoryData instances shall be maintained.
+                In case of <15min, the number of HistoryData instances shall be able to cover a span of 4 hours.";
         }
         uses tapi-common:local-class;
-        description "none";
+        description "The CurrentData class. The PM metrics/types can be specified in technology specific augmentations of this class.
+            ITU-T Q.822: This object contains the measurements for the resource being monitored for a specified time interval (measurement interval time / granularity period).";
     }
     grouping history-data {
         leaf period-start-time {
             type tapi-common:date-and-time;
-            description "This attribute indicates the start of the monitoring interval.
+            description "This attribute indicates the start time of the monitoring interval / granularity period.
                 The value is bound to the quarter of an hour in case of a 15 minute interval and bound to the hour in case of a 24 hour interval.";
         }
         leaf period-end-time {
             type tapi-common:date-and-time;
-            description "none";
+            description "This attribute indicates the end time of the monitoring interval / granularity period.
+                The value is bound to the quarter of an hour in case of a 15 minute interval and bound to the hour in case of a 24 hour interval.";
         }
         container pm-data-pac {
             uses pm-data-pac;
-            description "none";
+            description "Parameters specific to Performance Monitoring functions.";
         }
         uses tapi-common:local-class;
-        description "none";
+        description "The HistoryData class. The PM metrics/types can be specified in technology specific augmentations of this class.
+            ITU-T Q.822: This object will contain a copy of the performance management and other selected attributes that are present in the CurrentData object at the end of the current interval (measurement interval time / granularity period).
+            A new instance of this object class is created at the end of each interval.";
     }
     grouping oam-profile {
         list pm-threshold-data {
             key 'local-id';
             min-elements 1;
             uses pm-threshold-data;
-            description "none";
+            description "The PM threshold information associated to the OamProfile.";
         }
         uses tapi-common:global-class;
-        description "none";
+        description "The OamProfile allows centralization of OAM provisioning aspects, e.g. the PM parameters and their threshold values.";
     }
     grouping pm-threshold-data {
         leaf-list applicable-job-type {
             type oam-job-type;
-            description "This attribute allows an PMThresholdData instance to be constrained to specific job types. If an PMThresholdData instance is so configured to be applicable to more than one job type (worst case ALL), only the parameters relevant for the job instance will be used (non-applicable profile parameters will be ignored)";
+            description "This attribute allows an PmThresholdData instance to be constrained to specific job types. If a PmThresholdData instance is so configured to be applicable to more than one job type (worst case ALL), only the parameters relevant for the job instance will be used (non-applicable profile parameters will be ignored).";
         }
         list threshold-parameter {
             key 'pm-parameter-name threshold-location';
             uses threshold-parameter;
-            description "none";
+            description "The PM metrics and their threshold values.";
         }
         container granularity-period {
             uses tapi-common:time-period;
-            description "none";
+            description "The granularity period or measurement interval time.";
         }
         leaf is-transient {
             type boolean;
-            description "none";
+            description "A threshold crossing alarm (TCA) is transient when stateless, i.e. an explicit alarm clear notification is not foreseen.
+                MEF 35.1: Thresholds and associated TCAs are specific to a particular performance metric in a given PM Session (or OAM job).
+                There are two types of TCA reporting: stateless and stateful.
+                With stateless reporting, a TCA is generated in each Measurement Interval in which the threshold is crossed.
+                With stateful reporting, a SET TCA is generated in the first Measurement Interval in which the threshold is crossed,
+                and a CLEAR TCA is subsequently generated at the end of the first Measurement Interval in which the threshold is not crossed.
+                Note: In ITU-T G.7710 terminology, stateless TCA reporting corresponds to a transient condition, and stateful TCA reporting corresponds to a standing condition.
+                Note that threshold management for gauges may be more complex (e.g. out of range function for gauge overflow/underflow detection).";
         }
         uses tapi-common:local-class;
-        description "none";
+        description "The PM threshold information associated to an OamProfile instance.
+            It defines a set of PM metrics, their threshold values, the granularity period or measurement interval time for these PM metrics, the stateful or stateless types of related threshold crossing alarm (TCA) reporting.";
     }
     grouping pm-data-pac {
         container granularity-period {
             uses tapi-common:time-period;
-            description "none";
+            description "The granularity period or measurement interval time.";
         }
         leaf suspect-interval-flag {
             type boolean;
@@ -497,91 +522,96 @@ module tapi-oam {
                 – The performance counters were reset during the interval.
                 – The currentData (or subclass) object instance was created during the monitoring period.";
         }
-        description "none";
+        description "Parameters specific to Performance Monitoring functions.";
     }
     grouping tca-info {
         leaf is-transient {
             type boolean;
             config false;
-            description "none";
+            description "A threshold crossing alarm is transient when stateless, i.e. an explicit alarm clear notification is not foreseen.";
         }
         leaf perceived-severity {
             type perceived-tca-severity;
-            description "none";
+            description "The threshold crossing alarm severity.";
         }
         container threshold-parameter {
             config false;
             uses threshold-parameter;
-            description "none";
+            description "Information on the related PM metrics and their threshold values.";
         }
         leaf measurement-interval {
             type tapi-common:date-and-time;
-            description "none";
+            description "The measurement interval time of the related PM metric.";
         }
         leaf suspect-interval-flag {
             type boolean;
-            description "none";
+            description "This attribute is used to indicate that the performance data for the current period may not be reliable. Some reasons for this to occur are:
+                – Suspect data were detected by the actual resource doing data collection.
+                – Transition of the administrativeState attribute to/from the 'lock' state.
+                – Transition of the operationalState to/from the 'disabled' state.
+                – Scheduler setting that inhibits the collection function.
+                – The performance counters were reset during the interval.
+                – The currentData (or subclass) object instance was created during the monitoring period.";
         }
         container oam-job {
             uses oam-job-ref;
-            description "MEF 35.1
-                Identification of the PM Session for which the TCA Function was configured.";
+            description "Reference to the OamJob instance for which the PM metric and threshold values were configured.
+                MEF 35.1: Identification of the PM Session for which the TCA Function was configured.";
         }
-        description "none";
+        description "This class augments the Notification class with threshold crossing alarm related parameters.";
     }
     grouping alarm-info {
         leaf is-transient {
             type boolean;
             config false;
-            description "none";
+            description "An alarm is transient when stateless, i.e. an explicit alarm clear notification is not foreseen.";
         }
         leaf perceived-severity {
             type perceived-severity-type;
             config false;
-            description "none";
+            description "The alarm severity.";
         }
         leaf probable-cause {
             type alarm-condition-name;
             config false;
-            description "none";
+            description "The alarm probable cause.";
         }
         leaf service-affecting {
             type service-affecting;
-            description "none";
+            description "The impact on the service.";
         }
-        description "none";
+        description "This class augments the Notification class with alarm related parameters.";
     }
     grouping connectivity-oam-job {
         leaf oam-job-type {
             type oam-job-type;
-            description "none";
+            description "The type of the OAM job.";
         }
         container schedule {
             uses tapi-common:time-range;
-            description "none";
+            description "The schedule of the OAM job.";
         }
         list threshold-parameter {
             key 'pm-parameter-name threshold-location';
             uses threshold-parameter;
-            description "none";
+            description "The PM metrics and their threshold values.";
         }
         container granularity-period {
             uses tapi-common:time-period;
-            description "none";
+            description "The granularity period or measurement interval time of the OAM job.";
         }
         leaf is-transient {
             type boolean;
-            description "none";
+            description "A threshold crossing alarm is transient when stateless, i.e. an explicit alarm clear notification is not foreseen.";
         }
-        description "none";
+        description "This class augments the ConnectivityService class to associate OAM job provisioning to ConnectivityService provisioning.";
     }
     grouping connectivity-oam-service-point {
         leaf is-mip {
             type boolean;
-            description "If true, the object is related to a MIP.
-                If false, the object is related to a MEP.";
+            description "If true, the object is related to a MIP. If false, the object is related to a MEP.";
         }
-        description "none";
+        description "This class augments the ConnectivityServiceEndPoint (CSEP) class to associate OAM service provisioning to ConnectivityService provisioning.";
     }
 
     /**************************
@@ -596,11 +626,11 @@ module tapi-oam {
     }
     identity OAM_NOTIFICATION_TYPE_ALARM_EVENT {
         base OAM_NOTIFICATION_TYPE;
-        description "none";
+        description "The notification of an alarm event.";
     }
     identity OAM_NOTIFICATION_TYPE_THRESHOLD_CROSSING_ALERT {
         base OAM_NOTIFICATION_TYPE;
-        description "none";
+        description "The notification of a threshold crossing alarm event.";
     }
     identity ALARM_CONDITION_NAME {
         description "none";
@@ -614,203 +644,207 @@ module tapi-oam {
     }
     identity OAM_OBJECT_TYPE_OAM_SERVICE {
         base OAM_OBJECT_TYPE;
-        description "none";
+        description "The OamService class.";
     }
     identity OAM_OBJECT_TYPE_OAM_SERVICE_POINT {
         base OAM_OBJECT_TYPE;
-        description "none";
+        description "The OamServicePoint (OSP) class.";
     }
     identity OAM_OBJECT_TYPE_MEG {
         base OAM_OBJECT_TYPE;
-        description "none";
+        description "The Meg class.";
     }
     identity OAM_OBJECT_TYPE_MEP {
         base OAM_OBJECT_TYPE;
-        description "none";
+        description "The Mep class.";
     }
     identity OAM_OBJECT_TYPE_MIP {
         base OAM_OBJECT_TYPE;
-        description "none";
+        description "The Mip class.";
     }
     identity OAM_OBJECT_TYPE_OAM_JOB {
         base OAM_OBJECT_TYPE;
-        description "none";
+        description "The OamJob class.";
     }
     identity OAM_OBJECT_TYPE_OAM_PROFILE {
         base OAM_OBJECT_TYPE;
-        description "none";
-    }
-    identity OAM_OBJECT_TYPE_PM_THRESHOLD_DATA {
-        base OAM_OBJECT_TYPE;
-        description "none";
+        description "The OamProfile class.";
     }
     identity OAM_OBJECT_TYPE_CURRENT_DATA {
         base OAM_OBJECT_TYPE;
-        description "none";
+        description "The CurrentData class.";
     }
     identity OAM_OBJECT_TYPE_HISTORY_DATA {
         base OAM_OBJECT_TYPE;
-        description "none";
+        description "The HistoryData class.";
     }
     typedef oam-job-type {
         type identityref {
             base OAM_JOB_TYPE;
         }
-        description "none";
+        description "The OAM job types.
+            This extensible enumeration can be augmented with specific OAM job types in the other modules.";
     }
     typedef perceived-tca-severity {
         type enumeration {
             enum WARNING {
-                description "none";
+                description "ITU-T G.7710/X.733/M.3100: Indication for a potential or impending service-affecting fault. Further diagnosis should be made.";
             }
             enum CLEAR {
-                description "none";
+                description "Included only for some possible backward compatibility purpose. It should not be used to assign a severity to a failure.
+                    ITU-T G.7710: The severities 'cleared' and 'indeterminate' defined by [ITU-T X.733] are not included in Table 2, as it is assumed that these are not to be used to assign a failure.";
             }
         }
-        description "none";
+        description "The types of perceived severity of threshold crossing alarms.";
     }
     typedef perceived-severity-type {
         type enumeration {
             enum CRITICAL {
-                description "none";
+                description "ITU-T G.7710/X.733/M.3100: Indication for a service-affecting condition. Immediate corrective action is required.";
             }
             enum MAJOR {
-                description "none";
+                description "ITU-T G.7710/X.733/M.3100: Indication for a service-affecting condition. Urgent corrective action is required.";
             }
             enum MINOR {
-                description "none";
+                description "ITU-T G.7710/X.733/M.3100: Indication for a non-service-affecting condition. Corrective action should be taken in order to prevent more serious fault.";
             }
             enum WARNING {
-                description "none";
+                description "ITU-T G.7710/X.733/M.3100: Indication for a potential or impending service-affecting fault. Further diagnosis should be made.";
             }
             enum CLEARED {
-                description "none";
+                description "Included only for some possible backward compatibility purpose. It should not be used to assign a severity to a failure.
+                    ITU-T G.7710: The severities 'cleared' and 'indeterminate' defined by [ITU-T X.733] are not included in Table 2, as it is assumed that these are not to be used to assign a failure.";
             }
         }
-        description "none";
+        description "The types of perceived severity.
+            ITU-T G.7710: Failures may have been categorized to indicate the severity or urgency of the fault.";
     }
     typedef service-affecting {
         type enumeration {
             enum SERVICE_AFFECTING {
-                description "none";
+                description "The service is affected by the failure.";
             }
             enum NOT_SERVICE_AFFECTING {
-                description "none";
+                description "The service is not affected by the failure.";
             }
             enum UNKNOWN {
-                description "none";
+                description "The impact on the service is unknown.";
             }
         }
-        description "none";
+        description "The possible impact on the service.";
     }
     typedef oam-notification-type {
         type identityref {
             base OAM_NOTIFICATION_TYPE;
         }
-        description "none";
+        description "The list of OAM specific notification types.";
     }
     typedef alarm-condition-name {
         type identityref {
             base ALARM_CONDITION_NAME;
         }
-        description "none";
+        description "The alarm condition name, or alarm probable cause.
+            This extensible enumeration can be augmented with specific alarm condition names in the other modules.";
     }
     grouping pm-parameter {
         leaf pm-parameter-name {
             type pm-parameter-name;
-            description "none";
+            description "The name of the PM metric. Technology specific modules may define specific PM metrics.";
         }
         container pm-parameter-value {
             uses pm-parameter-value;
-            description "none";
+            description "The value of the PM metric.";
         }
-        description "none";
+        description "PM metric name and value.";
     }
     typedef pm-parameter-name {
         type identityref {
             base PM_PARAMETER_NAME;
         }
-        description "none";
+        description "The PM metric names.
+            This extensible enumeration can be augmented with specific PM metric names in the other modules.";
     }
     grouping threshold-parameter {
         leaf pm-parameter-name {
             type pm-parameter-name;
-            description "none";
+            description "PM metric name.";
         }
         leaf threshold-location {
             type threshold-crossing-qualifier;
-            description "none";
+            description "PM metric location.";
         }
         container pm-parameter-above-thrs {
             uses pm-parameter-value;
-            description "none";
+            description "PM metric above threshold.";
         }
         container pm-parameter-below-thrs {
             uses pm-parameter-value;
-            description "none";
+            description "PM metric below threshold.";
         }
         container pm-parameter-clear-thrs {
             uses pm-parameter-value;
-            description "none";
+            description "PM metric clear threshold.";
         }
-        description "none";
+        description "PM metrics, their locations and threshold values.";
     }
     typedef threshold-crossing-qualifier {
         type enumeration {
             enum NOT_APPLICABLE {
-                description "none";
+                description "Location or qualifier not applicable.";
             }
             enum NEAR_END {
-                description "none";
+                description "Near End detection.";
             }
             enum FAR_END {
-                description "none";
+                description "Far end detection.";
             }
             enum BIDIRECTIONAL {
-                description "none";
+                description "Composition of near and far end detections.";
             }
             enum FORWARD {
-                description "none";
+                description "MEF 35.1: The direction of performance measurements from the Controller MEP towards the Responder or Sink MEP, when One-way measurements are taken using a Single-Ended or Dual-Ended PM Function.
+                    MEF 83: In Single-Ended measurements, it is assumed that the the FORWARD and FAR_END qualifiers are equivalent.
+                    In Dual-Ended measurements (and in case of TX counters), it is assumed that the FORWARD and NEAR_END qualifiers are equivalent.";
             }
             enum BACKWARD {
-                description "none";
+                description "MEF 35.1: The direction of performance measurements from the Responder MEP towards the Controller MEP, when One-way measurements are taken using a Single-Ended PM Function.
+                    Note: this term is not applicable when Dual-Ended PM Functions are used.
+                    MEF 83: In Single-Ended measurements, it is assumed that the BACKWARD and NEAR_END qualifiers are equivalent.
+                    In Dual-Ended measurements (and in case of TX counters), it is assumed that the BACKWARD and FAR_END qualifiers are equivalent.";
             }
         }
-        description "none";
+        description "Threshold crossing location or qualifier.";
     }
     typedef oam-object-type {
         type identityref {
             base OAM_OBJECT_TYPE;
         }
-        description "The list of TAPI Global Object Class types on which Notifications can be raised.";
+        description "The list of TAPI OAM Global Object Class types on which Notification signals can be raised.";
     }
     grouping pm-parameter-value {
         leaf pm-parameter-int-value {
             type uint64;
-            description "none";
+            description "Integer value, e.g. for counters.";
         }
         leaf pm-parameter-real-value {
             type decimal64 {
                 fraction-digits 7;
             }
-            description "none";
+            description "Real value, e.g. for gauges.";
         }
-        description "none";
+        description "PM metric value.";
     }
 
     /**************************
     * package interfaces
     **************************/ 
     rpc create-oam-service {
-        description "UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
-            An UUID carries no semantics with respect to the purpose or state of the entity.
-            UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
-            Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
-            Example of a UUID in string representation: f81d4fae-7dec-11d0-a765-00a0c91e6bf6";
+        description "none";
         input {
             leaf uuid {
                 type tapi-common:uuid;
-                description "UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the OamService instance to be created.
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -819,28 +853,28 @@ module tapi-oam {
             list name {
                 key 'value-name';
                 uses tapi-common:name-and-value;
-                description "List of names. This value is unique in some namespace but may change during the life of the entity.
-                    A name carries no semantics with respect to the purpose of the entity.";
+                description "List of names of the OamService instance to be created.
+                    The value(s) is (are) unique in some namespace but may change during the life of the entity. A name carries no semantics with respect to the purpose of the entity.";
             }
             leaf layer-protocol-name {
                 type tapi-common:layer-protocol-name;
-                description "none";
+                description "The layer protocol of the OamService instance to be created.";
             }
             leaf state {
                 type tapi-common:administrative-state;
-                description "none";
+                description "The Administrative State of the OamService instance to be created.";
             }
             list oam-service-point {
             	key 'local-id';
                 min-elements 2;
                 uses oam-service-point;
-                description "none";
+                description "The parameters of the OamServicePoint (OSP) instances to be created as end points of the OamService instance under creation.";
             }
         }
         output {
             container oam-service {
                 uses oam-service;
-                description "none";
+                description "The created OamService instance.";
             }
         }
     }
@@ -849,7 +883,8 @@ module tapi-oam {
         input {
             leaf uuid {
                 type tapi-common:uuid;
-                description "UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the OamService instance to be deleted.
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -862,7 +897,8 @@ module tapi-oam {
         input {
             leaf uuid {
                 type tapi-common:uuid;
-                description "UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the OamService instance.
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -872,7 +908,7 @@ module tapi-oam {
         output {
             container oam-service {
                 uses oam-service;
-                description "none";
+                description "The requested OamService instance.";
             }
         }
     }
@@ -882,7 +918,7 @@ module tapi-oam {
             list oam-service {
             	key 'uuid';
                 uses oam-service;
-                description "none";
+                description "The requested list of OamService instances.";
             }
         }
     }
@@ -891,7 +927,8 @@ module tapi-oam {
         input {
             leaf uuid {
                 type tapi-common:uuid;
-                description "UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the Meg instance.
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -901,7 +938,7 @@ module tapi-oam {
         output {
             container meg {
                 uses meg;
-                description "none";
+                description "The requested Meg instance.";
             }
         }
     }
@@ -910,7 +947,8 @@ module tapi-oam {
         input {
             leaf uuid {
                 type tapi-common:uuid;
-                description "UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the OamService instance to be updated.
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -919,23 +957,23 @@ module tapi-oam {
             list name {
                 key 'value-name';
                 uses tapi-common:name-and-value;
-                description "List of names. This value is unique in some namespace but may change during the life of the entity.
-                    A name carries no semantics with respect to the purpose of the entity.";
+                description "List of names of the OamService instance to be updated.
+                    The value(s) is (are) unique in some namespace but may change during the life of the entity. A name carries no semantics with respect to the purpose of the entity.";
             }
             leaf state {
                 type tapi-common:administrative-state;
-                description "none";
+                description "The (updated) Administrative State of the OamService instance under update.";
             }
             list oam-service-point {
             	key 'local-id';
                 uses oam-service-point;
-                description "none";
+                description "The parameters of the OamServicePoint (OSP) instances to be updated as end points of the OamService instance under update.";
             }
         }
         output {
             container oam-service {
                 uses oam-service;
-                description "none";
+                description "The updated OamService instance.";
             }
         }
     }
@@ -944,7 +982,8 @@ module tapi-oam {
         input {
             leaf uuid {
                 type tapi-common:uuid;
-                description "UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the OamServicePoint (OSP) instance to be created. 
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -952,7 +991,8 @@ module tapi-oam {
             }
             leaf oam-service-id {
                 type tapi-common:uuid;
-                description "UUID of the parent OamService: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the parent OamService instance.
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -960,7 +1000,8 @@ module tapi-oam {
             }
             leaf service-interface-point-id {
                 type tapi-common:uuid;
-                description "UUID of the associated SIP to be monitored: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the associated ServiceInterfacePoint (SIP) instance to be monitored.
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -968,7 +1009,8 @@ module tapi-oam {
             }
             leaf connectivity-service-end-point-id {
                 type tapi-common:uuid;
-                description "UUID of the CSEP to be monitored: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the ConnectivityServiceEndPoint (CSEP) to be monitored. If omitted, the monitoring is intended on ServiceInterfacePoint (SIP).
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -977,22 +1019,22 @@ module tapi-oam {
             list name {
                 key 'value-name';
                 uses tapi-common:name-and-value;
-                description "List of names. This value is unique in some namespace but may change during the life of the entity.
-                    A name carries no semantics with respect to the purpose of the entity.";
+                description "List of names of the OamServicePoint (OSP) instance to be created.
+                    The value(s) is (are) unique in some namespace but may change during the life of the entity. A name carries no semantics with respect to the purpose of the entity.";
             }
             leaf layer-protocol-name {
                 type tapi-common:layer-protocol-name;
-                description "none";
+                description "The layer protocol of the OamServicePoint (OSP) instance to be created.";
             }
             leaf state {
                 type tapi-common:administrative-state;
-                description "none";
+                description "The Administrative State of the OamServicePoint (OSP) instance to be created.";
             }
         }
         output {
             container oam-service-point {
                 uses oam-service-point;
-                description "none";
+                description "The created OamServicePoint (OSP) instance.";
             }
         }
     }
@@ -1001,7 +1043,8 @@ module tapi-oam {
         input {
             leaf uuid {
                 type tapi-common:uuid;
-                description "UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the OamServicePoint (OSP) instance to be deleted. 
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -1014,7 +1057,8 @@ module tapi-oam {
         input {
             leaf uuid {
                 type tapi-common:uuid;
-                description "UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the OamServicePoint (OSP) instance to be updated.
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -1023,18 +1067,18 @@ module tapi-oam {
             list name {
                 key 'value-name';
                 uses tapi-common:name-and-value;
-                description "List of names. This value is unique in some namespace but may change during the life of the entity.
-                    A name carries no semantics with respect to the purpose of the entity.";
+                description "List of names of the OamServicePoint (OSP) instance to be updated.
+                    The value(s) is (are) unique in some namespace but may change during the life of the entity. A name carries no semantics with respect to the purpose of the entity.";
             }
             leaf state {
                 type tapi-common:administrative-state;
-                description "none";
+                description "The (updated) Administrative State of the OamServicePoint (OSP) instance under update.";
             }
         }
         output {
             container oam-service-point {
                 uses oam-service-point;
-                description "none";
+                description "The updated OamServicePoint (OSP) instance.";
             }
         }
     }
@@ -1043,7 +1087,8 @@ module tapi-oam {
         input {
             leaf uuid {
                 type tapi-common:uuid;
-                description "UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the OamServicePoint (OSP) instance.
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -1053,7 +1098,7 @@ module tapi-oam {
         output {
             container oam-service-point {
                 uses oam-service-point;
-                description "none";
+                description "The requested OamServicePoint (OSP) instance.";
             }
         }
     }
@@ -1062,7 +1107,8 @@ module tapi-oam {
         input {
             leaf uuid {
                 type tapi-common:uuid;
-                description "UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the OamJob instance to be created.
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -1070,7 +1116,8 @@ module tapi-oam {
             }
             leaf oam-service-id {
                 type tapi-common:uuid;
-                description "UUID of the associated OamService: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the associated OamService instance.
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -1078,7 +1125,8 @@ module tapi-oam {
             }
             leaf oam-service-point-id {
                 type tapi-common:uuid;
-                description "UUID of the associated OSEPs: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the OamServicePoint (OSP) instance(s) involved in the OamJob instance under creation.
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -1086,7 +1134,8 @@ module tapi-oam {
             }
             leaf oam-profile-id {
                 type tapi-common:uuid;
-                description "UUID of the OamProfile to be applied: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the OamProfile instance to be applied to the OamJob instance under creation.
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -1095,26 +1144,26 @@ module tapi-oam {
             list name {
                 key 'value-name';
                 uses tapi-common:name-and-value;
-                description "List of names. This value is unique in some namespace but may change during the life of the entity.
-                    A name carries no semantics with respect to the purpose of the entity.";
+                description "List of names of the OamJob instance to be created.
+                    The value(s) is (are) unique in some namespace but may change during the life of the entity. A name carries no semantics with respect to the purpose of the entity.";
             }
             leaf oam-job-type {
                 type oam-job-type;
-                description "none";
+                description "The OAM job type of the OamJob instance under creation.";
             }
             leaf state {
                 type tapi-common:administrative-state;
-                description "none";
+                description "The Administrative State of the OamJob instance to be created.";
             }
             container schedule {
                 uses tapi-common:time-range;
-                description "none";
+                description "The schedule of the OamJob instance to be created.";
             }
         }
         output {
             container oam-job {
                 uses oam-job;
-                description "none";
+                description "The created OamJob instance.";
             }
         }
     }
@@ -1123,7 +1172,8 @@ module tapi-oam {
         input {
             leaf uuid {
                 type tapi-common:uuid;
-                description "UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the OamJob instance to be updated.
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -1131,7 +1181,8 @@ module tapi-oam {
             }
             leaf oam-profile-id {
                 type tapi-common:uuid;
-                description "UUID of the OamProfile to be applied: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the OamProfile instance to be applied to the OamJob instance under update.
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -1140,22 +1191,22 @@ module tapi-oam {
             list name {
                 key 'value-name';
                 uses tapi-common:name-and-value;
-                description "List of names. This value is unique in some namespace but may change during the life of the entity.
-                    A name carries no semantics with respect to the purpose of the entity.";
+                description "List of names of the OamJob instance to be updated.
+                    The value(s) is (are) unique in some namespace but may change during the life of the entity. A name carries no semantics with respect to the purpose of the entity.";
             }
             leaf state {
                 type tapi-common:administrative-state;
-                description "none";
+                description "The (updated) Administrative State of the OamJob instance under update.";
             }
             container schedule {
                 uses tapi-common:time-range;
-                description "none";
+                description "The (updated) schedule of the OamJob instance under update.";
             }
         }
         output {
             container oam-job {
                 uses oam-job;
-                description "none";
+                description "The updated OamJob instance.";
             }
         }
     }
@@ -1164,7 +1215,8 @@ module tapi-oam {
         input {
             leaf uuid {
                 type tapi-common:uuid;
-                description "UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the OamJob instance to be deleted.
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -1177,7 +1229,8 @@ module tapi-oam {
         input {
             leaf uuid {
                 type tapi-common:uuid;
-                description "UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the OamJob instance.
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -1187,7 +1240,7 @@ module tapi-oam {
         output {
             container oam-job {
                 uses oam-job;
-                description "none";
+                description "The requested OamJob instance.";
             }
         }
     }
@@ -1197,7 +1250,7 @@ module tapi-oam {
             list oam-job {
             	key 'uuid';
                 uses oam-job;
-                description "none";
+                description "The requested list of OamJob instances.";
             }
         }
     }
@@ -1206,7 +1259,8 @@ module tapi-oam {
         input {
             leaf uuid {
                 type tapi-common:uuid;
-                description "UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the OamProfile instance to be created.
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -1215,19 +1269,19 @@ module tapi-oam {
             list name {
                 key 'value-name';
                 uses tapi-common:name-and-value;
-                description "List of names. This value is unique in some namespace but may change during the life of the entity.
-                    A name carries no semantics with respect to the purpose of the entity.";
+                description "List of names of the OamProfile instance to be created.
+                    The value(s) is (are) unique in some namespace but may change during the life of the entity. A name carries no semantics with respect to the purpose of the entity.";
             }
             list pm-threshold-data {
                 min-elements 1;
                 uses pm-threshold-data;
-                description "none";
+                description "The PM threshold infornation to be associated to the OamProfile instance under creation.";
             }
         }
         output {
             container oam-profile {
                 uses oam-profile;
-                description "none";
+                description "The created OamProfile instance.";
             }
         }
     }
@@ -1236,7 +1290,8 @@ module tapi-oam {
         input {
             leaf uuid {
                 type tapi-common:uuid;
-                description "UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the OamProfile instance to be updated.
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -1245,19 +1300,19 @@ module tapi-oam {
             list name {
                 key 'value-name';
                 uses tapi-common:name-and-value;
-                description "List of names. This value is unique in some namespace but may change during the life of the entity.
-                    A name carries no semantics with respect to the purpose of the entity.";
+                description "List of names of the OamProfile instance to be updated.
+                    The value(s) is (are) unique in some namespace but may change during the life of the entity. A name carries no semantics with respect to the purpose of the entity.";
             }
             list pm-threshold-data {
                 min-elements 1;
                 uses pm-threshold-data;
-                description "none";
+                description "The (updated) PM threshold infornation to be associated to the OamProfile instance under update.";
             }
         }
         output {
             container oam-profile {
                 uses oam-profile;
-                description "none";
+                description "The updated OamProfile instance.";
             }
         }
     }
@@ -1266,7 +1321,8 @@ module tapi-oam {
         input {
             leaf uuid {
                 type tapi-common:uuid;
-                description "UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the OamProfile instance to be deleted.
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -1279,7 +1335,8 @@ module tapi-oam {
         input {
             leaf uuid {
                 type tapi-common:uuid;
-                description "UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
+                description "UUID of the OamProfile instance.
+                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
                     An UUID carries no semantics with respect to the purpose or state of the entity.
                     UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
                     Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
@@ -1289,7 +1346,7 @@ module tapi-oam {
         output {
             container oam-profile {
                 uses oam-profile;
-                description "none";
+                description "The requested OamProfile instance.";
             }
         }
     }
@@ -1299,7 +1356,7 @@ module tapi-oam {
             list oam-profile {
             	key 'uuid';
                 uses oam-profile;
-                description "none";
+                description "The requested list of OamProfile instances.";
             }
         }
     }

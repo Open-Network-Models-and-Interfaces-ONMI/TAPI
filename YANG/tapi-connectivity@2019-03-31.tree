@@ -6,6 +6,13 @@ module: tapi-connectivity
        |  +--rw end-point* [local-id]
        |  |  +--rw layer-protocol-name?                         tapi-common:layer-protocol-name
        |  |  +--rw layer-protocol-qualifier?                    tapi-common:layer-protocol-qualifier
+       |  |  +--rw direction?                                   tapi-common:port-direction
+       |  |  +--rw role?                                        tapi-common:port-role
+       |  |  +--rw protection-role?                             protection-role
+       |  |  +--rw capacity
+       |  |  |  +--rw total-size
+       |  |  |     +--rw value?   uint64
+       |  |  |     +--rw unit?    capacity-unit
        |  |  +--rw service-interface-point
        |  |  |  +--rw service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
        |  |  +--ro connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
@@ -22,16 +29,14 @@ module: tapi-connectivity
        |  |  +--rw protecting-connectivity-service-end-point
        |  |  |  +--rw connectivity-service-uuid?                 -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
        |  |  |  +--rw connectivity-service-end-point-local-id?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/end-point/local-id
-       |  |  +--rw capacity
-       |  |  |  +--rw total-size
-       |  |  |     +--rw value?   uint64
-       |  |  |     +--rw unit?    capacity-unit
-       |  |  +--rw direction?                                   tapi-common:port-direction
-       |  |  +--rw role?                                        tapi-common:port-role
-       |  |  +--rw protection-role?                             protection-role
        |  |  +--rw assembled-connectivity-service-end-point* [connectivity-service-uuid connectivity-service-end-point-local-id]
        |  |  |  +--rw connectivity-service-uuid                  -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
        |  |  |  +--rw connectivity-service-end-point-local-id    -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/end-point/local-id
+       |  |  +--rw server-constraint* [local-id]
+       |  |  |  +--rw local-id    string
+       |  |  |  +--rw name* [value-name]
+       |  |  |     +--rw value-name    string
+       |  |  |     +--rw value?        string
        |  |  +--rw local-id                                     string
        |  |  +--rw name* [value-name]
        |  |  |  +--rw value-name    string
@@ -49,14 +54,14 @@ module: tapi-connectivity
        |  |  |     +--rw value?   uint64
        |  |  |     +--rw unit?    capacity-unit
        |  |  +--rw schedule
-       |  |  |  +--rw end-time?     date-and-time
        |  |  |  +--rw start-time?   date-and-time
+       |  |  |  +--rw end-time?     date-and-time
        |  |  +--rw coroute-inclusion
        |  |  |  +--rw connectivity-service-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
        |  |  +--rw diversity-exclusion* [connectivity-service-uuid]
        |  |  |  +--rw connectivity-service-uuid    -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
-       |  |  +--rw connection-exclusion*   tapi-common:uuid
        |  |  +--rw connection-inclusion*   tapi-common:uuid
+       |  |  +--rw connection-exclusion*   tapi-common:uuid
        |  +--rw routing-constraint
        |  |  +--rw cost-characteristic* [cost-name]
        |  |  |  +--rw cost-name         string
@@ -178,6 +183,10 @@ module: tapi-connectivity
        |  |  |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
        |  |  |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
        |  |  |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
+       |  |  +--ro node-edge-point
+       |  |  |  +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |  |  +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |  |  |  +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
        |  |  +--rw local-id                    string
        |  |  +--rw name* [value-name]
        |  |     +--rw value-name    string
@@ -190,6 +199,8 @@ module: tapi-connectivity
        |  +--ro operational-state?         operational-state
        |  +--ro lifecycle-state?           lifecycle-state
        +--ro connection* [uuid]
+          +--ro layer-protocol-name?     tapi-common:layer-protocol-name
+          +--ro direction?               tapi-common:forwarding-direction
           +--ro connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
           |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
           |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
@@ -304,8 +315,6 @@ module: tapi-connectivity
           |     +--ro name* [value-name]
           |        +--ro value-name    string
           |        +--ro value?        string
-          +--ro direction?               tapi-common:forwarding-direction
-          +--ro layer-protocol-name?     tapi-common:layer-protocol-name
           +--ro uuid                     uuid
           +--ro name* [value-name]
           |  +--ro value-name    string
@@ -317,6 +326,9 @@ module: tapi-connectivity
        +--ro connection-end-point* [uuid]
           +--ro layer-protocol-name?               tapi-common:layer-protocol-name
           +--ro layer-protocol-qualifier?          tapi-common:layer-protocol-qualifier
+          +--ro connection-port-direction?         tapi-common:port-direction
+          +--ro connection-port-role?              tapi-common:port-role
+          +--ro protection-role?                   protection-role
           +--ro parent-node-edge-point
           |  +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
           |  +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
@@ -330,9 +342,6 @@ module: tapi-connectivity
           |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
           |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
           |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
-          +--ro connection-port-direction?         tapi-common:port-direction
-          +--ro connection-port-role?              tapi-common:port-role
-          +--ro protection-role?                   protection-role
           +--ro uuid                               uuid
           +--ro name* [value-name]
           |  +--ro value-name    string
@@ -348,6 +357,8 @@ module: tapi-connectivity
     |  |  +---w uuid?   tapi-common:uuid
     |  +--ro output
     |     +--ro connection
+    |        +--ro layer-protocol-name?     tapi-common:layer-protocol-name
+    |        +--ro direction?               tapi-common:forwarding-direction
     |        +--ro connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
     |        |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
     |        |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
@@ -462,8 +473,6 @@ module: tapi-connectivity
     |        |     +--ro name* [value-name]
     |        |        +--ro value-name    string
     |        |        +--ro value?        string
-    |        +--ro direction?               tapi-common:forwarding-direction
-    |        +--ro layer-protocol-name?     tapi-common:layer-protocol-name
     |        +--ro uuid?                    uuid
     |        +--ro name* [value-name]
     |        |  +--ro value-name    string
@@ -476,6 +485,13 @@ module: tapi-connectivity
     |        +--ro end-point* [local-id]
     |        |  +--ro layer-protocol-name?                         tapi-common:layer-protocol-name
     |        |  +--ro layer-protocol-qualifier?                    tapi-common:layer-protocol-qualifier
+    |        |  +--ro direction?                                   tapi-common:port-direction
+    |        |  +--ro role?                                        tapi-common:port-role
+    |        |  +--ro protection-role?                             protection-role
+    |        |  +--ro capacity
+    |        |  |  +--ro total-size
+    |        |  |     +--ro value?   uint64
+    |        |  |     +--ro unit?    capacity-unit
     |        |  +--ro service-interface-point
     |        |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
     |        |  +--ro connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
@@ -492,16 +508,14 @@ module: tapi-connectivity
     |        |  +--ro protecting-connectivity-service-end-point
     |        |  |  +--ro connectivity-service-uuid?                 -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
     |        |  |  +--ro connectivity-service-end-point-local-id?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/end-point/local-id
-    |        |  +--ro capacity
-    |        |  |  +--ro total-size
-    |        |  |     +--ro value?   uint64
-    |        |  |     +--ro unit?    capacity-unit
-    |        |  +--ro direction?                                   tapi-common:port-direction
-    |        |  +--ro role?                                        tapi-common:port-role
-    |        |  +--ro protection-role?                             protection-role
     |        |  +--ro assembled-connectivity-service-end-point* [connectivity-service-uuid connectivity-service-end-point-local-id]
     |        |  |  +--ro connectivity-service-uuid                  -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
     |        |  |  +--ro connectivity-service-end-point-local-id    -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/end-point/local-id
+    |        |  +--ro server-constraint* [local-id]
+    |        |  |  +--ro local-id    string
+    |        |  |  +--ro name* [value-name]
+    |        |  |     +--ro value-name    string
+    |        |  |     +--ro value?        string
     |        |  +--ro local-id                                     string
     |        |  +--ro name* [value-name]
     |        |  |  +--ro value-name    string
@@ -519,14 +533,14 @@ module: tapi-connectivity
     |        |  |     +--ro value?   uint64
     |        |  |     +--ro unit?    capacity-unit
     |        |  +--ro schedule
-    |        |  |  +--ro end-time?     date-and-time
     |        |  |  +--ro start-time?   date-and-time
+    |        |  |  +--ro end-time?     date-and-time
     |        |  +--ro coroute-inclusion
     |        |  |  +--ro connectivity-service-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
     |        |  +--ro diversity-exclusion* [connectivity-service-uuid]
     |        |  |  +--ro connectivity-service-uuid    -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
-    |        |  +--ro connection-exclusion*   tapi-common:uuid
     |        |  +--ro connection-inclusion*   tapi-common:uuid
+    |        |  +--ro connection-exclusion*   tapi-common:uuid
     |        +--ro routing-constraint
     |        |  +--ro cost-characteristic* [cost-name]
     |        |  |  +--ro cost-name         string
@@ -648,6 +662,10 @@ module: tapi-connectivity
     |        |  |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
     |        |  |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
     |        |  |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
+    |        |  +--ro node-edge-point
+    |        |  |  +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  |  +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |  |  +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
     |        |  +--ro local-id                    string
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
@@ -667,6 +685,13 @@ module: tapi-connectivity
     |        +--ro end-point* [local-id]
     |        |  +--ro layer-protocol-name?                         tapi-common:layer-protocol-name
     |        |  +--ro layer-protocol-qualifier?                    tapi-common:layer-protocol-qualifier
+    |        |  +--ro direction?                                   tapi-common:port-direction
+    |        |  +--ro role?                                        tapi-common:port-role
+    |        |  +--ro protection-role?                             protection-role
+    |        |  +--ro capacity
+    |        |  |  +--ro total-size
+    |        |  |     +--ro value?   uint64
+    |        |  |     +--ro unit?    capacity-unit
     |        |  +--ro service-interface-point
     |        |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
     |        |  +--ro connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
@@ -683,16 +708,14 @@ module: tapi-connectivity
     |        |  +--ro protecting-connectivity-service-end-point
     |        |  |  +--ro connectivity-service-uuid?                 -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
     |        |  |  +--ro connectivity-service-end-point-local-id?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/end-point/local-id
-    |        |  +--ro capacity
-    |        |  |  +--ro total-size
-    |        |  |     +--ro value?   uint64
-    |        |  |     +--ro unit?    capacity-unit
-    |        |  +--ro direction?                                   tapi-common:port-direction
-    |        |  +--ro role?                                        tapi-common:port-role
-    |        |  +--ro protection-role?                             protection-role
     |        |  +--ro assembled-connectivity-service-end-point* [connectivity-service-uuid connectivity-service-end-point-local-id]
     |        |  |  +--ro connectivity-service-uuid                  -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
     |        |  |  +--ro connectivity-service-end-point-local-id    -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/end-point/local-id
+    |        |  +--ro server-constraint* [local-id]
+    |        |  |  +--ro local-id    string
+    |        |  |  +--ro name* [value-name]
+    |        |  |     +--ro value-name    string
+    |        |  |     +--ro value?        string
     |        |  +--ro local-id                                     string
     |        |  +--ro name* [value-name]
     |        |  |  +--ro value-name    string
@@ -710,14 +733,14 @@ module: tapi-connectivity
     |        |  |     +--ro value?   uint64
     |        |  |     +--ro unit?    capacity-unit
     |        |  +--ro schedule
-    |        |  |  +--ro end-time?     date-and-time
     |        |  |  +--ro start-time?   date-and-time
+    |        |  |  +--ro end-time?     date-and-time
     |        |  +--ro coroute-inclusion
     |        |  |  +--ro connectivity-service-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
     |        |  +--ro diversity-exclusion* [connectivity-service-uuid]
     |        |  |  +--ro connectivity-service-uuid    -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
-    |        |  +--ro connection-exclusion*   tapi-common:uuid
     |        |  +--ro connection-inclusion*   tapi-common:uuid
+    |        |  +--ro connection-exclusion*   tapi-common:uuid
     |        +--ro routing-constraint
     |        |  +--ro cost-characteristic* [cost-name]
     |        |  |  +--ro cost-name         string
@@ -839,6 +862,10 @@ module: tapi-connectivity
     |        |  |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
     |        |  |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
     |        |  |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
+    |        |  +--ro node-edge-point
+    |        |  |  +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  |  +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |  |  +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
     |        |  +--ro local-id                    string
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
@@ -860,6 +887,13 @@ module: tapi-connectivity
     |  |  +---w end-point* [local-id]
     |  |  |  +---w layer-protocol-name?                         tapi-common:layer-protocol-name
     |  |  |  +---w layer-protocol-qualifier?                    tapi-common:layer-protocol-qualifier
+    |  |  |  +---w direction?                                   tapi-common:port-direction
+    |  |  |  +---w role?                                        tapi-common:port-role
+    |  |  |  +---w protection-role?                             protection-role
+    |  |  |  +---w capacity
+    |  |  |  |  +---w total-size
+    |  |  |  |     +---w value?   uint64
+    |  |  |  |     +---w unit?    capacity-unit
     |  |  |  +---w service-interface-point
     |  |  |  |  +---w service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
     |  |  |  +---w connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
@@ -876,16 +910,14 @@ module: tapi-connectivity
     |  |  |  +---w protecting-connectivity-service-end-point
     |  |  |  |  +---w connectivity-service-uuid?                 -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
     |  |  |  |  +---w connectivity-service-end-point-local-id?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/end-point/local-id
-    |  |  |  +---w capacity
-    |  |  |  |  +---w total-size
-    |  |  |  |     +---w value?   uint64
-    |  |  |  |     +---w unit?    capacity-unit
-    |  |  |  +---w direction?                                   tapi-common:port-direction
-    |  |  |  +---w role?                                        tapi-common:port-role
-    |  |  |  +---w protection-role?                             protection-role
     |  |  |  +---w assembled-connectivity-service-end-point* [connectivity-service-uuid connectivity-service-end-point-local-id]
     |  |  |  |  +---w connectivity-service-uuid                  -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
     |  |  |  |  +---w connectivity-service-end-point-local-id    -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/end-point/local-id
+    |  |  |  +---w server-constraint* [local-id]
+    |  |  |  |  +---w local-id    string
+    |  |  |  |  +---w name* [value-name]
+    |  |  |  |     +---w value-name    string
+    |  |  |  |     +---w value?        string
     |  |  |  +---w local-id                                     string
     |  |  |  +---w name* [value-name]
     |  |  |  |  +---w value-name    string
@@ -901,14 +933,14 @@ module: tapi-connectivity
     |  |  |  |     +---w value?   uint64
     |  |  |  |     +---w unit?    capacity-unit
     |  |  |  +---w schedule
-    |  |  |  |  +---w end-time?     date-and-time
     |  |  |  |  +---w start-time?   date-and-time
+    |  |  |  |  +---w end-time?     date-and-time
     |  |  |  +---w coroute-inclusion
     |  |  |  |  +---w connectivity-service-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
     |  |  |  +---w diversity-exclusion* [connectivity-service-uuid]
     |  |  |  |  +---w connectivity-service-uuid    -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
-    |  |  |  +---w connection-exclusion*   tapi-common:uuid
     |  |  |  +---w connection-inclusion*   tapi-common:uuid
+    |  |  |  +---w connection-exclusion*   tapi-common:uuid
     |  |  +---w routing-constraint
     |  |  |  +---w cost-characteristic* [cost-name]
     |  |  |  |  +---w cost-name         string
@@ -1025,6 +1057,13 @@ module: tapi-connectivity
     |        +--ro end-point* [local-id]
     |        |  +--ro layer-protocol-name?                         tapi-common:layer-protocol-name
     |        |  +--ro layer-protocol-qualifier?                    tapi-common:layer-protocol-qualifier
+    |        |  +--ro direction?                                   tapi-common:port-direction
+    |        |  +--ro role?                                        tapi-common:port-role
+    |        |  +--ro protection-role?                             protection-role
+    |        |  +--ro capacity
+    |        |  |  +--ro total-size
+    |        |  |     +--ro value?   uint64
+    |        |  |     +--ro unit?    capacity-unit
     |        |  +--ro service-interface-point
     |        |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
     |        |  +--ro connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
@@ -1041,16 +1080,14 @@ module: tapi-connectivity
     |        |  +--ro protecting-connectivity-service-end-point
     |        |  |  +--ro connectivity-service-uuid?                 -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
     |        |  |  +--ro connectivity-service-end-point-local-id?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/end-point/local-id
-    |        |  +--ro capacity
-    |        |  |  +--ro total-size
-    |        |  |     +--ro value?   uint64
-    |        |  |     +--ro unit?    capacity-unit
-    |        |  +--ro direction?                                   tapi-common:port-direction
-    |        |  +--ro role?                                        tapi-common:port-role
-    |        |  +--ro protection-role?                             protection-role
     |        |  +--ro assembled-connectivity-service-end-point* [connectivity-service-uuid connectivity-service-end-point-local-id]
     |        |  |  +--ro connectivity-service-uuid                  -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
     |        |  |  +--ro connectivity-service-end-point-local-id    -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/end-point/local-id
+    |        |  +--ro server-constraint* [local-id]
+    |        |  |  +--ro local-id    string
+    |        |  |  +--ro name* [value-name]
+    |        |  |     +--ro value-name    string
+    |        |  |     +--ro value?        string
     |        |  +--ro local-id                                     string
     |        |  +--ro name* [value-name]
     |        |  |  +--ro value-name    string
@@ -1068,14 +1105,14 @@ module: tapi-connectivity
     |        |  |     +--ro value?   uint64
     |        |  |     +--ro unit?    capacity-unit
     |        |  +--ro schedule
-    |        |  |  +--ro end-time?     date-and-time
     |        |  |  +--ro start-time?   date-and-time
+    |        |  |  +--ro end-time?     date-and-time
     |        |  +--ro coroute-inclusion
     |        |  |  +--ro connectivity-service-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
     |        |  +--ro diversity-exclusion* [connectivity-service-uuid]
     |        |  |  +--ro connectivity-service-uuid    -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
-    |        |  +--ro connection-exclusion*   tapi-common:uuid
     |        |  +--ro connection-inclusion*   tapi-common:uuid
+    |        |  +--ro connection-exclusion*   tapi-common:uuid
     |        +--ro routing-constraint
     |        |  +--ro cost-characteristic* [cost-name]
     |        |  |  +--ro cost-name         string
@@ -1197,6 +1234,10 @@ module: tapi-connectivity
     |        |  |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
     |        |  |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
     |        |  |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
+    |        |  +--ro node-edge-point
+    |        |  |  +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  |  +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |  |  +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
     |        |  +--ro local-id                    string
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
@@ -1217,6 +1258,13 @@ module: tapi-connectivity
     |  |  +---w end-point* [local-id]
     |  |  |  +---w layer-protocol-name?                         tapi-common:layer-protocol-name
     |  |  |  +---w layer-protocol-qualifier?                    tapi-common:layer-protocol-qualifier
+    |  |  |  +---w direction?                                   tapi-common:port-direction
+    |  |  |  +---w role?                                        tapi-common:port-role
+    |  |  |  +---w protection-role?                             protection-role
+    |  |  |  +---w capacity
+    |  |  |  |  +---w total-size
+    |  |  |  |     +---w value?   uint64
+    |  |  |  |     +---w unit?    capacity-unit
     |  |  |  +---w service-interface-point
     |  |  |  |  +---w service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
     |  |  |  +---w connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
@@ -1233,16 +1281,14 @@ module: tapi-connectivity
     |  |  |  +---w protecting-connectivity-service-end-point
     |  |  |  |  +---w connectivity-service-uuid?                 -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
     |  |  |  |  +---w connectivity-service-end-point-local-id?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/end-point/local-id
-    |  |  |  +---w capacity
-    |  |  |  |  +---w total-size
-    |  |  |  |     +---w value?   uint64
-    |  |  |  |     +---w unit?    capacity-unit
-    |  |  |  +---w direction?                                   tapi-common:port-direction
-    |  |  |  +---w role?                                        tapi-common:port-role
-    |  |  |  +---w protection-role?                             protection-role
     |  |  |  +---w assembled-connectivity-service-end-point* [connectivity-service-uuid connectivity-service-end-point-local-id]
     |  |  |  |  +---w connectivity-service-uuid                  -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
     |  |  |  |  +---w connectivity-service-end-point-local-id    -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/end-point/local-id
+    |  |  |  +---w server-constraint* [local-id]
+    |  |  |  |  +---w local-id    string
+    |  |  |  |  +---w name* [value-name]
+    |  |  |  |     +---w value-name    string
+    |  |  |  |     +---w value?        string
     |  |  |  +---w local-id                                     string
     |  |  |  +---w name* [value-name]
     |  |  |  |  +---w value-name    string
@@ -1258,14 +1304,14 @@ module: tapi-connectivity
     |  |  |  |     +---w value?   uint64
     |  |  |  |     +---w unit?    capacity-unit
     |  |  |  +---w schedule
-    |  |  |  |  +---w end-time?     date-and-time
     |  |  |  |  +---w start-time?   date-and-time
+    |  |  |  |  +---w end-time?     date-and-time
     |  |  |  +---w coroute-inclusion
     |  |  |  |  +---w connectivity-service-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
     |  |  |  +---w diversity-exclusion* [connectivity-service-uuid]
     |  |  |  |  +---w connectivity-service-uuid    -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
-    |  |  |  +---w connection-exclusion*   tapi-common:uuid
     |  |  |  +---w connection-inclusion*   tapi-common:uuid
+    |  |  |  +---w connection-exclusion*   tapi-common:uuid
     |  |  +---w routing-constraint
     |  |  |  +---w cost-characteristic* [cost-name]
     |  |  |  |  +---w cost-name         string
@@ -1382,6 +1428,13 @@ module: tapi-connectivity
     |        +--ro end-point* [local-id]
     |        |  +--ro layer-protocol-name?                         tapi-common:layer-protocol-name
     |        |  +--ro layer-protocol-qualifier?                    tapi-common:layer-protocol-qualifier
+    |        |  +--ro direction?                                   tapi-common:port-direction
+    |        |  +--ro role?                                        tapi-common:port-role
+    |        |  +--ro protection-role?                             protection-role
+    |        |  +--ro capacity
+    |        |  |  +--ro total-size
+    |        |  |     +--ro value?   uint64
+    |        |  |     +--ro unit?    capacity-unit
     |        |  +--ro service-interface-point
     |        |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
     |        |  +--ro connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
@@ -1398,16 +1451,14 @@ module: tapi-connectivity
     |        |  +--ro protecting-connectivity-service-end-point
     |        |  |  +--ro connectivity-service-uuid?                 -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
     |        |  |  +--ro connectivity-service-end-point-local-id?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/end-point/local-id
-    |        |  +--ro capacity
-    |        |  |  +--ro total-size
-    |        |  |     +--ro value?   uint64
-    |        |  |     +--ro unit?    capacity-unit
-    |        |  +--ro direction?                                   tapi-common:port-direction
-    |        |  +--ro role?                                        tapi-common:port-role
-    |        |  +--ro protection-role?                             protection-role
     |        |  +--ro assembled-connectivity-service-end-point* [connectivity-service-uuid connectivity-service-end-point-local-id]
     |        |  |  +--ro connectivity-service-uuid                  -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
     |        |  |  +--ro connectivity-service-end-point-local-id    -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/end-point/local-id
+    |        |  +--ro server-constraint* [local-id]
+    |        |  |  +--ro local-id    string
+    |        |  |  +--ro name* [value-name]
+    |        |  |     +--ro value-name    string
+    |        |  |     +--ro value?        string
     |        |  +--ro local-id                                     string
     |        |  +--ro name* [value-name]
     |        |  |  +--ro value-name    string
@@ -1425,14 +1476,14 @@ module: tapi-connectivity
     |        |  |     +--ro value?   uint64
     |        |  |     +--ro unit?    capacity-unit
     |        |  +--ro schedule
-    |        |  |  +--ro end-time?     date-and-time
     |        |  |  +--ro start-time?   date-and-time
+    |        |  |  +--ro end-time?     date-and-time
     |        |  +--ro coroute-inclusion
     |        |  |  +--ro connectivity-service-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
     |        |  +--ro diversity-exclusion* [connectivity-service-uuid]
     |        |  |  +--ro connectivity-service-uuid    -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
-    |        |  +--ro connection-exclusion*   tapi-common:uuid
     |        |  +--ro connection-inclusion*   tapi-common:uuid
+    |        |  +--ro connection-exclusion*   tapi-common:uuid
     |        +--ro routing-constraint
     |        |  +--ro cost-characteristic* [cost-name]
     |        |  |  +--ro cost-name         string
@@ -1554,6 +1605,10 @@ module: tapi-connectivity
     |        |  |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
     |        |  |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
     |        |  |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
+    |        |  +--ro node-edge-point
+    |        |  |  +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  |  +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |  |  +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
     |        |  +--ro local-id                    string
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
@@ -1575,6 +1630,9 @@ module: tapi-connectivity
           +--ro connection-end-point
              +--ro layer-protocol-name?               tapi-common:layer-protocol-name
              +--ro layer-protocol-qualifier?          tapi-common:layer-protocol-qualifier
+             +--ro connection-port-direction?         tapi-common:port-direction
+             +--ro connection-port-role?              tapi-common:port-role
+             +--ro protection-role?                   protection-role
              +--ro parent-node-edge-point
              |  +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
              |  +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
@@ -1588,9 +1646,6 @@ module: tapi-connectivity
              |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
              |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
              |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
-             +--ro connection-port-direction?         tapi-common:port-direction
-             +--ro connection-port-role?              tapi-common:port-role
-             +--ro protection-role?                   protection-role
              +--ro uuid?                              uuid
              +--ro name* [value-name]
              |  +--ro value-name    string
