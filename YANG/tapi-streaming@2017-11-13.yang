@@ -318,10 +318,10 @@ Editor: your-name<mailto:your-email@example.com>";
     }
     grouping legacy-properties {
         leaf perceived-severity {
-            type perceived-severity-type;
-            description "A device will provide an indication of importance for each alarm. 
+            type perceived-severity;
+            description "A device will provide an indication of importance for each alarm.
                 This property indicates the importance.
-                In some cases the severity may change through the life of an active alarm.";
+                In some cases, the severity may change through the life of an active alarm.";
         }
         leaf service-affecting {
             type service-affecting;
@@ -340,41 +340,6 @@ Editor: your-name<mailto:your-email@example.com>";
                 This property can be used to convey this.";
         }
         description "At this point in the evolution of control solutions LegacyProperties are probably mandatory, however, it is anticipated that as control solutions advance the LegacyProperties will become irrelevant.";
-    }
-    typedef perceived-severity-type {
-        type enumeration {
-            enum CRITICAL {
-                description "The higherst severity of ACTIVE/INTERMITTENT alarm.";
-            }
-            enum MAJOR {
-                description "The middle severity of ACTIVE/INTERMITTENT alarm.";
-            }
-            enum MINOR {
-                description "The lowest severity of ACTIVE/INTERMITTENT alarm.";
-            }
-            enum WARNING {
-                description "An extremely low importance ACTIVE/INTERMITTENT alarm (lowere than MINOR).";
-            }
-            enum CLEARED {
-                description "The severity of a CLEAR where no other severity information is available.";
-            }
-        }
-        description "The values for importance of an ACTIVE, INTERMITTENT or CLEAR alarm.";
-    }
-    typedef service-affecting {
-        type enumeration {
-            enum SERVICE_AFFECTING {
-                description "The condition is believed to impact service.";
-            }
-            enum NOT_SERVICE_AFFECTING {
-                description "The condition is believed to not impact service.";
-            }
-            enum UNKNOWN {
-                description "The service impact of the condition is not known.";
-            }
-        }
-        description "Indicates whether the device considers the condition to be impacting service.
-            Note that the detected condition along with knowledge of the topology and protection provide a more suitable approach.";
     }
     typedef log-record-strategy {
         type identityref {
@@ -420,7 +385,7 @@ Editor: your-name<mailto:your-email@example.com>";
             config false;
             description "Indicates the knowledge of the time of occurence of the event.";
         }
-        leaf source-precesion {
+        leaf source-precision {
             type source-precision;
             config false;
             description "none";
@@ -436,6 +401,53 @@ Editor: your-name<mailto:your-email@example.com>";
             For some record types there is special encoding.
             A ACTIVE alarm and an INTERMITTENT alarm are CREATE_UPDATE.
             A CLEAR alarm is DELETE with an adjacent TOMBSTONE record.";
+    }
+    typedef source-precision {
+        type identityref {
+            base SOURCE_PRECISION;
+        }
+        description "Alternative statements about timing precision at the event source.";
+    }
+    typedef spread {
+        type identityref {
+            base SPREAD;
+        }
+        description "The alterntive time of occurrence statements.";
+    }
+    typedef perceived-severity {
+        type enumeration {
+            enum CRITICAL {
+                description "The higherst severity of ACTIVE/INTERMITTENT alarm.";
+            }
+            enum MAJOR {
+                description "The middle severity of ACTIVE/INTERMITTENT alarm.";
+            }
+            enum MINOR {
+                description "The lowest severity of ACTIVE/INTERMITTENT alarm.";
+            }
+            enum WARNING {
+                description "An extremely low importance ACTIVE/INTERMITTENT alarm (lower than MINOR).";
+            }
+            enum CLEARED {
+                description "The severity of a CLEAR where no other severity information is available.";
+            }
+        }
+        description "The values for importance of an ACTIVE, INTERMITTENT or CLEAR alarm.";
+    }
+    typedef service-affecting {
+        type enumeration {
+            enum SERVICE_AFFECTING {
+                description "The condition is believed to impact service.";
+            }
+            enum NOT_SERVICE_AFFECTING {
+                description "The condition is believed to not impact service.";
+            }
+            enum UNKNOWN {
+                description "The service impact of the condition is not known.";
+            }
+        }
+        description "Indicates whether the device considers the condition to be impacting service.
+            Note that the detected condition along with knowledge of the topology and protection provide a more suitable approach.";
     }
     typedef event-source-indicator {
         type enumeration {
@@ -454,19 +466,27 @@ Editor: your-name<mailto:your-email@example.com>";
         description "Source of the event.
             Use to give some idea of the time characteristics of the event source.";
     }
-    typedef source-precision {
-        type identityref {
-            base SOURCE_PRECISION;
+    /**************************
+    * definitions of references
+    **************************/
+    grouping available-stream-ref {
+        leaf available-stream-uuid{
+            type leafref {
+                path '/tapi-common:context/tapi-streaming:stream-context/tapi-streaming:available-stream/tapi-streaming:uuid';
+            }
+            description "none";
         }
-        description "Alternative statements about timing precision at the event source.";
+        description "none";
     }
-    typedef spread {
-        type identityref {
-            base SPREAD;
+    grouping supported-stream-type-ref {
+        leaf supported-stream-type-uuid {
+            type leafref {
+                path '/tapi-common:context/tapi-streaming:stream-context/tapi-streaming:supported-stream-type/tapi-streaming:uuid';
+            }
+            description "none";
         }
-        description "The alterntive time of occurrence statements.";
+        description "none";
     }
-
     /**************************
     * package object-classes
     **************************/ 
@@ -602,10 +622,8 @@ Editor: your-name<mailto:your-email@example.com>";
             description "The id/key of the last record written to the log. 
                 This is the same value for all clients of the stream.";
         }
-        leaf available-stream {
-            type leafref {
-                path '/tapi-common:context/tapi-streaming:available-stream/tapi-streaming:connection-address';
-            }
+        container available-stream {
+		    uses available-stream-ref;
             config false;
             description "none";
         }
@@ -646,10 +664,8 @@ Editor: your-name<mailto:your-email@example.com>";
             config false;
             description "The state of the stream.";
         }
-        leaf stream-connection-type {
-            type leafref {
-                path '/tapi-common:context/tapi-streaming:supported-stream-type/tapi-streaming:stream-type-id';
-            }
+        container stream-connection-type {
+		    uses supported-stream-type-ref;
             config false;
             description "Identifies the type of stream that is available for connection.";
         }
@@ -664,17 +680,18 @@ Editor: your-name<mailto:your-email@example.com>";
             description "Names the connection protocol for this particular available stream.
                 The connection protocol is chosen from the lost of connecion protocols identified in the referenced SupportedStreamType.";
         }
+        uses tapi-common:global-class;
         description "Details of stream a stream that can be connected to by a client application.";
     }
     grouping stream-context {
         list available-stream {
-            key 'connection-address';
+            key 'connection-address uuid';
             config false;
             uses available-stream;
             description "none";
         }
         list supported-stream-type {
-            key 'stream-type-id';
+            key 'stream-type-id uuid';
             config false;
             uses supported-stream-type;
             description "none";
@@ -685,8 +702,7 @@ Editor: your-name<mailto:your-email@example.com>";
         leaf stream-type-name {
             type string;
             config false;
-            description "Name of the stream type.
-                Name of the stream type.";
+            description "Name of the stream type.";
         }
         leaf record-retention {
             type string;
@@ -721,6 +737,7 @@ Editor: your-name<mailto:your-email@example.com>";
             config false;
             description "The identifier for the stream type.";
         }
+        uses tapi-common:global-class;
         description "Definition of a supported stream type.";
     }
     grouping log-record {

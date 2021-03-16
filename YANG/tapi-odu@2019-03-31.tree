@@ -1,25 +1,26 @@
 
 module: tapi-odu
-  augment /tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:node-edge-point:
+  augment /tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point:
     +--ro odu-node-edge-point-spec
        +--ro odu-pool
           +--ro client-capacity?        uint64
           +--ro max-client-instances?   uint64
           +--ro max-client-size?        uint64
-  augment /tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point:
+  augment /tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point:
     +--ro odu-connection-end-point-spec
        +--ro odu-common
        |  +--ro odu-type?             odu-type
        |  +--ro odu-rate?             uint64
        |  +--ro odu-rate-tolerance?   uint64
        +--ro odu-term-and-adapter
-       |  +--ro opu-tributary-slot-size?   odu-slot-size
-       |  +--ro auto-payload-type?         boolean
-       |  +--ro configured-client-type?    tapi-dsr:digital-signal-type
-       |  +--ro configured-mapping-type?   mapping-type
+       |  +--ro opu-tributary-slot-size?           odu-slot-size
+       |  +--ro auto-payload-type?                 boolean
+       |  +--ro configured-client-type?            tapi-dsr:digital-signal-type
+       |  +--ro configured-mapping-type?           mapping-type
        |  +--ro accepted-payload-type
-       |     +--ro named-payload-type?   odu-named-payload-type
-       |     +--ro hex-payload-type?     uint64
+       |  |  +--ro named-payload-type?   odu-named-payload-type
+       |  |  +--ro hex-payload-type?     uint64
+       |  +--ro odu-cn-effective-time-slot-list*   uint64
        +--ro odu-ctp
        |  +--ro tributary-slot-list*     uint64
        |  +--ro tributary-port-number?   uint64
@@ -30,92 +31,255 @@ module: tapi-odu
   augment /tapi-common:context/tapi-oam:oam-context/tapi-oam:meg/tapi-oam:mep:
     +--ro odu-mep-spec
        +--ro odu-mep
-       |  +--ro dm-source?          boolean
-       |  +--ro dm-value?           boolean
-       |  +--ro txti?               string
-       |  +--ro acti?               string
-       |  +--ro ex-dapi?            string
-       |  +--ro ex-sapi?            string
-       |  +--ro tim-act-disabled?   boolean
-       |  +--ro tim-det-mode?       tim-det-mo
-       |  +--ro deg-m?              uint64
-       |  +--ro deg-thr
-       |     +--ro deg-thr-value?            uint64
-       |     +--ro deg-thr-type?             deg-thr-type
-       |     +--ro percentage-granularity?   percentage-granularity
-       +--ro odu-ncm
-       |  +--ro tcm-fields-in-use*   uint64
-       +--ro odu-tcm
-       |  +--ro tcm-extension?        tcm-extension
-       |  +--ro tcm-mode?             tcm-mode
-       |  +--ro codirectional?        boolean
-       |  +--ro ac-status-source?     tcm-status
-       |  +--ro ac-status-sink?       tcm-status
-       |  +--ro admin-state-source?   tapi-common:administrative-state
-       |  +--ro admin-state-sink?     tapi-common:administrative-state
-       |  +--ro tcm-field?            uint64
-       +--ro odu-defect
-       |  +--ro bdi?   boolean
-       |  +--ro deg?   boolean
-       |  +--ro lck?   boolean
-       |  +--ro oci?   boolean
-       |  +--ro ssf?   boolean
-       |  +--ro tim?   boolean
-       +--ro odu-pm
-          +--ro n-bbe?   uint64
-          +--ro f-bbe?   uint64
-          +--ro n-ses?   uint64
-          +--ro f-ses?   uint64
-          +--ro uas
-             +--ro bidirectional?   boolean
-             +--ro uas?             uint64
-             +--ro nuas?            uint64
-             +--ro fuas?            uint64
+       |  +--ro txti?             string
+       |  +--ro odu-oam-common
+       |  |  +--ro ex-dapi?            string
+       |  |  +--ro ex-sapi?            string
+       |  |  +--ro deg-thr
+       |  |  |  +--ro deg-thr-value?            uint64
+       |  |  |  +--ro deg-thr-type?             deg-thr-type
+       |  |  |  +--ro percentage-granularity?   percentage-granularity
+       |  |  +--ro tim-det-mode?       tim-det-mo
+       |  |  +--ro tim-act-disabled?   boolean
+       |  |  +--ro deg-m?              uint64
+       |  +--ro odu-mep-status
+       |     +--ro acti?                string
+       |     +--ro tcm-fields-in-use*   uint64
+       +--ro otu-mep
+       |  +--ro txti?             string
+       |  +--ro odu-oam-common
+       |  |  +--ro ex-dapi?            string
+       |  |  +--ro ex-sapi?            string
+       |  |  +--ro deg-thr
+       |  |  |  +--ro deg-thr-value?            uint64
+       |  |  |  +--ro deg-thr-type?             deg-thr-type
+       |  |  |  +--ro percentage-granularity?   percentage-granularity
+       |  |  +--ro tim-det-mode?       tim-det-mo
+       |  |  +--ro tim-act-disabled?   boolean
+       |  |  +--ro deg-m?              uint64
+       |  +--ro otu-mep-status
+       |     +--ro acti?   string
+       +--ro odu-tcm-mep
+          +--ro codirectional?        boolean
+          +--ro tcm-extension?        tcm-extension
+          +--ro tcm-mode?             tcm-mode
+          +--ro admin-state-source?   tapi-common:administrative-state
+          +--ro admin-state-sink?     tapi-common:administrative-state
+          +--ro txti?                 string
+          +--ro position-sequence?    uint64
+          +--ro odu-oam-common
+          |  +--ro ex-dapi?            string
+          |  +--ro ex-sapi?            string
+          |  +--ro deg-thr
+          |  |  +--ro deg-thr-value?            uint64
+          |  |  +--ro deg-thr-type?             deg-thr-type
+          |  |  +--ro percentage-granularity?   percentage-granularity
+          |  +--ro tim-det-mode?       tim-det-mo
+          |  +--ro tim-act-disabled?   boolean
+          |  +--ro deg-m?              uint64
+          +--ro odu-tcm-mep-status
+             +--ro tcm-field?           uint64
+             +--ro ac-status-source?    tcm-status
+             +--ro ac-status-sink?      tcm-status
+             +--ro operational-state?   tapi-common:operational-state
+             +--ro acti?                string
   augment /tapi-common:context/tapi-oam:oam-context/tapi-oam:meg/tapi-oam:mip:
     +--ro odu-mip-spec
        +--ro odu-mip
-       |  +--ro acti?               string
-       |  +--ro ex-dapi?            string
-       |  +--ro ex-sapi?            string
-       |  +--ro tim-act-disabled?   boolean
-       |  +--ro tim-det-mode?       tim-det-mo
-       |  +--ro deg-m?              uint64
-       |  +--ro deg-thr
-       |     +--ro deg-thr-value?            uint64
-       |     +--ro deg-thr-type?             deg-thr-type
-       |     +--ro percentage-granularity?   percentage-granularity
-       +--ro odu-ncm
-       |  +--ro tcm-fields-in-use*   uint64
-       +--ro odu-tcm
-       |  +--ro tcm-field?       uint64
-       |  +--ro codirectional?   boolean
-       +--ro odu-pm
-       |  +--ro n-bbe?   uint64
-       |  +--ro f-bbe?   uint64
-       |  +--ro n-ses?   uint64
-       |  +--ro f-ses?   uint64
-       |  +--ro uas
-       |     +--ro bidirectional?   boolean
-       |     +--ro uas?             uint64
-       |     +--ro nuas?            uint64
-       |     +--ro fuas?            uint64
-       +--ro odu-defect
-          +--ro bdi?   boolean
-          +--ro deg?   boolean
-          +--ro lck?   boolean
-          +--ro oci?   boolean
-          +--ro ssf?   boolean
-          +--ro tim?   boolean
+       |  +--ro odu-oam-common
+       |  |  +--ro ex-dapi?            string
+       |  |  +--ro ex-sapi?            string
+       |  |  +--ro deg-thr
+       |  |  |  +--ro deg-thr-value?            uint64
+       |  |  |  +--ro deg-thr-type?             deg-thr-type
+       |  |  |  +--ro percentage-granularity?   percentage-granularity
+       |  |  +--ro tim-det-mode?       tim-det-mo
+       |  |  +--ro tim-act-disabled?   boolean
+       |  |  +--ro deg-m?              uint64
+       |  +--ro codirectional?    boolean
+       |  +--ro odu-mip-status
+       |     +--ro acti?                                    string
+       |     +--ro tcm-fields-in-use*                       uint64
+       |     +--ro odu-current-number-of-tributary-slots?   uint64
+       +--ro odu-tcm-mip
+          +--ro codirectional?        boolean
+          +--ro odu-oam-common
+          |  +--ro ex-dapi?            string
+          |  +--ro ex-sapi?            string
+          |  +--ro deg-thr
+          |  |  +--ro deg-thr-value?            uint64
+          |  |  +--ro deg-thr-type?             deg-thr-type
+          |  |  +--ro percentage-granularity?   percentage-granularity
+          |  +--ro tim-det-mode?       tim-det-mo
+          |  +--ro tim-act-disabled?   boolean
+          |  +--ro deg-m?              uint64
+          +--ro odu-tcm-mip-status
+          |  +--ro tcm-field?           uint64
+          |  +--ro operational-state?   tapi-common:operational-state
+          |  +--ro acti?                string
+          +--ro position-sequence?    uint64
   augment /tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point:
     +--rw odu-connectivity-service-end-point-spec
-       +--ro odu-type?                  odu-type
-       +--ro tributary-slot-list*       uint64
-       +--ro tributary-port-number?     uint64
-       +--ro opu-tributary-slot-size?   odu-slot-size
-       +--ro configured-mapping-type?   mapping-type
-       +--ro accepted-payload-type
-          +--ro named-payload-type?   odu-named-payload-type
-          +--ro hex-payload-type?     uint64
+       +--rw odu-csep-common-pac
+       |  +--rw odu-type?                  odu-type
+       |  +--rw odu-rate?                  uint64
+       |  +--rw opu-tributary-slot-size?   odu-slot-size
+       +--rw odu-csep-ctp-pac
+       |  +--rw tributary-port-number?   uint64
+       |  +--rw tributary-slot-list*     uint64
+       +--rw odu-csep-ttp-pac
+          +--rw configured-mapping-type?   mapping-type
+          +--rw configured-client-type?    tapi-dsr:digital-signal-type
   augment /tapi-common:context/tapi-oam:oam-context/tapi-oam:meg:
     +--ro odu-meg-spec
        +--ro meg-level?   uint64
+  augment /tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job:
+    +--rw odu-measurement-job
+       +--rw measurement-interval?        uint64
+       +--rw time-of-the-day-alignment?   boolean
+  augment /tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:current-data:
+    +--ro odu-error-performance-data
+       +--ro near-end-odu-counters
+       |  +--ro bbe?   uint64
+       |  +--ro ses?   uint64
+       |  +--ro uas?   uint64
+       +--ro far-end-odu-counters
+       |  +--ro bbe?   uint64
+       |  +--ro ses?   uint64
+       |  +--ro uas?   uint64
+       +--ro bidirectional-uas?       uint64
+  augment /tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:current-data/tapi-oam:history-data:
+    +--ro odu-error-performance-data
+       +--ro near-end-odu-counters
+       |  +--ro bbe?   uint64
+       |  +--ro ses?   uint64
+       |  +--ro uas?   uint64
+       +--ro far-end-odu-counters
+       |  +--ro bbe?   uint64
+       |  +--ro ses?   uint64
+       |  +--ro uas?   uint64
+       +--ro bidirectional-uas?       uint64
+  augment /tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:current-data:
+    +--ro odu-delay-performance-data
+       +--ro delay-frame-count?   uint64
+  augment /tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:current-data:
+    +--ro odu-fec-performance-data
+       +--ro fec-corrected-errors-count?   uint64
+  augment /tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:current-data/tapi-oam:history-data:
+    +--ro odu-fec-performance-data
+       +--ro fec-corrected-errors-count?   uint64
+  augment /tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point:
+    +--rw otu-connectivity-service-end-point-spec
+       +--rw odu-cn-csep-ttp-pac
+       |  +--rw number-of-odu-c?   uint64
+       +--rw otu-csep-ttp-pac
+       |  +--rw otu-type?   otu-type
+       +--rw otu-otsia-csep-ttp-pac
+          +--rw number-of-otsi?                     uint64
+          +--rw total-power-warn-threshold-upper?   decimal64
+          +--rw total-power-warn-threshold-lower?   decimal64
+  augment /tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point:
+    +--ro otu-connection-end-point-spec
+       +--ro otu-ttp-pac
+       |  +--ro fec-parameters
+       |  |  +--ro pre-fec-ber?           uint64
+       |  |  +--ro post-fec-ber?          uint64
+       |  |  +--ro corrected-bytes?       uint64
+       |  |  +--ro corrected-bits?        uint64
+       |  |  +--ro uncorrectable-bytes?   uint64
+       |  |  +--ro uncorrectable-bits?    uint64
+       |  +--ro otu-type?         otu-type
+       +--ro odu-cn-ttp-pac
+          +--ro number-of-odu-c?   uint64
+  augment /tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point/tapi-oam:connectivity-oam-service-point:
+    +--rw odu-oam-mep-service-point
+       +--rw odu-mep
+       |  +--rw txti?             string
+       |  +--rw odu-oam-common
+       |  |  +--rw ex-dapi?            string
+       |  |  +--rw ex-sapi?            string
+       |  |  +--rw deg-thr
+       |  |  |  +--rw deg-thr-value?            uint64
+       |  |  |  +--rw deg-thr-type?             deg-thr-type
+       |  |  |  +--rw percentage-granularity?   percentage-granularity
+       |  |  +--rw tim-det-mode?       tim-det-mo
+       |  |  +--rw tim-act-disabled?   boolean
+       |  |  +--rw deg-m?              uint64
+       |  +--rw odu-mep-status
+       |     +--ro acti?                string
+       |     +--ro tcm-fields-in-use*   uint64
+       +--rw odu-tcm-mep* [position-sequence]
+       |  +--rw codirectional?        boolean
+       |  +--rw tcm-extension?        tcm-extension
+       |  +--rw tcm-mode?             tcm-mode
+       |  +--rw admin-state-source?   tapi-common:administrative-state
+       |  +--rw admin-state-sink?     tapi-common:administrative-state
+       |  +--rw txti?                 string
+       |  +--rw position-sequence     uint64
+       |  +--rw odu-oam-common
+       |  |  +--rw ex-dapi?            string
+       |  |  +--rw ex-sapi?            string
+       |  |  +--rw deg-thr
+       |  |  |  +--rw deg-thr-value?            uint64
+       |  |  |  +--rw deg-thr-type?             deg-thr-type
+       |  |  |  +--rw percentage-granularity?   percentage-granularity
+       |  |  +--rw tim-det-mode?       tim-det-mo
+       |  |  +--rw tim-act-disabled?   boolean
+       |  |  +--rw deg-m?              uint64
+       |  +--rw odu-tcm-mep-status
+       |     +--rw tcm-field?           uint64
+       |     +--ro ac-status-source?    tcm-status
+       |     +--ro ac-status-sink?      tcm-status
+       |     +--rw operational-state?   tapi-common:operational-state
+       |     +--ro acti?                string
+       +--rw otu-mep
+       |  +--rw txti?             string
+       |  +--rw odu-oam-common
+       |  |  +--rw ex-dapi?            string
+       |  |  +--rw ex-sapi?            string
+       |  |  +--rw deg-thr
+       |  |  |  +--rw deg-thr-value?            uint64
+       |  |  |  +--rw deg-thr-type?             deg-thr-type
+       |  |  |  +--rw percentage-granularity?   percentage-granularity
+       |  |  +--rw tim-det-mode?       tim-det-mo
+       |  |  +--rw tim-act-disabled?   boolean
+       |  |  +--rw deg-m?              uint64
+       |  +--rw otu-mep-status
+       |     +--ro acti?   string
+       +--rw meg-level?     uint64
+  augment /tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point/tapi-oam:connectivity-oam-service-point:
+    +--rw odu-oam-mip-service-point
+       +--rw odu-mip
+       |  +--rw odu-oam-common
+       |  |  +--rw ex-dapi?            string
+       |  |  +--rw ex-sapi?            string
+       |  |  +--rw deg-thr
+       |  |  |  +--rw deg-thr-value?            uint64
+       |  |  |  +--rw deg-thr-type?             deg-thr-type
+       |  |  |  +--rw percentage-granularity?   percentage-granularity
+       |  |  +--rw tim-det-mode?       tim-det-mo
+       |  |  +--rw tim-act-disabled?   boolean
+       |  |  +--rw deg-m?              uint64
+       |  +--rw codirectional?    boolean
+       |  +--rw odu-mip-status
+       |     +--ro acti?                                    string
+       |     +--ro tcm-fields-in-use*                       uint64
+       |     +--ro odu-current-number-of-tributary-slots?   uint64
+       +--rw odu-tcm-mip* [position-sequence]
+       |  +--rw codirectional?        boolean
+       |  +--rw odu-oam-common
+       |  |  +--rw ex-dapi?            string
+       |  |  +--rw ex-sapi?            string
+       |  |  +--rw deg-thr
+       |  |  |  +--rw deg-thr-value?            uint64
+       |  |  |  +--rw deg-thr-type?             deg-thr-type
+       |  |  |  +--rw percentage-granularity?   percentage-granularity
+       |  |  +--rw tim-det-mode?       tim-det-mo
+       |  |  +--rw tim-act-disabled?   boolean
+       |  |  +--rw deg-m?              uint64
+       |  +--rw odu-tcm-mip-status
+       |  |  +--ro tcm-field?           uint64
+       |  |  +--ro operational-state?   tapi-common:operational-state
+       |  |  +--ro acti?                string
+       |  +--rw position-sequence     uint64
+       +--rw meg-level?     uint64

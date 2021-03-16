@@ -11,7 +11,7 @@ module: tapi-topology
        |     +--ro value?        string
        +--ro topology* [uuid]
           +--ro node* [uuid]
-          |  +--ro node-edge-point* [uuid]
+          |  +--ro owned-node-edge-point* [uuid]
           |  |  +--ro layer-protocol-name?              tapi-common:layer-protocol-name
           |  |  +--ro available-cep-layer-protocol* [layer-protocol-qualifier]
           |  |  |  +--ro layer-protocol-qualifier    tapi-common:layer-protocol-qualifier
@@ -19,7 +19,7 @@ module: tapi-topology
           |  |  +--ro aggregated-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
           |  |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
           |  |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
-          |  |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/node-edge-point/uuid
+          |  |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
           |  |  +--ro mapped-service-interface-point* [service-interface-point-uuid]
           |  |  |  +--ro service-interface-point-uuid    -> /tapi-common:context/service-interface-point/uuid
           |  |  +--ro link-port-direction?              tapi-common:port-direction
@@ -44,30 +44,58 @@ module: tapi-topology
           |  +--ro aggregated-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
           |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
           |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
-          |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/node-edge-point/uuid
+          |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
           |  +--ro node-rule-group* [uuid]
           |  |  +--ro rule* [local-id]
-          |  |  |  +--ro rule-type?           rule-type
-          |  |  |  +--ro forwarding-rule?     forwarding-rule
-          |  |  |  +--ro override-priority?   uint64
-          |  |  |  +--ro local-id             string
+          |  |  |  +--ro rule-type?                   rule-type
+          |  |  |  +--ro forwarding-rule?             forwarding-rule
+          |  |  |  +--ro override-priority?           uint64
+          |  |  |  +--ro cep-direction*               tapi-common:port-direction
+          |  |  |  +--ro cep-port-role* []
+          |  |  |  |  +--ro port-role*        port-role
+          |  |  |  |  +--ro port-role-rule*   port-role-rule-option
+          |  |  |  +--ro connection-spec-reference* []
+          |  |  |  |  +--ro connection-spec-name?   string
+          |  |  |  |  +--ro connection-spec?        tapi-common:uuid
+          |  |  |  +--ro layer-protocol-qualifier*    tapi-common:layer-protocol-qualifier
+          |  |  |  +--ro signal-property
+          |  |  |  |  +--ro signal-property-name?         string
+          |  |  |  |  +--ro signal-property-value-rule?   signal-property-value-rule
+          |  |  |  |  +--ro applicable-signal-value*      string
+          |  |  |  |  +--ro number-of-signal-values?      uint64
+          |  |  |  +--ro complex-rule*                string
+          |  |  |  +--ro local-id                     string
           |  |  |  +--ro name* [value-name]
           |  |  |     +--ro value-name    string
           |  |  |     +--ro value?        string
           |  |  +--ro node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
           |  |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
           |  |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
-          |  |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/node-edge-point/uuid
+          |  |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
           |  |  +--ro composed-rule-group* [topology-uuid node-uuid node-rule-group-uuid]
           |  |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
           |  |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
           |  |  |  +--ro node-rule-group-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/node-rule-group/uuid
           |  |  +--ro inter-rule-group* [uuid]
           |  |  |  +--ro rule* [local-id]
-          |  |  |  |  +--ro rule-type?           rule-type
-          |  |  |  |  +--ro forwarding-rule?     forwarding-rule
-          |  |  |  |  +--ro override-priority?   uint64
-          |  |  |  |  +--ro local-id             string
+          |  |  |  |  +--ro rule-type?                   rule-type
+          |  |  |  |  +--ro forwarding-rule?             forwarding-rule
+          |  |  |  |  +--ro override-priority?           uint64
+          |  |  |  |  +--ro cep-direction*               tapi-common:port-direction
+          |  |  |  |  +--ro cep-port-role* []
+          |  |  |  |  |  +--ro port-role*        port-role
+          |  |  |  |  |  +--ro port-role-rule*   port-role-rule-option
+          |  |  |  |  +--ro connection-spec-reference* []
+          |  |  |  |  |  +--ro connection-spec-name?   string
+          |  |  |  |  |  +--ro connection-spec?        tapi-common:uuid
+          |  |  |  |  +--ro layer-protocol-qualifier*    tapi-common:layer-protocol-qualifier
+          |  |  |  |  +--ro signal-property
+          |  |  |  |  |  +--ro signal-property-name?         string
+          |  |  |  |  |  +--ro signal-property-value-rule?   signal-property-value-rule
+          |  |  |  |  |  +--ro applicable-signal-value*      string
+          |  |  |  |  |  +--ro number-of-signal-values?      uint64
+          |  |  |  |  +--ro complex-rule*                string
+          |  |  |  |  +--ro local-id                     string
           |  |  |  |  +--ro name* [value-name]
           |  |  |  |     +--ro value-name    string
           |  |  |  |     +--ro value?        string
@@ -163,11 +191,12 @@ module: tapi-topology
           |  +--ro node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
           |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
           |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
-          |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/node-edge-point/uuid
+          |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
           |  +--ro layer-protocol-name*                       tapi-common:layer-protocol-name
           |  +--ro direction?                                 tapi-common:forwarding-direction
-          |  +--ro protection-type?                           protection-type
-          |  +--ro restoration-policy?                        restoration-policy
+          |  +--ro resilience-type
+          |  |  +--ro restoration-policy?   restoration-policy
+          |  |  +--ro protection-type?      protection-type
           |  +--ro uuid                                       uuid
           |  +--ro name* [value-name]
           |  |  +--ro value-name    string
@@ -211,7 +240,7 @@ module: tapi-topology
           +--ro boundary-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
           |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
           |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
-          |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/node-edge-point/uuid
+          |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
           +--ro uuid                        uuid
           +--ro name* [value-name]
              +--ro value-name    string
@@ -224,7 +253,7 @@ module: tapi-topology
     |  +--ro output
     |     +--ro topology
     |        +--ro node* [uuid]
-    |        |  +--ro node-edge-point* [uuid]
+    |        |  +--ro owned-node-edge-point* [uuid]
     |        |  |  +--ro layer-protocol-name?              tapi-common:layer-protocol-name
     |        |  |  +--ro available-cep-layer-protocol* [layer-protocol-qualifier]
     |        |  |  |  +--ro layer-protocol-qualifier    tapi-common:layer-protocol-qualifier
@@ -232,7 +261,7 @@ module: tapi-topology
     |        |  |  +--ro aggregated-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
     |        |  |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
     |        |  |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
-    |        |  |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/node-edge-point/uuid
+    |        |  |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
     |        |  |  +--ro mapped-service-interface-point* [service-interface-point-uuid]
     |        |  |  |  +--ro service-interface-point-uuid    -> /tapi-common:context/service-interface-point/uuid
     |        |  |  +--ro link-port-direction?              tapi-common:port-direction
@@ -257,30 +286,58 @@ module: tapi-topology
     |        |  +--ro aggregated-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
     |        |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
     |        |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
-    |        |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/node-edge-point/uuid
+    |        |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
     |        |  +--ro node-rule-group* [uuid]
     |        |  |  +--ro rule* [local-id]
-    |        |  |  |  +--ro rule-type?           rule-type
-    |        |  |  |  +--ro forwarding-rule?     forwarding-rule
-    |        |  |  |  +--ro override-priority?   uint64
-    |        |  |  |  +--ro local-id             string
+    |        |  |  |  +--ro rule-type?                   rule-type
+    |        |  |  |  +--ro forwarding-rule?             forwarding-rule
+    |        |  |  |  +--ro override-priority?           uint64
+    |        |  |  |  +--ro cep-direction*               tapi-common:port-direction
+    |        |  |  |  +--ro cep-port-role* []
+    |        |  |  |  |  +--ro port-role*        port-role
+    |        |  |  |  |  +--ro port-role-rule*   port-role-rule-option
+    |        |  |  |  +--ro connection-spec-reference* []
+    |        |  |  |  |  +--ro connection-spec-name?   string
+    |        |  |  |  |  +--ro connection-spec?        tapi-common:uuid
+    |        |  |  |  +--ro layer-protocol-qualifier*    tapi-common:layer-protocol-qualifier
+    |        |  |  |  +--ro signal-property
+    |        |  |  |  |  +--ro signal-property-name?         string
+    |        |  |  |  |  +--ro signal-property-value-rule?   signal-property-value-rule
+    |        |  |  |  |  +--ro applicable-signal-value*      string
+    |        |  |  |  |  +--ro number-of-signal-values?      uint64
+    |        |  |  |  +--ro complex-rule*                string
+    |        |  |  |  +--ro local-id                     string
     |        |  |  |  +--ro name* [value-name]
     |        |  |  |     +--ro value-name    string
     |        |  |  |     +--ro value?        string
     |        |  |  +--ro node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
     |        |  |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
     |        |  |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
-    |        |  |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/node-edge-point/uuid
+    |        |  |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
     |        |  |  +--ro composed-rule-group* [topology-uuid node-uuid node-rule-group-uuid]
     |        |  |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
     |        |  |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
     |        |  |  |  +--ro node-rule-group-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/node-rule-group/uuid
     |        |  |  +--ro inter-rule-group* [uuid]
     |        |  |  |  +--ro rule* [local-id]
-    |        |  |  |  |  +--ro rule-type?           rule-type
-    |        |  |  |  |  +--ro forwarding-rule?     forwarding-rule
-    |        |  |  |  |  +--ro override-priority?   uint64
-    |        |  |  |  |  +--ro local-id             string
+    |        |  |  |  |  +--ro rule-type?                   rule-type
+    |        |  |  |  |  +--ro forwarding-rule?             forwarding-rule
+    |        |  |  |  |  +--ro override-priority?           uint64
+    |        |  |  |  |  +--ro cep-direction*               tapi-common:port-direction
+    |        |  |  |  |  +--ro cep-port-role* []
+    |        |  |  |  |  |  +--ro port-role*        port-role
+    |        |  |  |  |  |  +--ro port-role-rule*   port-role-rule-option
+    |        |  |  |  |  +--ro connection-spec-reference* []
+    |        |  |  |  |  |  +--ro connection-spec-name?   string
+    |        |  |  |  |  |  +--ro connection-spec?        tapi-common:uuid
+    |        |  |  |  |  +--ro layer-protocol-qualifier*    tapi-common:layer-protocol-qualifier
+    |        |  |  |  |  +--ro signal-property
+    |        |  |  |  |  |  +--ro signal-property-name?         string
+    |        |  |  |  |  |  +--ro signal-property-value-rule?   signal-property-value-rule
+    |        |  |  |  |  |  +--ro applicable-signal-value*      string
+    |        |  |  |  |  |  +--ro number-of-signal-values?      uint64
+    |        |  |  |  |  +--ro complex-rule*                string
+    |        |  |  |  |  +--ro local-id                     string
     |        |  |  |  |  +--ro name* [value-name]
     |        |  |  |  |     +--ro value-name    string
     |        |  |  |  |     +--ro value?        string
@@ -376,11 +433,12 @@ module: tapi-topology
     |        |  +--ro node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
     |        |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
     |        |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
-    |        |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/node-edge-point/uuid
+    |        |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
     |        |  +--ro layer-protocol-name*                       tapi-common:layer-protocol-name
     |        |  +--ro direction?                                 tapi-common:forwarding-direction
-    |        |  +--ro protection-type?                           protection-type
-    |        |  +--ro restoration-policy?                        restoration-policy
+    |        |  +--ro resilience-type
+    |        |  |  +--ro restoration-policy?   restoration-policy
+    |        |  |  +--ro protection-type?      protection-type
     |        |  +--ro uuid                                       uuid
     |        |  +--ro name* [value-name]
     |        |  |  +--ro value-name    string
@@ -424,7 +482,7 @@ module: tapi-topology
     |        +--ro boundary-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
     |        |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
     |        |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
-    |        |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/node-edge-point/uuid
+    |        |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
     |        +--ro uuid?                       uuid
     |        +--ro name* [value-name]
     |           +--ro value-name    string
@@ -435,7 +493,7 @@ module: tapi-topology
     |  |  +---w node-id?       tapi-common:uuid
     |  +--ro output
     |     +--ro node
-    |        +--ro node-edge-point* [uuid]
+    |        +--ro owned-node-edge-point* [uuid]
     |        |  +--ro layer-protocol-name?              tapi-common:layer-protocol-name
     |        |  +--ro available-cep-layer-protocol* [layer-protocol-qualifier]
     |        |  |  +--ro layer-protocol-qualifier    tapi-common:layer-protocol-qualifier
@@ -443,7 +501,7 @@ module: tapi-topology
     |        |  +--ro aggregated-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
     |        |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
     |        |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
-    |        |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/node-edge-point/uuid
+    |        |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
     |        |  +--ro mapped-service-interface-point* [service-interface-point-uuid]
     |        |  |  +--ro service-interface-point-uuid    -> /tapi-common:context/service-interface-point/uuid
     |        |  +--ro link-port-direction?              tapi-common:port-direction
@@ -468,30 +526,58 @@ module: tapi-topology
     |        +--ro aggregated-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
     |        |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
     |        |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
-    |        |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/node-edge-point/uuid
+    |        |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
     |        +--ro node-rule-group* [uuid]
     |        |  +--ro rule* [local-id]
-    |        |  |  +--ro rule-type?           rule-type
-    |        |  |  +--ro forwarding-rule?     forwarding-rule
-    |        |  |  +--ro override-priority?   uint64
-    |        |  |  +--ro local-id             string
+    |        |  |  +--ro rule-type?                   rule-type
+    |        |  |  +--ro forwarding-rule?             forwarding-rule
+    |        |  |  +--ro override-priority?           uint64
+    |        |  |  +--ro cep-direction*               tapi-common:port-direction
+    |        |  |  +--ro cep-port-role* []
+    |        |  |  |  +--ro port-role*        port-role
+    |        |  |  |  +--ro port-role-rule*   port-role-rule-option
+    |        |  |  +--ro connection-spec-reference* []
+    |        |  |  |  +--ro connection-spec-name?   string
+    |        |  |  |  +--ro connection-spec?        tapi-common:uuid
+    |        |  |  +--ro layer-protocol-qualifier*    tapi-common:layer-protocol-qualifier
+    |        |  |  +--ro signal-property
+    |        |  |  |  +--ro signal-property-name?         string
+    |        |  |  |  +--ro signal-property-value-rule?   signal-property-value-rule
+    |        |  |  |  +--ro applicable-signal-value*      string
+    |        |  |  |  +--ro number-of-signal-values?      uint64
+    |        |  |  +--ro complex-rule*                string
+    |        |  |  +--ro local-id                     string
     |        |  |  +--ro name* [value-name]
     |        |  |     +--ro value-name    string
     |        |  |     +--ro value?        string
     |        |  +--ro node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
     |        |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
     |        |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
-    |        |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/node-edge-point/uuid
+    |        |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
     |        |  +--ro composed-rule-group* [topology-uuid node-uuid node-rule-group-uuid]
     |        |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
     |        |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
     |        |  |  +--ro node-rule-group-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/node-rule-group/uuid
     |        |  +--ro inter-rule-group* [uuid]
     |        |  |  +--ro rule* [local-id]
-    |        |  |  |  +--ro rule-type?           rule-type
-    |        |  |  |  +--ro forwarding-rule?     forwarding-rule
-    |        |  |  |  +--ro override-priority?   uint64
-    |        |  |  |  +--ro local-id             string
+    |        |  |  |  +--ro rule-type?                   rule-type
+    |        |  |  |  +--ro forwarding-rule?             forwarding-rule
+    |        |  |  |  +--ro override-priority?           uint64
+    |        |  |  |  +--ro cep-direction*               tapi-common:port-direction
+    |        |  |  |  +--ro cep-port-role* []
+    |        |  |  |  |  +--ro port-role*        port-role
+    |        |  |  |  |  +--ro port-role-rule*   port-role-rule-option
+    |        |  |  |  +--ro connection-spec-reference* []
+    |        |  |  |  |  +--ro connection-spec-name?   string
+    |        |  |  |  |  +--ro connection-spec?        tapi-common:uuid
+    |        |  |  |  +--ro layer-protocol-qualifier*    tapi-common:layer-protocol-qualifier
+    |        |  |  |  +--ro signal-property
+    |        |  |  |  |  +--ro signal-property-name?         string
+    |        |  |  |  |  +--ro signal-property-value-rule?   signal-property-value-rule
+    |        |  |  |  |  +--ro applicable-signal-value*      string
+    |        |  |  |  |  +--ro number-of-signal-values?      uint64
+    |        |  |  |  +--ro complex-rule*                string
+    |        |  |  |  +--ro local-id                     string
     |        |  |  |  +--ro name* [value-name]
     |        |  |  |     +--ro value-name    string
     |        |  |  |     +--ro value?        string
@@ -597,7 +683,7 @@ module: tapi-topology
     |        +--ro aggregated-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
     |        |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
     |        |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
-    |        |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/node-edge-point/uuid
+    |        |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
     |        +--ro mapped-service-interface-point* [service-interface-point-uuid]
     |        |  +--ro service-interface-point-uuid    -> /tapi-common:context/service-interface-point/uuid
     |        +--ro link-port-direction?              tapi-common:port-direction
@@ -628,11 +714,12 @@ module: tapi-topology
     |        +--ro node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
     |        |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
     |        |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
-    |        |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/node-edge-point/uuid
+    |        |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
     |        +--ro layer-protocol-name*                       tapi-common:layer-protocol-name
     |        +--ro direction?                                 tapi-common:forwarding-direction
-    |        +--ro protection-type?                           protection-type
-    |        +--ro restoration-policy?                        restoration-policy
+    |        +--ro resilience-type
+    |        |  +--ro restoration-policy?   restoration-policy
+    |        |  +--ro protection-type?      protection-type
     |        +--ro uuid?                                      uuid
     |        +--ro name* [value-name]
     |        |  +--ro value-name    string
@@ -676,7 +763,7 @@ module: tapi-topology
        +--ro output
           +--ro topology* [uuid]
              +--ro node* [uuid]
-             |  +--ro node-edge-point* [uuid]
+             |  +--ro owned-node-edge-point* [uuid]
              |  |  +--ro layer-protocol-name?              tapi-common:layer-protocol-name
              |  |  +--ro available-cep-layer-protocol* [layer-protocol-qualifier]
              |  |  |  +--ro layer-protocol-qualifier    tapi-common:layer-protocol-qualifier
@@ -684,7 +771,7 @@ module: tapi-topology
              |  |  +--ro aggregated-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
              |  |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
              |  |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
-             |  |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/node-edge-point/uuid
+             |  |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
              |  |  +--ro mapped-service-interface-point* [service-interface-point-uuid]
              |  |  |  +--ro service-interface-point-uuid    -> /tapi-common:context/service-interface-point/uuid
              |  |  +--ro link-port-direction?              tapi-common:port-direction
@@ -709,30 +796,58 @@ module: tapi-topology
              |  +--ro aggregated-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
              |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
              |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
-             |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/node-edge-point/uuid
+             |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
              |  +--ro node-rule-group* [uuid]
              |  |  +--ro rule* [local-id]
-             |  |  |  +--ro rule-type?           rule-type
-             |  |  |  +--ro forwarding-rule?     forwarding-rule
-             |  |  |  +--ro override-priority?   uint64
-             |  |  |  +--ro local-id             string
+             |  |  |  +--ro rule-type?                   rule-type
+             |  |  |  +--ro forwarding-rule?             forwarding-rule
+             |  |  |  +--ro override-priority?           uint64
+             |  |  |  +--ro cep-direction*               tapi-common:port-direction
+             |  |  |  +--ro cep-port-role* []
+             |  |  |  |  +--ro port-role*        port-role
+             |  |  |  |  +--ro port-role-rule*   port-role-rule-option
+             |  |  |  +--ro connection-spec-reference* []
+             |  |  |  |  +--ro connection-spec-name?   string
+             |  |  |  |  +--ro connection-spec?        tapi-common:uuid
+             |  |  |  +--ro layer-protocol-qualifier*    tapi-common:layer-protocol-qualifier
+             |  |  |  +--ro signal-property
+             |  |  |  |  +--ro signal-property-name?         string
+             |  |  |  |  +--ro signal-property-value-rule?   signal-property-value-rule
+             |  |  |  |  +--ro applicable-signal-value*      string
+             |  |  |  |  +--ro number-of-signal-values?      uint64
+             |  |  |  +--ro complex-rule*                string
+             |  |  |  +--ro local-id                     string
              |  |  |  +--ro name* [value-name]
              |  |  |     +--ro value-name    string
              |  |  |     +--ro value?        string
              |  |  +--ro node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
              |  |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
              |  |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
-             |  |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/node-edge-point/uuid
+             |  |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
              |  |  +--ro composed-rule-group* [topology-uuid node-uuid node-rule-group-uuid]
              |  |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
              |  |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
              |  |  |  +--ro node-rule-group-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/node-rule-group/uuid
              |  |  +--ro inter-rule-group* [uuid]
              |  |  |  +--ro rule* [local-id]
-             |  |  |  |  +--ro rule-type?           rule-type
-             |  |  |  |  +--ro forwarding-rule?     forwarding-rule
-             |  |  |  |  +--ro override-priority?   uint64
-             |  |  |  |  +--ro local-id             string
+             |  |  |  |  +--ro rule-type?                   rule-type
+             |  |  |  |  +--ro forwarding-rule?             forwarding-rule
+             |  |  |  |  +--ro override-priority?           uint64
+             |  |  |  |  +--ro cep-direction*               tapi-common:port-direction
+             |  |  |  |  +--ro cep-port-role* []
+             |  |  |  |  |  +--ro port-role*        port-role
+             |  |  |  |  |  +--ro port-role-rule*   port-role-rule-option
+             |  |  |  |  +--ro connection-spec-reference* []
+             |  |  |  |  |  +--ro connection-spec-name?   string
+             |  |  |  |  |  +--ro connection-spec?        tapi-common:uuid
+             |  |  |  |  +--ro layer-protocol-qualifier*    tapi-common:layer-protocol-qualifier
+             |  |  |  |  +--ro signal-property
+             |  |  |  |  |  +--ro signal-property-name?         string
+             |  |  |  |  |  +--ro signal-property-value-rule?   signal-property-value-rule
+             |  |  |  |  |  +--ro applicable-signal-value*      string
+             |  |  |  |  |  +--ro number-of-signal-values?      uint64
+             |  |  |  |  +--ro complex-rule*                string
+             |  |  |  |  +--ro local-id                     string
              |  |  |  |  +--ro name* [value-name]
              |  |  |  |     +--ro value-name    string
              |  |  |  |     +--ro value?        string
@@ -828,11 +943,12 @@ module: tapi-topology
              |  +--ro node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
              |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
              |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
-             |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/node-edge-point/uuid
+             |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
              |  +--ro layer-protocol-name*                       tapi-common:layer-protocol-name
              |  +--ro direction?                                 tapi-common:forwarding-direction
-             |  +--ro protection-type?                           protection-type
-             |  +--ro restoration-policy?                        restoration-policy
+             |  +--ro resilience-type
+             |  |  +--ro restoration-policy?   restoration-policy
+             |  |  +--ro protection-type?      protection-type
              |  +--ro uuid                                       uuid
              |  +--ro name* [value-name]
              |  |  +--ro value-name    string
@@ -876,7 +992,7 @@ module: tapi-topology
              +--ro boundary-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
              |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
              |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
-             |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/node-edge-point/uuid
+             |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
              +--ro uuid                        uuid
              +--ro name* [value-name]
                 +--ro value-name    string
