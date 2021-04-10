@@ -3,59 +3,67 @@ module: tapi-alarm
   augment /tapi-common:context/tapi-notification:notification-context/tapi-notification:notification:
     +--ro alarm-info
        +--ro alarm-identifier?          tapi-common:uuid
-       +--ro alarm-name?                tapi-oam:alarm-condition-name
-       +--ro alarm-raised-time?         tapi-common:date-and-time
-       +--ro alarm-changed-time?        tapi-common:date-and-time
-       +--ro alarm-cleared-time?        tapi-common:date-and-time
+       +--ro alarm-name?                alarm-condition-name
        +--ro native-alarm-identifier?   string
        +--ro native-alarm-info?         string
        +--ro is-transient?              boolean
-       +--ro occurrence-times?          uint64
-       +--ro alarm-life-cycle?          alarm-tca-life-cycle
-       +--ro perceived-severity?        tapi-oam:perceived-severity-type
+       +--ro perceived-severity?        perceived-severity-type
        +--ro probable-cause?            string
-       +--ro service-affecting?         tapi-oam:service-affecting
+       +--ro service-affecting?         service-affecting
        +--ro alarm-category?            alarm-category
+       +--ro layer-info* []
+       |  +--ro layer-protocol-name?        tapi-common:layer-protocol-name
+       |  +--ro layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
        +--ro networking-alarm-info
        |  +--ro root-cause-alarm?          boolean
        |  +--ro correlated-alarms* [correlated-alarm-identifier]
        |  |  +--ro correlated-alarm-identifier    tapi-common:uuid
        |  |  +--ro correlated-alarm-time-stamp?   tapi-common:date-and-time
-       |  |  +--ro correlated-alarm-name?         tapi-oam:alarm-condition-name
+       |  |  +--ro correlated-alarm-name?         string
        |  +--ro alarm-affected-services* [connectivity-service-identifier]
        |     +--ro connectivity-service-identifier      tapi-common:uuid
        |     +--ro connectivity-services-name?          string
        |     +--ro connectivity-service-admin-status?   tapi-common:administrative-state
        +--ro security-alarm-info
-          +--ro security-alarm-cause?        string
-          +--ro security-alarm-severity?     tapi-oam:perceived-severity-type
-          +--ro security-alarm-category?     string
-          +--ro security-alarm-detector?     string
-          +--ro security-service-user?       string
-          +--ro security-service-provider?   string
+       |  +--ro security-alarm-cause?        security-alarm-condition-name
+       |  +--ro security-alarm-severity?     tapi-oam:perceived-severity-type
+       |  +--ro security-alarm-category?     security-alarm-category
+       |  +--ro security-alarm-detector?     string
+       |  +--ro security-service-user?       string
+       |  +--ro security-service-provider?   string
+       +--ro alarm-tca-lifecycle
+          +--ro alarm-tca-life-cycle?   alarm-tca-life-cycle
+          +--ro raised-time?            tapi-common:date-and-time
+          +--ro changed-time?           tapi-common:date-and-time
+          +--ro cleared-time?           tapi-common:date-and-time
+          +--ro occurrence-times?       uint64
   augment /tapi-common:context/tapi-notification:notification-context/tapi-notification:notification:
     +--ro tca-info
-       +--ro tca-identifier?               tapi-common:uuid
-       +--ro threshold-indicator-name?     tapi-oam:pm-parameter-name
-       +--ro threshold-crossing?           threshold-crossing-type
-       +--ro tca-raised-time?              tapi-common:date-and-time
-       +--ro tca-changed-time?             tapi-common:date-and-time
-       +--ro tca-cleared-time?             tapi-common:date-and-time
-       +--ro is-transient?                 boolean
-       +--ro occurrence-times?             uint64
-       +--ro threshold-observed-value
-       |  +--ro pm-parameter-int-value?    uint64
-       |  +--ro pm-parameter-real-value?   decimal64
-       +--ro threshold-configured-value
-       |  +--ro pm-parameter-int-value?    uint64
-       |  +--ro pm-parameter-real-value?   decimal64
-       +--ro threshold-units?              string
-       +--ro threshold-granularity
-       |  +--ro value?   uint64
-       |  +--ro unit?    time-unit
-       +--ro perceived-severity?           tapi-oam:perceived-tca-severity
-       +--ro tca-life-cycle?               alarm-tca-life-cycle
-       +--ro measurement-interval
-       |  +--ro begin-time?   tapi-common:date-and-time
-       |  +--ro end-time?     tapi-common:date-and-time
-       +--ro suspect-interval-flag?        boolean
+       +--ro tca-identifier?             tapi-common:uuid
+       +--ro threshold-indicator-name?   tapi-common:pm-parameter-name
+       +--ro is-transient?               boolean
+       +--ro perceived-severity?         tapi-oam:perceived-tca-severity
+       +--ro alarm-tca-lifecycle
+       |  +--ro alarm-tca-life-cycle?   alarm-tca-life-cycle
+       |  +--ro raised-time?            tapi-common:date-and-time
+       |  +--ro changed-time?           tapi-common:date-and-time
+       |  +--ro cleared-time?           tapi-common:date-and-time
+       |  +--ro occurrence-times?       uint64
+       +--ro threshold-info
+          +--ro threshold-observed-value
+          |  +--ro pm-parameter-int-value?    uint64
+          |  +--ro pm-parameter-real-value?   decimal64
+          +--ro threshold-crossing?           threshold-crossing-type
+          +--ro threshold-configured-value
+          |  +--ro pm-parameter-int-value?    uint64
+          |  +--ro pm-parameter-real-value?   decimal64
+          +--ro threshold-units?              string
+          +--ro threshold-granularity
+          |  +--ro period* [unit]
+          |     +--ro value?   uint64
+          |     +--ro unit     time-unit
+          +--ro measurement-interval
+          |  +--ro begin-time?   tapi-common:date-and-time
+          |  +--ro end-time?     tapi-common:date-and-time
+          +--ro suspect-interval-flag?        boolean
+          +--ro oam-job?                      tapi-common:uuid
