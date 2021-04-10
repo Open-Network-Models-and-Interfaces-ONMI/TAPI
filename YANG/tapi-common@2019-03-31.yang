@@ -231,6 +231,9 @@ module tapi-common {
         base OBJECT_TYPE;
         description "The ServiceInterfacePoint (SIP) class.";
     }
+    identity PM_PARAMETER_NAME {
+        description "none";
+    }
     typedef administrative-state {
         type enumeration {
             enum LOCKED {
@@ -244,14 +247,14 @@ module tapi-common {
     }
     typedef date-and-time {
         type string;
-        description "This primitive type defines the date and time according to the following structure:
+        description "This primitive type defines the date and time according to ISO 8601 with the following structure:
             yyyyMMddhhmmss.s[Z|{+|-}HHMm] where:
             yyyy    0000..9999    year
             MM    01..12            month
             dd        01..31            day
             hh        00..23            hour
             mm    00..59            minute
-            ss        00..59            second
+            ss        00..60            second (60 for leap seconds)
             s        .0...9            tenth of second (set to .0 if EMS or NE cannot support this granularity)
             Z        Z                indicates UTC (rather than local time)
             {+|-}    + or -            delta from UTC
@@ -573,16 +576,28 @@ module tapi-common {
             min-elements 1;
             max-elements 5;
             uses time-period;
-            description "The specific interval of time.
+            description "The specific interval of time. Each TimePeriod occurrence specifies a duration in years, months, days, hours, minutes etc. 
+                The 1..5 occurrences complies with Q.821.
                 ITU-T Q.821 (02/2000):
                 TimeInterval ::= SEQUENCE {
                 day [0] INTEGER (0..31) DEFAULT 0,
                 hour [1] INTEGER (0..23) DEFAULT 0,
                 minute [2] INTEGER (0..59) DEFAULT 0,
                 second [3] INTEGER (0..59) DEFAULT 0,
-                msec [4] INTEGER (0..999) DEFAULT 0 }";
+                msec [4] INTEGER (0..999) DEFAULT 0 }
+                Examples: 
+                A duration of 1 hour, 15 minutes and 30 seconds should be coded as 3 occurrences of TimePeriod:
+                - HOURS; 1
+                - MINUTES; 15
+                - SECONDS; 30
+                A duration of 1550 milliseconds as two occurrences of TimePeriod:
+                - SECONDS; 1
+                - MILLISECONDS: 550";
         }
-        description "Interval of time.";
+        description "Interval of time, duration.
+            Q.821: The Interval attribute type indicates the time between occurrences of a given activity described by an instance of the Management Operations Schedule object class.
+            The interval can be specified in seconds, minutes, hours, or days.
+            ";
     }
     typedef layer-protocol-qualifier {
         type identityref {
@@ -612,6 +627,37 @@ module tapi-common {
         }
         description "The list of TAPI Global Object Class types on which Notification signals can be raised.
             This extensible enumeration includes only the 'SERVICE_INTERFACE_POINT' entry in the common module and can be augmented with specific object types/classes in the other modules.";
+    }
+    grouping pm-parameter-value {
+        leaf pm-parameter-int-value {
+            type uint64;
+            description "Integer value, e.g. for counters.";
+        }
+        leaf pm-parameter-real-value {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            description "Real value, e.g. for gauges.";
+        }
+        description "PM metric value.";
+    }
+    typedef pm-parameter-name {
+        type identityref {
+            base PM_PARAMETER_NAME;
+        }
+        description "The PM metric names.
+            This extensible enumeration can be augmented with specific PM metric names in the other modules.";
+    }
+    grouping pm-parameter {
+        leaf pm-parameter-name {
+            type pm-parameter-name;
+            description "The name of the PM metric. Technology specific modules may define specific PM metrics.";
+        }
+        container pm-parameter-value {
+            uses pm-parameter-value;
+            description "The value of the PM metric.";
+        }
+        description "PM metric name and value.";
     }
 
     /**************************
