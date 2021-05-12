@@ -229,14 +229,14 @@ If direction attribute is missing the ServiceInterfacePoint (SIP) instance is to
       </packagedElement>
       <packagedElement xmi:type="uml:DataType" xmi:id="_6iCS8O-fEeWLlrwIF3w0vA" name="DateAndTime" isLeaf="true">
         <ownedComment xmi:type="uml:Comment" xmi:id="_6iCS8e-fEeWLlrwIF3w0vA" annotatedElement="_6iCS8O-fEeWLlrwIF3w0vA">
-          <body>This primitive type defines the date and time according to the following structure:&#xD;
+          <body>This primitive type defines the date and time according to ISO 8601 with the following structure:&#xD;
 yyyyMMddhhmmss.s[Z|{+|-}HHMm] where:&#xD;
 yyyy	0000..9999	year&#xD;
 MM	01..12			month&#xD;
 dd		01..31			day&#xD;
 hh		00..23			hour&#xD;
 mm	00..59			minute&#xD;
-ss		00..59			second&#xD;
+ss		00..60			second (60 for leap seconds)&#xD;
 s		.0...9			tenth of second (set to .0 if EMS or NE cannot support this granularity)&#xD;
 Z		Z				indicates UTC (rather than local time)&#xD;
 {+|-}	+ or -			delta from UTC&#xD;
@@ -683,18 +683,30 @@ Example of a UUID in string representation: f81d4fae-7dec-11d0-a765-00a0c91e6bf6
       </packagedElement>
       <packagedElement xmi:type="uml:DataType" xmi:id="__aY_AF6cEeitO-Stqhyn1g" name="TimeInterval" isLeaf="true">
         <ownedComment xmi:type="uml:Comment" xmi:id="_wDqKMEktEeukK6laO_KG0g" annotatedElement="__aY_AF6cEeitO-Stqhyn1g">
-          <body>Interval of time.</body>
+          <body>Interval of time, duration.&#xD;
+Q.821: The Interval attribute type indicates the time between occurrences of a given activity described by an instance of the Management Operations Schedule object class.&#xD;
+The interval can be specified in seconds, minutes, hours, or days.&#xD;
+</body>
         </ownedComment>
         <ownedAttribute xmi:type="uml:Property" xmi:id="_eNe_IF6lEeitO-Stqhyn1g" name="period" type="_Ay2V0F6UEeitO-Stqhyn1g">
           <ownedComment xmi:type="uml:Comment" xmi:id="_zP6q0EktEeukK6laO_KG0g" annotatedElement="_eNe_IF6lEeitO-Stqhyn1g">
-            <body>The specific interval of time.&#xD;
+            <body>The specific interval of time. Each TimePeriod occurrence specifies a duration in years, months, days, hours, minutes etc. &#xD;
+The 1..5 occurrences complies with Q.821.&#xD;
 ITU-T Q.821 (02/2000):&#xD;
 TimeInterval ::= SEQUENCE {&#xD;
 day [0] INTEGER (0..31) DEFAULT 0,&#xD;
 hour [1] INTEGER (0..23) DEFAULT 0,&#xD;
 minute [2] INTEGER (0..59) DEFAULT 0,&#xD;
 second [3] INTEGER (0..59) DEFAULT 0,&#xD;
-msec [4] INTEGER (0..999) DEFAULT 0 }</body>
+msec [4] INTEGER (0..999) DEFAULT 0 }&#xD;
+Examples: &#xD;
+A duration of 1 hour, 15 minutes and 30 seconds should be coded as 3 occurrences of TimePeriod:&#xD;
+- HOURS; 1&#xD;
+- MINUTES; 15&#xD;
+- SECONDS; 30&#xD;
+A duration of 1550 milliseconds as two occurrences of TimePeriod:&#xD;
+- SECONDS; 1&#xD;
+- MILLISECONDS: 550</body>
           </ownedComment>
           <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_fiUEEF6lEeitO-Stqhyn1g" value="1"/>
           <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_fiaKsF6lEeitO-Stqhyn1g" value="5"/>
@@ -739,6 +751,46 @@ This extensible enumeration includes only the &quot;SERVICE_INTERFACE_POINT&quot
             <body>The ServiceInterfacePoint (SIP) class.</body>
           </ownedComment>
         </ownedLiteral>
+      </packagedElement>
+      <packagedElement xmi:type="uml:DataType" xmi:id="_gpUt0ISvEeuugLwCgMtsUg" name="PmParameterValue">
+        <ownedComment xmi:type="uml:Comment" xmi:id="_k8cI0ISvEeuugLwCgMtsUg" annotatedElement="_gpUt0ISvEeuugLwCgMtsUg">
+          <body>PM metric value.</body>
+        </ownedComment>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="_rEpdMISvEeuugLwCgMtsUg" name="pmParameterIntValue">
+          <ownedComment xmi:type="uml:Comment" xmi:id="_rEpdMYSvEeuugLwCgMtsUg" annotatedElement="_rEpdMISvEeuugLwCgMtsUg">
+            <body>Integer value, e.g. for counters.</body>
+          </ownedComment>
+          <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_azXxoISwEeuugLwCgMtsUg"/>
+        </ownedAttribute>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="_0SjXMISvEeuugLwCgMtsUg" name="pmParameterRealValue">
+          <ownedComment xmi:type="uml:Comment" xmi:id="_0SjXMYSvEeuugLwCgMtsUg" annotatedElement="_0SjXMISvEeuugLwCgMtsUg">
+            <body>Real value, e.g. for gauges.</body>
+          </ownedComment>
+          <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_beDGUISwEeuugLwCgMtsUg"/>
+        </ownedAttribute>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Enumeration" xmi:id="_Yt6WcISvEeuugLwCgMtsUg" name="PmParameterName">
+        <ownedComment xmi:type="uml:Comment" xmi:id="_dSet0ISvEeuugLwCgMtsUg" annotatedElement="_Yt6WcISvEeuugLwCgMtsUg">
+          <body>The PM metric names.&#xD;
+This extensible enumeration can be augmented with specific PM metric names in the other modules.</body>
+        </ownedComment>
+      </packagedElement>
+      <packagedElement xmi:type="uml:DataType" xmi:id="_5gIEwISuEeuugLwCgMtsUg" name="PmParameter">
+        <ownedComment xmi:type="uml:Comment" xmi:id="_87af4ISuEeuugLwCgMtsUg" annotatedElement="_5gIEwISuEeuugLwCgMtsUg">
+          <body>PM metric name and value.</body>
+        </ownedComment>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="_FE-A8ISvEeuugLwCgMtsUg" name="pmParameterName" type="_Yt6WcISvEeuugLwCgMtsUg">
+          <ownedComment xmi:type="uml:Comment" xmi:id="_FE-A8YSvEeuugLwCgMtsUg" annotatedElement="_FE-A8ISvEeuugLwCgMtsUg">
+            <body>The name of the PM metric. Technology specific modules may define specific PM metrics.</body>
+          </ownedComment>
+        </ownedAttribute>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="_KGgBIISvEeuugLwCgMtsUg" name="pmParameterValue" type="_gpUt0ISvEeuugLwCgMtsUg">
+          <ownedComment xmi:type="uml:Comment" xmi:id="_KGgBIYSvEeuugLwCgMtsUg" annotatedElement="_KGgBIISvEeuugLwCgMtsUg">
+            <body>The value of the PM metric.</body>
+          </ownedComment>
+        </ownedAttribute>
       </packagedElement>
     </packagedElement>
     <packagedElement xmi:type="uml:Package" xmi:id="_FhzwMHrqEeavcODnuX7FyA" name="Interfaces">
@@ -923,11 +975,6 @@ Example of a UUID in string representation: f81d4fae-7dec-11d0-a765-00a0c91e6bf6
   <OpenInterfaceModel_Profile:OpenInterfaceModelAttribute xmi:id="_7oAQQqg2EeeAVfY3jqnvAA" base_Property="_7n4Ucqg2EeeAVfY3jqnvAA"/>
   <OpenModel_Profile:OpenModelAttribute xmi:id="_7oAQQ6g2EeeAVfY3jqnvAA" base_StructuralFeature="_7n4Udqg2EeeAVfY3jqnvAA"/>
   <OpenInterfaceModel_Profile:OpenInterfaceModelAttribute xmi:id="_7oAQRKg2EeeAVfY3jqnvAA" base_Property="_7n4Udqg2EeeAVfY3jqnvAA"/>
-  <OpenModel_Profile:Experimental xmi:id="_YY38IOyqEee2fqmozVFruQ" base_Element="_7n4Ucqg2EeeAVfY3jqnvAA"/>
-  <OpenModel_Profile:Experimental xmi:id="_aKnmkOyqEee2fqmozVFruQ" base_Element="_7n4Udqg2EeeAVfY3jqnvAA"/>
-  <OpenModel_Profile:Experimental xmi:id="_jLwP4OyqEee2fqmozVFruQ" base_Element="_pGsZEN5qEeWd9KDn6x5Skg"/>
-  <OpenModel_Profile:Experimental xmi:id="_JTDxgO_1Eee2fqmozVFruQ" base_Element="_adPI0NnqEeWIOYiRCk5bbQ"/>
-  <OpenModel_Profile:Experimental xmi:id="_MvTO4O_1Eee2fqmozVFruQ" base_Element="_7n4UcKg2EeeAVfY3jqnvAA"/>
   <OpenInterfaceModel_Profile:OpenInterfaceModelAttribute xmi:id="_iJ72UV6UEeitO-Stqhyn1g" base_Property="_iJ72UF6UEeitO-Stqhyn1g"/>
   <OpenModel_Profile:OpenModelAttribute xmi:id="_iKB88F6UEeitO-Stqhyn1g" base_StructuralFeature="_iJ72UF6UEeitO-Stqhyn1g"/>
   <OpenInterfaceModel_Profile:OpenInterfaceModelAttribute xmi:id="_m-294F6UEeitO-Stqhyn1g" base_Property="_m-w3QF6UEeitO-Stqhyn1g"/>
@@ -937,12 +984,17 @@ Example of a UUID in string representation: f81d4fae-7dec-11d0-a765-00a0c91e6bf6
   <OpenModel_Profile:OpenModelStatement xmi:id="_TyKG4Gm1EeiLh_06MH5Rjg" base_Model="_cOw5UDA4Eea4fKwSGMr6CA"/>
   <OpenModel_Profile:OpenModelAttribute xmi:id="_Xu-HEIk4Eeil5oKL3Vgl-g" base_StructuralFeature="_Xu4AcIk4Eeil5oKL3Vgl-g"/>
   <OpenInterfaceModel_Profile:OpenInterfaceModelAttribute xmi:id="_Xu-HEYk4Eeil5oKL3Vgl-g" base_Property="_Xu4AcIk4Eeil5oKL3Vgl-g"/>
-  <OpenModel_Profile:Experimental xmi:id="_aTAKEIk4Eeil5oKL3Vgl-g" base_Element="_-eq88Ik2Eeil5oKL3Vgl-g"/>
-  <OpenModel_Profile:Experimental xmi:id="_lnBfMIk8Eeil5oKL3Vgl-g" base_Element="_i92HIL6PEeWRz-VHgA3LJQ"/>
-  <OpenModel_Profile:Experimental xmi:id="_sghtoIk8Eeil5oKL3Vgl-g" base_Element="_2wdyENnjEeWIOYiRCk5bbQ"/>
   <OpenModel_Profile:Reference xmi:id="_E081EC7kEem3g99vIRtESQ" base_Element="_6-ftUC7jEem3g99vIRtESQ" reference="3.1 and 8.1 of IEEE Std 802-2014"/>
   <OpenModel_Profile:Reference xmi:id="_U9wKkC9mEem3g99vIRtESQ" base_Element="_vK1_AC9lEem3g99vIRtESQ" reference="RFC 2578"/>
   <OpenInterfaceModel_Profile:OpenInterfaceModelAttribute xmi:id="_PgoDcG9NEequJuWZpC8-lA" base_Property="_PgncYG9NEequJuWZpC8-lA"/>
   <OpenModel_Profile:OpenModelAttribute xmi:id="_PgpRkG9NEequJuWZpC8-lA" base_StructuralFeature="_PgncYG9NEequJuWZpC8-lA"/>
   <OpenInterfaceModel_Profile:RootElement xmi:id="_lQnIoDraEeu2XeyB7yzYZA" base_Class="_sfccMOK0EeSq5fATALSQkQ" name="_context" description="Root container for all TAPI interaction"/>
+  <OpenInterfaceModel_Profile:OpenInterfaceModelAttribute xmi:id="_FE-A8oSvEeuugLwCgMtsUg" base_Property="_FE-A8ISvEeuugLwCgMtsUg"/>
+  <OpenModel_Profile:OpenModelAttribute xmi:id="_FFC5cISvEeuugLwCgMtsUg" base_StructuralFeature="_FE-A8ISvEeuugLwCgMtsUg"/>
+  <OpenInterfaceModel_Profile:OpenInterfaceModelAttribute xmi:id="_KGgBIoSvEeuugLwCgMtsUg" base_Property="_KGgBIISvEeuugLwCgMtsUg"/>
+  <OpenModel_Profile:OpenModelAttribute xmi:id="_KGjrgISvEeuugLwCgMtsUg" base_StructuralFeature="_KGgBIISvEeuugLwCgMtsUg"/>
+  <OpenInterfaceModel_Profile:OpenInterfaceModelAttribute xmi:id="_rEpdMoSvEeuugLwCgMtsUg" base_Property="_rEpdMISvEeuugLwCgMtsUg"/>
+  <OpenModel_Profile:OpenModelAttribute xmi:id="_rEsggISvEeuugLwCgMtsUg" base_StructuralFeature="_rEpdMISvEeuugLwCgMtsUg"/>
+  <OpenInterfaceModel_Profile:OpenInterfaceModelAttribute xmi:id="_0SjXMoSvEeuugLwCgMtsUg" base_Property="_0SjXMISvEeuugLwCgMtsUg"/>
+  <OpenModel_Profile:OpenModelAttribute xmi:id="_0SrTAISvEeuugLwCgMtsUg" base_StructuralFeature="_0SjXMISvEeuugLwCgMtsUg"/>
 </xmi:XMI>

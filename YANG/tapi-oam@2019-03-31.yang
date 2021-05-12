@@ -329,7 +329,6 @@ module tapi-oam {
         }
         list oam-service-point {
             key 'local-id';
-            min-elements 2;
             uses oam-service-point;
             description "The OamServicePoint (OSP) instances of the OamService.";
         }
@@ -494,7 +493,7 @@ module tapi-oam {
         }
         leaf is-transient {
             type boolean;
-            description "A threshold crossing alarm (TCA) is transient when stateless, i.e. an explicit alarm clear notification is not foreseen.
+            description "A threshold crossing alert (TCA) is transient when stateless, i.e. an explicit alarm clear notification is not foreseen.
                 MEF 35.1: Thresholds and associated TCAs are specific to a particular performance metric in a given PM Session (or OAM job).
                 There are two types of TCA reporting: stateless and stateful.
                 With stateless reporting, a TCA is generated in each Measurement Interval in which the threshold is crossed.
@@ -505,11 +504,11 @@ module tapi-oam {
         }
         uses tapi-common:local-class;
         description "The PM threshold information associated to an OamProfile instance.
-            It defines a set of PM metrics, their threshold values, the granularity period or measurement interval time for these PM metrics, the stateful or stateless types of related threshold crossing alarm (TCA) reporting.";
+            It defines a set of PM metrics, their threshold values, the granularity period or measurement interval time for these PM metrics, the stateful or stateless types of related threshold crossing alert (TCA) reporting.";
     }
     grouping pm-data-pac {
         container granularity-period {
-            uses tapi-common:time-period;
+            uses tapi-common:time-interval;
             description "The granularity period or measurement interval time.";
         }
         leaf suspect-interval-flag {
@@ -572,7 +571,7 @@ module tapi-oam {
             description "The alarm severity.";
         }
         leaf probable-cause {
-            type alarm-condition-name;
+            type string;
             config false;
             description "The alarm probable cause.";
         }
@@ -597,12 +596,12 @@ module tapi-oam {
             description "The PM metrics and their threshold values.";
         }
         container granularity-period {
-            uses tapi-common:time-period;
+            uses tapi-common:time-interval;
             description "The granularity period or measurement interval time of the OAM job.";
         }
         leaf is-transient {
             type boolean;
-            description "A threshold crossing alarm is transient when stateless, i.e. an explicit alarm clear notification is not foreseen.";
+            description "A threshold crossing alert is transient when stateless, i.e. an explicit clear notification is not foreseen.";
         }
         description "This class augments the ConnectivityService class to associate OAM job provisioning to ConnectivityService provisioning.";
     }
@@ -618,24 +617,6 @@ module tapi-oam {
     * package type-definitions
     **************************/ 
     identity OAM_JOB_TYPE {
-        description "none";
-    }
-    identity OAM_NOTIFICATION_TYPE {
-    	base tapi-notification:NOTIFICATION_TYPE;
-        description "none";
-    }
-    identity OAM_NOTIFICATION_TYPE_ALARM_EVENT {
-        base OAM_NOTIFICATION_TYPE;
-        description "The notification of an alarm event.";
-    }
-    identity OAM_NOTIFICATION_TYPE_THRESHOLD_CROSSING_ALERT {
-        base OAM_NOTIFICATION_TYPE;
-        description "The notification of a threshold crossing alarm event.";
-    }
-    identity ALARM_CONDITION_NAME {
-        description "none";
-    }
-    identity PM_PARAMETER_NAME {
         description "none";
     }
     identity OAM_OBJECT_TYPE {
@@ -733,40 +714,9 @@ module tapi-oam {
         }
         description "The possible impact on the service.";
     }
-    typedef oam-notification-type {
-        type identityref {
-            base OAM_NOTIFICATION_TYPE;
-        }
-        description "The list of OAM specific notification types.";
-    }
-    typedef alarm-condition-name {
-        type identityref {
-            base ALARM_CONDITION_NAME;
-        }
-        description "The alarm condition name, or alarm probable cause.
-            This extensible enumeration can be augmented with specific alarm condition names in the other modules.";
-    }
-    grouping pm-parameter {
-        leaf pm-parameter-name {
-            type pm-parameter-name;
-            description "The name of the PM metric. Technology specific modules may define specific PM metrics.";
-        }
-        container pm-parameter-value {
-            uses pm-parameter-value;
-            description "The value of the PM metric.";
-        }
-        description "PM metric name and value.";
-    }
-    typedef pm-parameter-name {
-        type identityref {
-            base PM_PARAMETER_NAME;
-        }
-        description "The PM metric names.
-            This extensible enumeration can be augmented with specific PM metric names in the other modules.";
-    }
     grouping threshold-parameter {
         leaf pm-parameter-name {
-            type pm-parameter-name;
+            type tapi-common:pm-parameter-name;
             description "PM metric name.";
         }
         leaf threshold-location {
@@ -774,15 +724,15 @@ module tapi-oam {
             description "PM metric location.";
         }
         container pm-parameter-above-thrs {
-            uses pm-parameter-value;
+            uses tapi-common:pm-parameter-value;
             description "PM metric above threshold.";
         }
         container pm-parameter-below-thrs {
-            uses pm-parameter-value;
+            uses tapi-common:pm-parameter-value;
             description "PM metric below threshold.";
         }
         container pm-parameter-clear-thrs {
-            uses pm-parameter-value;
+            uses tapi-common:pm-parameter-value;
             description "PM metric clear threshold.";
         }
         description "PM metrics, their locations and threshold values.";
@@ -821,19 +771,6 @@ module tapi-oam {
         }
         description "The list of TAPI OAM Global Object Class types on which Notification signals can be raised.";
     }
-    grouping pm-parameter-value {
-        leaf pm-parameter-int-value {
-            type uint64;
-            description "Integer value, e.g. for counters.";
-        }
-        leaf pm-parameter-real-value {
-            type decimal64 {
-                fraction-digits 7;
-            }
-            description "Real value, e.g. for gauges.";
-        }
-        description "PM metric value.";
-    }
 
     /**************************
     * package interfaces
@@ -866,9 +803,8 @@ module tapi-oam {
             }
             list oam-service-point {
             	key 'local-id';
-                min-elements 2;
                 uses oam-service-point;
-                description "The parameters of the OamServicePoint (OSP) instances to be created as end points of the OamService instance under creation.";
+                description "The parameters of the OamServicePoint (OSP) instances to be created as monitoring points of the OamService instance under creation.";
             }
         }
         output {
@@ -967,7 +903,7 @@ module tapi-oam {
             list oam-service-point {
             	key 'local-id';
                 uses oam-service-point;
-                description "The parameters of the OamServicePoint (OSP) instances to be updated as end points of the OamService instance under update.";
+                description "The parameters of the OamServicePoint (OSP) instances to be updated as monitoring points of the OamService instance under update.";
             }
         }
         output {

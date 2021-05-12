@@ -16,6 +16,9 @@ module tapi-odu {
     import tapi-dsr {
         prefix tapi-dsr;
     }
+    import tapi-alarm {
+        prefix tapi-alarm;
+    }
     organization "ONF OTCC (Open Transport Configuration & Control) Project";
     contact "
          Project Web: <https://wiki.opennetworking.org/display/OTCC/TAPI>
@@ -143,13 +146,6 @@ module tapi-odu {
         description "none";
     }
     augment "/tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:current-data" {
-        container odu-delay-performance-data {
-            uses odu-delay-performance-data;
-            description "none";
-        }
-        description "none";
-    }
-    augment "/tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:current-data" {
         container odu-fec-performance-data {
             uses odu-fec-performance-data;
             description "none";
@@ -191,6 +187,27 @@ module tapi-odu {
         }
         description "none";
     }
+    augment "/tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-service/tapi-oam:oam-service-point" {
+        container odu-oam-mep-service-point {
+            uses odu-oam-mep-service-point;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-service/tapi-oam:oam-service-point" {
+        container odu-oam-mip-service-point {
+            uses odu-oam-mip-service-point;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job" {
+        container odu-delay-performance-data {
+            uses odu-delay-performance-data;
+            description "none";
+        }
+        description "none";
+    }
     /**************************
     * package object-classes
     **************************/ 
@@ -228,6 +245,10 @@ module tapi-odu {
                 which represents the list of effective time slots which are available for carrying ODUk clients.
                 Each entry in the list is an integer value (P) representing the time slot name TS#A.B (see ITU-T Recommendation G.709 (v5) Clause 20.1).
                 The mapping between P and A & B is: A = [P/20] + 1; B = P - (P/20]*20; where the sqaure bracket represents the whole integer.";
+        }
+        container odu-mep {
+            uses odu-mep;
+            description "none";
         }
         description "This Pac contains the attributes associated with the client adaptation function of the server layer TTP
             It is present only if the CEP contains a TTP";
@@ -312,6 +333,10 @@ module tapi-odu {
             type string;
             config false;
             description "This attribute is applicable when the ODU CTP object instance represents a lower order ODU1 or ODU2 CTP Sink at the client layer of the ODU3P/ODU12 adaptation function or represents a lower order ODUj CTP Sink at the client layer of the ODUP/ODUj-21 adaptation function. This attribute is a 1-byte field that represents the accepted multiplex structure of the adaptation function. ";
+        }
+        container odu-mip {
+            uses odu-mip;
+            description "none";
         }
         description "This Pac contains the attributes associated with the CTP
             It is present only if the CEP contains a CTP";
@@ -569,6 +594,10 @@ module tapi-odu {
             type uint64;
             description "∑ number of frames between the DMValue toggle event and the received DMp signal value toggle event. This value is a snapshot value.";
         }
+        leaf delay-measure-success {
+            type boolean;
+            description "none";
+        }
         description "none";
     }
     grouping odu-fec-performance-data {
@@ -811,6 +840,10 @@ module tapi-odu {
             type otu-type;
             description "none";
         }
+        container otu-mep {
+            uses otu-mep;
+            description "none";
+        }
         description "none";
     }
     grouping odu-cn-ttp-pac {
@@ -818,6 +851,10 @@ module tapi-odu {
             type uint64;
             default "1";
             description "This attribute specifies the number of ODUC instances of the ODUCn.";
+        }
+        container odu-mep {
+            uses odu-mep;
+            description "none";
         }
         description "none";
     }
@@ -861,7 +898,7 @@ module tapi-odu {
     * package type-definitions
     **************************/ 
     identity OTN_ALARM_CONDITION_NAME {
-        base tapi-oam:ALARM_CONDITION_NAME;
+        base tapi-alarm:ALARM_CONDITION_NAME;
         description "none";
     }
     identity OTN_ALARM_CONDITION_NAME_LOS-P {
@@ -1090,10 +1127,6 @@ module tapi-odu {
         base ODU_OAM_JOB_TYPE;
         description "none";
     }
-    identity ODU_OAM_JOB_TYPE_NCM_AND_DELAY {
-        base ODU_OAM_JOB_TYPE;
-        description "none";
-    }
     identity ODU_OAM_JOB_TYPE_TCM {
         base ODU_OAM_JOB_TYPE;
         description "none";
@@ -1102,12 +1135,8 @@ module tapi-odu {
         base ODU_OAM_JOB_TYPE;
         description "none";
     }
-    identity ODU_OAM_JOB_TYPE_TCM_AND_DELAY {
-        base ODU_OAM_JOB_TYPE;
-        description "none";
-    }
     identity ODU_PM_PARAMETER_NAME {
-        base tapi-oam:PM_PARAMETER_NAME;
+        base tapi-common:PM_PARAMETER_NAME;
         description "none";
     }
     identity ODU_PM_PARAMETER_NAME_BBE {
