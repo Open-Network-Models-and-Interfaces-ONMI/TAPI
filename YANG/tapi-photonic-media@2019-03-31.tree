@@ -50,17 +50,6 @@ module: tapi-photonic-media
              +--ro frequency-constraint
                 +--ro adjustment-granularity?   adjustment-granularity
                 +--ro grid-type?                grid-type
-  augment /tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point:
-    +--ro otsi-assembly-connection-end-point-spec
-       +--ro otsi-adapter
-          +--ro number-of-otsi?   uint64
-          +--ro fec-parameters
-             +--ro pre-fec-ber?           uint64
-             +--ro post-fec-ber?          uint64
-             +--ro corrected-bytes?       uint64
-             +--ro corrected-bits?        uint64
-             +--ro uncorrectable-bytes?   uint64
-             +--ro uncorrectable-bits?    uint64
   augment /tapi-common:context/tapi-common:service-interface-point:
     +--rw otsi-service-interface-point-spec
        +--ro otsi-capability-pac
@@ -75,12 +64,14 @@ module: tapi-photonic-media
        |  |  +--ro application-code               string
        |  +--ro supportable-modulation*                        modulation-technique
        |  +--ro total-power-threshold-pac
-       |     +--ro total-power-upper-warn-threshold-default?   decimal64
-       |     +--ro total-power-upper-warn-threshold-min?       decimal64
-       |     +--ro total-power-upper-warn-threshold-max?       decimal64
-       |     +--ro total-power-lower-warn-threshold-default?   decimal64
-       |     +--ro total-power-lower-warn-threshold-max?       decimal64
-       |     +--ro total-power-lower-warn-threshold-min?       decimal64
+       |  |  +--ro total-power-upper-warn-threshold-default?   decimal64
+       |  |  +--ro total-power-upper-warn-threshold-min?       decimal64
+       |  |  +--ro total-power-upper-warn-threshold-max?       decimal64
+       |  |  +--ro total-power-lower-warn-threshold-default?   decimal64
+       |  |  +--ro total-power-lower-warn-threshold-max?       decimal64
+       |  |  +--ro total-power-lower-warn-threshold-min?       decimal64
+       |  +--ro max-number-of-otsi?                            uint64
+       |  +--ro supported-fec-type?                            string
        +--rw power-management-capability-pac
           +--rw supportable-maximum-output-power
           |  +--rw total-power?              decimal64
@@ -230,42 +221,94 @@ module: tapi-photonic-media
              +--rw value?        string
   augment /tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point:
     +--ro media-channel-connection-end-point-spec
-       +--ro media-channel-properties-pac
+       +--ro otsi-mc-properties-pac* [local-id]
        |  +--ro occupied-spectrum
        |  |  +--ro upper-frequency?        uint64
        |  |  +--ro lower-frequency?        uint64
        |  |  +--ro frequency-constraint
        |  |     +--ro adjustment-granularity?   adjustment-granularity
        |  |     +--ro grid-type?                grid-type
+       |  +--ro central-frequency
+       |  |  +--ro frequency-constraint
+       |  |  |  +--ro adjustment-granularity?   adjustment-granularity
+       |  |  |  +--ro grid-type?                grid-type
+       |  |  +--ro central-frequency?      uint64
+       |  +--ro spectrum-bandwidth?       uint64
        |  +--ro measured-power-ingress
        |  |  +--ro total-power?              decimal64
        |  |  +--ro power-spectral-density?   decimal64
        |  +--ro measured-power-egress
-       |     +--ro total-power?              decimal64
-       |     +--ro power-spectral-density?   decimal64
-       +--ro otsi-mc-properties-pac* [local-id]
-          +--ro occupied-spectrum
-          |  +--ro upper-frequency?        uint64
-          |  +--ro lower-frequency?        uint64
-          |  +--ro frequency-constraint
-          |     +--ro adjustment-granularity?   adjustment-granularity
-          |     +--ro grid-type?                grid-type
-          +--ro central-frequency
-          |  +--ro frequency-constraint
-          |  |  +--ro adjustment-granularity?   adjustment-granularity
-          |  |  +--ro grid-type?                grid-type
-          |  +--ro central-frequency?      uint64
-          +--ro spectrum-bandwidth?       uint64
-          +--ro measured-power-ingress
-          |  +--ro total-power?              decimal64
-          |  +--ro power-spectral-density?   decimal64
-          +--ro measured-power-egress
-          |  +--ro total-power?              decimal64
-          |  +--ro power-spectral-density?   decimal64
-          +--ro local-id                  string
-          +--ro name* [value-name]
-             +--ro value-name    string
-             +--ro value?        string
+       |  |  +--ro total-power?              decimal64
+       |  |  +--ro power-spectral-density?   decimal64
+       |  +--ro local-id                  string
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
+       +--ro mc-cep-pac
+       |  +--ro media-channel-spectrum-pac
+       |  |  +--ro occupied-spectrum
+       |  |  |  +--ro upper-frequency?        uint64
+       |  |  |  +--ro lower-frequency?        uint64
+       |  |  |  +--ro frequency-constraint
+       |  |  |     +--ro adjustment-granularity?   adjustment-granularity
+       |  |  |     +--ro grid-type?                grid-type
+       |  |  +--ro local-id?            string
+       |  |  +--ro name* [value-name]
+       |  |     +--ro value-name    string
+       |  |     +--ro value?        string
+       |  +--ro media-channel-power-pac
+       |     +--ro measured-power-ingress
+       |     |  +--ro total-power?              decimal64
+       |     |  +--ro power-spectral-density?   decimal64
+       |     +--ro measured-power-egress
+       |        +--ro total-power?              decimal64
+       |        +--ro power-spectral-density?   decimal64
+       +--ro oms-cep-pac
+       |  +--ro media-channel-spectrum-pac* [local-id]
+       |  |  +--ro occupied-spectrum
+       |  |  |  +--ro upper-frequency?        uint64
+       |  |  |  +--ro lower-frequency?        uint64
+       |  |  |  +--ro frequency-constraint
+       |  |  |     +--ro adjustment-granularity?   adjustment-granularity
+       |  |  |     +--ro grid-type?                grid-type
+       |  |  +--ro local-id             string
+       |  |  +--ro name* [value-name]
+       |  |     +--ro value-name    string
+       |  |     +--ro value?        string
+       |  +--ro media-channel-power-pac
+       |     +--ro measured-power-ingress
+       |     |  +--ro total-power?              decimal64
+       |     |  +--ro power-spectral-density?   decimal64
+       |     +--ro measured-power-egress
+       |        +--ro total-power?              decimal64
+       |        +--ro power-spectral-density?   decimal64
+       +--ro ots-cep-pac
+       |  +--ro media-channel-power-pac
+       |  |  +--ro measured-power-ingress
+       |  |  |  +--ro total-power?              decimal64
+       |  |  |  +--ro power-spectral-density?   decimal64
+       |  |  +--ro measured-power-egress
+       |  |     +--ro total-power?              decimal64
+       |  |     +--ro power-spectral-density?   decimal64
+       |  +--ro media-channel-spectrum-pac* [local-id]
+       |     +--ro occupied-spectrum
+       |     |  +--ro upper-frequency?        uint64
+       |     |  +--ro lower-frequency?        uint64
+       |     |  +--ro frequency-constraint
+       |     |     +--ro adjustment-granularity?   adjustment-granularity
+       |     |     +--ro grid-type?                grid-type
+       |     +--ro local-id             string
+       |     +--ro name* [value-name]
+       |        +--ro value-name    string
+       |        +--ro value?        string
+       +--ro physical-cep-pac
+          +--ro media-channel-power-pac
+             +--ro measured-power-ingress
+             |  +--ro total-power?              decimal64
+             |  +--ro power-spectral-density?   decimal64
+             +--ro measured-power-egress
+                +--ro total-power?              decimal64
+                +--ro power-spectral-density?   decimal64
   augment /tapi-connectivity:create-connectivity-service/tapi-connectivity:input/tapi-connectivity:end-point:
     +-- media-channel-connectivity-service-end-point-spec
        +-- media-channel-config-pac
@@ -969,12 +1012,14 @@ module: tapi-photonic-media
        |  |  +--ro application-code               string
        |  +--ro supportable-modulation*                        modulation-technique
        |  +--ro total-power-threshold-pac
-       |     +--ro total-power-upper-warn-threshold-default?   decimal64
-       |     +--ro total-power-upper-warn-threshold-min?       decimal64
-       |     +--ro total-power-upper-warn-threshold-max?       decimal64
-       |     +--ro total-power-lower-warn-threshold-default?   decimal64
-       |     +--ro total-power-lower-warn-threshold-max?       decimal64
-       |     +--ro total-power-lower-warn-threshold-min?       decimal64
+       |  |  +--ro total-power-upper-warn-threshold-default?   decimal64
+       |  |  +--ro total-power-upper-warn-threshold-min?       decimal64
+       |  |  +--ro total-power-upper-warn-threshold-max?       decimal64
+       |  |  +--ro total-power-lower-warn-threshold-default?   decimal64
+       |  |  +--ro total-power-lower-warn-threshold-max?       decimal64
+       |  |  +--ro total-power-lower-warn-threshold-min?       decimal64
+       |  +--ro max-number-of-otsi?                            uint64
+       |  +--ro supported-fec-type?                            string
        +-- power-management-capability-pac
           +-- supportable-maximum-output-power
           |  +-- total-power?              decimal64
@@ -1002,12 +1047,14 @@ module: tapi-photonic-media
        |  |  +--ro application-code               string
        |  +--ro supportable-modulation*                        modulation-technique
        |  +--ro total-power-threshold-pac
-       |     +--ro total-power-upper-warn-threshold-default?   decimal64
-       |     +--ro total-power-upper-warn-threshold-min?       decimal64
-       |     +--ro total-power-upper-warn-threshold-max?       decimal64
-       |     +--ro total-power-lower-warn-threshold-default?   decimal64
-       |     +--ro total-power-lower-warn-threshold-max?       decimal64
-       |     +--ro total-power-lower-warn-threshold-min?       decimal64
+       |  |  +--ro total-power-upper-warn-threshold-default?   decimal64
+       |  |  +--ro total-power-upper-warn-threshold-min?       decimal64
+       |  |  +--ro total-power-upper-warn-threshold-max?       decimal64
+       |  |  +--ro total-power-lower-warn-threshold-default?   decimal64
+       |  |  +--ro total-power-lower-warn-threshold-max?       decimal64
+       |  |  +--ro total-power-lower-warn-threshold-min?       decimal64
+       |  +--ro max-number-of-otsi?                            uint64
+       |  +--ro supported-fec-type?                            string
        +-- power-management-capability-pac
           +-- supportable-maximum-output-power
           |  +-- total-power?              decimal64
@@ -1023,53 +1070,94 @@ module: tapi-photonic-media
              +-- power-spectral-density?   decimal64
   augment /tapi-connectivity:get-connection-end-point-details/tapi-connectivity:output/tapi-connectivity:connection-end-point:
     +-- media-channel-connection-end-point-spec
-       +--ro media-channel-properties-pac
+       +-- otsi-mc-properties-pac* [local-id]
        |  +--ro occupied-spectrum
        |  |  +--ro upper-frequency?        uint64
        |  |  +--ro lower-frequency?        uint64
        |  |  +--ro frequency-constraint
        |  |     +--ro adjustment-granularity?   adjustment-granularity
        |  |     +--ro grid-type?                grid-type
+       |  +-- central-frequency
+       |  |  +-- frequency-constraint
+       |  |  |  +-- adjustment-granularity?   adjustment-granularity
+       |  |  |  +-- grid-type?                grid-type
+       |  |  +-- central-frequency?      uint64
+       |  +-- spectrum-bandwidth?       uint64
        |  +--ro measured-power-ingress
        |  |  +--ro total-power?              decimal64
        |  |  +--ro power-spectral-density?   decimal64
-       |  +--ro measured-power-egress
-       |     +--ro total-power?              decimal64
-       |     +--ro power-spectral-density?   decimal64
-       +-- otsi-mc-properties-pac* [local-id]
-          +--ro occupied-spectrum
-          |  +--ro upper-frequency?        uint64
-          |  +--ro lower-frequency?        uint64
-          |  +--ro frequency-constraint
-          |     +--ro adjustment-granularity?   adjustment-granularity
-          |     +--ro grid-type?                grid-type
-          +-- central-frequency
-          |  +-- frequency-constraint
-          |  |  +-- adjustment-granularity?   adjustment-granularity
-          |  |  +-- grid-type?                grid-type
-          |  +-- central-frequency?      uint64
-          +-- spectrum-bandwidth?       uint64
-          +--ro measured-power-ingress
-          |  +--ro total-power?              decimal64
-          |  +--ro power-spectral-density?   decimal64
-          +-- measured-power-egress
-          |  +-- total-power?              decimal64
-          |  +-- power-spectral-density?   decimal64
-          +-- local-id                  string
-          +-- name* [value-name]
-             +-- value-name    string
-             +-- value?        string
-  augment /tapi-connectivity:get-connection-end-point-details/tapi-connectivity:output/tapi-connectivity:connection-end-point:
-    +-- otsi-assembly-connection-end-point-spec
-       +--ro otsi-adapter
-          +--ro number-of-otsi?   uint64
-          +--ro fec-parameters
-             +--ro pre-fec-ber?           uint64
-             +--ro post-fec-ber?          uint64
-             +--ro corrected-bytes?       uint64
-             +--ro corrected-bits?        uint64
-             +--ro uncorrectable-bytes?   uint64
-             +--ro uncorrectable-bits?    uint64
+       |  +-- measured-power-egress
+       |  |  +-- total-power?              decimal64
+       |  |  +-- power-spectral-density?   decimal64
+       |  +-- local-id                  string
+       |  +-- name* [value-name]
+       |     +-- value-name    string
+       |     +-- value?        string
+       +-- mc-cep-pac
+       |  +-- media-channel-spectrum-pac
+       |  |  +--ro occupied-spectrum
+       |  |  |  +--ro upper-frequency?        uint64
+       |  |  |  +--ro lower-frequency?        uint64
+       |  |  |  +--ro frequency-constraint
+       |  |  |     +--ro adjustment-granularity?   adjustment-granularity
+       |  |  |     +--ro grid-type?                grid-type
+       |  |  +-- local-id?            string
+       |  |  +-- name* [value-name]
+       |  |     +-- value-name    string
+       |  |     +-- value?        string
+       |  +-- media-channel-power-pac
+       |     +--ro measured-power-ingress
+       |     |  +--ro total-power?              decimal64
+       |     |  +--ro power-spectral-density?   decimal64
+       |     +-- measured-power-egress
+       |        +-- total-power?              decimal64
+       |        +-- power-spectral-density?   decimal64
+       +-- oms-cep-pac
+       |  +-- media-channel-spectrum-pac* [local-id]
+       |  |  +--ro occupied-spectrum
+       |  |  |  +--ro upper-frequency?        uint64
+       |  |  |  +--ro lower-frequency?        uint64
+       |  |  |  +--ro frequency-constraint
+       |  |  |     +--ro adjustment-granularity?   adjustment-granularity
+       |  |  |     +--ro grid-type?                grid-type
+       |  |  +-- local-id             string
+       |  |  +-- name* [value-name]
+       |  |     +-- value-name    string
+       |  |     +-- value?        string
+       |  +-- media-channel-power-pac
+       |     +--ro measured-power-ingress
+       |     |  +--ro total-power?              decimal64
+       |     |  +--ro power-spectral-density?   decimal64
+       |     +-- measured-power-egress
+       |        +-- total-power?              decimal64
+       |        +-- power-spectral-density?   decimal64
+       +-- ots-cep-pac
+       |  +-- media-channel-power-pac
+       |  |  +--ro measured-power-ingress
+       |  |  |  +--ro total-power?              decimal64
+       |  |  |  +--ro power-spectral-density?   decimal64
+       |  |  +-- measured-power-egress
+       |  |     +-- total-power?              decimal64
+       |  |     +-- power-spectral-density?   decimal64
+       |  +-- media-channel-spectrum-pac* [local-id]
+       |     +--ro occupied-spectrum
+       |     |  +--ro upper-frequency?        uint64
+       |     |  +--ro lower-frequency?        uint64
+       |     |  +--ro frequency-constraint
+       |     |     +--ro adjustment-granularity?   adjustment-granularity
+       |     |     +--ro grid-type?                grid-type
+       |     +-- local-id             string
+       |     +-- name* [value-name]
+       |        +-- value-name    string
+       |        +-- value?        string
+       +-- physical-cep-pac
+          +-- media-channel-power-pac
+             +--ro measured-power-ingress
+             |  +--ro total-power?              decimal64
+             |  +--ro power-spectral-density?   decimal64
+             +-- measured-power-egress
+                +-- total-power?              decimal64
+                +-- power-spectral-density?   decimal64
   augment /tapi-connectivity:get-connection-end-point-details/tapi-connectivity:output/tapi-connectivity:connection-end-point:
     +-- otsi-connection-end-point-spec
        +--ro otsi-termination
@@ -1099,52 +1187,6 @@ module: tapi-photonic-media
              +--ro laser-application-type?   laser-type
              +--ro laser-bias-current?       decimal64
              +--ro laser-temperature?        decimal64
-  augment /tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point/tapi-odu:otu-connectivity-service-end-point-spec/tapi-odu:otu-otsia-csep-ttp-pac:
-    +--rw otsia-csep-ttp-pac
-       +--rw otsi-common-config-pac* [local-id]
-       |  +--rw application-identifier
-       |  |  +--rw application-identifier-type?   application-identifier-type
-       |  |  +--rw application-code?              string
-       |  +--rw modulation?                         modulation-technique
-       |  +--rw laser-control?                      laser-control-type
-       |  +--rw center-frequency-offset?            uint64
-       |  +--rw center-frequency-constraint
-       |  |  +--rw adjustment-granularity?   adjustment-granularity
-       |  |  +--rw grid-type?                grid-type
-       |  +--rw edge-frequency-constraint
-       |  |  +--rw adjustment-granularity?   adjustment-granularity
-       |  |  +--rw grid-type?                grid-type
-       |  +--rw transmit-power
-       |  |  +--rw total-power?              decimal64
-       |  |  +--rw power-spectral-density?   decimal64
-       |  +--rw total-power-warn-threshold-upper?   decimal64
-       |  +--rw total-power-warn-threshold-lower?   decimal64
-       |  +--rw local-id                            string
-       |  +--rw name* [value-name]
-       |     +--rw value-name    string
-       |     +--rw value?        string
-       +--rw otsi-spectr-config-pac* [local-id]
-       |  +--rw spectrum
-       |  |  +--rw upper-frequency?        uint64
-       |  |  +--rw lower-frequency?        uint64
-       |  |  +--rw frequency-constraint
-       |  |     +--rw adjustment-granularity?   adjustment-granularity
-       |  |     +--rw grid-type?                grid-type
-       |  +--rw local-id    string
-       |  +--rw name* [value-name]
-       |     +--rw value-name    string
-       |     +--rw value?        string
-       +--rw otsi-freq-config-pac* [local-id]
-          +--rw central-frequency
-          |  +--rw frequency-constraint
-          |  |  +--rw adjustment-granularity?   adjustment-granularity
-          |  |  +--rw grid-type?                grid-type
-          |  +--rw central-frequency?      uint64
-          +--rw spectrum-bandwidth?   uint64
-          +--rw local-id              string
-          +--rw name* [value-name]
-             +--rw value-name    string
-             +--rw value?        string
   augment /tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point:
     +--rw mcg-connectivity-service-end-point-spec
        +--rw number-of-mc?                  uint64
@@ -1295,23 +1337,6 @@ module: tapi-photonic-media
              +--rw value-name    string
              +--rw value?        string
   augment /tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point:
-    +--ro ots-oms-connection-end-point-spec
-       +--ro media-channel-properties-pac
-       |  +--ro occupied-spectrum
-       |  |  +--ro upper-frequency?        uint64
-       |  |  +--ro lower-frequency?        uint64
-       |  |  +--ro frequency-constraint
-       |  |     +--ro adjustment-granularity?   adjustment-granularity
-       |  |     +--ro grid-type?                grid-type
-       |  +--ro measured-power-ingress
-       |  |  +--ro total-power?              decimal64
-       |  |  +--ro power-spectral-density?   decimal64
-       |  +--ro measured-power-egress
-       |     +--ro total-power?              decimal64
-       |     +--ro power-spectral-density?   decimal64
-       +--ro ots-cep-pac
-       +--ro oms-cep-pac
-  augment /tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point:
     +--ro otsi-mc-connection-end-point-spec
        +--ro otsi-mc-properties-pac
           +--ro occupied-spectrum
@@ -1430,6 +1455,28 @@ module: tapi-photonic-media
           +--rw name* [value-name]
              +--rw value-name    string
              +--rw value?        string
+  augment /tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point:
+    +--ro otsi-node-edge-point-spec
+       +--ro otsi-capability-pac
+          +--ro supportable-central-frequency-spectrum-band* [lower-central-frequency upper-central-frequency]
+          |  +--ro lower-central-frequency    uint64
+          |  +--ro upper-central-frequency    uint64
+          |  +--ro frequency-constraint
+          |     +--ro adjustment-granularity?   adjustment-granularity
+          |     +--ro grid-type?                grid-type
+          +--ro supportable-application-identifier* [application-code]
+          |  +--ro application-identifier-type?   application-identifier-type
+          |  +--ro application-code               string
+          +--ro supportable-modulation*                        modulation-technique
+          +--ro total-power-threshold-pac
+          |  +--ro total-power-upper-warn-threshold-default?   decimal64
+          |  +--ro total-power-upper-warn-threshold-min?       decimal64
+          |  +--ro total-power-upper-warn-threshold-max?       decimal64
+          |  +--ro total-power-lower-warn-threshold-default?   decimal64
+          |  +--ro total-power-lower-warn-threshold-max?       decimal64
+          |  +--ro total-power-lower-warn-threshold-min?       decimal64
+          +--ro max-number-of-otsi?                            uint64
+          +--ro supported-fec-type?                            string
   augment /tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point/tapi-connectivity:server-constraint:
     +--rw mcg-connectivity-service-end-point-spec
        +--rw number-of-mc?                  uint64
@@ -1485,3 +1532,101 @@ module: tapi-photonic-media
           +--rw name* [value-name]
              +--rw value-name    string
              +--rw value?        string
+  augment /tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point:
+    +--rw otsia-csep-ttp-pac
+       +--rw otsi-common-config-pac* [local-id]
+       |  +--rw application-identifier
+       |  |  +--rw application-identifier-type?   application-identifier-type
+       |  |  +--rw application-code?              string
+       |  +--rw modulation?                         modulation-technique
+       |  +--rw laser-control?                      laser-control-type
+       |  +--rw center-frequency-offset?            uint64
+       |  +--rw center-frequency-constraint
+       |  |  +--rw adjustment-granularity?   adjustment-granularity
+       |  |  +--rw grid-type?                grid-type
+       |  +--rw edge-frequency-constraint
+       |  |  +--rw adjustment-granularity?   adjustment-granularity
+       |  |  +--rw grid-type?                grid-type
+       |  +--rw transmit-power
+       |  |  +--rw total-power?              decimal64
+       |  |  +--rw power-spectral-density?   decimal64
+       |  +--rw total-power-warn-threshold-upper?   decimal64
+       |  +--rw total-power-warn-threshold-lower?   decimal64
+       |  +--rw local-id                            string
+       |  +--rw name* [value-name]
+       |     +--rw value-name    string
+       |     +--rw value?        string
+       +--rw otsi-spectr-config-pac* [local-id]
+       |  +--rw spectrum
+       |  |  +--rw upper-frequency?        uint64
+       |  |  +--rw lower-frequency?        uint64
+       |  |  +--rw frequency-constraint
+       |  |     +--rw adjustment-granularity?   adjustment-granularity
+       |  |     +--rw grid-type?                grid-type
+       |  +--rw local-id    string
+       |  +--rw name* [value-name]
+       |     +--rw value-name    string
+       |     +--rw value?        string
+       +--rw otsi-freq-config-pac* [local-id]
+       |  +--rw central-frequency
+       |  |  +--rw frequency-constraint
+       |  |  |  +--rw adjustment-granularity?   adjustment-granularity
+       |  |  |  +--rw grid-type?                grid-type
+       |  |  +--rw central-frequency?      uint64
+       |  +--rw spectrum-bandwidth?   uint64
+       |  +--rw local-id              string
+       |  +--rw name* [value-name]
+       |     +--rw value-name    string
+       |     +--rw value?        string
+       +--rw number-of-otsi?                     uint64
+       +--rw total-power-warn-threshold-upper?   decimal64
+       +--rw total-power-warn-threshold-lower?   decimal64
+  augment /tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point/tapi-connectivity:server-constraint:
+    +--rw otsia-csep-ttp-pac
+       +--rw otsi-common-config-pac* [local-id]
+       |  +--rw application-identifier
+       |  |  +--rw application-identifier-type?   application-identifier-type
+       |  |  +--rw application-code?              string
+       |  +--rw modulation?                         modulation-technique
+       |  +--rw laser-control?                      laser-control-type
+       |  +--rw center-frequency-offset?            uint64
+       |  +--rw center-frequency-constraint
+       |  |  +--rw adjustment-granularity?   adjustment-granularity
+       |  |  +--rw grid-type?                grid-type
+       |  +--rw edge-frequency-constraint
+       |  |  +--rw adjustment-granularity?   adjustment-granularity
+       |  |  +--rw grid-type?                grid-type
+       |  +--rw transmit-power
+       |  |  +--rw total-power?              decimal64
+       |  |  +--rw power-spectral-density?   decimal64
+       |  +--rw total-power-warn-threshold-upper?   decimal64
+       |  +--rw total-power-warn-threshold-lower?   decimal64
+       |  +--rw local-id                            string
+       |  +--rw name* [value-name]
+       |     +--rw value-name    string
+       |     +--rw value?        string
+       +--rw otsi-spectr-config-pac* [local-id]
+       |  +--rw spectrum
+       |  |  +--rw upper-frequency?        uint64
+       |  |  +--rw lower-frequency?        uint64
+       |  |  +--rw frequency-constraint
+       |  |     +--rw adjustment-granularity?   adjustment-granularity
+       |  |     +--rw grid-type?                grid-type
+       |  +--rw local-id    string
+       |  +--rw name* [value-name]
+       |     +--rw value-name    string
+       |     +--rw value?        string
+       +--rw otsi-freq-config-pac* [local-id]
+       |  +--rw central-frequency
+       |  |  +--rw frequency-constraint
+       |  |  |  +--rw adjustment-granularity?   adjustment-granularity
+       |  |  |  +--rw grid-type?                grid-type
+       |  |  +--rw central-frequency?      uint64
+       |  +--rw spectrum-bandwidth?   uint64
+       |  +--rw local-id              string
+       |  +--rw name* [value-name]
+       |     +--rw value-name    string
+       |     +--rw value?        string
+       +--rw number-of-otsi?                     uint64
+       +--rw total-power-warn-threshold-upper?   decimal64
+       +--rw total-power-warn-threshold-lower?   decimal64

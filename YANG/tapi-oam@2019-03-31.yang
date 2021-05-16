@@ -10,9 +10,6 @@ module tapi-oam {
     import tapi-topology {
         prefix tapi-topology;
     }
-    import tapi-notification {
-        prefix tapi-notification;
-    }
     organization "ONF OTCC (Open Transport Configuration & Control) Project";
     contact "
          Project Web: <https://wiki.opennetworking.org/display/OTCC/TAPI>
@@ -86,34 +83,6 @@ module tapi-oam {
     augment "/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point" {
         container mep-mip-list {
             uses mep-mip-list;
-            description "none";
-        }
-        description "none";
-    }
-    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:notification" {
-        container alarm-info {
-            uses alarm-info;
-            description "none";
-        }
-        description "none";
-    }
-    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:notification" {
-        container tca-info {
-            uses tca-info;
-            description "none";
-        }
-        description "none";
-    }
-    augment "/tapi-notification:get-notification-list/tapi-notification:output/tapi-notification:notification" {
-        container alarm-info {
-            uses alarm-info;
-            description "none";
-        }
-        description "none";
-    }
-    augment "/tapi-notification:get-notification-list/tapi-notification:output/tapi-notification:notification" {
-        container tca-info {
-            uses tca-info;
             description "none";
         }
         description "none";
@@ -434,6 +403,21 @@ module tapi-oam {
             uses pm-data-pac;
             description "Parameters specific to Performance Monitoring functions.";
         }
+        container mep {
+            uses mep-ref;
+            config false;
+            description "The MEP to which the measurements refer to.";
+        }
+        container mip {
+            uses mip-ref;
+            config false;
+            description "The MIP to which the measurements refer to.";
+        }
+        container connection-end-point {
+            uses tapi-connectivity:connection-end-point-ref;
+            config false;
+            description "The CEP to which the measurements refer to.";
+        }
         list history-data {
             key 'local-id';
             config false;
@@ -523,64 +507,6 @@ module tapi-oam {
         }
         description "Parameters specific to Performance Monitoring functions.";
     }
-    grouping tca-info {
-        leaf is-transient {
-            type boolean;
-            config false;
-            description "A threshold crossing alarm is transient when stateless, i.e. an explicit alarm clear notification is not foreseen.";
-        }
-        leaf perceived-severity {
-            type perceived-tca-severity;
-            description "The threshold crossing alarm severity.";
-        }
-        container threshold-parameter {
-            config false;
-            uses threshold-parameter;
-            description "Information on the related PM metrics and their threshold values.";
-        }
-        leaf measurement-interval {
-            type tapi-common:date-and-time;
-            description "The measurement interval time of the related PM metric.";
-        }
-        leaf suspect-interval-flag {
-            type boolean;
-            description "This attribute is used to indicate that the performance data for the current period may not be reliable. Some reasons for this to occur are:
-                – Suspect data were detected by the actual resource doing data collection.
-                – Transition of the administrativeState attribute to/from the 'lock' state.
-                – Transition of the operationalState to/from the 'disabled' state.
-                – Scheduler setting that inhibits the collection function.
-                – The performance counters were reset during the interval.
-                – The currentData (or subclass) object instance was created during the monitoring period.";
-        }
-        container oam-job {
-            uses oam-job-ref;
-            description "Reference to the OamJob instance for which the PM metric and threshold values were configured.
-                MEF 35.1: Identification of the PM Session for which the TCA Function was configured.";
-        }
-        description "This class augments the Notification class with threshold crossing alarm related parameters.";
-    }
-    grouping alarm-info {
-        leaf is-transient {
-            type boolean;
-            config false;
-            description "An alarm is transient when stateless, i.e. an explicit alarm clear notification is not foreseen.";
-        }
-        leaf perceived-severity {
-            type perceived-severity-type;
-            config false;
-            description "The alarm severity.";
-        }
-        leaf probable-cause {
-            type string;
-            config false;
-            description "The alarm probable cause.";
-        }
-        leaf service-affecting {
-            type service-affecting;
-            description "The impact on the service.";
-        }
-        description "This class augments the Notification class with alarm related parameters.";
-    }
     grouping connectivity-oam-job {
         leaf oam-job-type {
             type oam-job-type;
@@ -665,54 +591,6 @@ module tapi-oam {
         }
         description "The OAM job types.
             This extensible enumeration can be augmented with specific OAM job types in the other modules.";
-    }
-    typedef perceived-tca-severity {
-        type enumeration {
-            enum WARNING {
-                description "ITU-T G.7710/X.733/M.3100: Indication for a potential or impending service-affecting fault. Further diagnosis should be made.";
-            }
-            enum CLEAR {
-                description "Included only for some possible backward compatibility purpose. It should not be used to assign a severity to a failure.
-                    ITU-T G.7710: The severities 'cleared' and 'indeterminate' defined by [ITU-T X.733] are not included in Table 2, as it is assumed that these are not to be used to assign a failure.";
-            }
-        }
-        description "The types of perceived severity of threshold crossing alarms.";
-    }
-    typedef perceived-severity-type {
-        type enumeration {
-            enum CRITICAL {
-                description "ITU-T G.7710/X.733/M.3100: Indication for a service-affecting condition. Immediate corrective action is required.";
-            }
-            enum MAJOR {
-                description "ITU-T G.7710/X.733/M.3100: Indication for a service-affecting condition. Urgent corrective action is required.";
-            }
-            enum MINOR {
-                description "ITU-T G.7710/X.733/M.3100: Indication for a non-service-affecting condition. Corrective action should be taken in order to prevent more serious fault.";
-            }
-            enum WARNING {
-                description "ITU-T G.7710/X.733/M.3100: Indication for a potential or impending service-affecting fault. Further diagnosis should be made.";
-            }
-            enum CLEARED {
-                description "Included only for some possible backward compatibility purpose. It should not be used to assign a severity to a failure.
-                    ITU-T G.7710: The severities 'cleared' and 'indeterminate' defined by [ITU-T X.733] are not included in Table 2, as it is assumed that these are not to be used to assign a failure.";
-            }
-        }
-        description "The types of perceived severity.
-            ITU-T G.7710: Failures may have been categorized to indicate the severity or urgency of the fault.";
-    }
-    typedef service-affecting {
-        type enumeration {
-            enum SERVICE_AFFECTING {
-                description "The service is affected by the failure.";
-            }
-            enum NOT_SERVICE_AFFECTING {
-                description "The service is not affected by the failure.";
-            }
-            enum UNKNOWN {
-                description "The impact on the service is unknown.";
-            }
-        }
-        description "The possible impact on the service.";
     }
     grouping threshold-parameter {
         leaf pm-parameter-name {

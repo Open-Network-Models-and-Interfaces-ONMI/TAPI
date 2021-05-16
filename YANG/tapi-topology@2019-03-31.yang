@@ -258,12 +258,24 @@ module tapi-topology {
             config false;
             description "The layer protocol of the NodeEdgePoint (NEP).";
         }
+        leaf base-layer-protocol-qualifier {
+            type tapi-common:layer-protocol-qualifier;
+            description "none";
+        }
         list available-cep-layer-protocol {
             key 'layer-protocol-qualifier';
             min-elements 1;
             uses nep-layer-protocol-capability;
             description "The potentially supported protocols and flows.
                 In ITU-T terms, the potentially supported adaptation and termination functions. ";
+        }
+        list supported-mux-sequence {
+            uses multiplexing-sequence;
+            description "More detailed description of (potential) capability than 'availableCepLayerProtocol'.";
+        }
+        list available-mux-sequence {
+            uses multiplexing-sequence;
+            description "More detailed description of available capability than 'availableCepLayerProtocol'.";
         }
         list aggregated-node-edge-point {
             uses node-edge-point-ref;
@@ -287,6 +299,10 @@ module tapi-topology {
             type tapi-common:port-role;
             config false;
             description "The role of the (conceptual) port of the associated Link.";
+        }
+        container inter-domain-plug-in-pac {
+            uses inter-domain-plug-in-pac;
+            description "none";
         }
         uses tapi-common:global-class;
         uses tapi-common:admin-state-pac;
@@ -553,6 +569,26 @@ module tapi-topology {
             Rules that are for different layerProtocolQualifiers or connectionSpecReferences are independent and provide options for Connection in the NodeRuleGroup.
             Some rules may apply to multiple connectionSpecReferences and all cepPortRoles and all cepDirections.";
     }
+    grouping inter-domain-plug-in-pac {
+        leaf inter-domain-plug-id-sapi {
+            type string;
+            description "Trail trace identifier: Source Access Point Identifier.";
+        }
+        leaf inter-domain-plug-id-dapi {
+            type string;
+            description "Trail trace identifier: Destination Access Point Identifier";
+        }
+        description "NEP at ENNI shall include an ENNI identifier (inter domain plug id) which must be unique in both the connected managed domains, to support the automatic discovery of interdomain links between E-NNI interfaces of e.g. different network providers.
+            The inter domain plug id can be based on OTN technology (OTU or ODU Trail Trace Identifier, SAPI/DAPI).
+            ITU-T G.709: The access point identifier (SAPI, DAPI) shall consist of a three-character international segment (IS) and a twelve-character national segment (NS).
+            These characters shall be coded according to [ITU T T.50] (International Reference Alphabet – 7-bit coded character set for information exchange).
+            The international segment (IS) field provides a three-character ISO 3166 geographic/political country code (G/PCC). The country code shall be based on the three-character uppercase alphabetic ISO 3166 country code (e.g., USA, FRA).
+            The national segment (NS) field consists of two subfields: the ITU carrier code (ICC) followed by a unique access point code (UAPC).
+            The ITU carrier code (ICC) is a code assigned to a network operator/service provider, maintained by the ITU-T Telecommunication Standardization Bureau (TSB) as per [ITU T M.1400].
+            This code shall consist of 1 6 left-justified characters, alphabetic, or leading alphabetic with trailing numeric.
+            The unique access point code (UAPC) shall be a matter for the organization to which the country code and ITU carrier code have been assigned, provided that uniqueness is guaranteed.
+            This code shall consist of 6-11 characters, with trailing NUL, completing the 12-character national segment.";
+    }
 
     /**************************
     * package type-definitions
@@ -704,15 +740,15 @@ module tapi-topology {
         type enumeration {
             enum MAY_FORWARD_ACROSS_GROUP {
                 description "NEPs referenced by the NodeRuleGroup (or indirectly by the InterRuleGroup between NodeRuleGroups) may have Connections created between them unless some other rule overrides this.
-                    For an InterRuleGroup points in a NodeRuleGroup at one end of the InterRuleGroup may be connected to points in a NodeRuleGroup at an other end of the InterRuleGroup.";
+                    For an InterRuleGroup points in a NodeRuleGroup at one end of the InterRuleGroup may be connected to points in a NodeRuleGroup at another end of the InterRuleGroup.";
             }
             enum MUST_FORWARD_ACROSS_GROUP {
                 description "NEPs referenced by the NodeRuleGroup (or indirectly by the InterRuleGroup between NodeRuleGroups) MUST have Connections created between them unless some other rule overrides this.
-                    For an InterRuleGroup points in a NodeRuleGroup at one end of the InterRuleGroup MUST be connected to points in a NodeRuleGroup at an other end of the InterRuleGroup.";
+                    For an InterRuleGroup points in a NodeRuleGroup at one end of the InterRuleGroup MUST be connected to points in a NodeRuleGroup at another end of the InterRuleGroup.";
             }
             enum CANNOT_FORWARD_ACROSS_GROUP {
                 description "NEPs referenced by the NodeRuleGroup (or indirectly by the InterRuleGroup between NodeRuleGroups) MUST NOT have Connections created between them.
-                    For an InterRuleGroup points in a NodeRuleGroup at one end of the InterRuleGroup MUST NOT be connected to points in an NodeRuleGroup at an other end of the InterRuleGroup.";
+                    For an InterRuleGroup points in a NodeRuleGroup at one end of the InterRuleGroup MUST NOT be connected to points in an NodeRuleGroup at another end of the InterRuleGroup.";
             }
             enum NO_STATEMENT_ON_FORWARDING {
                 description "The rule group makes no statement on forwarding.";
@@ -901,6 +937,30 @@ module tapi-topology {
             description "The protection type.";
         }
         description "The type of resiliency (protection/restoration).";
+    }
+    grouping multiplexing-sequence {
+        leaf-list layer-protocol-qualifier {
+            type tapi-common:layer-protocol-qualifier;
+            description "none";
+        }
+        leaf number-of-cep-instances {
+            type uint64;
+            description "none";
+        }
+        container capacity {
+            uses tapi-common:capacity-value;
+            description "none";
+        }
+        description "The supported multiplexing sequences, e.g.
+            - ODU0; ODU1; ODU2; ODU4 : 80
+            - ODU0; ODU1; ODU2; ODU3; ODU4 : 64
+            - ODUflex; ODU2; ODU3; ODU4 : 64 [64/ts] : 10G
+            - ODUflex; ODU2; ODU4: 80 [80/ts] : 10G
+            - ODU1; ODU2; ODU3; ODUCn : 40 [mult. for n]
+            - OTS; OMS; MC; OTSiMC : 80 : 50G
+            - OTSi; ODUCn : 2 : 200G
+            - OTSi; ODUCn : 1 : 400G
+            ";
     }
 
     /**************************

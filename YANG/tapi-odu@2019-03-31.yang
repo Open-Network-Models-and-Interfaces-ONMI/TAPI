@@ -16,8 +16,8 @@ module tapi-odu {
     import tapi-dsr {
         prefix tapi-dsr;
     }
-    import tapi-alarm {
-        prefix tapi-alarm;
+    import tapi-fm {
+        prefix tapi-fm;
     }
     organization "ONF OTCC (Open Transport Configuration & Control) Project";
     contact "
@@ -159,6 +159,13 @@ module tapi-odu {
         }
         description "none";
     }
+    augment "/tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-service" {
+        container odu-oam-service {
+            uses odu-oam-service;
+            description "none";
+        }
+        description "none";
+    }
     augment "/tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point" {
         container otu-connectivity-service-end-point-spec {
             uses otu-connectivity-service-end-point-spec;
@@ -204,6 +211,13 @@ module tapi-odu {
     augment "/tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job" {
         container odu-delay-performance-data {
             uses odu-delay-performance-data;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point/tapi-connectivity:server-constraint" {
+        container odu-connectivity-service-end-point-spec {
+            uses odu-connectivity-service-end-point-spec;
             description "none";
         }
         description "none";
@@ -365,7 +379,8 @@ module tapi-odu {
         }
         leaf aps-level {
             type uint64;
-            description "This attribute is for configuring the automatic protection switching (APS) level that should operate at the transport adaptation function that is represented by the ODU_ConnectionTerminationPoint object class. It triggers the MI_APS_LVL signal to the transport adaptation function. The value 0 means path and the values 1 through 6 mean TCM level 1 through 6 respectively.";
+            description "This attribute is for configuring the automatic protection switching (APS) level that should operate at the transport adaptation function that is represented by the ODU_ConnectionTerminationPoint object class.
+                It triggers the MI_APS_LVL signal to the transport adaptation function. The value 0 means path and the values 1 through 6 mean TCM level 1 through 6 respectively.";
         }
         description "none";
     }
@@ -376,7 +391,7 @@ module tapi-odu {
         }
         leaf tcm-extension {
             type tcm-extension;
-            description "none";
+            description "ITU-T G.798: TCM information forwarding and erasing: TCM information can be forwarded or erased for continuing TCM information into sections at the end of a TCM section and the related ODUT_TT_Sk function.";
         }
         leaf tcm-mode {
             type tcm-mode;
@@ -549,7 +564,12 @@ module tapi-odu {
             type uint64;
             description "none";
         }
-        description "none";
+        list odu-cn-error-performance-data {
+            key 'odu-cn-oh-index';
+            uses odu-cn-error-performance-data;
+            description "none";
+        }
+        description "ODU/OTU PM Metrics.";
     }
     grouping odu-oam-mep-service-point {
         container odu-mep {
@@ -592,7 +612,7 @@ module tapi-odu {
     grouping odu-delay-performance-data {
         leaf delay-frame-count {
             type uint64;
-            description "∑ number of frames between the DMValue toggle event and the received DMp signal value toggle event. This value is a snapshot value.";
+            description "Summation of the number of frames between the DMValue toggle event and the received DMp signal value toggle event. This value is a snapshot value.";
         }
         leaf delay-measure-success {
             type boolean;
@@ -603,9 +623,30 @@ module tapi-odu {
     grouping odu-fec-performance-data {
         leaf fec-corrected-errors-count {
             type uint64;
-            description "none";
+            description "ITU-T G798: The number of bits corrected by the FEC are counted over one second and reported to the MI at the end of the second. For the application of this filter, see the specific atomic functions.
+                During signal fail conditions of the data signal, no corrected bits shall be counted. For details on the signal fail conditions, see the specific atomic functions.";
         }
-        description "none";
+        leaf pre-fec-ber {
+            type uint64;
+            description "counter: bit error rate before correction by FEC";
+        }
+        leaf post-fec-ber {
+            type uint64;
+            description "counter: bit error rate after correction by FEC";
+        }
+        leaf uncorrectable-bytes {
+            type uint64;
+            description "Bytes that could not be corrected by FEC";
+        }
+        leaf uncorrectable-bits {
+            type uint64;
+            description "Bits that could not be corrected by FEC";
+        }
+        leaf corrected-bytes {
+            type uint64;
+            description "Bytes corrected between those that were received corrupted";
+        }
+        description "The OTU FEC PM Metrics.";
     }
     grouping odu-csep-ttp-pac {
         leaf configured-mapping-type {
@@ -703,7 +744,8 @@ module tapi-odu {
             type uint64;
             description "This attribute indicates the threshold level for declaring a Degraded Signal defect (dDEG). A dDEG shall be declared if DegM consecutive bad PM Seconds are detected.";
         }
-        description "none";
+        description "Common ODU OAM parameters.
+            Note that the object is read/write or read-only depending on the context, i.e. if is part of CSEP is R/W, while if is part of CEP is read-only.";
     }
     grouping odu-tcm-mep-status {
         leaf tcm-field {
@@ -763,6 +805,19 @@ module tapi-odu {
             uses otu-mep-status;
             description "none";
         }
+        leaf fec-monitoring {
+            type boolean;
+            default "true";
+            description "none";
+        }
+        leaf fec-corrected-error-threshold {
+            type uint64;
+            description "none";
+        }
+        container otsia-mep {
+            uses otsia-mep;
+            description "none";
+        }
         description "none";
     }
     grouping otu-mep-status {
@@ -809,6 +864,15 @@ module tapi-odu {
             type otu-type;
             description "none";
         }
+        container fec-type {
+            uses fec-type;
+            description "none";
+        }
+        leaf baud-rate {
+            type uint64;
+            description "The baud rate in terms of giga baud.
+                baud = bit/symbol, and the baud rate is hence sometimes referred to as the symbol rate";
+        }
         description "none";
     }
     grouping odu-cn-csep-ttp-pac {
@@ -831,11 +895,6 @@ module tapi-odu {
         description "none";
     }
     grouping otu-ttp-pac {
-        container fec-parameters {
-            config false;
-            uses fec-properties;
-            description "none";
-        }
         leaf otu-type {
             type otu-type;
             description "none";
@@ -843,6 +902,15 @@ module tapi-odu {
         container otu-mep {
             uses otu-mep;
             description "none";
+        }
+        container fec-type {
+            uses fec-type;
+            description "none";
+        }
+        leaf baud-rate {
+            type uint64;
+            description "The baud rate in terms of giga baud.
+                baud = bit/symbol, and the baud rate is hence sometimes referred to as the symbol rate";
         }
         description "none";
     }
@@ -893,12 +961,54 @@ module tapi-odu {
         }
         description "none";
     }
+    grouping otsia-mep {
+        leaf total-power-warn-threshold-upper {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            description "Allows to configure the upper power threshold on whole Assembly scope.";
+        }
+        leaf total-power-warn-threshold-lower {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            description "Allows to configure the lower power threshold on whole Assembly scope.";
+        }
+        description "none";
+    }
+    grouping odu-cn-error-performance-data {
+        container near-end-odu-counters {
+            uses odu-counters;
+            description "none";
+        }
+        container far-end-odu-counters {
+            uses odu-counters;
+            description "none";
+        }
+        leaf bidirectional-uas {
+            type uint64;
+            description "none";
+        }
+        leaf odu-cn-oh-index {
+            type uint64;
+            description "The ODUCn contains n instances of the ODU PM/TCM overhead, numbered 1 to n (PM #1 to PM #n)/(TCMi #1 to TCMi #n)..
+                This index specify the 2..n instance of the ODUCn PM/TCM overhead.";
+        }
+        description "The ODUk contains one instance of ODU PM overhead. The ODUCn contains n instances of the ODU PM overhead, numbered 1 to n (PM #1 to PM #n).
+            The PM #2 to #n fields contain the following subfields:
+            - bit interleaved parity (BIP-8)
+            - backward error indication (BEI)
+            The ODUCn contains n instances of the ODU TCM1 to TCM6 overhead, numbered 1 to n (TCMi #1 to TCMi #n).
+            Each TCMi #2 to #n field contains the following subfields (see Figure 15-19): 
+            - bit interleaved parity 8 (BIP-8);
+            - backward error indication and backward incoming alignment error (BEI/BIAE)";
+    }
 
     /**************************
     * package type-definitions
     **************************/ 
     identity OTN_ALARM_CONDITION_NAME {
-        base tapi-alarm:ALARM_CONDITION_NAME;
+        base tapi-fm:ALARM_CONDITION_NAME;
         description "none";
     }
     identity OTN_ALARM_CONDITION_NAME_LOS-P {
@@ -1143,10 +1253,6 @@ module tapi-odu {
         base ODU_PM_PARAMETER_NAME;
         description "none";
     }
-    identity ODU_PM_PARAMETER_NAME_ES {
-        base ODU_PM_PARAMETER_NAME;
-        description "none";
-    }
     identity ODU_PM_PARAMETER_NAME_SES {
         base ODU_PM_PARAMETER_NAME;
         description "none";
@@ -1156,6 +1262,10 @@ module tapi-odu {
         description "none";
     }
     identity ODU_PM_PARAMETER_NAME_DELAY {
+        base ODU_PM_PARAMETER_NAME;
+        description "none";
+    }
+    identity ODU_PM_PARAMETER_NAME_FEC_CORRECTED_ERROR {
         base ODU_PM_PARAMETER_NAME;
         description "none";
     }
@@ -1181,6 +1291,17 @@ module tapi-odu {
     }
     identity OTU_TYPE_OTU_CN {
         base OTU_TYPE;
+        description "none";
+    }
+    identity STANDARD_FEC_TYPE {
+        description "none";
+    }
+    identity STANDARD_FEC_TYPE_REED_SOLOMON {
+        base STANDARD_FEC_TYPE;
+        description "none";
+    }
+    identity STANDARD_FEC_TYPE_PROPRIETARY {
+        base STANDARD_FEC_TYPE;
         description "none";
     }
     typedef otn-alarm-condition-name {
@@ -1433,33 +1554,6 @@ module tapi-odu {
         }
         description "none";
     }
-    grouping fec-properties {
-        leaf pre-fec-ber {
-            type uint64;
-            description "counter: bit error rate before correction by FEC";
-        }
-        leaf post-fec-ber {
-            type uint64;
-            description "counter: bit error rate after correction by FEC";
-        }
-        leaf corrected-bytes {
-            type uint64;
-            description "Bytes corrected between those that were received corrupted";
-        }
-        leaf corrected-bits {
-            type uint64;
-            description "Bits corrected between those that were received corrupted";
-        }
-        leaf uncorrectable-bytes {
-            type uint64;
-            description "Bytes that could not be corrected by FEC";
-        }
-        leaf uncorrectable-bits {
-            type uint64;
-            description "Bits that could not be corrected by FEC";
-        }
-        description "none";
-    }
     typedef odu-pm-parameter-name {
         type identityref {
             base ODU_PM_PARAMETER_NAME;
@@ -1469,6 +1563,23 @@ module tapi-odu {
     typedef otu-type {
         type identityref {
             base OTU_TYPE;
+        }
+        description "none";
+    }
+    grouping fec-type {
+        leaf standard-fec-type {
+            type standard-fec-type;
+            description "none";
+        }
+        leaf proprietary-fec-type {
+            type string;
+            description "none";
+        }
+        description "none";
+    }
+    typedef standard-fec-type {
+        type identityref {
+            base STANDARD_FEC_TYPE;
         }
         description "none";
     }

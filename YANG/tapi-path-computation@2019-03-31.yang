@@ -159,6 +159,7 @@ module tapi-path-computation {
         list end-point {
             key 'local-id';
             min-elements 2;
+            max-elements 2;
             uses path-service-end-point;
             description "The PathServiceEndPoint (PSEP) instances of the PathComputationService.";
         }
@@ -169,7 +170,7 @@ module tapi-path-computation {
         list topology-constraint {
             key 'local-id';
             uses topology-constraint;
-            description "The associated topology constraints.";
+            description "The associated topology constraints. Different instances of TopologyConstraints may be used to specify constraints at different layer networks.";
         }
         container objective-function {
             uses path-objective-function;
@@ -291,44 +292,102 @@ module tapi-path-computation {
             An instance of this class includes its PathComputationService and Path object instances.";
     }
     grouping topology-constraint {
-        leaf include-topology {
+        leaf explicit-route {
+            type boolean;
+            description "If true, indicates that the route constraints are specified with full detail, i.e. no need for further route computation.";
+        }
+        leaf-list include-topology {
             type tapi-common:uuid;
             description "The Topology instance to be included in the connectivity route.";
         }
-        leaf avoid-topology {
+        list include-topology-ref {
+            uses tapi-topology:topology-ref;
+            key 'topology-uuid';
+            description "The Topology instance to be included in the connectivity route.";
+        }
+        leaf-list avoid-topology {
             type tapi-common:uuid;
             description "The Topology instance to be avoided in the connectivity route.";
         }
-        leaf include-path {
+        list exclude-topology-ref {
+            uses tapi-topology:topology-ref;
+            key 'topology-uuid';
+            description "The Topology instance to be excluded from the connectivity route.";
+        }
+        leaf-list include-path {
             type tapi-common:uuid;
             description "The Path instance to be followed by the connectivity route.";
         }
-        leaf exclude-path {
+/*        list include-path-ref {
+            uses path-ref;
+            key 'path-uuid'; */
+        leaf-list include-path-ref {
             type tapi-common:uuid;
-            description "The Path instance to be avoided by the connectivity route.";
+            description "The Path instance to be followed by the connectivity route.";
         }
-        leaf include-link {
+        leaf-list exclude-path {
+            type tapi-common:uuid;
+            description "The Path instance to be excluded from the connectivity route.";
+        }
+/*        list exclude-path-ref {
+            uses path-ref;
+            key 'path-uuid'; */
+        leaf-list exclude-path-ref {
+            type tapi-common:uuid;
+            description "The Path instance to be excluded from the connectivity route.";
+        }
+        leaf-list include-link {
             type tapi-common:uuid;
             description "The Link instance to be included in the connectivity route.";
         }
-        leaf exclude-link {
+        list include-link-ref {
+            uses tapi-topology:link-ref;
+            key 'topology-uuid link-uuid';
+            description "The Link instance to be included in the connectivity route.";
+        }
+        leaf-list exclude-link {
             type tapi-common:uuid;
             description "The Link instance to be excluded from the connectivity route.";
         }
-        leaf include-node {
+        list exclude-link-ref {
+            uses tapi-topology:link-ref;
+            key 'topology-uuid link-uuid';
+            description "The Link instance to be excluded from the connectivity route.";
+        }
+        leaf-list include-node {
             type tapi-common:uuid;
             description "The Node instance to be included in the connectivity route.";
         }
-        leaf exclude-node {
+        list include-node-ref {
+            uses tapi-topology:node-ref;
+            key 'topology-uuid node-uuid';
+            description "The Node instance to be included in the connectivity route.";
+        }
+        leaf-list exclude-node {
             type tapi-common:uuid;
             description "The Node instance to be excluded from the connectivity route.";
         }
-        leaf include-node-edge-point {
+        list exclude-node-ref {
+            uses tapi-topology:node-ref;
+            key 'topology-uuid node-uuid';
+            description "The Node instance to be excluded from the connectivity route.";
+        }
+        leaf-list include-node-edge-point {
             type tapi-common:uuid;
             description "The NodeEdgePoint (NEP) instance to be included in the connectivity route.";
         }
-        leaf exclude-node-edge-point {
+        list include-node-edge-point-ref {
+            uses tapi-topology:node-edge-point-ref;
+            key 'topology-uuid node-uuid node-edge-point-uuid';
+            description "The NodeEdgePoint (NEP) instance to be included in the connectivity route.";
+        }
+        leaf-list exclude-node-edge-point {
             type tapi-common:uuid;
+            description "The NodeEdgePoint (NEP) instance to be excluded from the connectivity route.";
+        }
+        list exclude-node-edge-point-ref {
+            uses tapi-topology:node-edge-point-ref;
+            key 'topology-uuid node-uuid node-edge-point-uuid';
             description "The NodeEdgePoint (NEP) instance to be excluded from the connectivity route.";
         }
         leaf preferred-transport-layer {

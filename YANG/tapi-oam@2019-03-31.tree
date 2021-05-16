@@ -73,7 +73,7 @@ module: tapi-oam
        |  +--rw oam-profile
        |  |  +--rw oam-profile-uuid?   -> /tapi-common:context/tapi-oam:oam-context/oam-profile/uuid
        |  +--ro current-data* [local-id]
-       |  |  +--ro period-start-time?   tapi-common:date-and-time
+       |  |  +--ro period-start-time?      tapi-common:date-and-time
        |  |  +--ro elapsed-time
        |  |  |  +--ro period* [unit]
        |  |  |     +--ro value?   uint64
@@ -84,6 +84,17 @@ module: tapi-oam
        |  |  |  |     +--ro value?   uint64
        |  |  |  |     +--ro unit     time-unit
        |  |  |  +--ro suspect-interval-flag?   boolean
+       |  |  +--ro mep
+       |  |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+       |  |  |  +--ro mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
+       |  |  +--ro mip
+       |  |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+       |  |  |  +--ro mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
+       |  |  +--ro connection-end-point
+       |  |  |  +--ro topology-uuid?               -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |  |  +--ro node-uuid?                   -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |  |  |  +--ro node-edge-point-uuid?        -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+       |  |  |  +--ro connection-end-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
        |  |  +--ro history-data* [local-id]
        |  |  |  +--ro period-start-time?   tapi-common:date-and-time
        |  |  |  +--ro period-end-time?     tapi-common:date-and-time
@@ -97,7 +108,7 @@ module: tapi-oam
        |  |  |  +--ro name* [value-name]
        |  |  |     +--ro value-name    string
        |  |  |     +--ro value?        string
-       |  |  +--ro local-id             string
+       |  |  +--ro local-id                string
        |  |  +--ro name* [value-name]
        |  |     +--ro value-name    string
        |  |     +--ro value?        string
@@ -143,58 +154,6 @@ module: tapi-oam
        +--ro mip* [meg-uuid mip-local-id]
           +--ro meg-uuid        -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
           +--ro mip-local-id    -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
-  augment /tapi-common:context/tapi-notification:notification-context/tapi-notification:notification:
-    +--ro alarm-info
-       +--ro is-transient?         boolean
-       +--ro perceived-severity?   perceived-severity-type
-       +--ro probable-cause?       string
-       +--ro service-affecting?    service-affecting
-  augment /tapi-common:context/tapi-notification:notification-context/tapi-notification:notification:
-    +--ro tca-info
-       +--ro is-transient?            boolean
-       +--ro perceived-severity?      perceived-tca-severity
-       +--ro threshold-parameter
-       |  +--ro pm-parameter-name?         tapi-common:pm-parameter-name
-       |  +--ro threshold-location?        threshold-crossing-qualifier
-       |  +--ro pm-parameter-above-thrs
-       |  |  +--ro pm-parameter-int-value?    uint64
-       |  |  +--ro pm-parameter-real-value?   decimal64
-       |  +--ro pm-parameter-below-thrs
-       |  |  +--ro pm-parameter-int-value?    uint64
-       |  |  +--ro pm-parameter-real-value?   decimal64
-       |  +--ro pm-parameter-clear-thrs
-       |     +--ro pm-parameter-int-value?    uint64
-       |     +--ro pm-parameter-real-value?   decimal64
-       +--ro measurement-interval?    tapi-common:date-and-time
-       +--ro suspect-interval-flag?   boolean
-       +--ro oam-job
-          +--ro oam-job-uuid?   -> /tapi-common:context/tapi-oam:oam-context/oam-job/uuid
-  augment /tapi-notification:get-notification-list/tapi-notification:output/tapi-notification:notification:
-    +-- alarm-info
-       +--ro is-transient?         boolean
-       +--ro perceived-severity?   perceived-severity-type
-       +--ro probable-cause?       string
-       +-- service-affecting?    service-affecting
-  augment /tapi-notification:get-notification-list/tapi-notification:output/tapi-notification:notification:
-    +-- tca-info
-       +--ro is-transient?            boolean
-       +-- perceived-severity?      perceived-tca-severity
-       +--ro threshold-parameter
-       |  +--ro pm-parameter-name?         tapi-common:pm-parameter-name
-       |  +--ro threshold-location?        threshold-crossing-qualifier
-       |  +--ro pm-parameter-above-thrs
-       |  |  +--ro pm-parameter-int-value?    uint64
-       |  |  +--ro pm-parameter-real-value?   decimal64
-       |  +--ro pm-parameter-below-thrs
-       |  |  +--ro pm-parameter-int-value?    uint64
-       |  |  +--ro pm-parameter-real-value?   decimal64
-       |  +--ro pm-parameter-clear-thrs
-       |     +--ro pm-parameter-int-value?    uint64
-       |     +--ro pm-parameter-real-value?   decimal64
-       +-- measurement-interval?    tapi-common:date-and-time
-       +-- suspect-interval-flag?   boolean
-       +-- oam-job
-          +-- oam-job-uuid?   -> /tapi-common:context/tapi-oam:oam-context/oam-job/uuid
   augment /tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service:
     +--rw connectivity-oam-job
        +--rw oam-job-type?          oam-job-type
@@ -602,7 +561,7 @@ module: tapi-oam
     |        +--ro oam-profile
     |        |  +--ro oam-profile-uuid?   -> /tapi-common:context/tapi-oam:oam-context/oam-profile/uuid
     |        +--ro current-data* [local-id]
-    |        |  +--ro period-start-time?   tapi-common:date-and-time
+    |        |  +--ro period-start-time?      tapi-common:date-and-time
     |        |  +--ro elapsed-time
     |        |  |  +--ro period* [unit]
     |        |  |     +--ro value?   uint64
@@ -613,6 +572,17 @@ module: tapi-oam
     |        |  |  |     +--ro value?   uint64
     |        |  |  |     +--ro unit     time-unit
     |        |  |  +--ro suspect-interval-flag?   boolean
+    |        |  +--ro mep
+    |        |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+    |        |  |  +--ro mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
+    |        |  +--ro mip
+    |        |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+    |        |  |  +--ro mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
+    |        |  +--ro connection-end-point
+    |        |  |  +--ro topology-uuid?               -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  |  +--ro node-uuid?                   -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |  |  +--ro node-edge-point-uuid?        -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+    |        |  |  +--ro connection-end-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
     |        |  +--ro history-data* [local-id]
     |        |  |  +--ro period-start-time?   tapi-common:date-and-time
     |        |  |  +--ro period-end-time?     tapi-common:date-and-time
@@ -626,7 +596,7 @@ module: tapi-oam
     |        |  |  +--ro name* [value-name]
     |        |  |     +--ro value-name    string
     |        |  |     +--ro value?        string
-    |        |  +--ro local-id             string
+    |        |  +--ro local-id                string
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
@@ -661,7 +631,7 @@ module: tapi-oam
     |        +--ro oam-profile
     |        |  +--ro oam-profile-uuid?   -> /tapi-common:context/tapi-oam:oam-context/oam-profile/uuid
     |        +--ro current-data* [local-id]
-    |        |  +--ro period-start-time?   tapi-common:date-and-time
+    |        |  +--ro period-start-time?      tapi-common:date-and-time
     |        |  +--ro elapsed-time
     |        |  |  +--ro period* [unit]
     |        |  |     +--ro value?   uint64
@@ -672,6 +642,17 @@ module: tapi-oam
     |        |  |  |     +--ro value?   uint64
     |        |  |  |     +--ro unit     time-unit
     |        |  |  +--ro suspect-interval-flag?   boolean
+    |        |  +--ro mep
+    |        |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+    |        |  |  +--ro mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
+    |        |  +--ro mip
+    |        |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+    |        |  |  +--ro mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
+    |        |  +--ro connection-end-point
+    |        |  |  +--ro topology-uuid?               -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  |  +--ro node-uuid?                   -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |  |  +--ro node-edge-point-uuid?        -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+    |        |  |  +--ro connection-end-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
     |        |  +--ro history-data* [local-id]
     |        |  |  +--ro period-start-time?   tapi-common:date-and-time
     |        |  |  +--ro period-end-time?     tapi-common:date-and-time
@@ -685,7 +666,7 @@ module: tapi-oam
     |        |  |  +--ro name* [value-name]
     |        |  |     +--ro value-name    string
     |        |  |     +--ro value?        string
-    |        |  +--ro local-id             string
+    |        |  +--ro local-id                string
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
@@ -715,7 +696,7 @@ module: tapi-oam
     |        +--ro oam-profile
     |        |  +--ro oam-profile-uuid?   -> /tapi-common:context/tapi-oam:oam-context/oam-profile/uuid
     |        +--ro current-data* [local-id]
-    |        |  +--ro period-start-time?   tapi-common:date-and-time
+    |        |  +--ro period-start-time?      tapi-common:date-and-time
     |        |  +--ro elapsed-time
     |        |  |  +--ro period* [unit]
     |        |  |     +--ro value?   uint64
@@ -726,6 +707,17 @@ module: tapi-oam
     |        |  |  |     +--ro value?   uint64
     |        |  |  |     +--ro unit     time-unit
     |        |  |  +--ro suspect-interval-flag?   boolean
+    |        |  +--ro mep
+    |        |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+    |        |  |  +--ro mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
+    |        |  +--ro mip
+    |        |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+    |        |  |  +--ro mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
+    |        |  +--ro connection-end-point
+    |        |  |  +--ro topology-uuid?               -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  |  +--ro node-uuid?                   -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |  |  +--ro node-edge-point-uuid?        -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+    |        |  |  +--ro connection-end-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
     |        |  +--ro history-data* [local-id]
     |        |  |  +--ro period-start-time?   tapi-common:date-and-time
     |        |  |  +--ro period-end-time?     tapi-common:date-and-time
@@ -739,7 +731,7 @@ module: tapi-oam
     |        |  |  +--ro name* [value-name]
     |        |  |     +--ro value-name    string
     |        |  |     +--ro value?        string
-    |        |  +--ro local-id             string
+    |        |  +--ro local-id                string
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
@@ -764,7 +756,7 @@ module: tapi-oam
     |        +--ro oam-profile
     |        |  +--ro oam-profile-uuid?   -> /tapi-common:context/tapi-oam:oam-context/oam-profile/uuid
     |        +--ro current-data* [local-id]
-    |        |  +--ro period-start-time?   tapi-common:date-and-time
+    |        |  +--ro period-start-time?      tapi-common:date-and-time
     |        |  +--ro elapsed-time
     |        |  |  +--ro period* [unit]
     |        |  |     +--ro value?   uint64
@@ -775,6 +767,17 @@ module: tapi-oam
     |        |  |  |     +--ro value?   uint64
     |        |  |  |     +--ro unit     time-unit
     |        |  |  +--ro suspect-interval-flag?   boolean
+    |        |  +--ro mep
+    |        |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+    |        |  |  +--ro mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
+    |        |  +--ro mip
+    |        |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+    |        |  |  +--ro mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
+    |        |  +--ro connection-end-point
+    |        |  |  +--ro topology-uuid?               -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  |  +--ro node-uuid?                   -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |  |  +--ro node-edge-point-uuid?        -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+    |        |  |  +--ro connection-end-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
     |        |  +--ro history-data* [local-id]
     |        |  |  +--ro period-start-time?   tapi-common:date-and-time
     |        |  |  +--ro period-end-time?     tapi-common:date-and-time
@@ -788,7 +791,7 @@ module: tapi-oam
     |        |  |  +--ro name* [value-name]
     |        |  |     +--ro value-name    string
     |        |  |     +--ro value?        string
-    |        |  +--ro local-id             string
+    |        |  +--ro local-id                string
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
