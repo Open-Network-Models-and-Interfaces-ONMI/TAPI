@@ -162,6 +162,40 @@ module tapi-notification {
         description "A SubscriptionFilter represents an 'intent-like' request for the filters of the related notification subscription.
             The SubscriptionFilter is a container for filter request details.";
     }
+    grouping notification-channel {
+        leaf stream-address {
+            type string;
+            config false;
+            description "The address/location/URI of the channel/stream to which the subscribed notifications are published.
+                The format is typically dependent on the implementation protocol & mechanism and hence is typed as a string.";
+        }
+        leaf next-sequence-no {
+            type uint64;
+            config false;
+            description "The sequence number of the next notification that will be published on the channel.";
+        }
+        uses tapi-common:local-class;
+        description "The channel/stream to which the subscribed notifications are published.";
+    }
+    grouping notification-context {
+        list notif-subscription {
+            key 'uuid';
+            uses notification-subscription-service;
+            description "The included NotificationSubscriptionService instances.";
+        }
+        list notification {
+            key 'uuid';
+            config false;
+            uses notification;
+            description "The included Notification instances.";
+        }
+        description "This object class represents the scope of control that a particular SDN controller has with respect to a particular network, specifically regarding the notification description.
+            An instance of this class includes its NotificationSubscriptionService and Notification instances.";
+    }
+
+    /**************************
+    * package notifications
+    **************************/ 
     notification notification {
         uses notification;
         description "none";
@@ -225,36 +259,6 @@ module tapi-notification {
         description "The Notification signal.
             OMG UML(R) Version 2.5.1: 'A Signal is a specification of a kind of communication between objects in which a reaction is asynchronously triggered in the receiver without a reply.
             The data carried by the communication are represented as attributes of the Signal.'";
-    }
-    grouping notification-channel {
-        leaf stream-address {
-            type string;
-            config false;
-            description "The address/location/URI of the channel/stream to which the subscribed notifications are published.
-                The format is typically dependent on the implementation protocol & mechanism and hence is typed as a string.";
-        }
-        leaf next-sequence-no {
-            type uint64;
-            config false;
-            description "The sequence number of the next notification that will be published on the channel.";
-        }
-        uses tapi-common:local-class;
-        description "The channel/stream to which the subscribed notifications are published.";
-    }
-    grouping notification-context {
-        list notif-subscription {
-            key 'uuid';
-            uses notification-subscription-service;
-            description "The included NotificationSubscriptionService instances.";
-        }
-        list notification {
-            key 'uuid';
-            config false;
-            uses notification;
-            description "The included Notification instances.";
-        }
-        description "This object class represents the scope of control that a particular SDN controller has with respect to a particular network, specifically regarding the notification description.
-            An instance of this class includes its NotificationSubscriptionService and Notification instances.";
     }
 
     /**************************
