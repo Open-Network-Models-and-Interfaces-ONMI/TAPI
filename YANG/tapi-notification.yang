@@ -28,8 +28,15 @@ module tapi-notification {
         YANG models included in this release may not be backward compatible with previous TAPI releases.
         Copyright (c) 2021 Open Networking Foundation (ONF). All rights reserved.
         License: This module is distributed under the Apache License 2.0.";
-    revision 2021-05-24 {
+    revision 2021-08-04 {
         description "ONF Transport API version 2.3.
+                   Changes included in this TAPI release (v2.3) are listed in
+                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2021>";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
+                  <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.3/UML>";
+    }
+    revision 2021-05-24 {
+        description "ONF Transport API version 2.3 RC1.
                    Changes included in this TAPI release (v2.3) are listed in
                    <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2021>";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
@@ -107,6 +114,11 @@ module tapi-notification {
             config false;
             uses notification;
             description "The Notification instances associated to this NotificationSubscriptionService instance.";
+        }
+        list event-notification {
+            key 'uuid';
+            uses event-notification;
+            description "The EventNotification instances associated to this NotificationSubscriptionService instance.";
         }
         container notification-channel {
             config false;
@@ -189,8 +201,30 @@ module tapi-notification {
             uses notification;
             description "The included Notification instances.";
         }
+        list event-notification {
+            key 'uuid';
+            uses event-notification;
+            description "The included Event Notification instances.";
+        }
         description "This object class represents the scope of control that a particular SDN controller has with respect to a particular network, specifically regarding the notification description.
             An instance of this class includes its NotificationSubscriptionService and Notification instances.";
+    }
+    grouping object-notification {
+        leaf object-notification-type {
+            type notification-type;
+            description "The object notification type.";
+        }
+        leaf object-content {
+            type string;
+            description "The object content, e.g. all the attributes of a newly created object.
+                The mapping is not specified.";
+        }
+        list changed-attributes {
+            key 'value-name';
+            uses name-and-value-change;
+            description "The list of relevant changed attributes and their values.";
+        }
+        description "Object notification related information.";
     }
 
     /**************************
@@ -254,6 +288,50 @@ module tapi-notification {
         leaf additional-text {
             type string;
             description "Text available for unspecified content.";
+        }
+        uses tapi-common:global-class;
+        description "The Notification signal.
+            OMG UML(R) Version 2.5.1: 'A Signal is a specification of a kind of communication between objects in which a reaction is asynchronously triggered in the receiver without a reply.
+            The data carried by the communication are represented as attributes of the Signal.'";
+    }
+    notification event-notification {
+        uses event-notification;
+        description "none";
+    }
+    grouping event-notification {
+        leaf target-object-type {
+            type tapi-common:object-type;
+            description "The Notification instance is related to the object instance with this ObjectType value.";
+        }
+        leaf target-object-identifier {
+            type tapi-common:uuid;
+            description "The Notification instance is related to the object instance with this UUID value.";
+        }
+        list target-object-name {
+            key 'value-name';
+            uses tapi-common:name-and-value;
+            description "The Notification instance is related to the object instance with this list of names.";
+        }
+        leaf event-time-stamp {
+            type tapi-common:date-and-time;
+            description "The best knowledge of the time of the event which originated this Notification instance.";
+        }
+        leaf sequence-number {
+            type uint64;
+            description "A monotonous increasing sequence number associated with the Notification instances.
+                The exact semantics of how this sequence number is assigned (per channel or subscription or source or system) is left undefined.";
+        }
+        leaf source-indicator {
+            type source-indicator;
+            description "The possible source of this Notification instance.";
+        }
+        leaf layer-protocol-name {
+            type tapi-common:layer-protocol-name;
+            description "The Notification instance is related to a resource with this layer protocol value.";
+        }
+        leaf-list layer-protocol-qualifier {
+            type tapi-common:layer-protocol-qualifier;
+            description "The Notification instance is related to a resource with this layer protocol qualifier value.";
         }
         uses tapi-common:global-class;
         description "The Notification signal.

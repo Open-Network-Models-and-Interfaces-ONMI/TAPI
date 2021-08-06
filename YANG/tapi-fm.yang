@@ -31,8 +31,15 @@ module tapi-fm {
         YANG models included in this release may not be backward compatible with previous TAPI releases.
         Copyright (c) 2021 Open Networking Foundation (ONF). All rights reserved.
         License: This module is distributed under the Apache License 2.0.";
-    revision 2021-05-24 {
+    revision 2021-08-04 {
         description "ONF Transport API version 2.3.
+                   Changes included in this TAPI release (v2.3) are listed in
+                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2021>";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
+                  <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.3/UML>";
+    }
+    revision 2021-05-24 {
+        description "ONF Transport API version 2.3 RC1.
                    Changes included in this TAPI release (v2.3) are listed in
                    <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2021>";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
@@ -183,6 +190,91 @@ module tapi-fm {
         }
         description "This class augments the Notification class with threshold crossing alert related parameters.";
     }
+    grouping detected-condition {
+        leaf detected-condition-name {
+            type tapi-common:condition-name;
+            description "The name of the Condition, e.g. an alarm probable cause or the PM metric name which threshold crossing alert refers to.
+                ITU-T probable cause of the failure (detected fault).
+                G.806:
+                - fault: A fault is the inability of a function to perform a required action. This does not include an inability due to preventive maintenance, lack of external resources or planned actions.
+                - fault cause: A single disturbance or fault may lead to the detection of multiple defects.
+                - defect: The density of anomalies has reached a level where the ability to perform a required function has been interrupted.
+                Defects are used as input for performance monitoring, the control of consequent actions and for the determination of fault causes.
+                A fault cause is the result of a correlation process which is intended to identify the defect that is representative of the disturbance or fault that is causing the problem.
+                - failure: The fault cause persisted long enough to consider the ability of an item to perform a required function to be terminated. The item may be considered as failed; a fault has now been detected.
+                - alarm: A human-observable indication that draws attention to a failure (detected fault) usually giving an indication of the severity of the fault.";
+        }
+        leaf detected-condition-native-name {
+            type string;
+            description "The name used for the Condition by the source of the information.";
+        }
+        list detected-condition-native-info {
+            key 'value-name';
+            uses tapi-common:name-and-value;
+            description "Additional info of the Condition provided by the source of the information.";
+        }
+        leaf detected-condition-type {
+            type condition-type;
+            description "The type of the Condition.";
+        }
+        list detected-condition-qualifier {
+            key 'value-name';
+            uses tapi-common:name-and-value;
+            description "Further information necessary to precisely/uniquely/unambiguously identify the Condition
+                Regarding ITU-T X.733 Alarm Category:
+                For Equipment and Processing Alarm Category, e.g. the local id of the ActualNonFieldReplaceableModule which identifies exact alarm source.
+                For Environment Alarm Category, e.g. on the same Device instance may appear more Environmental alarm notifications with same Alarn Name.
+                For Connectivity Alarm Category in case that same CEP instance includes e.g. both OTS and OMS monitoring layers.";
+        }
+        leaf oam-job {
+            type tapi-common:uuid;
+            description "Reference to the OamJob instance for which the Condition detection has been configured, e.g. configuration of PM metrics and threshold values and/or of the (alarm) Conditions.
+                The reference is defined as simple UUID because TapiFm does not import TapiOam.
+                MEF 35.1: Identification of the PM Session for which the TCA Function was configured.";
+        }
+        description "A record of the state of a Detector where that Detector has two underling states that are of asymmetric importance.
+            For example, an alarm or a threshold crossing alert detected on a given resource.
+            A Condition Detector represents any monitoring component that assesses properties of something and determines from those properties what conditions are associated with the thing.
+            For example, a thing might be 'too hot' or might be 'unreliable'.";
+    }
+    grouping detector-info {
+        leaf perceived-severity {
+            type perceived-severity-type;
+            description "The severity of the detected Condition.";
+        }
+        leaf service-affecting {
+            type service-affecting;
+            description "The impact on the service.";
+        }
+        leaf is-acknowledge {
+            type boolean;
+            description "Information on operator acknowledgement.";
+        }
+        leaf detector-category {
+            type detector-category;
+            description "The Detector (alarm) category, based on ITU-T X.733.";
+        }
+        description "(Legacy) information associated to a Condition (alarm).";
+    }
+    grouping simple-detector {
+        leaf simple-detector-state {
+            type simple-detector-state;
+            description "The (simple) state of the Detector.
+                The Detector state accounts for the time characteristics of the detected Condition.";
+        }
+        description "Information regarding the (simple) state of the Detector.";
+    }
+    grouping pm-metric-info {
+        container threshold-observed-value {
+            uses tapi-common:pm-parameter-value;
+            description "The observed value of PM metric to which TCA refers to.";
+        }
+        container threshold-configured-value {
+            uses tapi-common:pm-parameter-value;
+            description "The configured threshold value of PM metric to which TCA refers to.";
+        }
+        description "Information associated to a Threshold Crossing Alert.";
+    }
 
     /**************************
     * package type-definitions
@@ -240,6 +332,71 @@ module tapi-fm {
         base ALARM_NOTIFICATION_TYPE;
         description "The notification of a threshold crossing alert event.";
     }
+    identity CONDITION_TYPE {
+        description "none";
+    }
+    identity CONDITION_TYPE_ALARM {
+        base CONDITION_TYPE;
+        description "none";
+    }
+    identity CONDITION_TYPE_TCA {
+        base CONDITION_TYPE;
+        description "Threshold Crossing Alert";
+    }
+    identity DETECTOR_CATEGORY {
+        description "none";
+    }
+    identity DETECTOR_CATEGORY_EQUIPMENT {
+        base DETECTOR_CATEGORY;
+        description "none";
+    }
+    identity DETECTOR_CATEGORY_ENVIRONMENT {
+        base DETECTOR_CATEGORY;
+        description "none";
+    }
+    identity DETECTOR_CATEGORY_CONNECTIVITY {
+        base DETECTOR_CATEGORY;
+        description "none";
+    }
+    identity DETECTOR_CATEGORY_PROCESSING {
+        base DETECTOR_CATEGORY;
+        description "none";
+    }
+    identity DETECTOR_CATEGORY_SECURITY {
+        base DETECTOR_CATEGORY;
+        description "none";
+    }
+    identity DETECTOR_CATEGORY_UNDEFINED {
+        base DETECTOR_CATEGORY;
+        description "none";
+    }
+    identity SIMPLE_DETECTOR_STATE {
+        description "none";
+    }
+    identity SIMPLE_DETECTOR_STATE_ACTIVE {
+        base SIMPLE_DETECTOR_STATE;
+        description "The detector is indicating the operation of the monitored entity is not within acceptable bounds with respect to the specific condition measured.
+            If INTERMITTENT is supported there may be a requirement for persisted unacceptable operation after a problem occurs before ACTIVE is declared. An alternative may be to declare INTERMITTENT.
+            Where INTERMITTENT is supported, ACTIVE indicates the stable presence of a problem.";
+    }
+    identity SIMPLE_DETECTOR_STATE_CLEAR {
+        base SIMPLE_DETECTOR_STATE;
+        description "The detector is indicating the operation of the monitored entity is within acceptable bounds with respect to the specific condition measured.";
+    }
+    identity SIMPLE_DETECTOR_STATE_INTERMITTENT {
+        base SIMPLE_DETECTOR_STATE;
+        description "The detector is indicating the operation of the monitored entity is intermittently not within acceptable bounds with respect to the specific condition measured.
+            INTERMITTENT support is optional. Where it is supported there may be a requirement for persisted unacceptable operation after a problem occurs before ACTIVE or INTERMITTENT is declared.";
+    }
+    identity SIMPLE_DETECTOR_STATE_FLEETING {
+        base SIMPLE_DETECTOR_STATE;
+        description "Event has a very short life (Active-Clear), hence is notified/streamed after its occurrence.";
+    }
+    identity SIMPLE_DETECTOR_STATE_ACTIVE_NO_EXPLICIT_CLEAR {
+        base SIMPLE_DETECTOR_STATE;
+        description "Same as Active, but an explicit transition to Clear is not foreseen.
+            This e.g. applies to PM metrics which can only increase (counters), hence the 'clear' criteria is conventionally the end of a measurement period.";
+    }
     typedef alarm-category {
         type identityref {
             base ALARM_CATEGORY;
@@ -271,10 +428,10 @@ module tapi-fm {
     typedef service-affecting {
         type enumeration {
             enum SERVICE_AFFECTING {
-                description "The service is affected by the failure.";
+                description "The service is affected by the detected Condition.";
             }
             enum NOT_SERVICE_AFFECTING {
-                description "The service is not affected by the failure.";
+                description "The service is not affected by the detected Condition.";
             }
             enum UNKNOWN {
                 description "The impact on the service is unknown.";
@@ -300,6 +457,24 @@ module tapi-fm {
             base ALARM_NOTIFICATION_TYPE;
         }
         description "The list of alarm specific notification types.";
+    }
+    typedef condition-type {
+        type identityref {
+            base CONDITION_TYPE;
+        }
+        description "The types of the Condition.";
+    }
+    typedef detector-category {
+        type identityref {
+            base DETECTOR_CATEGORY;
+        }
+        description "The Detector (alarm) category, based on ITU-T X.733.";
+    }
+    typedef simple-detector-state {
+        type identityref {
+            base SIMPLE_DETECTOR_STATE;
+        }
+        description "The states of the detector.";
     }
 
 }

@@ -28,8 +28,15 @@ module tapi-topology {
         YANG models included in this release may not be backward compatible with previous TAPI releases.
         Copyright (c) 2021 Open Networking Foundation (ONF). All rights reserved.
         License: This module is distributed under the Apache License 2.0.";
-    revision 2021-05-24 {
+    revision 2021-08-04 {
         description "ONF Transport API version 2.3.
+                   Changes included in this TAPI release (v2.3) are listed in
+                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2021>";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
+                  <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.3/UML>";
+    }
+    revision 2021-05-24 {
+        description "ONF Transport API version 2.3 RC1.
                    Changes included in this TAPI release (v2.3) are listed in
                    <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2021>";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
@@ -166,14 +173,12 @@ module tapi-topology {
             type tapi-common:layer-protocol-name;
             config false;
             min-elements 1;
-            description "The layer protocol of the Link.";
+            description "The layer protocol(s) of the Link.";
         }
         leaf direction {
             type tapi-common:forwarding-direction;
             config false;
-            description "The directionality of the Link.
-                Is applicable to simple Links where all (conceptual) ports are BIDIRECTIONAL (the Link will be BIDIRECTIONAL) or UNIDIRECTIONAL (the Link will be UNIDIRECTIONAL).
-                Is not present in more complex cases.";
+            description "The directionality of the Link.";
         }
         container resilience-type {
             uses resilience-type;
@@ -284,7 +289,7 @@ module tapi-topology {
         }
         leaf base-layer-protocol-qualifier {
             type tapi-common:layer-protocol-qualifier;
-            description "none";
+            description "The layer protocol qualifier at the bottom of supported stack.";
         }
         list supported-cep-layer-protocol {
             key 'layer-protocol-qualifier';
@@ -301,6 +306,16 @@ module tapi-topology {
             uses multiplexing-sequence;
             description "More detailed description of available capability than 'supportedCepLayerProtocol'.";
         }
+        leaf link-port-direction {
+            type tapi-common:port-direction;
+            config false;
+            description "The orientation of flow at the (conceptual) port of the associated Link.";
+        }
+        leaf link-port-role {
+            type tapi-common:port-role;
+            config false;
+            description "The role of the (conceptual) port of the associated Link.";
+        }
         list aggregated-node-edge-point {
             uses node-edge-point-ref;
             key 'topology-uuid node-uuid node-edge-point-uuid';
@@ -314,19 +329,9 @@ module tapi-topology {
             description "A NodeEdgePoint (NEP) may be associated to a ServiceInterfacePoint (SIP), i.e. when the NEP is the resource oriented view of a SIP.
                 NEP mapped to more than one SIP (slicing/virtualizing) or a SIP mapped to more than one NEP (load balancing/resilience) should be considered experimental.";
         }
-        leaf link-port-direction {
-            type tapi-common:port-direction;
-            config false;
-            description "The orientation of flow at the (conceptual) port of the associated Link.";
-        }
-        leaf link-port-role {
-            type tapi-common:port-role;
-            config false;
-            description "The role of the (conceptual) port of the associated Link.";
-        }
         container inter-domain-plug-in-pac {
             uses inter-domain-plug-in-pac;
-            description "none";
+            description "ENNI Identifier.";
         }
         uses tapi-common:global-class;
         uses tapi-common:admin-state-pac;
@@ -648,6 +653,10 @@ module tapi-topology {
     identity TOPOLOGY_OBJECT_TYPE_RULE {
         base TOPOLOGY_OBJECT_TYPE;
         description "The Rule class.";
+    }
+    identity TOPOLOGY_OBJECT_TYPE_NETWORK_TOPOLOGY_SERVICE {
+        base TOPOLOGY_OBJECT_TYPE;
+        description "The NetworkTopologyService class.";
     }
     identity PORT_ROLE_RULE_OPTION {
         description "none";

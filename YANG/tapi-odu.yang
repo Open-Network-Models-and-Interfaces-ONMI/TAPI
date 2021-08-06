@@ -43,8 +43,15 @@ module tapi-odu {
         YANG models included in this release may not be backward compatible with previous TAPI releases.
         Copyright (c) 2021 Open Networking Foundation (ONF). All rights reserved.
         License: This module is distributed under the Apache License 2.0.";
-    revision 2021-05-24 {
+    revision 2021-08-04 {
         description "ONF Transport API version 2.3.
+                   Changes included in this TAPI release (v2.3) are listed in
+                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2021>";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
+                  <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.3/UML>";
+    }
+    revision 2021-05-24 {
+        description "ONF Transport API version 2.3 RC1.
                    Changes included in this TAPI release (v2.3) are listed in
                    <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2021>";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
@@ -509,7 +516,9 @@ module tapi-odu {
             uses odu-mep-status;
             description "none";
         }
-        description "none";
+        description "If the CSEP is OTU CSEP, then
+            1) OTU only: OtuMep,
+            2) OTU and ODUCn: both OtuCep and OduMep.";
     }
     grouping odu-common-pac {
         leaf odu-type {
@@ -614,7 +623,19 @@ module tapi-odu {
             type uint64;
             description "none";
         }
-        description "none";
+        description "Two alternative provisioning scenarios:
+            1) Oam provisioning through CSEPs for 'service' related OAM (QoS) - provisioning joint to ConnectivityService.
+            In this case the ODU MEP and MIP parameters are included (composed) in resp. ODU CEP TTP and CTP instances, i.e. no distinct ODU MEP/MIP instances.
+            This provisioning scenario could apply for:
+            a) NCM MEPs on terminated OTU
+            b) NCM MEPs on terminated ODUCn
+            c) NCM MEPs on terminated ODU/Flex
+            d) NCM MEP and NCM NIM/MIP on semi-terminated ODU/Flex
+            e) TCM MEPs on semi-terminated and non terminated ODU/Flex
+            The Meg related attributes are distributed also to Mep/Mip for this provisioning scenario which does not involve OduOamService/ServicePoints.
+            2) Oam provisioning through OduOamService/ServicePoints for 'maintenance' related OAM. 
+            In this case the distinct ODU MEP and MIP instances are created, referred (by name) by resp. ODU CEP TTP and CTP.
+            This provisioning scenario could apply for TCM or NIM at any segment of the Service.";
     }
     grouping odu-oam-mip-service-point {
         container odu-mip {
@@ -631,7 +652,7 @@ module tapi-odu {
             type uint64;
             description "none";
         }
-        description "none";
+        description "See OduOamMepService point comment.";
     }
     grouping odu-delay-performance-data {
         leaf delay-frame-count {
@@ -703,7 +724,7 @@ module tapi-odu {
             type odu-slot-size;
             description "This attribute is applicable for ODU2 and ODU3 CTP only. It indicates the slot size of the ODU CTP.";
         }
-        description "none";
+        description "Note that the OduType ODU_CN does not apply to OduCsepCommonPac package, as ODUCn is always and only defined within OTU CSEP. ";
     }
     grouping odu-csep-ctp-pac {
         leaf tributary-port-number {
@@ -739,7 +760,7 @@ module tapi-odu {
             uses odu-meg-spec;
             description "none";
         }
-        description "none";
+        description "OduOamService class is used for TCM provisioning.";
     }
     grouping odu-oam-common {
         leaf ex-dapi {
@@ -769,7 +790,9 @@ module tapi-odu {
             description "This attribute indicates the threshold level for declaring a Degraded Signal defect (dDEG). A dDEG shall be declared if DegM consecutive bad PM Seconds are detected.";
         }
         description "Common ODU OAM parameters.
-            Note that the object is read/write or read-only depending on the context, i.e. if is part of CSEP is R/W, while if is part of CEP is read-only.";
+            Note that the object is read/write or read-only depending on the context, i.e. if is part of CSEP is R/W, while if is part of CEP is read-only.
+            Note that both the ODUk and ODUCn contain only one instance of ODU PM TTI overhead and ODU PM DMp overhead.
+            Note that the ODUCn contains n instances of the ODU PM overhead: The OduOamCommon degThr and degM apply to the n instances of ODUCn PM OH.";
     }
     grouping odu-tcm-mep-status {
         leaf tcm-field {
@@ -842,7 +865,9 @@ module tapi-odu {
             uses otsia-mep;
             description "none";
         }
-        description "none";
+        description "If the CSEP is OTU CSEP, then
+            1) OTU only: OtuMep
+            2) OTU and ODUCn: both OtuCep and OduMep";
     }
     grouping otu-mep-status {
         leaf acti {
@@ -905,7 +930,7 @@ module tapi-odu {
             default "1";
             description "This attribute specifies the number of ODUC instances of the ODUCn.";
         }
-        description "none";
+        description "When otuType=OTU_CN then OduCnCsepTtpPac must be instantiated.";
     }
     grouping otu-connection-end-point-spec {
         container otu-ttp-pac {
@@ -916,7 +941,7 @@ module tapi-odu {
             uses odu-cn-ttp-pac;
             description "none";
         }
-        description "none";
+        description "Note that the OTU CEP includes OTSiA 'termination&adaptation'.";
     }
     grouping otu-ttp-pac {
         leaf otu-type {
@@ -969,7 +994,7 @@ module tapi-odu {
         leaf number-of-otsi {
             type uint64;
             default "1";
-            description "none";
+            description "numberOfOTSi shall reflect the number of OTSi-CSEP referenced by OTU-CSEP through CSEPHasAssembledCSEPs association, or the number of OtsiCommonConfigPacs in case of compact model (single CSEP).";
         }
         leaf total-power-warn-threshold-upper {
             type decimal64 {
@@ -983,7 +1008,12 @@ module tapi-odu {
             }
             description "Allows to configure the lower power threshold on whole Assembly scope.";
         }
-        description "none";
+        description "This class is used to specify OTSiA provisioning parameters together with OTU parameters.
+            Alternatively it is possible to avoid the OtuOtsiaCsepTtpPac class by using the ServerConstraint class:
+            - The CSEP instance augmented by OtuConnectivityServiceEndPointSpec is also augmented by the ServerConstraint class
+            - TapiPhotonicMedia:OtsiaCsepTtpPac augments the ServerConstraint class
+            Another alternative is that both OtuConnectivityServiceEndPointSpec and TapiPhotonicMedia:OtsiaCsepTtpPac augment the same CSEP instance.
+            Note that the ServerConstraint class is useful in the case of 'array' augmentations, i.e. when a CSEP instance shall be augmented by more than one instance of a spec class.";
     }
     grouping otsia-mep {
         leaf total-power-warn-threshold-upper {
@@ -1018,10 +1048,12 @@ module tapi-odu {
             description "The ODUCn contains n instances of the ODU PM/TCM overhead, numbered 1 to n (PM #1 to PM #n)/(TCMi #1 to TCMi #n)..
                 This index specify the 2..n instance of the ODUCn PM/TCM overhead.";
         }
-        description "The ODUk contains one instance of ODU PM overhead. The ODUCn contains n instances of the ODU PM overhead, numbered 1 to n (PM #1 to PM #n).
+        description "The ODUk contains one instance of ODU PM overhead.
+            The ODUCn contains n instances of the ODU PM overhead, numbered 1 to n (PM #1 to PM #n).
             The PM #2 to #n fields contain the following subfields:
             - bit interleaved parity (BIP-8)
             - backward error indication (BEI)
+            The ODUk contains one instance of ODU TCM1 to TCM6 overhead.
             The ODUCn contains n instances of the ODU TCM1 to TCM6 overhead, numbered 1 to n (TCMi #1 to TCMi #n).
             Each TCMi #2 to #n field contains the following subfields (see Figure 15-19): 
             - bit interleaved parity 8 (BIP-8);

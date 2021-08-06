@@ -34,8 +34,15 @@ module tapi-photonic-media {
         YANG models included in this release may not be backward compatible with previous TAPI releases.
         Copyright (c) 2021 Open Networking Foundation (ONF). All rights reserved.
         License: This module is distributed under the Apache License 2.0.";
-    revision 2021-05-24 {
+    revision 2021-08-04 {
         description "ONF Transport API version 2.3.
+                   Changes included in this TAPI release (v2.3) are listed in
+                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2021>";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
+                  <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.3/UML>";
+    }
+    revision 2021-05-24 {
+        description "ONF Transport API version 2.3 RC1.
                    Changes included in this TAPI release (v2.3) are listed in
                    <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2021>";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
@@ -466,10 +473,12 @@ module tapi-photonic-media {
         }
         leaf max-number-of-otsi {
             type uint64;
+            config false;
             description "none";
         }
         leaf-list supported-fec-type {
             type string;
+            config false;
             description "Experimental - this is a capability related to OTU client layer.";
         }
         description "Can read the status of the warning for the upper value that the power can reach.";
@@ -583,13 +592,13 @@ module tapi-photonic-media {
             description "none";
         }
         uses tapi-common:local-class;
-        description "none";
+        description "MediaChannelConfigPac and MediaChannelBwConfigPac are mutually exclusive.";
     }
     grouping media-channel-connection-end-point-spec {
         list otsi-mc-properties-pac {
             key 'local-id';
             uses otsi-mc-properties-pac;
-            description "none";
+            description "In case of 'MC only' scenario, where OtsiMc CEP(s) is(are) not present.";
         }
         container mc-cep-pac {
             uses mc-cep-pac;
@@ -650,21 +659,25 @@ module tapi-photonic-media {
     }
     grouping power-management-capability-pac {
         container supportable-maximum-output-power {
+            config false;
             uses power-properties;
             description "This parameter exposes the maximum output power supported
                 at the Logical-Termination-Point (LTP) associated to the SIP.";
         }
         container supportable-minimum-output-power {
+            config false;
             uses power-properties;
             description "This parameter exposes the minimum output power supported
                 at the Logical-Termination-Point (LTP) associated to the SIP.";
         }
         container tolerable-maximum-input-power {
+            config false;
             uses power-properties;
             description "This parameter exposes the maximum input power tolerated
                 at the Logical-Termination-Point (LTP) associated to the SIP.";
         }
         container tolerable-minimum-input-power {
+            config false;
             uses power-properties;
             description "This parameter exposes the minimum input power tolerated
                 at the Logical-Termination-Point (LTP) associated to the SIP.";
@@ -676,27 +689,26 @@ module tapi-photonic-media {
     grouping power-management-config-pac {
         container intended-maximum-output-power {
             uses power-properties;
-            description "This parameter shall be used to specify the maximum output power
-                desired at the Logical-Termination-Point (LTP) associated to the CSEP.";
+            description "This parameter shall be used to specify the maximum intended power to be delivered to the local transceiver i.e., after the signal has crossed the amplification/attenuation of the optical line system.
+                This specifies constraints related to power that the OLS should guarantee.
+                ";
         }
         container intended-minimum-output-power {
             uses power-properties;
-            description "This parameter shall be used to specify the minimum output power
-                desired at the Logical-Termination-Point (LTP) associated to the CSEP.";
+            description "This parameter shall be used to specify the minimum intended power to be delivered to the local transceiver i.e., after the signal has crossed the amplification/attenuation of the optical line system.
+                This specifies constraints related to power that the OLS should guarantee.";
         }
         container expected-maximum-input-power {
             uses power-properties;
-            description "This parameter shall be used to specify the maximum input power
-                being received at the Logical-Termination-Point (LTP) associated to the CSEP.";
+            description "This parameter conveys the attached transceiver max launch (TX) power (expected from the transceiver).
+                This specifies constraints related to power tolerance at the input.";
         }
         container expected-minimum-input-power {
             uses power-properties;
-            description "This parameter shall be used to specify the minimum input power
-                being received at the Logical-Termination-Point (LTP) associated to the CSEP.";
+            description "This parameter conveys the attached transceiver min launch (TX) power (expected from the transceiver).
+                This specifies constraints related to power tolerance at the input.";
         }
-        description "This pac includes power management constrains which can be included
-            as part of the characterization of the Connectivity-Service-End-Points
-            associated to Logical-Termination-Points (LTPs) at the PHOTONIC_MEDIA layer.";
+        description "This pac includes power management constrains which can be included as part of the characterization of the CSEPs associated to CEPs at the PHOTONIC_MEDIA layer.";
     }
     grouping otsi-mc-config-pac {
         container spectrum {
@@ -721,7 +733,7 @@ module tapi-photonic-media {
             description "none";
         }
         uses tapi-common:local-class;
-        description "none";
+        description "OtsiMcBwConfigPac, OtsiMcConfigPac and OtsiMcFreqConfigPac are mutually exclusive.";
     }
     grouping otsi-mc-bw-config-pac {
         container capacity {
@@ -754,7 +766,7 @@ module tapi-photonic-media {
             description "none";
         }
         uses tapi-common:local-class;
-        description "none";
+        description "OtsiMcBwConfigPac, OtsiMcConfigPac and OtsiMcFreqConfigPac are mutually exclusive.";
     }
     grouping otsi-mcg-connectivity-service-end-point-spec {
         list otsi-mc-bw-config-pac {
@@ -772,7 +784,8 @@ module tapi-photonic-media {
             uses otsi-mc-freq-config-pac;
             description "none";
         }
-        description "none";
+        description "OTSiMCG CSEP is provisioned also in case OTSiMC layer is not explicitly represented on Resource side, i.e. no OTSiMC Connections and CEPs are instantiated.
+            OTSiMCG provisioning scenarios: analogous to McgConnectivityServiceEndPointSpec provisioning scenarios.";
     }
     grouping media-channel-bw-config-pac {
         container capacity {
@@ -792,7 +805,7 @@ module tapi-photonic-media {
             description "none";
         }
         uses tapi-common:local-class;
-        description "none";
+        description "MediaChannelConfigPac and MediaChannelBwConfigPac are mutually exclusive.";
     }
     grouping mcg-connectivity-service-end-point-spec {
         leaf number-of-mc {
@@ -810,7 +823,12 @@ module tapi-photonic-media {
             uses media-channel-bw-config-pac;
             description "none";
         }
-        description "none";
+        description "MCG provisioning scenarios:
+            1) In case of MCG provisioning based on multiple SIPs (e.g. more add/drop ports each one potentially supporting a single OTSi), to maintain the rule that a CSEP is supported by an unique SIP,
+            then the McgConnectivityServiceEndPointSpec CSEP instance does not include any package, but refers to the MediaChannelConnectivityServiceEndPointSpec CSEP instances (one per each OMS Link) through the CSEPHasAssembledCSEPs  association.
+            The MediaChannelConnectivityServiceEndPointSpec CSEP instance(s) include its(their) Media Channel Config Pacs.
+            2) In case of MCG provisioning based on single SIP, then the model is compacted into only one CSEP instance, augmented by McgConnectivityServiceEndPointSpec, which directly composes one or more Media Channel Config Pacs.
+            MediaChannelConfigPac and MediaChannelBwConfigPac are mutually exclusive.";
     }
     grouping otsia-csep-ttp-pac {
         list otsi-common-config-pac {
@@ -845,7 +863,17 @@ module tapi-photonic-media {
             }
             description "Allows to configure the lower power threshold on whole Assembly scope.";
         }
-        description "none";
+        description "OTU/OTSiG provisioning scenarios:
+            1) In case of OTU/OTSiG provisioning based on multiple SIPs (e.g. more line ports each one supporting a single OTSi), to maintain the rule that a CSEP is supported by an unique SIP, then the Assembly model is moved up to TapiOdu OTU+OTSiA CSEP instance.
+            This OTU+OTSiA CSEP instance (CSEP augmented by OtuConnectivityServiceEndPointSpec + OtuOtsiaCsepTtpPac) will refer to the OTSi CSEP instances (CSEPs augmented by OtsiConnectivityServiceEndPointSpec) through CSEPHasAssembledCSEPs association.
+            1.1) Alternative model is based on ServerConstraint package of CSEP. In this case, the OTU+OTSiA CSEP instance
+            a) is augmented by the OtuConnectivityServiceEndPointSpec,
+            b) includes / composes the ServerConstraint package, which is augmented by the OtsiaCsepTtpPac.
+            1.2) Alternative model based on OTU+OTSiA CSEP instance being directly augmented by both OtuConnectivityServiceEndPointSpec and OtsiaCsepTtpPac.
+            2) In case of OTU/OTSiG provisioning based on a single SIP, then the Assembly model is moved down to the 'server' CSEP instance.
+            In other words, the OTU CSEP instance (augmented by OtuConnectivityServiceEndPointSpec), refers to a 'server' CSEP instance (through CSEPHasServerCSEP association) augmented by OtsiaCsepTtpPac, which directly composes one or more OtsiCommonConfigPac.
+            2.1) Alternative model is based on ServerConstraint package of CSEP, see case 1.1) above, with OtsiaCsepTtpPac which directly composes one or more OtsiCommonConfigPac.
+            2.2) See case 1.2) above, with OtsiaCsepTtpPac which directly composes one or more OtsiCommonConfigPac.";
     }
     grouping otsi-mc-connection-end-point-spec {
         container otsi-mc-properties-pac {
@@ -931,7 +959,7 @@ module tapi-photonic-media {
             description "none";
         }
         uses tapi-common:local-class;
-        description "none";
+        description "OtsiMcBwConfigPac, OtsiMcConfigPac and OtsiMcFreqConfigPac are mutually exclusive.";
     }
     grouping otsi-spectr-config-pac {
         container spectrum {

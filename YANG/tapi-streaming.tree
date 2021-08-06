@@ -35,7 +35,7 @@ module: tapi-streaming
           +--ro stream-type-name?              string
           +--ro record-retention?              string
           +--ro segment-size?                  string
-          +--ro record-content*                object-class-identifier
+          +--ro stream-type-content*           tapi-common:object-type
           +--ro log-storage-strategy?          log-storage-strategy
           +--ro log-record-strategy?           log-record-strategy
           +--ro uuid                           uuid
@@ -72,7 +72,7 @@ module: tapi-streaming
              +--ro stream-type-name?       string
              +--ro record-retention?       string
              +--ro segment-size?           string
-             +--ro record-content*         object-class-identifier
+             +--ro stream-type-content*    tapi-common:object-type
              +--ro log-storage-strategy?   log-storage-strategy
              +--ro log-record-strategy?    log-record-strategy
              +--ro uuid?                   uuid
@@ -104,13 +104,13 @@ module: tapi-streaming
              |  +--ro value-name    string
              |  +--ro value?        string
              +--ro parent-address*                      string
-             +--ro record-content?                      object-class-identifier
+             +--ro record-content?                      tapi-common:object-type
              +--rw condition-detector {tapi-streaming}?
              |  +--ro condition-native-name?             string
              |  +--ro measured-entity-uuid?              tapi-common:uuid
              |  +--ro measured-entity-native-id?         string
              |  +--ro condition-normalized-name?         string
-             |  +--ro measured-entity-class?             object-class-identifier
+             |  +--ro measured-entity-class?             tapi-common:object-type
              |  +--ro detector-uuid?                     tapi-common:uuid
              |  +--ro detector-native-id?                string
              |  +--ro condition-detector-type?           condition-detector-type
@@ -158,7 +158,7 @@ module: tapi-streaming
              |  +--ro stream-type-name?       string
              |  +--ro record-retention?       string
              |  +--ro segment-size?           string
-             |  +--ro record-content*         object-class-identifier
+             |  +--ro stream-type-content*    tapi-common:object-type
              |  +--ro log-storage-strategy?   log-storage-strategy
              |  +--ro log-record-strategy?    log-record-strategy
              |  +--ro uuid?                   uuid
@@ -1057,6 +1057,13 @@ module: tapi-streaming
              |  +--ro oam-service-point* [oam-service-uuid oam-service-point-local-id]
              |  |  +--ro oam-service-uuid              -> /tapi-common:context/tapi-oam:oam-context/oam-service/uuid
              |  |  +--ro oam-service-point-local-id    -> /tapi-common:context/tapi-oam:oam-context/oam-service/oam-service-point/local-id
+             |  +--ro connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
+             |  |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+             |  |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+             |  |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+             |  |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
+             |  +--ro connectivity-service
+             |  |  +--ro connectivity-service-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
              |  +--ro oam-profile
              |  |  +--ro oam-profile-uuid?   -> /tapi-common:context/tapi-oam:oam-context/oam-profile/uuid
              |  +--ro current-data* [local-id]
@@ -1541,14 +1548,14 @@ module: tapi-streaming
              |  |  |  +--ro capacity
              |  |  |     +--ro value?   uint64
              |  |  |     +--ro unit?    capacity-unit
+             |  |  +--ro link-port-direction?              tapi-common:port-direction
+             |  |  +--ro link-port-role?                   tapi-common:port-role
              |  |  +--ro aggregated-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
              |  |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
              |  |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
              |  |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
              |  |  +--ro mapped-service-interface-point* [service-interface-point-uuid]
              |  |  |  +--ro service-interface-point-uuid    -> /tapi-common:context/service-interface-point/uuid
-             |  |  +--ro link-port-direction?              tapi-common:port-direction
-             |  |  +--ro link-port-role?                   tapi-common:port-role
              |  |  +--ro inter-domain-plug-in-pac
              |  |  |  +--ro inter-domain-plug-id-sapi?   string
              |  |  |  +--ro inter-domain-plug-id-dapi?   string
@@ -1735,14 +1742,14 @@ module: tapi-streaming
              |  |  |  |  +--ro capacity
              |  |  |  |     +--ro value?   uint64
              |  |  |  |     +--ro unit?    capacity-unit
+             |  |  |  +--ro link-port-direction?              tapi-common:port-direction
+             |  |  |  +--ro link-port-role?                   tapi-common:port-role
              |  |  |  +--ro aggregated-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
              |  |  |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
              |  |  |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
              |  |  |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
              |  |  |  +--ro mapped-service-interface-point* [service-interface-point-uuid]
              |  |  |  |  +--ro service-interface-point-uuid    -> /tapi-common:context/service-interface-point/uuid
-             |  |  |  +--ro link-port-direction?              tapi-common:port-direction
-             |  |  |  +--ro link-port-role?                   tapi-common:port-role
              |  |  |  +--ro inter-domain-plug-in-pac
              |  |  |  |  +--ro inter-domain-plug-id-sapi?   string
              |  |  |  |  +--ro inter-domain-plug-id-dapi?   string
@@ -1985,14 +1992,14 @@ module: tapi-streaming
              |  |  +--ro capacity
              |  |     +--ro value?   uint64
              |  |     +--ro unit?    capacity-unit
+             |  +--ro link-port-direction?              tapi-common:port-direction
+             |  +--ro link-port-role?                   tapi-common:port-role
              |  +--ro aggregated-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
              |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
              |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
              |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
              |  +--ro mapped-service-interface-point* [service-interface-point-uuid]
              |  |  +--ro service-interface-point-uuid    -> /tapi-common:context/service-interface-point/uuid
-             |  +--ro link-port-direction?              tapi-common:port-direction
-             |  +--ro link-port-role?                   tapi-common:port-role
              |  +--ro inter-domain-plug-in-pac
              |  |  +--ro inter-domain-plug-id-sapi?   string
              |  |  +--ro inter-domain-plug-id-dapi?   string

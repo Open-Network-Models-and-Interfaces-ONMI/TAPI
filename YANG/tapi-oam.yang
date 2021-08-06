@@ -34,8 +34,15 @@ module tapi-oam {
         YANG models included in this release may not be backward compatible with previous TAPI releases.
         Copyright (c) 2021 Open Networking Foundation (ONF). All rights reserved.
         License: This module is distributed under the Apache License 2.0.";
-    revision 2021-05-24 {
+    revision 2021-08-04 {
         description "ONF Transport API version 2.3.
+                   Changes included in this TAPI release (v2.3) are listed in
+                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2021>";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
+                  <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.3/UML>";
+    }
+    revision 2021-05-24 {
+        description "ONF Transport API version 2.3 RC1.
                    Changes included in this TAPI release (v2.3) are listed in
                    <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2021>";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
@@ -97,6 +104,13 @@ module tapi-oam {
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 6020, RFC 6087 and ONF TAPI UML model
                   <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.0.0/UML>";
     }
+    augment "/tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service" {
+        container connectivity-oam-job {
+            uses connectivity-oam-job;
+            description "none";
+        }
+        description "none";
+    }
     augment "/tapi-common:context" {
         container oam-context {
             uses oam-context;
@@ -107,13 +121,6 @@ module tapi-oam {
     augment "/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point" {
         container mep-mip-list {
             uses mep-mip-list;
-            description "none";
-        }
-        description "none";
-    }
-    augment "/tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service" {
-        container connectivity-oam-job {
-            uses connectivity-oam-job;
             description "none";
         }
         description "none";
@@ -248,6 +255,15 @@ module tapi-oam {
             key 'oam-service-uuid oam-service-point-local-id';
             min-elements 1;
             description "The OamServicePoint (OSP) instances involved in the OamJob.";
+        }
+        list connection-end-point {
+            uses tapi-connectivity:connection-end-point-ref;
+            key 'topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid';
+            description "none";
+        }
+        container connectivity-service {
+            uses tapi-connectivity:connectivity-service-ref;
+            description "In case the OamJob instance is not related to any OamService/Point but created together with ConnectivityService through ConnectivityOamJob augment.";
         }
         container oam-profile {
             uses oam-profile-ref;
@@ -608,6 +624,10 @@ module tapi-oam {
     identity OAM_OBJECT_TYPE_HISTORY_DATA {
         base OAM_OBJECT_TYPE;
         description "The HistoryData class.";
+    }
+    identity OAM_OBJECT_TYPE_PM_THRESHOLD_DATA {
+        base OAM_OBJECT_TYPE;
+        description "The PmThresholdData class.";
     }
     typedef oam-job-type {
         type identityref {
