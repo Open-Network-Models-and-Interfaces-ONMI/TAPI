@@ -9,12 +9,6 @@ Copyright (c) 2021 Open Networking Foundation (ONF). All rights reserved.&#xD;
 License: This module is distributed under the Apache License 2.0</body>
     </ownedComment>
     <packagedElement xmi:type="uml:Package" xmi:id="_KjQ3oBKOEeajhbtskMXJfw" name="Associations">
-      <packagedElement xmi:type="uml:Association" xmi:id="_KjQ3phKOEeajhbtskMXJfw" name="OtsiCepHasTerminationPac" memberEnd="_KjQ3pxKOEeajhbtskMXJfw _KjQ3sRKOEeajhbtskMXJfw">
-        <ownedEnd xmi:type="uml:Property" xmi:id="_KjQ3pxKOEeajhbtskMXJfw" name="_otsiTerminationPac" type="_KjQ3rRKOEeajhbtskMXJfw" association="_KjQ3phKOEeajhbtskMXJfw">
-          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_KjQ3qBKOEeajhbtskMXJfw" value="1"/>
-          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_KjQ3qRKOEeajhbtskMXJfw" value="1"/>
-        </ownedEnd>
-      </packagedElement>
       <packagedElement xmi:type="uml:Association" xmi:id="_hv9NsNnYEeWIOYiRCk5bbQ" name="McNepHasMcPoolPac" memberEnd="_hv9Ns9nYEeWIOYiRCk5bbQ _hv9NtdnYEeWIOYiRCk5bbQ">
         <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_hv9NsdnYEeWIOYiRCk5bbQ" source="org.eclipse.papyrus">
           <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_hv9NstnYEeWIOYiRCk5bbQ" key="nature" value="UML_Nature"/>
@@ -420,9 +414,18 @@ License: This module is distributed under the Apache License 2.0</body>
         <body>In case of &quot;MC only&quot; scenario, where OtsiMc CEP(s) is(are) not present </body>
       </ownedComment>
       <ownedComment xmi:type="uml:Comment" xmi:id="_NKVOsCTtEeuOI7jLVfF7jA">
-        <body>In case of OTU/OTSiG provisioning based on multiple SIPs (e.g. more line ports each one supporting a single OTSi), to maintain the rule that a CSEP is supported by an unique SIP, then the Assembly model is moved to TapiOdu OtuConnectivityServiceEndPointSpec.&#xD;
-This OTU+OTSiA CSEP will refer to the OTSi CSEPs through CSEP-assembles-CSEPs association.&#xD;
-In case of OTU/OTSiG provisioning based on a single SIP, then the model is compacted into only one CSEP, the OtsiaCsepTtpPac (which augments TapiOdu:OtuOtsiaCsepTtpPac), which directly composes one or more OtsiCommonConfigPac.</body>
+        <body>OTU/OTSiG provisioning scenarios:&#xD;
+1) In case of OTU/OTSiG provisioning based on multiple SIPs (e.g. more line ports each one supporting a single OTSi), to maintain the rule that a CSEP is supported by an unique SIP, then the Assembly model is moved up to TapiOdu OTU+OTSiA CSEP instance.&#xD;
+This OTU+OTSiA CSEP instance (CSEP augmented by OtuConnectivityServiceEndPointSpec + OtuOtsiaCsepTtpPac) will refer to the OTSi CSEP instances (CSEPs augmented by OtsiConnectivityServiceEndPointSpec) through CSEPHasAssembledCSEPs association.&#xD;
+1.1) Alternative model is based on ServerConstraint package of CSEP. In this case, the OTU+OTSiA CSEP instance&#xD;
+a) is augmented by the OtuConnectivityServiceEndPointSpec,&#xD;
+b) includes / composes the ServerConstraint package, which is augmented by the OtsiaCsepTtpPac.&#xD;
+1.2) Alternative model based on OTU+OTSiA CSEP instance being directly augmented by both OtuConnectivityServiceEndPointSpec and OtsiaCsepTtpPac.&#xD;
+&#xD;
+&#xD;
+2) In case of OTU/OTSiG provisioning based on a single SIP, then the Assembly model is moved down to the &quot;server&quot; CSEP instance. In other words, the OTU CSEP instance (augmented by OtuConnectivityServiceEndPointSpec), refers to a &quot;server&quot; CSEP instance (through CSEPHasServerCSEP association) augmented by OtsiaCsepTtpPac, which directly composes one or more OtsiCommonConfigPac.&#xD;
+2.1) Alternative model is based on ServerConstraint package of CSEP, see case 1.1) above, with OtsiaCsepTtpPac which directly composes one or more OtsiCommonConfigPac.&#xD;
+2.2) See case 1.2) above, with OtsiaCsepTtpPac which directly composes one or more OtsiCommonConfigPac.</body>
       </ownedComment>
       <ownedComment xmi:type="uml:Comment" xmi:id="_WpGdsCzZEeuDjaKhL26inA">
         <body>draft-ietf-ccamp-optical-impairment-topology-yang-06:&#xD;
@@ -450,10 +453,10 @@ o currently received channel power</body>
         <body>OtsiaCsepTtpPac could augment a DSR CEP in case of direct photonic to DSR adaptation (i.e. no OTN layer network).</body>
       </ownedComment>
       <ownedComment xmi:type="uml:Comment" xmi:id="_hMNvMDsTEeu2XeyB7yzYZA">
-        <body>In case of MCG provisioning based on multiple SIPs (e.g. more add/drop ports each one potentially supporting a single OTSi), to maintain the rule that a CSEP is supported by an unique SIP,&#xD;
-then the McgConnectivityServiceEndPointSpec CSEP instance does not include any package, but refers to the MediaChannelConnectivityServiceEndPointSpec instances (one per each OMS Link) through CSEP-assembles-CSEP association.&#xD;
-The MediaChannelConnectivityServiceEndPointSpec CSEP instance(s) include its(their) MC-Config Pacs.&#xD;
-In case of MCG provisioning based on single SIP, then the model is compacted into only one CSEP instance, the McgConnectivityServiceEndPointSpec, which directly composes one or more MC-Config Pacs.</body>
+        <body>MCG provisioning scenarios:&#xD;
+1) In case of MCG provisioning based on multiple SIPs (e.g. more add/drop ports each one potentially supporting a single OTSi), to maintain the rule that a CSEP is supported by an unique SIP, then the McgConnectivityServiceEndPointSpec CSEP instance does not include any package, but refers to the MediaChannelConnectivityServiceEndPointSpec CSEP instances (one per each OMS Link) through CSEPHasAssembledCSEPs  association.&#xD;
+The MediaChannelConnectivityServiceEndPointSpec CSEP instance(s) include its(their) Media Channel Config Pacs.&#xD;
+2) In case of MCG provisioning based on single SIP, then the model is compacted into only one CSEP instance, augmented by McgConnectivityServiceEndPointSpec, which directly composes one or more Media Channel Config Pacs.</body>
       </ownedComment>
       <ownedComment xmi:type="uml:Comment" xmi:id="_-UsyYDtBEeu2XeyB7yzYZA">
         <body>OtsiMcBwConfigPac, OtsiMcConfigPac and OtsiMcFreqConfigPac are mutually exclusive.</body>
@@ -467,20 +470,16 @@ In case of MCG provisioning based on single SIP, then the model is compacted int
       <ownedComment xmi:type="uml:Comment" xmi:id="_Vcv_8JMOEeu0RJTv6EZbHg">
         <body>o currently received total power</body>
       </ownedComment>
-      <ownedComment xmi:type="uml:Comment" xmi:id="_ZG0CIKzREeuX1783-GkXZQ">
-        <body>In case of ODUCn, it could be expected an increase of supporting OTSi, hence OTSi CSEP is created even if supported by single SIP, specially if the SIP is single-lambda.</body>
-      </ownedComment>
-      <ownedComment xmi:type="uml:Comment" xmi:id="_e-dyAKzREeuX1783-GkXZQ">
-        <body>The OTU+OTSiA CSEP can be modeled by the OtsiaCsepTtpPac augmenting ServerConstraint class of OtuConnectivityServiceEndPointSpec CSEP instance.&#xD;
-Doing so the OtuOtsiaCsepTtpPac can be deleted and its attributes moved to OtsiaCsepTtpPac.</body>
-      </ownedComment>
+      <packagedElement xmi:type="uml:Association" xmi:id="_0iylQPyVEeuQN9hw20b53g" name="OtsiCepHasTerminationPac" memberEnd="_0i4E0PyVEeuQN9hw20b53g _0jCc4fyVEeuQN9hw20b53g">
+        <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_0i2PoPyVEeuQN9hw20b53g" source="org.eclipse.papyrus">
+          <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_0i2PofyVEeuQN9hw20b53g" key="nature" value="UML_Nature"/>
+        </eAnnotations>
+        <ownedEnd xmi:type="uml:Property" xmi:id="_0jCc4fyVEeuQN9hw20b53g" name="otsiconnectionendpointspec" type="_KjQ3rRKOEeajhbtskMXJfw" association="_0iylQPyVEeuQN9hw20b53g"/>
+      </packagedElement>
     </packagedElement>
     <packagedElement xmi:type="uml:Package" xmi:id="_bTHgIBKOEeajhbtskMXJfw" name="ObjectClasses">
       <packagedElement xmi:type="uml:Class" xmi:id="_KjQ3rRKOEeajhbtskMXJfw" name="OtsiConnectionEndPointSpec">
-        <ownedAttribute xmi:type="uml:Property" xmi:id="_KjQ3sRKOEeajhbtskMXJfw" name="_otsiTermination" type="_KjQ3tBKOEeajhbtskMXJfw" isReadOnly="true" aggregation="composite" association="_KjQ3phKOEeajhbtskMXJfw">
-          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_KjQ3shKOEeajhbtskMXJfw" value="1"/>
-          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_KjQ3sxKOEeajhbtskMXJfw" value="1"/>
-        </ownedAttribute>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="_0i4E0PyVEeuQN9hw20b53g" name="_otsiTerminationPac" type="_KjQ3tBKOEeajhbtskMXJfw" aggregation="composite" association="_0iylQPyVEeuQN9hw20b53g"/>
       </packagedElement>
       <packagedElement xmi:type="uml:Class" xmi:id="_KjQ3tBKOEeajhbtskMXJfw" name="OtsiTerminationPac">
         <ownedComment xmi:type="uml:Comment" xmi:id="_9cw2ALKhEei69qzpcujF2A" annotatedElement="_KjQ3tBKOEeajhbtskMXJfw">
@@ -593,10 +592,10 @@ central frequencies supported within the band.</body>
         <ownedAttribute xmi:type="uml:Property" xmi:id="_eIOh8rs6Eeiljfl0umr-iQ" name="_totalPowerThresholdPac" type="_sPmrcLTbEeiF8sBzK2t1Sw" isReadOnly="true" aggregation="composite" association="_eDYeMLs6Eeiljfl0umr-iQ">
           <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_eIUokbs6Eeiljfl0umr-iQ"/>
         </ownedAttribute>
-        <ownedAttribute xmi:type="uml:Property" xmi:id="_meFyYKXYEeu37eHxH-5cyQ" name="maxNumberOfOtsi">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="_meFyYKXYEeu37eHxH-5cyQ" name="maxNumberOfOtsi" isReadOnly="true">
           <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
         </ownedAttribute>
-        <ownedAttribute xmi:type="uml:Property" xmi:id="_2pHJ8LRGEeuCSuivI1LD1Q" name="supportedFecType">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="_2pHJ8LRGEeuCSuivI1LD1Q" name="supportedFecType" isReadOnly="true">
           <ownedComment xmi:type="uml:Comment" xmi:id="_JKLRYLRHEeuCSuivI1LD1Q" annotatedElement="_2pHJ8LRGEeuCSuivI1LD1Q">
             <body>Experimental - this is a capability related to OTU client layer.</body>
           </ownedComment>
@@ -706,6 +705,9 @@ central frequencies supported within the band.</body>
         </ownedAttribute>
       </packagedElement>
       <packagedElement xmi:type="uml:Class" xmi:id="_awx_YJmYEeiOmuqNbykpsw" name="MediaChannelConfigPac">
+        <ownedComment xmi:type="uml:Comment" xmi:id="_0aQgAPOwEeuKX89QII2qWg" annotatedElement="_awx_YJmYEeiOmuqNbykpsw">
+          <body>MediaChannelConfigPac and MediaChannelBwConfigPac are mutually exclusive.</body>
+        </ownedComment>
         <generalization xmi:type="uml:Generalization" xmi:id="_CwGNsByYEeuIEMxgcF5NNA">
           <general xmi:type="uml:Class" href="TapiCommon.uml#_UhrZoN8qEeWT9tG0gGLRFw"/>
         </generalization>
@@ -722,6 +724,9 @@ central frequencies supported within the band.</body>
       </packagedElement>
       <packagedElement xmi:type="uml:Class" xmi:id="_aiExkJozEeiOmuqNbykpsw" name="MediaChannelConnectionEndPointSpec">
         <ownedAttribute xmi:type="uml:Property" xmi:id="_p8QuIh07EeuIEMxgcF5NNA" name="_otsiMcPropertiesPac" type="_qQVLkB05EeuIEMxgcF5NNA" aggregation="composite" association="_p8PgAB07EeuIEMxgcF5NNA">
+          <ownedComment xmi:type="uml:Comment" xmi:id="_OcZZIPPmEeuKX89QII2qWg" annotatedElement="_p8QuIh07EeuIEMxgcF5NNA">
+            <body>In case of &quot;MC only&quot; scenario, where OtsiMc CEP(s) is(are) not present.</body>
+          </ownedComment>
           <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_p8U_kR07EeuIEMxgcF5NNA" value="*"/>
         </ownedAttribute>
         <ownedAttribute xmi:type="uml:Property" xmi:id="_KDf6wKxfEeuX1783-GkXZQ" name="_mcCepPac" type="_1K4tIKxeEeuX1783-GkXZQ" aggregation="composite" association="_KDc3cKxfEeuX1783-GkXZQ">
@@ -788,25 +793,25 @@ central frequencies supported within the band.</body>
 exposed as part of the characterization of the different LTPs&#xD;
 at the PHOTONIC_MEDIA layer.</body>
         </ownedComment>
-        <ownedAttribute xmi:type="uml:Property" xmi:id="_zsrDAFJlEemV99d_1db7sQ" name="supportableMaximumOutputPower" type="_4sZ_UFJYEemV99d_1db7sQ">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="_zsrDAFJlEemV99d_1db7sQ" name="supportableMaximumOutputPower" type="_4sZ_UFJYEemV99d_1db7sQ" isReadOnly="true">
           <ownedComment xmi:type="uml:Comment" xmi:id="_4k9noFJlEemV99d_1db7sQ" annotatedElement="_zsrDAFJlEemV99d_1db7sQ">
             <body>This parameter exposes the maximum output power supported&#xD;
 at the Logical-Termination-Point (LTP) associated to the SIP.</body>
           </ownedComment>
         </ownedAttribute>
-        <ownedAttribute xmi:type="uml:Property" xmi:id="_9JQSMFJlEemV99d_1db7sQ" name="supportableMinimumOutputPower" type="_4sZ_UFJYEemV99d_1db7sQ">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="_9JQSMFJlEemV99d_1db7sQ" name="supportableMinimumOutputPower" type="_4sZ_UFJYEemV99d_1db7sQ" isReadOnly="true">
           <ownedComment xmi:type="uml:Comment" xmi:id="_AXskIFJmEemV99d_1db7sQ" annotatedElement="_9JQSMFJlEemV99d_1db7sQ">
             <body>This parameter exposes the minimum output power supported&#xD;
 at the Logical-Termination-Point (LTP) associated to the SIP.</body>
           </ownedComment>
         </ownedAttribute>
-        <ownedAttribute xmi:type="uml:Property" xmi:id="_E5FEoFJmEemV99d_1db7sQ" name="tolerableMaximumInputPower" type="_4sZ_UFJYEemV99d_1db7sQ">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="_E5FEoFJmEemV99d_1db7sQ" name="tolerableMaximumInputPower" type="_4sZ_UFJYEemV99d_1db7sQ" isReadOnly="true">
           <ownedComment xmi:type="uml:Comment" xmi:id="_IKDtMFJmEemV99d_1db7sQ" annotatedElement="_E5FEoFJmEemV99d_1db7sQ">
             <body>This parameter exposes the maximum input power tolerated&#xD;
 at the Logical-Termination-Point (LTP) associated to the SIP.</body>
           </ownedComment>
         </ownedAttribute>
-        <ownedAttribute xmi:type="uml:Property" xmi:id="_L_1E4FJmEemV99d_1db7sQ" name="tolerableMinimumInputPower" type="_4sZ_UFJYEemV99d_1db7sQ">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="_L_1E4FJmEemV99d_1db7sQ" name="tolerableMinimumInputPower" type="_4sZ_UFJYEemV99d_1db7sQ" isReadOnly="true">
           <ownedComment xmi:type="uml:Comment" xmi:id="_T4cm8FJmEemV99d_1db7sQ" annotatedElement="_L_1E4FJmEemV99d_1db7sQ">
             <body>This parameter exposes the minimum input power tolerated&#xD;
 at the Logical-Termination-Point (LTP) associated to the SIP.</body>
@@ -815,36 +820,39 @@ at the Logical-Termination-Point (LTP) associated to the SIP.</body>
       </packagedElement>
       <packagedElement xmi:type="uml:Class" xmi:id="_BnH2kFJkEemV99d_1db7sQ" name="PowerManagementConfigPac">
         <ownedComment xmi:type="uml:Comment" xmi:id="_57x0IFJmEemV99d_1db7sQ" annotatedElement="_BnH2kFJkEemV99d_1db7sQ">
-          <body>This pac includes power management constrains which can be included&#xD;
-as part of the characterization of the Connectivity-Service-End-Points&#xD;
-associated to Logical-Termination-Points (LTPs) at the PHOTONIC_MEDIA layer.</body>
+          <body>This pac includes power management constrains which can be included as part of the characterization of the CSEPs associated to CEPs at the PHOTONIC_MEDIA layer.</body>
         </ownedComment>
         <ownedAttribute xmi:type="uml:Property" xmi:id="_aiF0cFJmEemV99d_1db7sQ" name="intendedMaximumOutputPower" type="_4sZ_UFJYEemV99d_1db7sQ">
           <ownedComment xmi:type="uml:Comment" xmi:id="_dMPtkFJmEemV99d_1db7sQ" annotatedElement="_aiF0cFJmEemV99d_1db7sQ">
-            <body>This parameter shall be used to specify the maximum output power&#xD;
-desired at the Logical-Termination-Point (LTP) associated to the CSEP.</body>
+            <body>This parameter shall be used to specify the maximum intended power to be delivered to the local transceiver i.e., after the signal has crossed the amplification/attenuation of the optical line system.&#xD;
+This specifies constraints related to power that the OLS should guarantee.&#xD;
+&#xD;
+</body>
           </ownedComment>
         </ownedAttribute>
         <ownedAttribute xmi:type="uml:Property" xmi:id="_g5liAFJmEemV99d_1db7sQ" name="intendedMinimumOutputPower" type="_4sZ_UFJYEemV99d_1db7sQ">
           <ownedComment xmi:type="uml:Comment" xmi:id="_jwOX8FJmEemV99d_1db7sQ" annotatedElement="_g5liAFJmEemV99d_1db7sQ">
-            <body>This parameter shall be used to specify the minimum output power&#xD;
-desired at the Logical-Termination-Point (LTP) associated to the CSEP.</body>
+            <body>This parameter shall be used to specify the minimum intended power to be delivered to the local transceiver i.e., after the signal has crossed the amplification/attenuation of the optical line system.&#xD;
+This specifies constraints related to power that the OLS should guarantee.</body>
           </ownedComment>
         </ownedAttribute>
         <ownedAttribute xmi:type="uml:Property" xmi:id="_oFiyYFJmEemV99d_1db7sQ" name="expectedMaximumInputPower" type="_4sZ_UFJYEemV99d_1db7sQ">
           <ownedComment xmi:type="uml:Comment" xmi:id="_rRrXMFJmEemV99d_1db7sQ" annotatedElement="_oFiyYFJmEemV99d_1db7sQ">
-            <body>This parameter shall be used to specify the maximum input power&#xD;
-being received at the Logical-Termination-Point (LTP) associated to the CSEP.</body>
+            <body>This parameter conveys the attached transceiver max launch (TX) power (expected from the transceiver).&#xD;
+This specifies constraints related to power tolerance at the input.</body>
           </ownedComment>
         </ownedAttribute>
         <ownedAttribute xmi:type="uml:Property" xmi:id="_vVoU0FJmEemV99d_1db7sQ" name="expectedMinimumInputPower" type="_4sZ_UFJYEemV99d_1db7sQ">
           <ownedComment xmi:type="uml:Comment" xmi:id="_ybMXkFJmEemV99d_1db7sQ" annotatedElement="_vVoU0FJmEemV99d_1db7sQ">
-            <body>This parameter shall be used to specify the minimum input power&#xD;
-being received at the Logical-Termination-Point (LTP) associated to the CSEP.</body>
+            <body>This parameter conveys the attached transceiver min launch (TX) power (expected from the transceiver).&#xD;
+This specifies constraints related to power tolerance at the input.</body>
           </ownedComment>
         </ownedAttribute>
       </packagedElement>
       <packagedElement xmi:type="uml:Class" xmi:id="_xD0CoB0aEeuIEMxgcF5NNA" name="OtsiMcConfigPac">
+        <ownedComment xmi:type="uml:Comment" xmi:id="_ocNnYPO1EeuKX89QII2qWg" annotatedElement="_xD0CoB0aEeuIEMxgcF5NNA">
+          <body>OtsiMcBwConfigPac, OtsiMcConfigPac and OtsiMcFreqConfigPac are mutually exclusive.</body>
+        </ownedComment>
         <generalization xmi:type="uml:Generalization" xmi:id="_5SD2cB0aEeuIEMxgcF5NNA">
           <general xmi:type="uml:Class" href="TapiCommon.uml#_UhrZoN8qEeWT9tG0gGLRFw"/>
         </generalization>
@@ -871,6 +879,9 @@ being received at the Logical-Termination-Point (LTP) associated to the CSEP.</b
         </ownedAttribute>
       </packagedElement>
       <packagedElement xmi:type="uml:Class" xmi:id="_u2TCMB0aEeuIEMxgcF5NNA" name="OtsiMcBwConfigPac">
+        <ownedComment xmi:type="uml:Comment" xmi:id="_mbvkcPO1EeuKX89QII2qWg" annotatedElement="_u2TCMB0aEeuIEMxgcF5NNA">
+          <body>OtsiMcBwConfigPac, OtsiMcConfigPac and OtsiMcFreqConfigPac are mutually exclusive.</body>
+        </ownedComment>
         <generalization xmi:type="uml:Generalization" xmi:id="_4T2hwB0aEeuIEMxgcF5NNA">
           <general xmi:type="uml:Class" href="TapiCommon.uml#_UhrZoN8qEeWT9tG0gGLRFw"/>
         </generalization>
@@ -908,6 +919,10 @@ being received at the Logical-Termination-Point (LTP) associated to the CSEP.</b
         </ownedAttribute>
       </packagedElement>
       <packagedElement xmi:type="uml:Class" xmi:id="_gB-SQB0aEeuIEMxgcF5NNA" name="OtsiMcgConnectivityServiceEndPointSpec">
+        <ownedComment xmi:type="uml:Comment" xmi:id="_hWbQcPO1EeuKX89QII2qWg" annotatedElement="_gB-SQB0aEeuIEMxgcF5NNA">
+          <body>OTSiMCG CSEP is provisioned also in case OTSiMC layer is not explicitly represented on Resource side, i.e. no OTSiMC Connections and CEPs are instantiated.&#xD;
+OTSiMCG provisioning scenarios: analogous to McgConnectivityServiceEndPointSpec provisioning scenarios.</body>
+        </ownedComment>
         <ownedAttribute xmi:type="uml:Property" xmi:id="__0Xs4h0aEeuIEMxgcF5NNA" name="_otsiMcBwConfigPac" type="_u2TCMB0aEeuIEMxgcF5NNA" aggregation="composite" association="__0XF0B0aEeuIEMxgcF5NNA">
           <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_yhtdIDucEeu30PzdbK1rLQ"/>
           <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="__0dzgR0aEeuIEMxgcF5NNA" value="*"/>
@@ -922,6 +937,9 @@ being received at the Logical-Termination-Point (LTP) associated to the CSEP.</b
         </ownedAttribute>
       </packagedElement>
       <packagedElement xmi:type="uml:Class" xmi:id="_OlRAsByfEeuIEMxgcF5NNA" name="MediaChannelBwConfigPac">
+        <ownedComment xmi:type="uml:Comment" xmi:id="_2HIRgPOwEeuKX89QII2qWg" annotatedElement="_OlRAsByfEeuIEMxgcF5NNA">
+          <body>MediaChannelConfigPac and MediaChannelBwConfigPac are mutually exclusive.</body>
+        </ownedComment>
         <generalization xmi:type="uml:Generalization" xmi:id="_hD44IByfEeuIEMxgcF5NNA">
           <general xmi:type="uml:Class" href="TapiCommon.uml#_UhrZoN8qEeWT9tG0gGLRFw"/>
         </generalization>
@@ -945,6 +963,15 @@ being received at the Logical-Termination-Point (LTP) associated to the CSEP.</b
         </ownedAttribute>
       </packagedElement>
       <packagedElement xmi:type="uml:Class" xmi:id="_n-Y7MByWEeuIEMxgcF5NNA" name="McgConnectivityServiceEndPointSpec">
+        <ownedComment xmi:type="uml:Comment" xmi:id="_ufmD0PBMEeuW0_mqPzvh_A" annotatedElement="_n-Y7MByWEeuIEMxgcF5NNA">
+          <body>MCG provisioning scenarios:&#xD;
+1) In case of MCG provisioning based on multiple SIPs (e.g. more add/drop ports each one potentially supporting a single OTSi), to maintain the rule that a CSEP is supported by an unique SIP,&#xD;
+then the McgConnectivityServiceEndPointSpec CSEP instance does not include any package, but refers to the MediaChannelConnectivityServiceEndPointSpec CSEP instances (one per each OMS Link) through the CSEPHasAssembledCSEPs  association.&#xD;
+The MediaChannelConnectivityServiceEndPointSpec CSEP instance(s) include its(their) Media Channel Config Pacs.&#xD;
+2) In case of MCG provisioning based on single SIP, then the model is compacted into only one CSEP instance, augmented by McgConnectivityServiceEndPointSpec, which directly composes one or more Media Channel Config Pacs.&#xD;
+&#xD;
+MediaChannelConfigPac and MediaChannelBwConfigPac are mutually exclusive.</body>
+        </ownedComment>
         <ownedAttribute xmi:type="uml:Property" xmi:id="_BEL68ByXEeuIEMxgcF5NNA" name="numberOfMc">
           <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
           <defaultValue xmi:type="uml:LiteralInteger" xmi:id="_FyHCoByXEeuIEMxgcF5NNA" value="1"/>
@@ -959,6 +986,20 @@ being received at the Logical-Termination-Point (LTP) associated to the CSEP.</b
         </ownedAttribute>
       </packagedElement>
       <packagedElement xmi:type="uml:Class" xmi:id="_KDJdABx2EeuIEMxgcF5NNA" name="OtsiaCsepTtpPac">
+        <ownedComment xmi:type="uml:Comment" xmi:id="_ZI5V4PPXEeuKX89QII2qWg" annotatedElement="_KDJdABx2EeuIEMxgcF5NNA">
+          <body>OTU/OTSiG provisioning scenarios:&#xD;
+1) In case of OTU/OTSiG provisioning based on multiple SIPs (e.g. more line ports each one supporting a single OTSi), to maintain the rule that a CSEP is supported by an unique SIP, then the Assembly model is moved up to TapiOdu OTU+OTSiA CSEP instance.&#xD;
+This OTU+OTSiA CSEP instance (CSEP augmented by OtuConnectivityServiceEndPointSpec + OtuOtsiaCsepTtpPac) will refer to the OTSi CSEP instances (CSEPs augmented by OtsiConnectivityServiceEndPointSpec) through CSEPHasAssembledCSEPs association.&#xD;
+1.1) Alternative model is based on ServerConstraint package of CSEP. In this case, the OTU+OTSiA CSEP instance&#xD;
+a) is augmented by the OtuConnectivityServiceEndPointSpec,&#xD;
+b) includes / composes the ServerConstraint package, which is augmented by the OtsiaCsepTtpPac.&#xD;
+1.2) Alternative model based on OTU+OTSiA CSEP instance being directly augmented by both OtuConnectivityServiceEndPointSpec and OtsiaCsepTtpPac.&#xD;
+&#xD;
+2) In case of OTU/OTSiG provisioning based on a single SIP, then the Assembly model is moved down to the &quot;server&quot; CSEP instance.&#xD;
+In other words, the OTU CSEP instance (augmented by OtuConnectivityServiceEndPointSpec), refers to a &quot;server&quot; CSEP instance (through CSEPHasServerCSEP association) augmented by OtsiaCsepTtpPac, which directly composes one or more OtsiCommonConfigPac.&#xD;
+2.1) Alternative model is based on ServerConstraint package of CSEP, see case 1.1) above, with OtsiaCsepTtpPac which directly composes one or more OtsiCommonConfigPac.&#xD;
+2.2) See case 1.2) above, with OtsiaCsepTtpPac which directly composes one or more OtsiCommonConfigPac.</body>
+        </ownedComment>
         <ownedAttribute xmi:type="uml:Property" xmi:id="_Z9zi4Bx2EeuIEMxgcF5NNA" name="_otsiCommonConfigPac" type="_XVi5wHk6EeiO-c_khjKlFQ" aggregation="composite" association="_Z9px4Bx2EeuIEMxgcF5NNA">
           <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_Z95CcBx2EeuIEMxgcF5NNA" value="*"/>
         </ownedAttribute>
@@ -1036,6 +1077,9 @@ being received at the Logical-Termination-Point (LTP) associated to the CSEP.</b
         </ownedAttribute>
       </packagedElement>
       <packagedElement xmi:type="uml:Class" xmi:id="_C_YtADDHEeupK-F660Wa-g" name="OtsiMcFreqConfigPac">
+        <ownedComment xmi:type="uml:Comment" xmi:id="_rHe60PO1EeuKX89QII2qWg" annotatedElement="_C_YtADDHEeupK-F660Wa-g">
+          <body>OtsiMcBwConfigPac, OtsiMcConfigPac and OtsiMcFreqConfigPac are mutually exclusive.</body>
+        </ownedComment>
         <generalization xmi:type="uml:Generalization" xmi:id="_N_p8gDDHEeupK-F660Wa-g">
           <general xmi:type="uml:Class" href="TapiCommon.uml#_UhrZoN8qEeWT9tG0gGLRFw"/>
         </generalization>
@@ -1447,8 +1491,6 @@ It is the oscillation frequency of the corresponding electromagnetic wave. </bod
       <appliedProfile xmi:type="uml:Profile" href="UmlProfiles/OpenInterfaceModelProfile/OpenInterfaceModel_Profile.profile.uml#_UbM6ILbyEeaufdfMFhfy_A"/>
     </profileApplication>
   </uml:Model>
-  <OpenModel_Profile:OpenModelAttribute xmi:id="_KjSFwBKOEeajhbtskMXJfw" base_StructuralFeature="_KjQ3pxKOEeajhbtskMXJfw"/>
-  <OpenModel_Profile:OpenModelAttribute xmi:id="_KjTT4hKOEeajhbtskMXJfw" base_StructuralFeature="_KjQ3sRKOEeajhbtskMXJfw"/>
   <OpenModel_Profile:OpenModelAttribute xmi:id="_KjUiABKOEeajhbtskMXJfw" base_StructuralFeature="_KjQ3uRKOEeajhbtskMXJfw"/>
   <OpenModel_Profile:OpenModelAttribute xmi:id="_KjVJEBKOEeajhbtskMXJfw" base_StructuralFeature="_KjQ3vhKOEeajhbtskMXJfw"/>
   <OpenModel_Profile:OpenModelAttribute xmi:id="_KjVJEhKOEeajhbtskMXJfw" base_StructuralFeature="_KjQ3xRKOEeajhbtskMXJfw"/>
@@ -1462,9 +1504,7 @@ It is the oscillation frequency of the corresponding electromagnetic wave. </bod
   <OpenModel_Profile:Specify xmi:id="_1DcbQBNCEeeQQtMBY9ly8w" base_Abstraction="_wY7M4BNCEeeQQtMBY9ly8w">
     <target>/TapiCommon:Context:_context/TapiTopology:TopologyContext:_topologyContext/TapiTopology:TopologyContext:_topology/TapiTopology:Topology:_node/TapiTopology:Node:_ownedNodeEdgePoint/TapiConnectivity:CepList:_cepList/TapiConnectivity:CepList:_connectionEndPoint</target>
   </OpenModel_Profile:Specify>
-  <OpenInterfaceModel_Profile:OpenInterfaceModelAttribute xmi:id="_IyncUhhsEeewCs0lkpWskw" base_Property="_KjQ3pxKOEeajhbtskMXJfw"/>
   <OpenInterfaceModel_Profile:OpenInterfaceModelAttribute xmi:id="_IyncUxhsEeewCs0lkpWskw" base_Property="_hv9NtdnYEeWIOYiRCk5bbQ"/>
-  <OpenInterfaceModel_Profile:OpenInterfaceModelAttribute xmi:id="_IyncVhhsEeewCs0lkpWskw" base_Property="_KjQ3sRKOEeajhbtskMXJfw"/>
   <OpenInterfaceModel_Profile:OpenInterfaceModelAttribute xmi:id="_IyncVxhsEeewCs0lkpWskw" base_Property="_KjQ3uRKOEeajhbtskMXJfw"/>
   <OpenInterfaceModel_Profile:OpenInterfaceModelAttribute xmi:id="_IyncXBhsEeewCs0lkpWskw" base_Property="_hv9Ns9nYEeWIOYiRCk5bbQ"/>
   <OpenInterfaceModel_Profile:OpenInterfaceModelAttribute xmi:id="_IyncXRhsEeewCs0lkpWskw" base_Property="_KjQ3vhKOEeajhbtskMXJfw" attributeValueChangeNotification="YES"/>
@@ -1497,7 +1537,6 @@ It is the oscillation frequency of the corresponding electromagnetic wave. </bod
   <OpenModel_Profile:OpenModelAttribute xmi:id="_jXrhkJROEee0N_ppE1lIiw" base_StructuralFeature="_jVAoEJROEee0N_ppE1lIiw" unit=""/>
   <OpenModel_Profile:StrictComposite xmi:id="_odjvEBNqEeiod932A6hg3A" base_Association="_hv9NsNnYEeWIOYiRCk5bbQ"/>
   <OpenModel_Profile:OpenModelStatement xmi:id="_fZaomGm2EeiLh_06MH5Rjg" base_Model="_1qX9MBKNEeajhbtskMXJfw"/>
-  <OpenModel_Profile:StrictComposite xmi:id="_oWo8wHNnEeiPPoPDo3q5jA" base_Association="_KjQ3phKOEeajhbtskMXJfw"/>
   <OpenModel_Profile:Experimental xmi:id="_NG-4EHNoEeiPPoPDo3q5jA" base_Element="_YS8DkIfeEeet-8tHdGGp_w"/>
   <OpenModel_Profile:Experimental xmi:id="_vgaIcHZfEeiPPoPDo3q5jA" base_Element="_wB7jIHPYEeiPPoPDo3q5jA"/>
   <OpenModel_Profile:OpenModelClass xmi:id="_EqoDEHiHEeiPPoPDo3q5jA" base_Class="_EqncAHiHEeiPPoPDo3q5jA"/>
@@ -2066,4 +2105,9 @@ It is the oscillation frequency of the corresponding electromagnetic wave. </bod
   <OpenModel_Profile:OpenModelAttribute xmi:id="_RB8ecLcyEeuGW9Vb6J3Xig" base_StructuralFeature="_RB2X0LcyEeuGW9Vb6J3Xig"/>
   <OpenInterfaceModel_Profile:OpenInterfaceModelAttribute xmi:id="_mioYsbcyEeuGW9Vb6J3Xig" base_Property="_mioYsLcyEeuGW9Vb6J3Xig"/>
   <OpenModel_Profile:OpenModelAttribute xmi:id="_mixioLcyEeuGW9Vb6J3Xig" base_StructuralFeature="_mioYsLcyEeuGW9Vb6J3Xig"/>
+  <OpenModel_Profile:OpenModelAttribute xmi:id="_0i4r4PyVEeuQN9hw20b53g" base_StructuralFeature="_0i4E0PyVEeuQN9hw20b53g"/>
+  <OpenInterfaceModel_Profile:OpenInterfaceModelAttribute xmi:id="_0jB10PyVEeuQN9hw20b53g" base_Property="_0i4E0PyVEeuQN9hw20b53g"/>
+  <OpenModel_Profile:OpenModelAttribute xmi:id="_0jDD8PyVEeuQN9hw20b53g" base_StructuralFeature="_0jCc4fyVEeuQN9hw20b53g"/>
+  <OpenInterfaceModel_Profile:OpenInterfaceModelAttribute xmi:id="_0jDD8fyVEeuQN9hw20b53g" base_Property="_0jCc4fyVEeuQN9hw20b53g"/>
+  <OpenModel_Profile:StrictComposite xmi:id="_8UaugPyVEeuQN9hw20b53g" base_Association="_0iylQPyVEeuQN9hw20b53g"/>
 </xmi:XMI>

@@ -1,5 +1,28 @@
 
 module: tapi-oam
+  augment /tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service:
+    +--rw connectivity-oam-job
+       +--rw oam-job-type?          oam-job-type
+       +--rw schedule
+       |  +--rw start-time?   date-and-time
+       |  +--rw end-time?     date-and-time
+       +--rw threshold-parameter* [pm-parameter-name threshold-location]
+       |  +--rw pm-parameter-name          tapi-common:pm-parameter-name
+       |  +--rw threshold-location         threshold-crossing-qualifier
+       |  +--rw pm-parameter-above-thrs
+       |  |  +--rw pm-parameter-int-value?    uint64
+       |  |  +--rw pm-parameter-real-value?   decimal64
+       |  +--rw pm-parameter-below-thrs
+       |  |  +--rw pm-parameter-int-value?    uint64
+       |  |  +--rw pm-parameter-real-value?   decimal64
+       |  +--rw pm-parameter-clear-thrs
+       |     +--rw pm-parameter-int-value?    uint64
+       |     +--rw pm-parameter-real-value?   decimal64
+       +--rw granularity-period
+       |  +--rw period* [unit]
+       |     +--rw value?   uint64
+       |     +--rw unit     time-unit
+       +--rw is-transient?          boolean
   augment /tapi-common:context:
     +--rw oam-context
        +--rw oam-service* [uuid]
@@ -70,6 +93,13 @@ module: tapi-oam
        |  +--rw oam-service-point* [oam-service-uuid oam-service-point-local-id]
        |  |  +--rw oam-service-uuid              -> /tapi-common:context/tapi-oam:oam-context/oam-service/uuid
        |  |  +--rw oam-service-point-local-id    -> /tapi-common:context/tapi-oam:oam-context/oam-service/oam-service-point/local-id
+       |  +--rw connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
+       |  |  +--rw topology-uuid                -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |  +--rw node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |  |  +--rw node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+       |  |  +--rw connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
+       |  +--rw connectivity-service
+       |  |  +--rw connectivity-service-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
        |  +--rw oam-profile
        |  |  +--rw oam-profile-uuid?   -> /tapi-common:context/tapi-oam:oam-context/oam-profile/uuid
        |  +--ro current-data* [local-id]
@@ -154,29 +184,6 @@ module: tapi-oam
        +--ro mip* [meg-uuid mip-local-id]
           +--ro meg-uuid        -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
           +--ro mip-local-id    -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
-  augment /tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service:
-    +--rw connectivity-oam-job
-       +--rw oam-job-type?          oam-job-type
-       +--rw schedule
-       |  +--rw start-time?   date-and-time
-       |  +--rw end-time?     date-and-time
-       +--rw threshold-parameter* [pm-parameter-name threshold-location]
-       |  +--rw pm-parameter-name          tapi-common:pm-parameter-name
-       |  +--rw threshold-location         threshold-crossing-qualifier
-       |  +--rw pm-parameter-above-thrs
-       |  |  +--rw pm-parameter-int-value?    uint64
-       |  |  +--rw pm-parameter-real-value?   decimal64
-       |  +--rw pm-parameter-below-thrs
-       |  |  +--rw pm-parameter-int-value?    uint64
-       |  |  +--rw pm-parameter-real-value?   decimal64
-       |  +--rw pm-parameter-clear-thrs
-       |     +--rw pm-parameter-int-value?    uint64
-       |     +--rw pm-parameter-real-value?   decimal64
-       +--rw granularity-period
-       |  +--rw period* [unit]
-       |     +--rw value?   uint64
-       |     +--rw unit     time-unit
-       +--rw is-transient?          boolean
   augment /tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point:
     +--rw connectivity-oam-service-point
        +--rw is-mip?   boolean
@@ -558,6 +565,13 @@ module: tapi-oam
     |        +--ro oam-service-point* [oam-service-uuid oam-service-point-local-id]
     |        |  +--ro oam-service-uuid              -> /tapi-common:context/tapi-oam:oam-context/oam-service/uuid
     |        |  +--ro oam-service-point-local-id    -> /tapi-common:context/tapi-oam:oam-context/oam-service/oam-service-point/local-id
+    |        +--ro connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
+    |        |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+    |        |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
+    |        +--ro connectivity-service
+    |        |  +--ro connectivity-service-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
     |        +--ro oam-profile
     |        |  +--ro oam-profile-uuid?   -> /tapi-common:context/tapi-oam:oam-context/oam-profile/uuid
     |        +--ro current-data* [local-id]
@@ -628,6 +642,13 @@ module: tapi-oam
     |        +--ro oam-service-point* [oam-service-uuid oam-service-point-local-id]
     |        |  +--ro oam-service-uuid              -> /tapi-common:context/tapi-oam:oam-context/oam-service/uuid
     |        |  +--ro oam-service-point-local-id    -> /tapi-common:context/tapi-oam:oam-context/oam-service/oam-service-point/local-id
+    |        +--ro connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
+    |        |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+    |        |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
+    |        +--ro connectivity-service
+    |        |  +--ro connectivity-service-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
     |        +--ro oam-profile
     |        |  +--ro oam-profile-uuid?   -> /tapi-common:context/tapi-oam:oam-context/oam-profile/uuid
     |        +--ro current-data* [local-id]
@@ -693,6 +714,13 @@ module: tapi-oam
     |        +--ro oam-service-point* [oam-service-uuid oam-service-point-local-id]
     |        |  +--ro oam-service-uuid              -> /tapi-common:context/tapi-oam:oam-context/oam-service/uuid
     |        |  +--ro oam-service-point-local-id    -> /tapi-common:context/tapi-oam:oam-context/oam-service/oam-service-point/local-id
+    |        +--ro connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
+    |        |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+    |        |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
+    |        +--ro connectivity-service
+    |        |  +--ro connectivity-service-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
     |        +--ro oam-profile
     |        |  +--ro oam-profile-uuid?   -> /tapi-common:context/tapi-oam:oam-context/oam-profile/uuid
     |        +--ro current-data* [local-id]
@@ -753,6 +781,13 @@ module: tapi-oam
     |        +--ro oam-service-point* [oam-service-uuid oam-service-point-local-id]
     |        |  +--ro oam-service-uuid              -> /tapi-common:context/tapi-oam:oam-context/oam-service/uuid
     |        |  +--ro oam-service-point-local-id    -> /tapi-common:context/tapi-oam:oam-context/oam-service/oam-service-point/local-id
+    |        +--ro connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
+    |        |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+    |        |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
+    |        +--ro connectivity-service
+    |        |  +--ro connectivity-service-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/uuid
     |        +--ro oam-profile
     |        |  +--ro oam-profile-uuid?   -> /tapi-common:context/tapi-oam:oam-context/oam-profile/uuid
     |        +--ro current-data* [local-id]
