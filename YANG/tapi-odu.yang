@@ -116,9 +116,9 @@ module tapi-odu {
     augment "/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point" {
         container odu-node-edge-point-spec {
             uses odu-node-edge-point-spec;
-            description "Augments the base LayerProtocol information in NodeEdgePoint with ODU-specific information";
+            description "Augments the base NEP with digital OTN specific information.";
         }
-        description "Augments the base LayerProtocol information in NodeEdgePoint with ODU-specific information";
+        description "Augments the base NEP with digital OTN specific information.";
     }
     augment "/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point" {
         container odu-connection-end-point-spec {
@@ -286,12 +286,14 @@ module tapi-odu {
         }
         leaf-list odu-cn-effective-time-slot-list {
             type uint64;
+            config false;
             description "This attribute contains a set of distinct (i.e. unique) integers (e.g. 2, 3, 5, 9, 15, 34 representing the tributary slots TS#1.2, TS#1.3, TS#1.5, TS#1.9, TS#1.15, and TS#2.14)
                 which represents the list of effective time slots which are available for carrying ODUk clients.
                 Each entry in the list is an integer value (P) representing the time slot name TS#A.B (see ITU-T Recommendation G.709 (v5) Clause 20.1).
                 The mapping between P and A & B is: A = [P/20] + 1; B = P - (P/20]*20; where the sqaure bracket represents the whole integer.";
         }
         container odu-mep {
+            config false;
             uses odu-mep;
             description "none";
         }
@@ -300,6 +302,7 @@ module tapi-odu {
     }
     grouping odu-connection-end-point-spec {
         container odu-common {
+            config false;
             uses odu-common-pac;
             description "none";
         }
@@ -841,27 +844,33 @@ module tapi-odu {
     grouping otu-mep {
         leaf txti {
             type string;
+            config false;
             description "The Trail Trace Identifier (TTI) information, provisioned by the managing system at the termination source, to be placed in the TTI overhead position of the source of a trail for transmission.
                 ";
         }
         container odu-oam-common {
+            config false;
             uses odu-oam-common;
             description "none";
         }
         container otu-mep-status {
+            config false;
             uses otu-mep-status;
             description "none";
         }
         leaf fec-monitoring {
             type boolean;
             default "true";
+            config false;
             description "none";
         }
         leaf fec-corrected-error-threshold {
             type uint64;
+            config false;
             description "none";
         }
         container otsia-mep {
+            config false;
             uses otsia-mep;
             description "none";
         }
@@ -934,10 +943,12 @@ module tapi-odu {
     }
     grouping otu-connection-end-point-spec {
         container otu-ttp-pac {
+            config false;
             uses otu-ttp-pac;
             description "none";
         }
         container odu-cn-ttp-pac {
+            config false;
             uses odu-cn-ttp-pac;
             description "none";
         }
@@ -946,18 +957,22 @@ module tapi-odu {
     grouping otu-ttp-pac {
         leaf otu-type {
             type otu-type;
+            config false;
             description "none";
         }
         container otu-mep {
+            config false;
             uses otu-mep;
             description "none";
         }
         container fec-type {
+            config false;
             uses fec-type;
             description "none";
         }
         leaf baud-rate {
             type uint64;
+            config false;
             description "The baud rate in terms of giga baud.
                 baud = bit/symbol, and the baud rate is hence sometimes referred to as the symbol rate";
         }
@@ -967,9 +982,11 @@ module tapi-odu {
         leaf number-of-odu-c {
             type uint64;
             default "1";
+            config false;
             description "This attribute specifies the number of ODUC instances of the ODUCn.";
         }
         container odu-mep {
+            config false;
             uses odu-mep;
             description "none";
         }
@@ -1010,8 +1027,8 @@ module tapi-odu {
         }
         description "This class is used to specify OTSiA provisioning parameters together with OTU parameters.
             Alternatively it is possible to avoid the OtuOtsiaCsepTtpPac class by using the ServerConstraint class:
-            - The CSEP instance augmented by OtuConnectivityServiceEndPointSpec is also augmented by the ServerConstraint class
-            - TapiPhotonicMedia:OtsiaCsepTtpPac augments the ServerConstraint class
+            1) The CSEP instance augmented by OtuConnectivityServiceEndPointSpec is also augmented by the ServerConstraint class,
+            2) TapiPhotonicMedia:OtsiaCsepTtpPac augments the ServerConstraint class.
             Another alternative is that both OtuConnectivityServiceEndPointSpec and TapiPhotonicMedia:OtsiaCsepTtpPac augment the same CSEP instance.
             Note that the ServerConstraint class is useful in the case of 'array' augmentations, i.e. when a CSEP instance shall be augmented by more than one instance of a spec class.";
     }
@@ -1455,12 +1472,10 @@ module tapi-odu {
             description "none";
         }
         description "Degraded Threshold, specify either the percentage or the number of Errored Blocks in the defined interval. 
-            degThrValue when type is PERCENTAGE:
-            percentageGranularity is used to indicate the number of decimal points
-            So if percentageGranularity is ones, a value of 1 in degThrValue would indicate 1%, a value of 10 = 10%, a value of 100 = 100%
-            So if percentageGranularity is thousandths a value of 1 in degThrValue would indicate 0.001%, a value of 1000 = 1%, a value of 1000000 = 100%
-            degThrValue when type is NUMBER_ERROR_BLOCKS:
-            Number of Errored Blocks is captured in an integer value.";
+            1) degThrValue when type is PERCENTAGE: percentageGranularity is used to indicate the number of decimal points.
+            So if percentageGranularity is ones, a value of 1 in degThrValue would indicate 1%, a value of 10 = 10%, a value of 100 = 100%.
+            So if percentageGranularity is thousandths a value of 1 in degThrValue would indicate 0.001%, a value of 1000 = 1%, a value of 1000000 = 100%.
+            2) degThrValue when type is NUMBER_ERROR_BLOCKS: Number of Errored Blocks is captured in an integer value.";
     }
     typedef deg-thr-type {
         type enumeration {
@@ -1576,7 +1591,7 @@ module tapi-odu {
             type uint64;
             description "none";
         }
-        description "If bidirectional is TRUE then use the uas attribute, if bidirectional is FALSE use the nuas, and fuas attributes";
+        description "If bidirectional is TRUE then use the uas attribute, if bidirectional is FALSE use the nuas, and fuas attributes.";
     }
     typedef otn-fault-condition-determination {
         type identityref {

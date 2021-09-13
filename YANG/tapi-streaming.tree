@@ -194,14 +194,14 @@ module: tapi-streaming
              |  |  +--ro topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
              |  |  +--ro node-uuid?       -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
              |  +--ro route* [local-id]
+             |  |  +--ro resilience-route
+             |  |  |  +--ro route-state?   route-state
+             |  |  |  +--ro priority?      uint64
              |  |  +--ro connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
              |  |  |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
              |  |  |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
              |  |  |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
              |  |  |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
-             |  |  +--ro resilience-route
-             |  |  |  +--ro route-state?   route-state
-             |  |  |  +--ro priority?      uint64
              |  |  +--ro local-id                string
              |  |  +--ro name* [value-name]
              |  |     +--ro value-name    string
@@ -331,10 +331,6 @@ module: tapi-streaming
              |  |  +--ro connection-spec-reference
              |  |     +--ro connection-spec-name?   string
              |  |     +--ro connection-spec-id?     tapi-common:uuid
-             |  +--ro parent-node-edge-point
-             |  |  +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
-             |  |  +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
-             |  |  +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
              |  +--ro client-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
              |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
              |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
@@ -344,6 +340,10 @@ module: tapi-streaming
              |  |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
              |  |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
              |  |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
+             |  +--ro parent-node-edge-point
+             |  |  +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+             |  |  +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+             |  |  +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
              |  +--ro uuid?                              uuid
              |  +--ro name* [value-name]
              |  |  +--ro value-name    string
@@ -636,14 +636,14 @@ module: tapi-streaming
              |  +--ro operational-state?                           operational-state
              |  +--ro lifecycle-state?                             lifecycle-state
              +--ro route {tapi-streaming}?
+             |  +--ro resilience-route
+             |  |  +--ro route-state?   route-state
+             |  |  +--ro priority?      uint64
              |  +--ro connection-end-point* [topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid]
              |  |  +--ro topology-uuid                -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
              |  |  +--ro node-uuid                    -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
              |  |  +--ro node-edge-point-uuid         -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
              |  |  +--ro connection-end-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
-             |  +--ro resilience-route
-             |  |  +--ro route-state?   route-state
-             |  |  +--ro priority?      uint64
              |  +--ro local-id?               string
              |  +--ro name* [value-name]
              |     +--ro value-name    string
@@ -1557,8 +1557,8 @@ module: tapi-streaming
              |  |  +--ro mapped-service-interface-point* [service-interface-point-uuid]
              |  |  |  +--ro service-interface-point-uuid    -> /tapi-common:context/service-interface-point/uuid
              |  |  +--ro inter-domain-plug-in-pac
-             |  |  |  +--ro inter-domain-plug-id-sapi?   string
-             |  |  |  +--ro inter-domain-plug-id-dapi?   string
+             |  |  |  +--ro plug-id-inter-domain-local-id?    string
+             |  |  |  +--ro plug-id-inter-domain-remote-id?   string
              |  |  +--ro uuid                              uuid
              |  |  +--ro name* [value-name]
              |  |  |  +--ro value-name    string
@@ -1751,8 +1751,8 @@ module: tapi-streaming
              |  |  |  +--ro mapped-service-interface-point* [service-interface-point-uuid]
              |  |  |  |  +--ro service-interface-point-uuid    -> /tapi-common:context/service-interface-point/uuid
              |  |  |  +--ro inter-domain-plug-in-pac
-             |  |  |  |  +--ro inter-domain-plug-id-sapi?   string
-             |  |  |  |  +--ro inter-domain-plug-id-dapi?   string
+             |  |  |  |  +--ro plug-id-inter-domain-local-id?    string
+             |  |  |  |  +--ro plug-id-inter-domain-remote-id?   string
              |  |  |  +--ro uuid                              uuid
              |  |  |  +--ro name* [value-name]
              |  |  |  |  +--ro value-name    string
@@ -2001,8 +2001,8 @@ module: tapi-streaming
              |  +--ro mapped-service-interface-point* [service-interface-point-uuid]
              |  |  +--ro service-interface-point-uuid    -> /tapi-common:context/service-interface-point/uuid
              |  +--ro inter-domain-plug-in-pac
-             |  |  +--ro inter-domain-plug-id-sapi?   string
-             |  |  +--ro inter-domain-plug-id-dapi?   string
+             |  |  +--ro plug-id-inter-domain-local-id?    string
+             |  |  +--ro plug-id-inter-domain-remote-id?   string
              |  +--ro uuid?                             uuid
              |  +--ro name* [value-name]
              |  |  +--ro value-name    string

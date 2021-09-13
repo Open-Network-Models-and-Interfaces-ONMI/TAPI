@@ -107,16 +107,16 @@ module tapi-connectivity {
     augment "/tapi-common:context" {
         container connectivity-context {
             uses connectivity-context;
-            description "Augments the base TAPI Context with ConnectivityService information";
+            description "Augments the base TAPI Context with ConnectivityContext model.";
         }
-        description "Augments the base TAPI Context with ConnectivityService information";
+        description "Augments the base TAPI Context with ConnectivityContext model.";
     }
     augment "/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point" {
         container cep-list {
             uses cep-list;
-            description "none";
+            description "This augment allows NEP to refer to its CEPs despite TapiTopology model does not import TapiConnectivity model.";
         }
-        description "none";
+        description "This augment allows NEP to refer to its CEPs despite TapiTopology model does not import TapiConnectivity model.";
     }
     /**************************
     * definitions of references
@@ -291,11 +291,6 @@ module tapi-connectivity {
             description "Defines the role of the CEP in the context of the Connection spec.
                 There may be many CEP role - Connection spec combinations for a particular CEP where each corresponds to a specific Connection associated with the CEP.";
         }
-        container parent-node-edge-point {
-            uses tapi-topology:node-edge-point-ref;
-            config false;
-            description "The supporting NodeEdgePoint (NEP) instance.";
-        }
         list client-node-edge-point {
             uses tapi-topology:node-edge-point-ref;
             key 'topology-uuid node-uuid node-edge-point-uuid';
@@ -307,6 +302,11 @@ module tapi-connectivity {
             key 'topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid';
             config false;
             description "A ConnectionEndPoint (CEP) instance may aggregate one or more other CEP instances for e.g. pooling purposes, when a set of CEP instances are equivalent for usage.";
+        }
+        container parent-node-edge-point {
+            uses tapi-topology:node-edge-point-ref;
+            config false;
+            description "The supporting NodeEdgePoint (NEP) instance.";
         }
         uses tapi-common:global-class;
         uses tapi-common:operational-state-pac;
@@ -483,16 +483,16 @@ module tapi-connectivity {
         description "The ConnectivityServiceEndPoint (CSEP) encapsulates information related to a ConnectivityService at the ingress/egress points of that ConnectivityService.";
     }
     grouping route {
+        container resilience-route {
+            uses resilience-route;
+            description "Provides optional resilience and state attributes to the Route.";
+        }
         list connection-end-point {
             uses connection-end-point-ref;
             key 'topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid';
             config false;
             min-elements 2;
             description "The ConnectionEndPoint (CEP) instances composing the Route.";
-        }
-        container resilience-route {
-            uses resilience-route;
-            description "Provides optional resilience and state attributes to the Route.";
         }
         uses tapi-common:local-class;
         description "The Route of a Connection is modeled as a collection of ConnectionEndPoint (CEP) instances.

@@ -1,28 +1,13 @@
 
 module: tapi-oam
-  augment /tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service:
-    +--rw connectivity-oam-job
-       +--rw oam-job-type?          oam-job-type
-       +--rw schedule
-       |  +--rw start-time?   date-and-time
-       |  +--rw end-time?     date-and-time
-       +--rw threshold-parameter* [pm-parameter-name threshold-location]
-       |  +--rw pm-parameter-name          tapi-common:pm-parameter-name
-       |  +--rw threshold-location         threshold-crossing-qualifier
-       |  +--rw pm-parameter-above-thrs
-       |  |  +--rw pm-parameter-int-value?    uint64
-       |  |  +--rw pm-parameter-real-value?   decimal64
-       |  +--rw pm-parameter-below-thrs
-       |  |  +--rw pm-parameter-int-value?    uint64
-       |  |  +--rw pm-parameter-real-value?   decimal64
-       |  +--rw pm-parameter-clear-thrs
-       |     +--rw pm-parameter-int-value?    uint64
-       |     +--rw pm-parameter-real-value?   decimal64
-       +--rw granularity-period
-       |  +--rw period* [unit]
-       |     +--rw value?   uint64
-       |     +--rw unit     time-unit
-       +--rw is-transient?          boolean
+  augment /tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point:
+    +--ro mep-mip-list
+       +--ro mep* [meg-uuid mep-local-id]
+       |  +--ro meg-uuid        -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+       |  +--ro mep-local-id    -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
+       +--ro mip* [meg-uuid mip-local-id]
+          +--ro meg-uuid        -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
+          +--ro mip-local-id    -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
   augment /tapi-common:context:
     +--rw oam-context
        +--rw oam-service* [uuid]
@@ -187,6 +172,29 @@ module: tapi-oam
   augment /tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point:
     +--rw connectivity-oam-service-point
        +--rw is-mip?   boolean
+  augment /tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service:
+    +--rw connectivity-oam-job
+       +--rw oam-job-type?          oam-job-type
+       +--rw schedule
+       |  +--rw start-time?   date-and-time
+       |  +--rw end-time?     date-and-time
+       +--rw threshold-parameter* [pm-parameter-name threshold-location]
+       |  +--rw pm-parameter-name          tapi-common:pm-parameter-name
+       |  +--rw threshold-location         threshold-crossing-qualifier
+       |  +--rw pm-parameter-above-thrs
+       |  |  +--rw pm-parameter-int-value?    uint64
+       |  |  +--rw pm-parameter-real-value?   decimal64
+       |  +--rw pm-parameter-below-thrs
+       |  |  +--rw pm-parameter-int-value?    uint64
+       |  |  +--rw pm-parameter-real-value?   decimal64
+       |  +--rw pm-parameter-clear-thrs
+       |     +--rw pm-parameter-int-value?    uint64
+       |     +--rw pm-parameter-real-value?   decimal64
+       +--rw granularity-period
+       |  +--rw period* [unit]
+       |     +--rw value?   uint64
+       |     +--rw unit     time-unit
+       +--rw is-transient?          boolean
 
   rpcs:
     +---x create-oam-service
