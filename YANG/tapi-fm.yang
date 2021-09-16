@@ -4,12 +4,6 @@ module tapi-fm {
     import tapi-common {
         prefix tapi-common;
     }
-    import tapi-notification {
-        prefix tapi-notification;
-    }
-    import tapi-streaming {
-        prefix tapi-streaming;
-    }
     organization "ONF OTCC (Open Transport Configuration & Control) Project";
     contact "
          Project Web: <https://wiki.opennetworking.org/display/OTCC/TAPI>
@@ -104,40 +98,12 @@ module tapi-fm {
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 6020, RFC 6087 and ONF TAPI UML model
                   <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.0.0/UML>";
     }
-    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:notification" {
-        container alarm-info {
-            uses alarm-info;
-            description "none";
-        }
-        description "none";
-    }
-    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:notification" {
-        container tca-info {
-            uses tca-info;
-            description "none";
-        }
-        description "none";
-    }
-    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification" {
-        container detected-condition {
-            uses detected-condition;
-            description "none";
-        }
-        description "none";
-    }
-    augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body/tapi-streaming:condition-detector" {
-        container detected-condition {
-            uses detected-condition;
-            description "none";
-        }
-        description "none";
-    }
     /**************************
     * package object-classes
     **************************/ 
     grouping alarm-info {
         leaf alarm-name {
-            type alarm-condition-name;
+            type tapi-common:alarm-condition-name;
             description "The probable cause of the failure (detected fault).
                 G.806:
                 - fault: A fault is the inability of a function to perform a required action. This does not include an inability due to preventive maintenance, lack of external resources or planned actions.
@@ -251,15 +217,15 @@ module tapi-fm {
         }
         container pm-metric-info {
             uses pm-metric-info;
-            description "none";
+            description "The PM metric information.";
         }
         container detector-info {
             uses detector-info;
-            description "none";
+            description "The detector info for alarm and TCA.";
         }
         container simple-detector {
             uses simple-detector;
-            description "none";
+            description "The simple detector state.";
         }
         description "A record of the state of a Detector where that Detector has two underling states that are of asymmetric importance.
             For example, an alarm or a threshold crossing alert detected on a given resource.
@@ -333,10 +299,6 @@ module tapi-fm {
     }
     identity ALARM_CATEGORY_SECURITY {
         base ALARM_CATEGORY;
-        description "none";
-    }
-    identity ALARM_CONDITION_NAME {
-        base tapi-common:CONDITION_NAME;
         description "none";
     }
     identity PERCEIVED_TCA_SEVERITY {
@@ -468,13 +430,6 @@ module tapi-fm {
             }
         }
         description "The possible impact on the service.";
-    }
-    typedef alarm-condition-name {
-        type identityref {
-            base ALARM_CONDITION_NAME;
-        }
-        description "The alarm condition name, or alarm probable cause.
-            This extensible enumeration can be augmented with specific alarm condition names in the other modules.";
     }
     typedef perceived-tca-severity {
         type identityref {
