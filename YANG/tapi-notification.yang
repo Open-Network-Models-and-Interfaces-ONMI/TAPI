@@ -4,9 +4,6 @@ module tapi-notification {
     import tapi-common {
         prefix tapi-common;
     }
-    import tapi-fm {
-        prefix tapi-fm;
-    }
     organization "ONF OTCC (Open Transport Configuration & Control) Project";
     contact "
          Project Web: <https://wiki.opennetworking.org/display/OTCC/TAPI>
@@ -31,6 +28,13 @@ module tapi-notification {
         YANG models included in this release may not be backward compatible with previous TAPI releases.
         Copyright (c) 2021 Open Networking Foundation (ONF). All rights reserved.
         License: This module is distributed under the Apache License 2.0.";
+    revision 2021-09-24 {
+        description "ONF Transport API version 2.3.1.
+                   Changes included in this TAPI release (v2.3.1) are listed in
+                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2021>";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
+                  <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.3.1/UML>";
+    }
     revision 2021-08-04 {
         description "ONF Transport API version 2.3.
                    Changes included in this TAPI release (v2.3) are listed in
@@ -115,23 +119,9 @@ module tapi-notification {
         }
         description "none";
     }
-    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification" {
-        container detected-condition {
-            uses tapi-fm:detected-condition;
-            description "none";
-        }
-        description "none";
-    }
-    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:notification" {
-        container alarm-info {
-            uses tapi-fm:alarm-info;
-            description "none";
-        }
-        description "none";
-    }
-    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:notification" {
-        container tca-info {
-            uses tapi-fm:tca-info;
+    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification/tapi-notification:object-notification" {
+        container service-interface-point {
+            uses tapi-common:service-interface-point;
             description "none";
         }
         description "none";
@@ -244,15 +234,18 @@ module tapi-notification {
     grouping object-notification {
         leaf object-notification-type {
             type notification-type;
+            config false;
             description "The object notification type.";
         }
         leaf object-content {
             type string;
+            config false;
             description "The object content, e.g. all the attributes of a newly created object.
                 The mapping is not specified.";
         }
         list changed-attributes {
             key 'value-name';
+            config false;
             uses name-and-value-change;
             description "The list of relevant changed attributes and their values.";
         }
