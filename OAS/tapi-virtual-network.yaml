@@ -1990,25 +1990,6 @@ paths:
         400:
           description: "Internal error"
   /data/tapi-common:context/tapi-notification:notification-context/notif-subscription={uuid}/subscription-filter:
-    get:
-      tags:
-      - "tapi-notification"
-      summary: "returns tapi.notification.SubscriptionFilter"
-      description: "The SubscriptionFilter instance of this NotificationSubscriptionService\
-        \ instance."
-      parameters:
-      - name: "uuid"
-        in: "path"
-        description: "Id of notif-subscription"
-        required: true
-        type: "string"
-      responses:
-        200:
-          description: "tapi.notification.SubscriptionFilter"
-          schema:
-            $ref: "#/definitions/tapi.notification.SubscriptionFilterWrapper"
-        400:
-          description: "Internal error"
     post:
       tags:
       - "tapi-notification"
@@ -2034,6 +2015,31 @@ paths:
           description: "Internal error"
         409:
           description: "Object already exists"
+  /data/tapi-common:context/tapi-notification:notification-context/notif-subscription={uuid}/subscription-filter={local-id}:
+    get:
+      tags:
+      - "tapi-notification"
+      summary: "returns tapi.notification.SubscriptionFilter"
+      description: "The SubscriptionFilter instance of this NotificationSubscriptionService\
+        \ instance."
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of notif-subscription"
+        required: true
+        type: "string"
+      - name: "local-id"
+        in: "path"
+        description: "Id of subscription-filter"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.notification.SubscriptionFilter"
+          schema:
+            $ref: "#/definitions/tapi.notification.SubscriptionFilterWrapper"
+        400:
+          description: "Internal error"
     put:
       tags:
       - "tapi-notification"
@@ -2044,6 +2050,11 @@ paths:
       - name: "uuid"
         in: "path"
         description: "Id of notif-subscription"
+        required: true
+        type: "string"
+      - name: "local-id"
+        in: "path"
+        description: "Id of subscription-filter"
         required: true
         type: "string"
       - in: "body"
@@ -2071,12 +2082,17 @@ paths:
         description: "Id of notif-subscription"
         required: true
         type: "string"
+      - name: "local-id"
+        in: "path"
+        description: "Id of subscription-filter"
+        required: true
+        type: "string"
       responses:
         400:
           description: "Internal error"
         204:
           description: "Object deleted"
-  /data/tapi-common:context/tapi-notification:notification-context/notif-subscription={uuid}/subscription-filter/name:
+  /data/tapi-common:context/tapi-notification:notification-context/notif-subscription={uuid}/subscription-filter={local-id}/name:
     post:
       tags:
       - "tapi-notification"
@@ -2088,6 +2104,11 @@ paths:
       - name: "uuid"
         in: "path"
         description: "Id of notif-subscription"
+        required: true
+        type: "string"
+      - name: "local-id"
+        in: "path"
+        description: "Id of subscription-filter"
         required: true
         type: "string"
       - in: "body"
@@ -2103,7 +2124,7 @@ paths:
           description: "Internal error"
         409:
           description: "Object already exists"
-  ? /data/tapi-common:context/tapi-notification:notification-context/notif-subscription={uuid}/subscription-filter/name={value-name}/
+  ? /data/tapi-common:context/tapi-notification:notification-context/notif-subscription={uuid}/subscription-filter={local-id}/name={value-name}/
   : get:
       tags:
       - "tapi-notification"
@@ -2115,6 +2136,11 @@ paths:
       - name: "uuid"
         in: "path"
         description: "Id of notif-subscription"
+        required: true
+        type: "string"
+      - name: "local-id"
+        in: "path"
+        description: "Id of subscription-filter"
         required: true
         type: "string"
       - name: "value-name"
@@ -2140,6 +2166,11 @@ paths:
       - name: "uuid"
         in: "path"
         description: "Id of notif-subscription"
+        required: true
+        type: "string"
+      - name: "local-id"
+        in: "path"
+        description: "Id of subscription-filter"
         required: true
         type: "string"
       - name: "value-name"
@@ -2171,6 +2202,11 @@ paths:
       - name: "uuid"
         in: "path"
         description: "Id of notif-subscription"
+        required: true
+        type: "string"
+      - name: "local-id"
+        in: "path"
+        description: "Id of subscription-filter"
         required: true
         type: "string"
       - name: "value-name"
@@ -7601,6 +7637,9 @@ definitions:
     - $ref: "#/definitions/tapi.common.GlobalClass"
     - type: "object"
       properties:
+        subscription-state:
+          description: "The SubscriptionState value."
+          $ref: "#/definitions/tapi.notification.SubscriptionState"
         notification:
           type: "array"
           description: "The Notification instances associated to this NotificationSubscriptionService\
@@ -7611,25 +7650,12 @@ definitions:
           description: "The NotificationChannel instance of this NotificationSubscriptionService\
             \ instance."
           $ref: "#/definitions/tapi.notification.NotificationChannel"
-        subscription-state:
-          description: "The SubscriptionState value."
-          $ref: "#/definitions/tapi.notification.SubscriptionState"
-        supported-object-types:
-          type: "array"
-          description: "The supported ObjectType value(s) of this NotificationSubscriptionService\
-            \ instance."
-          items:
-            type: "string"
-        supported-notification-types:
-          type: "array"
-          description: "The supported NotificationType value(s) of this NotificationSubscriptionService\
-            \ instance."
-          items:
-            type: "string"
         subscription-filter:
+          type: "array"
           description: "The SubscriptionFilter instance of this NotificationSubscriptionService\
             \ instance."
-          $ref: "#/definitions/tapi.notification.SubscriptionFilter"
+          items:
+            $ref: "#/definitions/tapi.notification.SubscriptionFilter"
         event-notification:
           type: "array"
           description: "The EventNotification instances associated to this NotificationSubscriptionService\
@@ -9194,18 +9220,18 @@ definitions:
   tapi.virtual.network.ObjectNotificationAugmentation1:
     type: "object"
     properties:
-      virtual-network-constraint:
+      virtual-network-service-end-point:
         description: "none"
-        $ref: "#/definitions/tapi.virtual.network.VirtualNetworkConstraint"
+        $ref: "#/definitions/tapi.virtual.network.VirtualNetworkServiceEndPoint"
     x-augmentation:
       prefix: "tapi-virtual-network"
       namespace: "urn:onf:otcc:yang:tapi-virtual-network"
   tapi.virtual.network.ObjectNotificationAugmentation2:
     type: "object"
     properties:
-      virtual-network-service-end-point:
+      virtual-network-constraint:
         description: "none"
-        $ref: "#/definitions/tapi.virtual.network.VirtualNetworkServiceEndPoint"
+        $ref: "#/definitions/tapi.virtual.network.VirtualNetworkConstraint"
     x-augmentation:
       prefix: "tapi-virtual-network"
       namespace: "urn:onf:otcc:yang:tapi-virtual-network"
