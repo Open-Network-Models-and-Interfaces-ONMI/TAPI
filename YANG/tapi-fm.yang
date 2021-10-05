@@ -7,6 +7,9 @@ module tapi-fm {
     import tapi-notification {
         prefix tapi-notification;
     }
+    import tapi-streaming {
+        prefix tapi-streaming;
+    }
     organization "ONF OTCC (Open Transport Configuration & Control) Project";
     contact "
          Project Web: <https://wiki.opennetworking.org/display/OTCC/TAPI>
@@ -31,6 +34,13 @@ module tapi-fm {
         YANG models included in this release may not be backward compatible with previous TAPI releases.
         Copyright (c) 2021 Open Networking Foundation (ONF). All rights reserved.
         License: This module is distributed under the Apache License 2.0.";
+    revision 2021-09-24 {
+        description "ONF Transport API version 2.3.1.
+                   Changes included in this TAPI release (v2.3.1) are listed in
+                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2021>";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
+                  <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.3.1/UML>";
+    }
     revision 2021-08-04 {
         description "ONF Transport API version 2.3.
                    Changes included in this TAPI release (v2.3) are listed in
@@ -108,9 +118,23 @@ module tapi-fm {
         }
         description "none";
     }
+    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification" {
+        container detected-condition {
+            uses detected-condition;
+            description "none";
+        }
+        description "none";
+    }
     augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:notification" {
         container tca-info {
             uses tca-info;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body/tapi-streaming:condition-detector" {
+        container detected-condition {
+            uses detected-condition;
             description "none";
         }
         description "none";
@@ -120,7 +144,7 @@ module tapi-fm {
     **************************/ 
     grouping alarm-info {
         leaf alarm-name {
-            type alarm-condition-name;
+            type tapi-common:alarm-condition-name;
             description "The probable cause of the failure (detected fault).
                 G.806:
                 - fault: A fault is the inability of a function to perform a required action. This does not include an inability due to preventive maintenance, lack of external resources or planned actions.
@@ -159,7 +183,8 @@ module tapi-fm {
                 For Environment Alarm Category, e.g. on the same Device instance may appear more Environmental alarm notifications with same Alarn Name.
                 For Connectivity Alarm Category in case that same CEP instance includes e.g. both OTS and OMS monitoring layers.";
         }
-        description "This class augments the Notification class with alarm related parameters.";
+        description "This class augments the Notification class with alarm related parameters.
+            This class is deprecated in favor of DetectedCondition class, which unifies alarm and TCA related parameters.";
     }
     grouping tca-info {
         leaf threshold-indicator-name {
@@ -188,7 +213,8 @@ module tapi-fm {
                 The reference is defined as simple UUID because TapiFm does not import TapiOam.
                 MEF 35.1: Identification of the PM Session for which the TCA Function was configured.";
         }
-        description "This class augments the Notification class with threshold crossing alert related parameters.";
+        description "This class augments the Notification class with threshold crossing alert related parameters.
+            This class is deprecated in favor of DetectedCondition class, which unifies alarm and TCA related parameters.";
     }
     grouping detected-condition {
         leaf detected-condition-name {
@@ -231,6 +257,18 @@ module tapi-fm {
             description "Reference to the OamJob instance for which the Condition detection has been configured, e.g. configuration of PM metrics and threshold values and/or of the (alarm) Conditions.
                 The reference is defined as simple UUID because TapiFm does not import TapiOam.
                 MEF 35.1: Identification of the PM Session for which the TCA Function was configured.";
+        }
+        container pm-metric-info {
+            uses pm-metric-info;
+            description "The PM metric information.";
+        }
+        container detector-info {
+            uses detector-info;
+            description "The detector info for alarm and TCA.";
+        }
+        container simple-detector {
+            uses simple-detector;
+            description "The simple detector state.";
         }
         description "A record of the state of a Detector where that Detector has two underling states that are of asymmetric importance.
             For example, an alarm or a threshold crossing alert detected on a given resource.
@@ -304,9 +342,6 @@ module tapi-fm {
     }
     identity ALARM_CATEGORY_SECURITY {
         base ALARM_CATEGORY;
-        description "none";
-    }
-    identity ALARM_CONDITION_NAME {
         description "none";
     }
     identity PERCEIVED_TCA_SEVERITY {
@@ -438,13 +473,6 @@ module tapi-fm {
             }
         }
         description "The possible impact on the service.";
-    }
-    typedef alarm-condition-name {
-        type identityref {
-            base ALARM_CONDITION_NAME;
-        }
-        description "The alarm condition name, or alarm probable cause.
-            This extensible enumeration can be augmented with specific alarm condition names in the other modules.";
     }
     typedef perceived-tca-severity {
         type identityref {

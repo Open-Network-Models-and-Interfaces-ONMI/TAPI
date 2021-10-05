@@ -28,17 +28,19 @@ module: tapi-notification
        |  |     +--ro value-name    string
        |  |     +--ro value?        string
        |  +--rw event-notification* [uuid]
-       |  |  +--rw target-object-type?         tapi-common:object-type
-       |  |  +--rw target-object-identifier?   tapi-common:uuid
+       |  |  +--rw target-object-type?               tapi-common:object-type
+       |  |  +--rw target-object-identifier?         tapi-common:uuid
+       |  |  +--rw target-local-object-type?         tapi-common:object-type
+       |  |  +--rw target-local-object-identifier?   string
        |  |  +--rw target-object-name* [value-name]
        |  |  |  +--rw value-name    string
        |  |  |  +--rw value?        string
-       |  |  +--rw event-time-stamp?           tapi-common:date-and-time
-       |  |  +--rw sequence-number?            uint64
-       |  |  +--rw source-indicator?           source-indicator
-       |  |  +--rw layer-protocol-name?        tapi-common:layer-protocol-name
-       |  |  +--rw layer-protocol-qualifier*   tapi-common:layer-protocol-qualifier
-       |  |  +--rw uuid                        uuid
+       |  |  +--rw event-time-stamp?                 tapi-common:date-and-time
+       |  |  +--rw sequence-number?                  uint64
+       |  |  +--rw source-indicator?                 source-indicator
+       |  |  +--rw layer-protocol-name?              tapi-common:layer-protocol-name
+       |  |  +--rw layer-protocol-qualifier*         tapi-common:layer-protocol-qualifier
+       |  |  +--rw uuid                              uuid
        |  |  +--rw name* [value-name]
        |  |     +--rw value-name    string
        |  |     +--rw value?        string
@@ -49,20 +51,18 @@ module: tapi-notification
        |  |  +--ro name* [value-name]
        |  |     +--ro value-name    string
        |  |     +--ro value?        string
-       |  +--rw subscription-filter
+       |  +--rw subscription-filter* [local-id]
        |  |  +--rw requested-notification-types*   notification-type
        |  |  +--rw requested-object-types*         tapi-common:object-type
        |  |  +--rw requested-layer-protocols*      tapi-common:layer-protocol-name
        |  |  +--rw requested-object-identifier*    tapi-common:uuid
        |  |  +--rw include-content?                boolean
-       |  |  +--rw local-id?                       string
+       |  |  +--rw local-id                        string
        |  |  +--rw name* [value-name]
        |  |     +--rw value-name    string
        |  |     +--rw value?        string
-       |  +--rw subscription-state?             subscription-state
-       |  +--ro supported-notification-types*   notification-type
-       |  +--ro supported-object-types*         tapi-common:object-type
-       |  +--rw uuid                            uuid
+       |  +--rw subscription-state?     subscription-state
+       |  +--rw uuid                    uuid
        |  +--rw name* [value-name]
        |     +--rw value-name    string
        |     +--rw value?        string
@@ -90,21 +90,49 @@ module: tapi-notification
        |  +--ro name* [value-name]
        |     +--ro value-name    string
        |     +--ro value?        string
-       +--rw event-notification* [uuid]
-          +--rw target-object-type?         tapi-common:object-type
-          +--rw target-object-identifier?   tapi-common:uuid
-          +--rw target-object-name* [value-name]
-          |  +--rw value-name    string
-          |  +--rw value?        string
-          +--rw event-time-stamp?           tapi-common:date-and-time
-          +--rw sequence-number?            uint64
-          +--rw source-indicator?           source-indicator
-          +--rw layer-protocol-name?        tapi-common:layer-protocol-name
-          +--rw layer-protocol-qualifier*   tapi-common:layer-protocol-qualifier
-          +--rw uuid                        uuid
-          +--rw name* [value-name]
-             +--rw value-name    string
-             +--rw value?        string
+       +--ro event-notification* [uuid]
+          +--ro target-object-type?               tapi-common:object-type
+          +--ro target-object-identifier?         tapi-common:uuid
+          +--ro target-local-object-type?         tapi-common:object-type
+          +--ro target-local-object-identifier?   string
+          +--ro target-object-name* [value-name]
+          |  +--ro value-name    string
+          |  +--ro value?        string
+          +--ro event-time-stamp?                 tapi-common:date-and-time
+          +--ro sequence-number?                  uint64
+          +--ro source-indicator?                 source-indicator
+          +--ro layer-protocol-name?              tapi-common:layer-protocol-name
+          +--ro layer-protocol-qualifier*         tapi-common:layer-protocol-qualifier
+          +--ro uuid                              uuid
+          +--ro name* [value-name]
+          |  +--ro value-name    string
+          |  +--ro value?        string
+          +--ro object-notification
+             +--ro object-notification-type?   notification-type
+             +--ro object-content?             string
+             +--ro changed-attributes* [value-name]
+             |  +--ro value-name    string
+             |  +--ro old-value?    string
+             |  +--ro new-value?    string
+             +--ro service-interface-point
+                +--ro layer-protocol-name?                  layer-protocol-name
+                +--ro supported-layer-protocol-qualifier*   layer-protocol-qualifier
+                +--ro direction?                            port-direction
+                +--ro uuid?                                 uuid
+                +--ro name* [value-name]
+                |  +--ro value-name    string
+                |  +--ro value?        string
+                +--ro administrative-state?                 administrative-state
+                +--ro operational-state?                    operational-state
+                +--ro lifecycle-state?                      lifecycle-state
+                +--ro total-potential-capacity
+                |  +--ro total-size
+                |     +--ro value?   uint64
+                |     +--ro unit?    capacity-unit
+                +--ro available-capacity
+                   +--ro total-size
+                      +--ro value?   uint64
+                      +--ro unit?    capacity-unit
 
   rpcs:
     +---x get-supported-notification-types
@@ -155,17 +183,19 @@ module: tapi-notification
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
     |        +--ro event-notification* [uuid]
-    |        |  +--ro target-object-type?         tapi-common:object-type
-    |        |  +--ro target-object-identifier?   tapi-common:uuid
+    |        |  +--ro target-object-type?               tapi-common:object-type
+    |        |  +--ro target-object-identifier?         tapi-common:uuid
+    |        |  +--ro target-local-object-type?         tapi-common:object-type
+    |        |  +--ro target-local-object-identifier?   string
     |        |  +--ro target-object-name* [value-name]
     |        |  |  +--ro value-name    string
     |        |  |  +--ro value?        string
-    |        |  +--ro event-time-stamp?           tapi-common:date-and-time
-    |        |  +--ro sequence-number?            uint64
-    |        |  +--ro source-indicator?           source-indicator
-    |        |  +--ro layer-protocol-name?        tapi-common:layer-protocol-name
-    |        |  +--ro layer-protocol-qualifier*   tapi-common:layer-protocol-qualifier
-    |        |  +--ro uuid                        uuid
+    |        |  +--ro event-time-stamp?                 tapi-common:date-and-time
+    |        |  +--ro sequence-number?                  uint64
+    |        |  +--ro source-indicator?                 source-indicator
+    |        |  +--ro layer-protocol-name?              tapi-common:layer-protocol-name
+    |        |  +--ro layer-protocol-qualifier*         tapi-common:layer-protocol-qualifier
+    |        |  +--ro uuid                              uuid
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
@@ -176,20 +206,18 @@ module: tapi-notification
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
-    |        +--ro subscription-filter
+    |        +--ro subscription-filter* [local-id]
     |        |  +--ro requested-notification-types*   notification-type
     |        |  +--ro requested-object-types*         tapi-common:object-type
     |        |  +--ro requested-layer-protocols*      tapi-common:layer-protocol-name
     |        |  +--ro requested-object-identifier*    tapi-common:uuid
     |        |  +--ro include-content?                boolean
-    |        |  +--ro local-id?                       string
+    |        |  +--ro local-id                        string
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
-    |        +--ro subscription-state?             subscription-state
-    |        +--ro supported-notification-types*   notification-type
-    |        +--ro supported-object-types*         tapi-common:object-type
-    |        +--ro uuid?                           uuid
+    |        +--ro subscription-state?     subscription-state
+    |        +--ro uuid?                   uuid
     |        +--ro name* [value-name]
     |           +--ro value-name    string
     |           +--ro value?        string
@@ -237,17 +265,19 @@ module: tapi-notification
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
     |        +--ro event-notification* [uuid]
-    |        |  +--ro target-object-type?         tapi-common:object-type
-    |        |  +--ro target-object-identifier?   tapi-common:uuid
+    |        |  +--ro target-object-type?               tapi-common:object-type
+    |        |  +--ro target-object-identifier?         tapi-common:uuid
+    |        |  +--ro target-local-object-type?         tapi-common:object-type
+    |        |  +--ro target-local-object-identifier?   string
     |        |  +--ro target-object-name* [value-name]
     |        |  |  +--ro value-name    string
     |        |  |  +--ro value?        string
-    |        |  +--ro event-time-stamp?           tapi-common:date-and-time
-    |        |  +--ro sequence-number?            uint64
-    |        |  +--ro source-indicator?           source-indicator
-    |        |  +--ro layer-protocol-name?        tapi-common:layer-protocol-name
-    |        |  +--ro layer-protocol-qualifier*   tapi-common:layer-protocol-qualifier
-    |        |  +--ro uuid                        uuid
+    |        |  +--ro event-time-stamp?                 tapi-common:date-and-time
+    |        |  +--ro sequence-number?                  uint64
+    |        |  +--ro source-indicator?                 source-indicator
+    |        |  +--ro layer-protocol-name?              tapi-common:layer-protocol-name
+    |        |  +--ro layer-protocol-qualifier*         tapi-common:layer-protocol-qualifier
+    |        |  +--ro uuid                              uuid
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
@@ -258,20 +288,18 @@ module: tapi-notification
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
-    |        +--ro subscription-filter
+    |        +--ro subscription-filter* [local-id]
     |        |  +--ro requested-notification-types*   notification-type
     |        |  +--ro requested-object-types*         tapi-common:object-type
     |        |  +--ro requested-layer-protocols*      tapi-common:layer-protocol-name
     |        |  +--ro requested-object-identifier*    tapi-common:uuid
     |        |  +--ro include-content?                boolean
-    |        |  +--ro local-id?                       string
+    |        |  +--ro local-id                        string
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
-    |        +--ro subscription-state?             subscription-state
-    |        +--ro supported-notification-types*   notification-type
-    |        +--ro supported-object-types*         tapi-common:object-type
-    |        +--ro uuid?                           uuid
+    |        +--ro subscription-state?     subscription-state
+    |        +--ro uuid?                   uuid
     |        +--ro name* [value-name]
     |           +--ro value-name    string
     |           +--ro value?        string
@@ -308,17 +336,19 @@ module: tapi-notification
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
     |        +--ro event-notification* [uuid]
-    |        |  +--ro target-object-type?         tapi-common:object-type
-    |        |  +--ro target-object-identifier?   tapi-common:uuid
+    |        |  +--ro target-object-type?               tapi-common:object-type
+    |        |  +--ro target-object-identifier?         tapi-common:uuid
+    |        |  +--ro target-local-object-type?         tapi-common:object-type
+    |        |  +--ro target-local-object-identifier?   string
     |        |  +--ro target-object-name* [value-name]
     |        |  |  +--ro value-name    string
     |        |  |  +--ro value?        string
-    |        |  +--ro event-time-stamp?           tapi-common:date-and-time
-    |        |  +--ro sequence-number?            uint64
-    |        |  +--ro source-indicator?           source-indicator
-    |        |  +--ro layer-protocol-name?        tapi-common:layer-protocol-name
-    |        |  +--ro layer-protocol-qualifier*   tapi-common:layer-protocol-qualifier
-    |        |  +--ro uuid                        uuid
+    |        |  +--ro event-time-stamp?                 tapi-common:date-and-time
+    |        |  +--ro sequence-number?                  uint64
+    |        |  +--ro source-indicator?                 source-indicator
+    |        |  +--ro layer-protocol-name?              tapi-common:layer-protocol-name
+    |        |  +--ro layer-protocol-qualifier*         tapi-common:layer-protocol-qualifier
+    |        |  +--ro uuid                              uuid
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
@@ -329,20 +359,18 @@ module: tapi-notification
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
-    |        +--ro subscription-filter
+    |        +--ro subscription-filter* [local-id]
     |        |  +--ro requested-notification-types*   notification-type
     |        |  +--ro requested-object-types*         tapi-common:object-type
     |        |  +--ro requested-layer-protocols*      tapi-common:layer-protocol-name
     |        |  +--ro requested-object-identifier*    tapi-common:uuid
     |        |  +--ro include-content?                boolean
-    |        |  +--ro local-id?                       string
+    |        |  +--ro local-id                        string
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
-    |        +--ro subscription-state?             subscription-state
-    |        +--ro supported-notification-types*   notification-type
-    |        +--ro supported-object-types*         tapi-common:object-type
-    |        +--ro uuid?                           uuid
+    |        +--ro subscription-state?     subscription-state
+    |        +--ro uuid?                   uuid
     |        +--ro name* [value-name]
     |           +--ro value-name    string
     |           +--ro value?        string
@@ -374,17 +402,19 @@ module: tapi-notification
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
     |        +--ro event-notification* [uuid]
-    |        |  +--ro target-object-type?         tapi-common:object-type
-    |        |  +--ro target-object-identifier?   tapi-common:uuid
+    |        |  +--ro target-object-type?               tapi-common:object-type
+    |        |  +--ro target-object-identifier?         tapi-common:uuid
+    |        |  +--ro target-local-object-type?         tapi-common:object-type
+    |        |  +--ro target-local-object-identifier?   string
     |        |  +--ro target-object-name* [value-name]
     |        |  |  +--ro value-name    string
     |        |  |  +--ro value?        string
-    |        |  +--ro event-time-stamp?           tapi-common:date-and-time
-    |        |  +--ro sequence-number?            uint64
-    |        |  +--ro source-indicator?           source-indicator
-    |        |  +--ro layer-protocol-name?        tapi-common:layer-protocol-name
-    |        |  +--ro layer-protocol-qualifier*   tapi-common:layer-protocol-qualifier
-    |        |  +--ro uuid                        uuid
+    |        |  +--ro event-time-stamp?                 tapi-common:date-and-time
+    |        |  +--ro sequence-number?                  uint64
+    |        |  +--ro source-indicator?                 source-indicator
+    |        |  +--ro layer-protocol-name?              tapi-common:layer-protocol-name
+    |        |  +--ro layer-protocol-qualifier*         tapi-common:layer-protocol-qualifier
+    |        |  +--ro uuid                              uuid
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
@@ -395,20 +425,18 @@ module: tapi-notification
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
-    |        +--ro subscription-filter
+    |        +--ro subscription-filter* [local-id]
     |        |  +--ro requested-notification-types*   notification-type
     |        |  +--ro requested-object-types*         tapi-common:object-type
     |        |  +--ro requested-layer-protocols*      tapi-common:layer-protocol-name
     |        |  +--ro requested-object-identifier*    tapi-common:uuid
     |        |  +--ro include-content?                boolean
-    |        |  +--ro local-id?                       string
+    |        |  +--ro local-id                        string
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
-    |        +--ro subscription-state?             subscription-state
-    |        +--ro supported-notification-types*   notification-type
-    |        +--ro supported-object-types*         tapi-common:object-type
-    |        +--ro uuid                            uuid
+    |        +--ro subscription-state?     subscription-state
+    |        +--ro uuid                    uuid
     |        +--ro name* [value-name]
     |           +--ro value-name    string
     |           +--ro value?        string
@@ -470,17 +498,19 @@ module: tapi-notification
     |     +--ro value-name    string
     |     +--ro value?        string
     +---n event-notification
-       +--ro target-object-type?         tapi-common:object-type
-       +--ro target-object-identifier?   tapi-common:uuid
+       +--ro target-object-type?               tapi-common:object-type
+       +--ro target-object-identifier?         tapi-common:uuid
+       +--ro target-local-object-type?         tapi-common:object-type
+       +--ro target-local-object-identifier?   string
        +--ro target-object-name* [value-name]
        |  +--ro value-name    string
        |  +--ro value?        string
-       +--ro event-time-stamp?           tapi-common:date-and-time
-       +--ro sequence-number?            uint64
-       +--ro source-indicator?           source-indicator
-       +--ro layer-protocol-name?        tapi-common:layer-protocol-name
-       +--ro layer-protocol-qualifier*   tapi-common:layer-protocol-qualifier
-       +--ro uuid?                       uuid
+       +--ro event-time-stamp?                 tapi-common:date-and-time
+       +--ro sequence-number?                  uint64
+       +--ro source-indicator?                 source-indicator
+       +--ro layer-protocol-name?              tapi-common:layer-protocol-name
+       +--ro layer-protocol-qualifier*         tapi-common:layer-protocol-qualifier
+       +--ro uuid?                             uuid
        +--ro name* [value-name]
           +--ro value-name    string
           +--ro value?        string
