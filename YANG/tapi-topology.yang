@@ -847,7 +847,7 @@ module tapi-topology {
             description "A topological entity suffers delay caused by the realization of the servers (e.g. distance related; FEC encoding etc.) along with some client specific processing.
                 This is the total average latency effect of the topological entity.";
         }
-        leaf queing-latency-characteristic {
+        leaf queuing-latency-characteristic {
             type string;
             description "The specific queuing latency for the traffic property.";
         }
@@ -945,7 +945,8 @@ module tapi-topology {
     typedef restoration-policy {
         type enumeration {
             enum PER_DOMAIN_RESTORATION {
-                description "Restoration is expected to be performed independently within each (restoration) domain scope.";
+                description "Restoration is expected to be performed independently within each (restoration) domain scope.
+                This implies that the server is responsible of activating the required control mechanisms to guarantee the restoration of the service autonomously.";
             }
             enum END_TO_END_RESTORATION {
                 description "Restoration is expected to be performed on end to end basis across all domain(s).";
@@ -966,12 +967,10 @@ module tapi-topology {
             }
             enum ONE_PLUS_ONE_PROTECTION_WITH_DYNAMIC_RESTORATION {
                 description "Protection scheme where the switches are not required to be coordinated (typically the signal is always bridged).
-                    In addition a new protection route is dynamically computed and implemented to restore resiliency level (e.g. when a failure affects previously working route).";
+                    In addition is implemented a second level of resilience, through dynamic restoration of the first connection affected by a failure.";
             }
             enum PERMANENT_ONE_PLUS_ONE_PROTECTION {
-                description "Non-revertive scheme, a route which is impaired (by a failure or maintenance command) is forgotten.
-                    If the current route fails, the control plane will commute to a protection route. The role, or priority of this route changes from protected to working and the control plane will compute and provision a new protection route.
-                    If the protection route fails, the control plane will compute and restore it through a new protection route.";
+                description "Extends the ONE_PLUS_ONE_PROTECTION_WITH_DYNAMIC_RESTORATION allowing an indeterminate number of failures to affect either of the 1+1 routes and the respective subsequent dynamic restorations.";
             }
             enum ONE_FOR_ONE_PROTECTION {
                 description "Protection scheme where the switches are coordinated (e.g. by signalling).";
@@ -1099,15 +1098,15 @@ module tapi-topology {
     grouping multiplexing-sequence {
         leaf-list layer-protocol-qualifier {
             type tapi-common:layer-protocol-qualifier;
-            description "none";
+            description "List of layer protocol qualifiers composing the multiplexing sequence.";
         }
         leaf number-of-cep-instances {
             type uint64;
-            description "none";
+            description "The maximum number of CEP instances of the multiplexing sequence.";
         }
         container capacity {
             uses tapi-common:capacity-value;
-            description "none";
+            description "The maximum capacity of the multiplexing sequence.";
         }
         description "The supported multiplexing sequences, e.g.
             - ODU0; ODU1; ODU2; ODU4 : 80

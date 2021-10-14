@@ -369,9 +369,6 @@ License: This module is distributed under the Apache License 2.0</body>
       <packagedElement xmi:type="uml:Abstraction" xmi:id="_-z1xoBt-EeyYSYo4RTEF0Q" name="InterRuleGroupAugmentsLogRecordBody" client="_9W0Q4Bk7EeeV4o0osG5stg">
         <supplier xmi:type="uml:Class" href="TapiStreaming.uml#_lKL9sGWwEemRDKXaAompzQ"/>
       </packagedElement>
-      <packagedElement xmi:type="uml:Abstraction" xmi:id="__Ry48Bt-EeyYSYo4RTEF0Q" name="InterRuleGroupAugmentsObjectNotif" client="_SXc0sC5xEea0_JngOlSKcA">
-        <supplier xmi:type="uml:Class" href="TapiNotification.uml#_tjFTQNgZEeudANcJaTTLUg"/>
-      </packagedElement>
       <packagedElement xmi:type="uml:Abstraction" xmi:id="__v-CsBt-EeyYSYo4RTEF0Q" name="RuleAugmentsObjectNotif" client="_JCwTkBk8EeeV4o0osG5stg">
         <supplier xmi:type="uml:Class" href="TapiNotification.uml#_tjFTQNgZEeudANcJaTTLUg"/>
       </packagedElement>
@@ -1286,6 +1283,9 @@ AcTI: string [64 bytes] The Trail Trace Identifier (TTI) information recovered (
           <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
         </ownedAttribute>
       </packagedElement>
+      <packagedElement xmi:type="uml:Abstraction" xmi:id="_PhuxUCkfEeyse5UbUw_daA" name="InterRuleGroupAugmentsObjectNotif" client="_9W0Q4Bk7EeeV4o0osG5stg">
+        <supplier xmi:type="uml:Class" href="TapiNotification.uml#_tjFTQNgZEeudANcJaTTLUg"/>
+      </packagedElement>
     </packagedElement>
     <packagedElement xmi:type="uml:Package" xmi:id="_TTPukC5xEea0_JngOlSKcA" name="TypeDefinitions">
       <packagedElement xmi:type="uml:DataType" xmi:id="_8ZRqwdv-EeWowYqZXEhn3A" name="CostCharacteristic" isLeaf="true">
@@ -1338,7 +1338,7 @@ This is the total average latency effect of the topological entity.</body>
           <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_KjZXC9yKEeWXdJnxZxtFYA"/>
           <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_KjZXDNyKEeWXdJnxZxtFYA" value="1"/>
         </ownedAttribute>
-        <ownedAttribute xmi:type="uml:Property" xmi:id="_8ZRq_9v-EeWowYqZXEhn3A" name="queingLatencyCharacteristic" visibility="public">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="_8ZRq_9v-EeWowYqZXEhn3A" name="queuingLatencyCharacteristic" visibility="public">
           <ownedComment xmi:type="uml:Comment" xmi:id="_8ZRrANv-EeWowYqZXEhn3A" annotatedElement="_8ZRq_9v-EeWowYqZXEhn3A">
             <body>The specific queuing latency for the traffic property.</body>
           </ownedComment>
@@ -1493,7 +1493,8 @@ For example, each Connection to a NEP in the Group must use a same value of the 
         </ownedComment>
         <ownedLiteral xmi:type="uml:EnumerationLiteral" xmi:id="_9YG5wEthEeet_JEg2fof-A" name="PER_DOMAIN_RESTORATION">
           <ownedComment xmi:type="uml:Comment" xmi:id="_PdQvgEuNEeuJitB6Y7blvQ" annotatedElement="_9YG5wEthEeet_JEg2fof-A">
-            <body>Restoration is expected to be performed independently within each (restoration) domain scope.</body>
+            <body>Restoration is expected to be performed independently within each (restoration) domain scope.&#xD;
+This implies that the server is responsible of activating the required control mechanisms to guarantee the restoration of the service autonomously.</body>
           </ownedComment>
         </ownedLiteral>
         <ownedLiteral xmi:type="uml:EnumerationLiteral" xmi:id="__V-7sEthEeet_JEg2fof-A" name="END_TO_END_RESTORATION">
@@ -1520,14 +1521,12 @@ For example, each Connection to a NEP in the Group must use a same value of the 
         <ownedLiteral xmi:type="uml:EnumerationLiteral" xmi:id="__DN6cNyoEeqxBK8T2j_DrQ" name="ONE_PLUS_ONE_PROTECTION_WITH_DYNAMIC_RESTORATION">
           <ownedComment xmi:type="uml:Comment" xmi:id="_mD7k8EuOEeuJitB6Y7blvQ" annotatedElement="__DN6cNyoEeqxBK8T2j_DrQ">
             <body>Protection scheme where the switches are not required to be coordinated (typically the signal is always bridged).&#xD;
-In addition a new protection route is dynamically computed and implemented to restore resiliency level (e.g. when a failure affects previously working route).</body>
+In addition is implemented a second level of resilience, through dynamic restoration of the first connection affected by a failure.</body>
           </ownedComment>
         </ownedLiteral>
         <ownedLiteral xmi:type="uml:EnumerationLiteral" xmi:id="_DsvqUNypEeqxBK8T2j_DrQ" name="PERMANENT_ONE_PLUS_ONE_PROTECTION">
           <ownedComment xmi:type="uml:Comment" xmi:id="_75f6kEsAEeuJitB6Y7blvQ" annotatedElement="_DsvqUNypEeqxBK8T2j_DrQ">
-            <body>Non-revertive scheme, a route which is impaired (by a failure or maintenance command) is forgotten.&#xD;
-If the current route fails, the control plane will commute to a protection route. The role, or priority of this route changes from protected to working and the control plane will compute and provision a new protection route.&#xD;
-If the protection route fails, the control plane will compute and restore it through a new protection route.</body>
+            <body>Extends the ONE_PLUS_ONE_PROTECTION_WITH_DYNAMIC_RESTORATION allowing an indeterminate number of failures to affect either of the 1+1 routes and the respective subsequent dynamic restorations.</body>
           </ownedComment>
         </ownedLiteral>
         <ownedLiteral xmi:type="uml:EnumerationLiteral" xmi:id="_zdJ3EEtiEeet_JEg2fof-A" name="ONE_FOR_ONE_PROTECTION">
@@ -1797,14 +1796,25 @@ This can be used as a reference to a paper document where full formal machine in
 </body>
         </ownedComment>
         <ownedAttribute xmi:type="uml:Property" xmi:id="_0AAVULG3EeurqOsfy5V9ew" name="layerProtocolQualifier">
+          <ownedComment xmi:type="uml:Comment" xmi:id="_mjle4Cz6EeyAbdkzptz2cQ" annotatedElement="_0AAVULG3EeurqOsfy5V9ew">
+            <body>List of layer protocol qualifiers composing the multiplexing sequence.</body>
+          </ownedComment>
           <type xmi:type="uml:Enumeration" href="TapiCommon.uml#_-eq88Ik2Eeil5oKL3Vgl-g"/>
           <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_Mz20ALG5EeurqOsfy5V9ew" value="*"/>
         </ownedAttribute>
         <ownedAttribute xmi:type="uml:Property" xmi:id="_4L2DoLG3EeurqOsfy5V9ew" name="numberOfCepInstances">
+          <ownedComment xmi:type="uml:Comment" xmi:id="_wsWeoCz6EeyAbdkzptz2cQ" annotatedElement="_4L2DoLG3EeurqOsfy5V9ew">
+            <body>The maximum number of CEP instances of the multiplexing sequence.</body>
+          </ownedComment>
           <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_QdiYUCz7EeyAbdkzptz2cQ"/>
         </ownedAttribute>
         <ownedAttribute xmi:type="uml:Property" xmi:id="_8CeW8LG3EeurqOsfy5V9ew" name="capacity">
+          <ownedComment xmi:type="uml:Comment" xmi:id="_HFVS0Cz7EeyAbdkzptz2cQ" annotatedElement="_8CeW8LG3EeurqOsfy5V9ew">
+            <body>The maximum capacity of the multiplexing sequence.</body>
+          </ownedComment>
           <type xmi:type="uml:DataType" href="TapiCommon.uml#_ReBfoFs7EeexvMtO2oNM9g"/>
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_e2ZwwCz6EeyAbdkzptz2cQ"/>
         </ownedAttribute>
       </packagedElement>
     </packagedElement>
@@ -2290,10 +2300,10 @@ This can be used as a reference to a paper document where full formal machine in
   <OpenModel_Profile:Specify xmi:id="_EDt6YBuAEeyYSYo4RTEF0Q" base_Abstraction="_-Jf0IBt-EeyYSYo4RTEF0Q">
     <target>/TapiCommon:Context:_context/TapiNotification:NotificationContext:_notificationContext/TapiNotification:NotificationContext:_eventNotification/TapiNotification:EventNotification:_objectNotification</target>
   </OpenModel_Profile:Specify>
-  <OpenModel_Profile:Specify xmi:id="_FXjg0BuAEeyYSYo4RTEF0Q" base_Abstraction="__Ry48Bt-EeyYSYo4RTEF0Q">
+  <OpenModel_Profile:Specify xmi:id="_GlXXwBuAEeyYSYo4RTEF0Q" base_Abstraction="__v-CsBt-EeyYSYo4RTEF0Q">
     <target>/TapiCommon:Context:_context/TapiNotification:NotificationContext:_notificationContext/TapiNotification:NotificationContext:_eventNotification/TapiNotification:EventNotification:_objectNotification</target>
   </OpenModel_Profile:Specify>
-  <OpenModel_Profile:Specify xmi:id="_GlXXwBuAEeyYSYo4RTEF0Q" base_Abstraction="__v-CsBt-EeyYSYo4RTEF0Q">
+  <OpenModel_Profile:Specify xmi:id="_X5zPgCkfEeyse5UbUw_daA" base_Abstraction="_PhuxUCkfEeyse5UbUw_daA">
     <target>/TapiCommon:Context:_context/TapiNotification:NotificationContext:_notificationContext/TapiNotification:NotificationContext:_eventNotification/TapiNotification:EventNotification:_objectNotification</target>
   </OpenModel_Profile:Specify>
 </xmi:XMI>
