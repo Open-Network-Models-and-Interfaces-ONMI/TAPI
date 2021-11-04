@@ -1,4 +1,5 @@
 module tapi-fm {
+    yang-version "1.1";
     namespace "urn:onf:otcc:yang:tapi-fm";
     prefix tapi-fm;
     import tapi-common {
@@ -139,6 +140,27 @@ module tapi-fm {
         }
         description "none";
     }
+    augment "/tapi-notification:notification" {
+        container alarm-info {
+            uses alarm-info;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-notification:event-notification" {
+        container detected-condition {
+            uses detected-condition;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-notification:notification" {
+        container tca-info {
+            uses tca-info;
+            description "none";
+        }
+        description "none";
+    }
     /**************************
     * package object-classes
     **************************/ 
@@ -238,10 +260,6 @@ module tapi-fm {
             key 'value-name';
             uses tapi-common:name-and-value;
             description "Additional info of the Condition provided by the source of the information.";
-        }
-        leaf detected-condition-type {
-            type condition-type;
-            description "The type of the Condition.";
         }
         list detected-condition-qualifier {
             key 'value-name';
@@ -356,16 +374,16 @@ module tapi-fm {
         description "Included only for some possible backward compatibility purpose. It should not be used to assign a severity to a failure.
             ITU-T G.7710: The severities 'cleared' and 'indeterminate' defined by [ITU-T X.733] are not included in Table 2, as it is assumed that these are not to be used to assign a failure.";
     }
-    identity ALARM_NOTIFICATION_TYPE {
+    identity FM_NOTIFICATION_TYPE {
         description "none";
     }
-    identity ALARM_NOTIFICATION_TYPE_ALARM_EVENT {
-        base ALARM_NOTIFICATION_TYPE;
-        description "The notification of an alarm event.";
+    identity FM_NOTIFICATION_TYPE_ALARM_EVENT {
+        base FM_NOTIFICATION_TYPE;
+        description "The notification of a detected condition event, specifically an alarm detected on a given resource.";
     }
-    identity ALARM_NOTIFICATION_TYPE_THRESHOLD_CROSSING_ALERT {
-        base ALARM_NOTIFICATION_TYPE;
-        description "The notification of a threshold crossing alert event.";
+    identity FM_NOTIFICATION_TYPE_THRESHOLD_CROSSING_ALERT {
+        base FM_NOTIFICATION_TYPE;
+        description "The notification of a detected condition event, specifically a threshold crossing alert detected on a given resource.";
     }
     identity CONDITION_TYPE {
         description "none";
@@ -480,9 +498,9 @@ module tapi-fm {
         }
         description "The types of perceived severity of threshold crossing alerts.";
     }
-    typedef alarm-notification-type {
+    typedef fm-notification-type {
         type identityref {
-            base ALARM_NOTIFICATION_TYPE;
+            base FM_NOTIFICATION_TYPE;
         }
         description "The list of alarm specific notification types.";
     }
