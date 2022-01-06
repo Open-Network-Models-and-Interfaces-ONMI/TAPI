@@ -198,6 +198,11 @@ module tapi-common {
             uses service-interface-point;
             description "The ServiceInterfacePoint (SIP) instances belonging to this context.";
         }
+        list profile {
+            key 'uuid';
+            uses profile;
+            description "none";
+        }
         uses global-class;
         description "This object class represents the scope of control that a particular SDN controller has with respect to a particular network, (i.e., encompassing a designated set of interconnected (virtual) network elements).
             This class includes the list of Service Interface Points.
@@ -253,6 +258,10 @@ module tapi-common {
         }
         description "Specifies the direction and layer termination state of a termination entity, e.g. CEP, NEP.";
     }
+    grouping profile {
+        uses global-class;
+        description "none";
+    }
 
     /**************************
     * package type-definitions
@@ -279,12 +288,20 @@ module tapi-common {
         base CONDITION_NAME;
         description "none";
     }
+    identity PM_PARAMETER_NAME_NATIVE {
+        base PM_PARAMETER_NAME;
+        description "This value indicates a PM Parameter not standardized by this model and specified only in native info attribute.";
+    }
     identity CONDITION_NAME {
         description "none";
     }
     identity ALARM_CONDITION_NAME {
         base CONDITION_NAME;
         description "none";
+    }
+    identity ALARM_CONDITION_NAME_NATIVE {
+        base ALARM_CONDITION_NAME;
+        description "This value indicates an Alarm Condition not standardized by this model and specified only in native info attribute.";
     }
     typedef administrative-state {
         type enumeration {
@@ -684,15 +701,15 @@ module tapi-common {
             This extensible enumeration can be augmented with specific object types/classes in the other modules.";
     }
     grouping pm-parameter-value {
-        leaf pm-parameter-int-value {
-            type uint64;
-            description "Integer value, e.g. for counters.";
-        }
-        leaf pm-parameter-real-value {
+        leaf pm-parameter-value {
             type decimal64 {
                 fraction-digits 7;
             }
-            description "Real value, e.g. for gauges.";
+            description "The PM Parameter value. The type Real allows the representation of e.g. either gauges or counters.";
+        }
+        leaf pm-parameter-unit {
+            type string;
+            description "The PM Parameter unit.";
         }
         description "PM metric value.";
     }
