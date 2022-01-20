@@ -1,4 +1,5 @@
 module tapi-path-computation {
+    yang-version "1.1";
     namespace "urn:onf:otcc:yang:tapi-path-computation";
     prefix tapi-path-computation;
     import tapi-topology {
@@ -122,6 +123,7 @@ module tapi-path-computation {
         description "Augments the base TAPI Context with PathComputationService model.";
     }
     augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
+        when 'derived-from-or-self(tapi-streaming:record-content, "PATH_COMPUTATION_OBJECT_TYPE_PATH")';
         container path {
             uses path;
             description "none";
@@ -129,6 +131,7 @@ module tapi-path-computation {
         description "none";
     }
     augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
+        when 'derived-from-or-self(tapi-streaming:record-content, "PATH_COMPUTATION_OBJECT_TYPE_PATH_COMPUTATION_SERVICE")';
         container path-computation-service {
             uses path-computation-service;
             description "none";
@@ -136,6 +139,7 @@ module tapi-path-computation {
         description "none";
     }
     augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
+        when 'derived-from-or-self(tapi-streaming:record-content, "PATH_COMPUTATION_OBJECT_TYPE_PATH_COMPUTATION_SERVICE_END_POINT")';
         container path-service-end-point {
             uses path-service-end-point;
             description "none";
@@ -143,6 +147,7 @@ module tapi-path-computation {
         description "none";
     }
     augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
+        when 'derived-from-or-self(tapi-streaming:record-content, "PATH_COMPUTATION_OBJECT_TYPE_PATH_OPTIMIZATION_CONSTRAINT")';
         container path-optimization-constraint {
             uses path-optimization-constraint;
             description "none";
@@ -150,41 +155,47 @@ module tapi-path-computation {
         description "none";
     }
     augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
+        when 'derived-from-or-self(tapi-streaming:record-content, "PATH_COMPUTATION_OBJECT_TYPE_PATH_OBJECTIVE_FUNCTION")';
         container path-objective-function {
             uses path-objective-function;
             description "none";
         }
         description "none";
     }
-    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification/tapi-notification:object-notification" {
+    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification" {
+        when 'derived-from-or-self(tapi-notification:target-object-type, "PATH_COMPUTATION_OBJECT_TYPE_PATH_COMPUTATION_SERVICE")';
         container path-computation-service {
             uses path-computation-service;
             description "none";
         }
         description "none";
     }
-    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification/tapi-notification:object-notification" {
+    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification" {
+        when 'derived-from-or-self(tapi-notification:target-object-type, "PATH_COMPUTATION_OBJECT_TYPE_PATH_COMPUTATION_SERVICE_END_POINT")';
         container path-service-end-point {
             uses path-service-end-point;
             description "none";
         }
         description "none";
     }
-    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification/tapi-notification:object-notification" {
+    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification" {
+        when 'derived-from-or-self(tapi-notification:target-object-type, "PATH_COMPUTATION_OBJECT_TYPE_PATH")';
         container path {
             uses path;
             description "none";
         }
         description "none";
     }
-    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification/tapi-notification:object-notification" {
+    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification" {
+        when 'derived-from-or-self(tapi-notification:target-object-type, "PATH_COMPUTATION_OBJECT_TYPE_PATH_OPTIMIZATION_CONSTRAINT")';
         container path-optimization-constraint {
             uses path-optimization-constraint;
             description "none";
         }
         description "none";
     }
-    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification/tapi-notification:object-notification" {
+    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification" {
+        when 'derived-from-or-self(tapi-notification:target-object-type, "PATH_COMPUTATION_OBJECT_TYPE_PATH_OBJECTIVE_FUNCTION")';
         container path-objective-function {
             uses path-objective-function;
             description "none";
@@ -198,8 +209,10 @@ module tapi-path-computation {
         leaf path-uuid {
             type leafref {
                 path '/tapi-common:context/tapi-path-computation:path-computation-context/tapi-path-computation:path/tapi-path-computation:uuid';
+				require-instance false;
             }
-            description "none";
+            description "The require-instance statement is used as a workaround to enable write operation on a data node that refers to a read only list item.
+                Furthermore a referenced instance of a Path may be deleted by the TAPI Server, leaving a dangling reference. Implementations shall deal with this case.";
         }
         description "none";
     }
@@ -521,6 +534,14 @@ module tapi-path-computation {
     identity PATH_COMPUTATION_OBJECT_TYPE_TOPOLOGY_CONSTRAINT {
         base PATH_COMPUTATION_OBJECT_TYPE;
         description "The TopologyConstraint class.";
+    }
+    identity PATH_COMPUTATION_OBJECT_TYPE_PATH_OPTIMIZATION_CONSTRAINT {
+        base PATH_COMPUTATION_OBJECT_TYPE;
+        description "The PathOptimizationConstraint class.";
+    }
+    identity PATH_COMPUTATION_OBJECT_TYPE_PATH_OBJECTIVE_FUNCTION {
+        base PATH_COMPUTATION_OBJECT_TYPE;
+        description "The PathObjectiveFunction class.";
     }
     typedef route-objective-function {
         type enumeration {

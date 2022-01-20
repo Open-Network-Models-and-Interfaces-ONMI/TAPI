@@ -1,4 +1,5 @@
 module tapi-fm {
+    yang-version "1.1";
     namespace "urn:onf:otcc:yang:tapi-fm";
     prefix tapi-fm;
     import tapi-common {
@@ -139,6 +140,27 @@ module tapi-fm {
         }
         description "none";
     }
+    augment "/tapi-notification:notification" {
+        container alarm-info {
+            uses alarm-info;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-notification:event-notification" {
+        container detected-condition {
+            uses detected-condition;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-notification:notification" {
+        container tca-info {
+            uses tca-info;
+            description "none";
+        }
+        description "none";
+    }
     /**************************
     * package object-classes
     **************************/ 
@@ -155,9 +177,13 @@ module tapi-fm {
                 - failure: The fault cause persisted long enough to consider the ability of an item to perform a required function to be terminated. The item may be considered as failed; a fault has now been detected.
                 - alarm: A human-observable indication that draws attention to a failure (detected fault) usually giving an indication of the severity of the fault.";
         }
-        leaf native-alarm-info {
+        leaf native-alarm-name {
             type string;
             description "The probable cause of the failure as shown by lower level controllers.";
+        }
+        leaf native-alarm-info {
+            type string;
+            description "Additional info made available by the lower level controllers.";
         }
         leaf is-transient {
             type boolean;
@@ -175,10 +201,9 @@ module tapi-fm {
             type alarm-category;
             description "The alarm category, based on ITU-T X.733.";
         }
-        list alarm-qualifier {
-            key 'value-name';
-            uses tapi-common:name-and-value;
-            description "Further information necessary to precisely/uniquely/unambiguously identify the alarm.
+        leaf alarm-qualifier {
+            type string;
+            description "Further information necessary to precisely/uniquely/unambiguously identify the alarm detector.
                 For Equipment and Processing Alarm Category, e.g. the local id of the ActualNonFieldReplaceableModule which identifies exact alarm source.
                 For Environment Alarm Category, e.g. on the same Device instance may appear more Environmental alarm notifications with same Alarn Name.
                 For Connectivity Alarm Category in case that same CEP instance includes e.g. both OTS and OMS monitoring layers.";
@@ -190,6 +215,14 @@ module tapi-fm {
         leaf threshold-indicator-name {
             type tapi-common:pm-parameter-name;
             description "PM metric name which TCA refers to.";
+        }
+        leaf native-threshold-indicator-name {
+            type string;
+            description "PM metric name which TCA refers to as shown by lower level controllers.";
+        }
+        leaf native-tca-info {
+            type string;
+            description "Additional info made available by the lower level controllers.";
         }
         leaf is-transient {
             type boolean;
@@ -213,6 +246,19 @@ module tapi-fm {
                 The reference is defined as simple UUID because TapiFm does not import TapiOam.
                 MEF 35.1: Identification of the PM Session for which the TCA Function was configured.";
         }
+        leaf tca-qualifier {
+            type string;
+            description "Further information necessary to precisely/uniquely/unambiguously identify the TCA detector.";
+        }
+        container granularity-period {
+            uses tapi-common:time-period;
+            description "The granularity period or measurement interval time.
+                This parameter may be necessary when the reference to the OAM Job is not included, e.g. in case the OAM job is not visible at the management interface.";
+        }
+        leaf tca-category {
+            type alarm-category;
+            description "none";
+        }
         description "This class augments the Notification class with threshold crossing alert related parameters.
             This class is deprecated in favor of DetectedCondition class, which unifies alarm and TCA related parameters.";
     }
@@ -234,20 +280,13 @@ module tapi-fm {
             type string;
             description "The name used for the Condition by the source of the information.";
         }
-        list detected-condition-native-info {
-            key 'value-name';
-            uses tapi-common:name-and-value;
+        leaf detected-condition-native-info {
+            type string;
             description "Additional info of the Condition provided by the source of the information.";
         }
-        leaf detected-condition-type {
-            type condition-type;
-            description "The type of the Condition.";
-        }
-        list detected-condition-qualifier {
-            key 'value-name';
-            uses tapi-common:name-and-value;
-            description "Further information necessary to precisely/uniquely/unambiguously identify the Condition
-                Regarding ITU-T X.733 Alarm Category:
+        leaf detected-condition-qualifier {
+            type string;
+            description "Further information necessary to precisely/uniquely/unambiguously identify the Condition Detector.
                 For Equipment and Processing Alarm Category, e.g. the local id of the ActualNonFieldReplaceableModule which identifies exact alarm source.
                 For Environment Alarm Category, e.g. on the same Device instance may appear more Environmental alarm notifications with same Alarn Name.
                 For Connectivity Alarm Category in case that same CEP instance includes e.g. both OTS and OMS monitoring layers.";
@@ -311,6 +350,11 @@ module tapi-fm {
             uses tapi-common:pm-parameter-value;
             description "The configured threshold value of PM metric to which TCA refers to.";
         }
+        container granularity-period {
+            uses tapi-common:time-period;
+            description "The granularity period or measurement interval time.
+                This parameter may be necessary when the reference to the OAM Job is not included, e.g. in case the OAM job is not visible at the management interface.";
+        }
         description "Information associated to a Threshold Crossing Alert.";
     }
 
@@ -329,10 +373,6 @@ module tapi-fm {
         description "none";
     }
     identity ALARM_CATEGORY_CONNECTIVITY {
-        base ALARM_CATEGORY;
-        description "none";
-    }
-    identity ALARM_CATEGORY_TCA {
         base ALARM_CATEGORY;
         description "none";
     }
@@ -356,16 +396,16 @@ module tapi-fm {
         description "Included only for some possible backward compatibility purpose. It should not be used to assign a severity to a failure.
             ITU-T G.7710: The severities 'cleared' and 'indeterminate' defined by [ITU-T X.733] are not included in Table 2, as it is assumed that these are not to be used to assign a failure.";
     }
-    identity ALARM_NOTIFICATION_TYPE {
+    identity FM_NOTIFICATION_TYPE {
         description "none";
     }
-    identity ALARM_NOTIFICATION_TYPE_ALARM_EVENT {
-        base ALARM_NOTIFICATION_TYPE;
-        description "The notification of an alarm event.";
+    identity FM_NOTIFICATION_TYPE_ALARM_EVENT {
+        base FM_NOTIFICATION_TYPE;
+        description "The notification of a detected condition event, specifically an alarm detected on a given resource.";
     }
-    identity ALARM_NOTIFICATION_TYPE_THRESHOLD_CROSSING_ALERT {
-        base ALARM_NOTIFICATION_TYPE;
-        description "The notification of a threshold crossing alert event.";
+    identity FM_NOTIFICATION_TYPE_THRESHOLD_CROSSING_ALERT {
+        base FM_NOTIFICATION_TYPE;
+        description "The notification of a detected condition event, specifically a threshold crossing alert detected on a given resource.";
     }
     identity CONDITION_TYPE {
         description "none";
@@ -480,9 +520,9 @@ module tapi-fm {
         }
         description "The types of perceived severity of threshold crossing alerts.";
     }
-    typedef alarm-notification-type {
+    typedef fm-notification-type {
         type identityref {
-            base ALARM_NOTIFICATION_TYPE;
+            base FM_NOTIFICATION_TYPE;
         }
         description "The list of alarm specific notification types.";
     }

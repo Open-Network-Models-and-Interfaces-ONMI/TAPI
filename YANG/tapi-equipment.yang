@@ -1,4 +1,5 @@
 module tapi-equipment {
+    yang-version "1.1";
     namespace "urn:onf:otcc:yang:tapi-equipment";
     prefix tapi-equipment;
     import tapi-common {
@@ -12,6 +13,9 @@ module tapi-equipment {
     }
     import tapi-streaming {
         prefix tapi-streaming;
+    }
+    import tapi-connectivity {
+        prefix tapi-connectivity;
     }
     organization "ONF OTCC (Open Transport Configuration & Control) Project";
     contact "
@@ -136,6 +140,7 @@ module tapi-equipment {
         description "This augment allows NEP to refer to its AccessPorts despite TapiTopology model does not import TapiEquipment model.";
     }
     augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
+        when 'derived-from-or-self(tapi-streaming:record-content, "EQUIPMENT_OBJECT_TYPE_EQUIPMENT")';
         container equipment {
             uses equipment;
             description "none";
@@ -143,6 +148,7 @@ module tapi-equipment {
         description "none";
     }
     augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
+        when 'derived-from-or-self(tapi-streaming:record-content, "EQUIPMENT_OBJECT_TYPE_HOLDER")';
         container holder {
             uses holder;
             description "none";
@@ -150,6 +156,7 @@ module tapi-equipment {
         description "none";
     }
     augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
+        when 'derived-from-or-self(tapi-streaming:record-content, "EQUIPMENT_OBJECT_TYPE_ACCESS_PORT")';
         container access-port {
             uses access-port;
             description "none";
@@ -157,6 +164,7 @@ module tapi-equipment {
         description "none";
     }
     augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
+        when 'derived-from-or-self(tapi-streaming:record-content, "EQUIPMENT_OBJECT_TYPE_ABSTRACT_STRAND")';
         container abstract-strand {
             uses abstract-strand;
             description "none";
@@ -164,6 +172,7 @@ module tapi-equipment {
         description "none";
     }
     augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
+        when 'derived-from-or-self(tapi-streaming:record-content, "EQUIPMENT_OBJECT_TYPE_DEVICE")';
         container device {
             uses device;
             description "none";
@@ -171,53 +180,67 @@ module tapi-equipment {
         description "none";
     }
     augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
+        when 'derived-from-or-self(tapi-streaming:record-content, "EQUIPMENT_OBJECT_TYPE_PHYSICAL_SPAN")';
         container physical-span {
             uses physical-span;
             description "none";
         }
         description "none";
     }
-    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification/tapi-notification:object-notification" {
+    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification" {
+        when 'derived-from-or-self(tapi-notification:target-object-type, "EQUIPMENT_OBJECT_TYPE_EQUIPMENT")';
         container equipment {
             uses equipment;
             description "none";
         }
         description "none";
     }
-    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification/tapi-notification:object-notification" {
+    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification" {
+        when 'derived-from-or-self(tapi-notification:target-object-type, "EQUIPMENT_OBJECT_TYPE_HOLDER")';
         container holder {
             uses holder;
             description "none";
         }
         description "none";
     }
-    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification/tapi-notification:object-notification" {
+    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification" {
+        when 'derived-from-or-self(tapi-notification:target-object-type, "EQUIPMENT_OBJECT_TYPE_ACCESS_PORT")';
         container access-port {
             uses access-port;
             description "none";
         }
         description "none";
     }
-    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification/tapi-notification:object-notification" {
+    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification" {
+        when 'derived-from-or-self(tapi-notification:target-object-type, "EQUIPMENT_OBJECT_TYPE_ABSTRACT_STRAND")';
         container abstract-strand {
             uses abstract-strand;
             description "none";
         }
         description "none";
     }
-    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification/tapi-notification:object-notification" {
+    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification" {
+        when 'derived-from-or-self(tapi-notification:target-object-type, "EQUIPMENT_OBJECT_TYPE_DEVICE")';
         container device {
             uses device;
             description "none";
         }
         description "none";
     }
-    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification/tapi-notification:object-notification" {
+    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification" {
+        when 'derived-from-or-self(tapi-notification:target-object-type, "EQUIPMENT_OBJECT_TYPE_PHYSICAL_SPAN")';
         container physical-span {
             uses physical-span;
             description "none";
         }
         description "none";
+    }
+    augment "/tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connection" {
+        container physical-route-list {
+            uses physical-route-list;
+            description "This augment allows Connection to describe its physical route(s) by listing all involved AccessPorts, despite TapiConnectivity model does not import TapiEquipment model.";
+        }
+        description "This augment allows Connection to describe its physical route(s) by listing all involved AccessPorts, despite TapiConnectivity model does not import TapiEquipment model.";
     }
     /**************************
     * definitions of references
@@ -364,6 +387,21 @@ module tapi-equipment {
     identity EQUIPMENT_OBJECT_TYPE_ABSTRACT_STRAND {
         base EQUIPMENT_OBJECT_TYPE;
         description "none";
+    }
+    identity PHYSICAL_ROUTE_STATE {
+        description "none";
+    }
+    identity PHYSICAL_ROUTE_STATE_CURRENT {
+        base PHYSICAL_ROUTE_STATE;
+        description "The PhysicalRoute instance identified is the current PhysicalRoute, i.e., is the one that is active and selected to support service.";
+    }
+    identity PHYSICAL_ROUTE_STATE_NOT_CURRENT {
+        base PHYSICAL_ROUTE_STATE;
+        description "The PhysicalRoute instance is not the one supporting the service.";
+    }
+    identity PHYSICAL_ROUTE_STATE_UNKNOWN {
+        base PHYSICAL_ROUTE_STATE;
+        description "The PhysicalRoute state is unknown.";
     }
     typedef connector-and-pin-orientation {
         type identityref {
@@ -602,6 +640,12 @@ module tapi-equipment {
         }
         description "Provides an opportunity, for a pin, to give the location of the pin and the role of the pin.";
     }
+    typedef physical-route-state {
+        type identityref {
+            base PHYSICAL_ROUTE_STATE;
+        }
+        description "Potential PhysicalRoute states concerning the service support.";
+    }
 
     /**************************
     * package object-classes
@@ -781,16 +825,58 @@ module tapi-equipment {
     grouping supporting-physical-span {
         container physical-span {
             uses physical-span-ref;
-            description "none";
+            config false;
+            description "Reference to the PhysicalSpan.";
         }
-        description "This augment allows Link to refer to its PhysicalSpans despite TapiTopology model does not import TapiEquipment model.";
+        description "The PhysicalSpan supporting this Link. More Links can be supported by the same PhysicalSpan.
+            This augment allows Link to refer to its PhysicalSpans despite TapiTopology model does not import TapiEquipment model.";
     }
     grouping supporting-access-port {
         container access-port {
             uses access-port-ref;
-            description "none";
+            config false;
+            description "Reference to the AccessPort.";
         }
-        description "none";
+        description "The AccessPort supporting this NEP. More NEPs can be supported by the same AccessPort.
+            This augment allows NEP to refer to its AccessPort despite TapiTopology model does not import TapiEquipment model.";
+    }
+    grouping physical-route {
+        list access-port {
+            uses access-port-ref;
+            key "device-uuid access-port-uuid";
+            config false;
+            description "Reference to the AccessPorts composing one PhysicalRoute of a Connection.";
+        }
+        container resilience-physical-route {
+            config false;
+            uses resilience-physical-route;
+            description "Provides optional resilience and state attributes to the PhysicalRoute.";
+        }
+        description "The PhysicalRoute of a Connection is modeled as an ordered sequence of AccessPort instances.";
+    }
+    grouping physical-route-list {
+        list physical-route {
+            config false;
+            uses physical-route;
+            description "List of PhysicalRoutes composing the physical route of the Connection.";
+        }
+        description "The list of the PhysicalRoutes of a Connection.";
+    }
+    grouping resilience-physical-route {
+        leaf physical-route-state {
+            type physical-route-state;
+            config false;
+            description "Current information on the route selection.";
+        }
+        leaf physical-route-priority {
+            type uint64;
+            config false;
+            description "Value of 0 (zero) means 'unspecified priority'.
+                Highest priority is 1, sometimes referred as 'preferred' or 'main' or 'intended' route.
+                2 has lower priority than 1, 3 has lower priority than 2, etc.";
+        }
+        description "This object adds resilience and state attributes to the PhysicalRoute.
+            When this object is not present, then the PhysicalRoute is intended as 'current' PhysicalRoute of the Connection.";
     }
 
     /**************************
