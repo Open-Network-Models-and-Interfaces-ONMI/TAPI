@@ -350,6 +350,12 @@ module tapi-connectivity {
                 Aggregation is used as for the Node/Topology to allow changes in hierarchy. Connection aggregation reflects Node/Topology aggregation.
                 Note that a cross-connection in a switch matrix (i.e., a fabric) is not necessarily the lowest level of Connection partitioning.";
         }
+        list server-connection {
+            uses connection-ref;
+            key 'connection-uuid';
+            config false;
+            description "The server layer Connections supporting this Connection.";
+        }
         list supported-client-link {
             uses tapi-topology:link-ref;
             key 'topology-uuid link-uuid';
@@ -434,6 +440,24 @@ module tapi-connectivity {
             uses tapi-topology:node-edge-point-ref;
             config false;
             description "The supporting NodeEdgePoint (NEP) instance.";
+        }
+        list sink-profile {
+            uses tapi-common:profile-ref;
+            key 'profile-uuid';
+            config false;
+            description "none";
+        }
+        list source-profile {
+            uses tapi-common:profile-ref;
+            key 'profile-uuid';
+            config false;
+            description "none";
+        }
+        list profile {
+            uses tapi-common:profile-ref;
+            key 'profile-uuid';
+            config false;
+            description "none";
         }
         uses tapi-common:global-class;
         uses tapi-common:operational-state-pac;
@@ -602,10 +626,28 @@ module tapi-connectivity {
             key 'connectivity-service-uuid connectivity-service-end-point-local-id';
             description "The associated ConnectivityServiceEndPoint (CSEP) instances from assembling perspective, e.g. in inverse multiplexing schemes.";
         }
-        list server-constraint {
+        list layer-protocol-constraint {
             key 'local-id';
-            uses server-constraint;
-            description "The server constraints.";
+            uses layer-protocol-constraint;
+            description "The constraints applicable at specific layers.";
+        }
+        list profile {
+            uses tapi-common:profile-ref;
+            key 'profile-uuid';
+            config false;
+            description "none";
+        }
+        list sink-profile {
+            uses tapi-common:profile-ref;
+            key 'profile-uuid';
+            config false;
+            description "none";
+        }
+        list source-profile {
+            uses tapi-common:profile-ref;
+            key 'profile-uuid';
+            config false;
+            description "none";
         }
         uses tapi-common:local-class;
         uses tapi-common:admin-state-pac;
@@ -834,9 +876,17 @@ module tapi-connectivity {
         uses tapi-common:local-class;
         description "Experimental class for complex/detailed provisioning schemes.";
     }
-    grouping server-constraint {
+    grouping layer-protocol-constraint {
+        leaf layer-protocol-name {
+            type tapi-common:layer-protocol-name;
+            description "none";
+        }
+        leaf layer-protocol-qualifier {
+            type tapi-common:layer-protocol-qualifier;
+            description "none";
+        }
         uses tapi-common:local-class;
-        description "This package allows augmentations for server layer technology specific constraints.";
+        description "LayerProtocolConstraint allows to specify constraints at any layer, by allowing the technology specific augmentations of the generic CSEP.";
     }
 
     /**************************

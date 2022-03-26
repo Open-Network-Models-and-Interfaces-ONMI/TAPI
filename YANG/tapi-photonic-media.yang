@@ -329,7 +329,7 @@ module tapi-photonic-media {
         }
         description "Augments the base NEP with OTSi specific information.";
     }
-    augment "/tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point/tapi-connectivity:server-constraint" {
+    augment "/tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point/tapi-connectivity:layer-protocol-constraint" {
         container mcg-connectivity-service-end-point-spec {
             uses mcg-connectivity-service-end-point-spec;
             description "none";
@@ -343,9 +343,99 @@ module tapi-photonic-media {
         }
         description "none";
     }
-    augment "/tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point/tapi-connectivity:server-constraint" {
+    augment "/tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point/tapi-connectivity:layer-protocol-constraint" {
         container otsia-csep-ttp-pac {
             uses otsia-csep-ttp-pac;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-common:profile" {
+        container fiber-profile {
+            uses fiber-profile;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-common:profile" {
+        container transceiver-explicit-profile {
+            uses transceiver-explicit-profile;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-common:profile" {
+        container transceiver-organizational-profile {
+            uses transceiver-organizational-profile;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-common:profile" {
+        container transceiver-standard-profile {
+            uses transceiver-standard-profile;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-common:profile" {
+        container fixed-gain-amplification {
+            uses fixed-gain-amplification;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-common:profile" {
+        container roadm-add-path {
+            uses roadm-add-path;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-common:profile" {
+        container roadm-drop-path {
+            uses roadm-drop-path;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-common:profile" {
+        container roadm-express-path {
+            uses roadm-express-path;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point" {
+        container ots-node-edge-point-spec {
+            uses ots-node-edge-point-spec;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-common:profile" {
+        container variable-gain-amplification {
+            uses variable-gain-amplification;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point/tapi-connectivity:layer-protocol-constraint" {
+        container otsi-mcg-connectivity-service-end-point-spec {
+            uses otsi-mcg-connectivity-service-end-point-spec;
+            description "none";
+        }
+        description "none";
+    }
+    /**************************
+    * definitions of references
+    **************************/    
+    grouping amplification-ref {
+        uses tapi-connectivity:connection-end-point-ref;
+        leaf amplification-local-id {
+            type leafref {
+                path '/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point/tapi-photonic-media:media-channel-connection-end-point-spec/tapi-photonic-media:oms-cep-pac/tapi-photonic-media:amplifier-params/tapi-photonic-media:local-id';
+            }
             description "none";
         }
         description "none";
@@ -403,6 +493,14 @@ module tapi-photonic-media {
             uses laser-properties;
             description "Laser properties.";
         }
+        leaf rx-total-power {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Rx optical power for all the channels received at the interface.
+                Measured in dBm.";
+        }
         description "Provides status information only.";
     }
     grouping media-channel-pool-capability-pac {
@@ -432,6 +530,12 @@ module tapi-photonic-media {
             uses media-channel-pool-capability-pac;
             description "none";
         }
+        list oms-general-optical-params {
+            config false;
+            max-elements 2;
+            uses oms-general-optical-params;
+            description "none";
+        }
         description "none";
     }
     grouping otsi-routing-spec {
@@ -442,52 +546,28 @@ module tapi-photonic-media {
         description "none";
     }
     grouping media-channel-power-pac {
-        container measured-power-ingress {
+        container measured-power {
             config false;
             uses power-properties;
             description "none";
         }
-        container measured-power-egress {
+        container contradirectional-measured-power {
+            config false;
             uses power-properties;
             description "none";
         }
         description "none";
     }
     grouping otsi-capability-pac {
-        list supportable-central-frequency-spectrum-band {
-            key 'lower-central-frequency upper-central-frequency';
-            config false;
-            uses central-frequency-band;
-            description "Each spectrum band supported for otsi trasmitter to be tuned on, is specified
-                as per it's lower and upper central frequencies supported and its frequency constraints,
-                consisting in the frequency Grid and the AdjustmentGranularity, used to uniquely identify all
-                central frequencies supported within the band.";
-        }
-        list supportable-application-identifier {
-            key 'application-code';
-            config false;
-            uses application-identifier;
-            description "The list of supportable ApplicationIdentifiers.";
-        }
-        list supportable-modulation {
-            config false;
-            uses modulation-technique;
-            description "This parameter defines the modulation used at the source.";
-        }
-        container total-power-threshold-pac {
-            config false;
-            uses total-power-threshold-pac;
-            description "none";
-        }
         leaf max-number-of-otsi {
             type uint64;
             config false;
             description "none";
         }
-        leaf-list supported-fec-type {
-            type string;
+        container total-power-threshold-pac {
             config false;
-            description "Experimental - this is a capability related to OTU client layer.";
+            uses total-power-threshold-pac;
+            description "none";
         }
         description "Can read the status of the warning for the upper value that the power can reach.";
     }
@@ -497,70 +577,13 @@ module tapi-photonic-media {
             uses otsi-capability-pac;
             description "none";
         }
-        container power-management-capability-pac {
-            uses power-management-capability-pac;
-            description "none";
-        }
         description "none";
     }
     grouping otsi-connectivity-service-end-point-spec {
-        container otsi-common-config-pac {
-            uses otsi-common-config-pac;
+        container otsi-config {
+            uses otsi-config;
             description "none";
         }
-        container otsi-spectr-config-pac {
-            uses otsi-spectr-config-pac;
-            description "none";
-        }
-        container otsi-freq-config-pac {
-            uses otsi-freq-config-pac;
-            description "none";
-        }
-        description "none";
-    }
-    grouping otsi-common-config-pac {
-        container application-identifier {
-            uses application-identifier;
-            description "This attribute indicates the selected Application Identifier.";
-        }
-        container modulation {
-            uses modulation-technique;
-            description "The modulation techniqu selected at the source.";
-        }
-        leaf laser-control {
-            type laser-control-type;
-            description "Laser control can be FORCED-ON, FORCED-OFF or LASER-SHUTDOWN";
-        }
-        leaf center-frequency-offset {
-            type uint64;
-            description "Offset where it is expected to find the signal in the MC.
-                (unidimensional in MHz).";
-        }
-        container center-frequency-constraint {
-            uses frequency-constraint;
-            description "none";
-        }
-        container edge-frequency-constraint {
-            uses frequency-constraint;
-            description "none";
-        }
-        container transmit-power {
-            uses power-properties;
-            description "Transmit power as requested.";
-        }
-        leaf total-power-warn-threshold-upper {
-            type decimal64 {
-                fraction-digits 7;
-            }
-            description "Allows to configure the upper power threshold which is expected to be different from Default, but within the Min and Max values specified as OTSi SIP capability.";
-        }
-        leaf total-power-warn-threshold-lower {
-            type decimal64 {
-                fraction-digits 7;
-            }
-            description "Allows to configure the lower power threshold which is expected to be different from Default, but within the Min and Max values specified as OTSi SIP capability.";
-        }
-        uses tapi-common:local-class;
         description "none";
     }
     grouping media-channel-service-interface-point-spec {
@@ -636,36 +659,42 @@ module tapi-photonic-media {
             type decimal64 {
                 fraction-digits 7;
             }
+            config false;
             description "Can read the value of the default  threshold that was set";
         }
         leaf total-power-upper-warn-threshold-min {
             type decimal64 {
                 fraction-digits 7;
             }
+            config false;
             description "Can read the value of the lower threshold that was set";
         }
         leaf total-power-upper-warn-threshold-max {
             type decimal64 {
                 fraction-digits 7;
             }
+            config false;
             description "Can  read the value of the upper threshold that was set";
         }
         leaf total-power-lower-warn-threshold-default {
             type decimal64 {
                 fraction-digits 7;
             }
+            config false;
             description "Can read the value of the default  threshold that was set";
         }
         leaf total-power-lower-warn-threshold-max {
             type decimal64 {
                 fraction-digits 7;
             }
+            config false;
             description "Can  read the value of the upper threshold that was set";
         }
         leaf total-power-lower-warn-threshold-min {
             type decimal64 {
                 fraction-digits 7;
             }
+            config false;
             description "Can read the value of the lower threshold that was set";
         }
         description "Indication with severity warning raised when a total power value measured is above the threshold.";
@@ -844,19 +873,9 @@ module tapi-photonic-media {
             MediaChannelConfigPac and MediaChannelBwConfigPac are mutually exclusive.";
     }
     grouping otsia-csep-ttp-pac {
-        list otsi-common-config-pac {
+        list otsi-config {
             key 'local-id';
-            uses otsi-common-config-pac;
-            description "none";
-        }
-        list otsi-spectr-config-pac {
-            key 'local-id';
-            uses otsi-spectr-config-pac;
-            description "none";
-        }
-        list otsi-freq-config-pac {
-            key 'local-id';
-            uses otsi-freq-config-pac;
+            uses otsi-config;
             description "none";
         }
         leaf number-of-otsi {
@@ -903,11 +922,13 @@ module tapi-photonic-media {
             description "none";
         }
         container central-frequency {
+            config false;
             uses central-frequency;
             description "The central frequency of the laser. It is the oscillation frequency of the corresponding electromagnetic wave";
         }
         leaf spectrum-bandwidth {
             type uint64;
+            config false;
             description "Unidimensional in MHz";
         }
         container measured-power-ingress {
@@ -916,6 +937,7 @@ module tapi-photonic-media {
             description "none";
         }
         container measured-power-egress {
+            config false;
             uses power-properties;
             description "none";
         }
@@ -946,6 +968,12 @@ module tapi-photonic-media {
         container media-channel-power-pac {
             config false;
             uses media-channel-power-pac;
+            description "none";
+        }
+        list amplifier-params {
+            key 'local-id';
+            config false;
+            uses amplification;
             description "none";
         }
         description "none";
@@ -979,22 +1007,21 @@ module tapi-photonic-media {
         uses tapi-common:local-class;
         description "OtsiMcBwConfigPac, OtsiMcConfigPac and OtsiMcFreqConfigPac are mutually exclusive.";
     }
-    grouping otsi-spectr-config-pac {
-        container spectrum {
-            uses spectrum-band;
+    grouping otsi-config {
+        leaf central-frequency {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            description "The central frequency of the laser. It is the oscillation frequency of the corresponding electromagnetic wave.
+                Measured in THz.";
+        }
+        leaf laser-control {
+            type laser-control-type;
             description "none";
         }
-        uses tapi-common:local-class;
-        description "none";
-    }
-    grouping otsi-freq-config-pac {
-        container central-frequency {
-            uses central-frequency;
-            description "The central frequency of the laser. It is the oscillation frequency of the corresponding electromagnetic wave";
-        }
-        leaf spectrum-bandwidth {
-            type uint64;
-            description "Unidimensional in MHz";
+        container otsi-power-config {
+            uses otsi-power-config;
+            description "none";
         }
         uses tapi-common:local-class;
         description "none";
@@ -1050,6 +1077,900 @@ module tapi-photonic-media {
             description "none";
         }
         uses tapi-common:local-class;
+        description "none";
+    }
+    grouping transceiver-termination-type {
+        leaf transceiver-termination-type {
+            type transceiver-termination-type;
+            description "none";
+        }
+        description "Describes whether the transponder can be used in an Optical Tunnel termination configuration or in a 3R configuration (or both).";
+    }
+    grouping transceiver-standard-profile {
+        leaf application-code {
+            type standard-application-mode;
+            config false;
+            description "ietf-layer0-types-ext.yang:
+                ITU-T G.698.2 standard mode that guarantees interoperability.
+                It must be an string with the following format:
+                B-DScW-ytz(v) where all these attributes are conformant to the ITU-T recomendation.";
+        }
+        description "none";
+    }
+    grouping transceiver-organizational-profile {
+        leaf operational-mode {
+            type string;
+            config false;
+            description "ietf-layer0-types-ext.yang:
+                Organization/vendor specific mode that guarantees interoperability, reference ITU-T G.698.2 (11/2018).";
+        }
+        leaf organization-identifier {
+            type string;
+            config false;
+            description "ietf-layer0-types-ext.yang:
+                Vendor/organization identifier that uses a private mode out of already defined in G.698.2 ITU-T application-code (RFC 7581).";
+        }
+        container common-org-explicit {
+            config false;
+            uses common-organiz-explicit;
+            description "none";
+        }
+        description "none";
+    }
+    grouping transceiver-explicit-profile {
+        container common-org-explicit {
+            config false;
+            uses common-organiz-explicit;
+            description "none";
+        }
+        container common-explicit {
+            config false;
+            uses common-explicit;
+            description "none";
+        }
+        container supported-standard-application-codes {
+            uses tapi-common:profile-ref;
+            config false;
+            description "none";
+        }
+        container supported-organizational-modes {
+            uses tapi-common:profile-ref;
+            config false;
+            description "none";
+        }
+        description "none";
+    }
+    grouping common-organiz-explicit {
+        container frequency-range {
+            config false;
+            uses frequency-range;
+            description "This parameter indicates the minimum and maximum frequency for the transmitter tuning range.";
+        }
+        leaf central-frequency-step {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "This parameter indicates the transmitter tunability grid as the distance between two adjacent carrier frequencies of the transmitter tuning range.
+                Measured in THz.";
+        }
+        leaf tx-channel-power-min {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "The minimum output power.
+                Measured in dBm.";
+        }
+        leaf tx-channel-power-max {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "The maximum output power.
+                Measured in dBm.";
+        }
+        leaf rx-channel-power-min {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "The minimum input power.
+                Measured in dBm.";
+        }
+        leaf rx-channel-power-max {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "The maximum input power.
+                Measured in dBm.";
+        }
+        leaf rx-total-power-max {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Maximum rx optical power for all the channels received at the interface.
+                Measured in dBm.";
+        }
+        description "none";
+    }
+    grouping common-explicit {
+        leaf line-coding-bitrate {
+            type line-coding;
+            config false;
+            description "Bit rate/line coding of optical tributary signal.";
+        }
+        leaf max-polarization-mode-dispersion {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Maximum acceptable accumulated polarization mode dispersion on the receiver. 
+                Measured in picoseconds per square root kilometer.
+                ";
+        }
+        leaf max-chromatic-dispersion {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Maximum acceptable accumulated chromatic dispersion on the receiver. 
+                Measured in ps/nm (picoseconds per nanometer).";
+        }
+        list chromatic-and-polarization-dispersion-penalty {
+            config false;
+            uses cd-pmd-penalty;
+            description "Optional penalty associated with a given accumulated CD and PMD. 
+                This list of triplet cd, pmd, penalty can be used to sample the function penalty = f(CD, PMD).";
+        }
+        leaf max-diff-group-delay {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Maximum Differential group delay of this mode for this lane.
+                Measured in picoseconds.";
+        }
+        list max-polarization-dependent-loss-penalty {
+            config false;
+            uses pdl-penalty;
+            description "Optional penalty associated with the maximum acceptable accumulated polarization dependent loss. 
+                This list of pair pdl and penalty can be used to sample the function pdl = f(penalty).";
+        }
+        leaf available-modulation-type {
+            type standard-modulation-technique;
+            config false;
+            description "Modulation type this transceiver profile can support.";
+        }
+        leaf min-osnr {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Min OSNR: if received OSNR at minimum Rx-power is lower than MIN-OSNR, an increased level of bit-errors post-FEC needs to be expected.
+                Measured in dB@0.1nm (over 0.1 nm resolution bandwidth).";
+        }
+        leaf min-qfactor {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Min Qfactor at FEC threshold.
+                Measured in dB.";
+        }
+        leaf available-baud-rate {
+            type uint64;
+            config false;
+            description "Baud-rate the specific transceiver in the list can support. 
+                Baud-rate is the unit for symbol rate or modulation rate in symbols per second or pulses per second. 
+                It is the number of distinct symbol changes (signal events) made to the transmission medium per second in a digitally modulated signal or a line code.
+                Measured in Bd.";
+        }
+        leaf roll-off {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "The roll-off factor (beta with values from 0 to 1) identifies how the real signal shape exceed the baud rate. 
+                If=0 it is exactly matching the baud rate. 
+                If=1 the signal exceeds the 50% of the baud rate at each side.";
+        }
+        leaf min-carrier-spacing {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "This attribute specifies the minimum nominal difference between the carrier frequencies of two homogeneous OTSis (which have the same optical characteristics but the central frequencies) such that if they are placed next to each other the interference due to spectrum overlap between them can be considered negligible. 
+                In case of heterogeneous OTSi it is up to path computation engine to determine the minimum distance between the carrier frequency of the two adjacent OTSi.
+                Measured in GHz.";
+        }
+        leaf available-fec-type {
+            type fec-type;
+            config false;
+            description "Available FEC.";
+        }
+        leaf fec-code-rate {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "FEC code rate.";
+        }
+        leaf fec-threshold {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Threshold on the BER, for which FEC is able to correct errors.";
+        }
+        description "Attributes capabilities related to explicit mode of an optical transceiver.";
+    }
+    grouping oms-general-optical-params {
+        container power-params {
+            config false;
+            uses power-params;
+            description "none";
+        }
+        leaf generalized-snr {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Generalized SNR.
+                Measured in dB@0.1nm (over 0.1 nm resolution bandwidth).";
+        }
+        leaf ingress-direction {
+            type boolean;
+            default "true";
+            config false;
+            description "This attribute applies only in case of bidirectional NEP, where parameters related to ingressing and egressing direction can be separately specified. 
+                ingressDirection is true when the object instance describes the parameters of the ingressing direction, false for the parameters of the egressing direction.";
+        }
+        container frequency-range {
+            config false;
+            uses frequency-range;
+            description "none";
+        }
+        description "none";
+    }
+    grouping channel-power {
+        leaf nominal-carrier-power {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            description "Reference channel power. 
+                OMS power after the ROADM (input of the OMS) or after the out-voa of each amplifier.
+                Measured in dBm.";
+        }
+        description "none";
+    }
+    grouping power-spectral-density {
+        leaf nominal-power-spectral-density {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            description "Reference power spectral density after the ROADM or after the out-voa. 
+                Typical value : 3.9 E-14, resolution 0.1nW/MHz
+                Measured in W/Hz.";
+        }
+        description "none";
+    }
+    grouping fiber-profile {
+        leaf type-variety {
+            type string;
+            config false;
+            description "none";
+        }
+        leaf loss-coef {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Loss coefficient of the fiber in dB/Km.";
+        }
+        leaf fiber-pmd {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Polarization Mode Dispersion, in picoseconds per square root kilometer.";
+        }
+        leaf effective-area {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Effective area of the fiber, in square meters.";
+        }
+        description "none";
+    }
+    grouping ots-concentrated-loss {
+        leaf concentrated-loss {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Concentrated loss, in dB.";
+        }
+        description "none";
+    }
+    grouping roadm-express-path {
+        container frequency-range {
+            config false;
+            uses frequency-range;
+            description "none";
+        }
+        leaf roadm-pmd {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Polarization Mode Dispersion, in picoseconds per square root kilometer.";
+        }
+        leaf roadm-cd {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Chromatic Dispersion in ps/nm (picoseconds per nanometer).";
+        }
+        leaf roadm-pdl {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Polarization Dependent Loss, in dB.";
+        }
+        leaf roadm-inband-crosstalk {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "In-band crosstalk, or coherent crosstalk, can occur in components that can have multiple same wavelength inputs with the inputs either routed to different output ports, or all but 1 blocked.
+                Measured in dB.";
+        }
+        leaf roadm-maxloss {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "This is the maximum expected add path loss from the ROADM ingress to the ROADM egress assuming no additional add path loss is added.
+                Measured in dB.";
+        }
+        description "none";
+    }
+    grouping roadm-add-path {
+        container frequency-range {
+            config false;
+            uses frequency-range;
+            description "none";
+        }
+        leaf roadm-pmd {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Polarization Mode Dispersion, in picoseconds per square root kilometer.";
+        }
+        leaf roadm-cd {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Chromatic Dispersion in ps/nm (picoseconds per nanometer).";
+        }
+        leaf roadm-pdl {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Polarization Dependent Loss, in dB.";
+        }
+        leaf roadm-inband-crosstalk {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "In-band crosstalk, or coherent crosstalk, can occur in components that can have multiple same wavelength inputs, with the inputs either routed to different output ports, or all but 1 blocked.
+                In the case of add path it is the total of the add block + egress WSS crosstalk contributions.
+                Measured in dB.";
+        }
+        leaf roadm-maxloss {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "This is the maximum expected add path loss from the add/drop port input to the ROADM egress, assuming no additional add path loss is added.
+                This is used to establish the minimum required transponder output power required to hit the ROADM egress target power levels and preventing to hit the WSS attenuation limits.
+                If the add path contains an internal amplifier this loss value should be based on worst case expected amplifier gain due to ripple or gain uncertainty.
+                Measured in dB.";
+        }
+        leaf roadm-pmax {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "This is the maximum (per carrier) power level permitted at the add block input ports, that can be handled by the ROADM node.
+                This may reflect either add amplifier power contraints or WSS adjustment limits.
+                Higher power transponders would need to have their launch power reduced to this value or lower.
+                Measured in dBm.";
+        }
+        leaf roadm-osnr {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Optical Signal-to-Noise Ratio (OSNR).
+                If the add path contains the ability to adjust the carrier power levels into an add path amplifier (if present) to a target value, this reflects the OSNR contribution of the add amplifier assuming this target value is obtained.
+                The worst case OSNR based on the input power and NF calculation method, and this value, should be used (if both are defined).
+                Measured in dB@0.1nm (over 0.1 nm resolution bandwidth).";
+        }
+        leaf roadm-noise-figure {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Noise Figure. If the add path contains an amplifier, this is the noise figure of that amplifier inferred to the add port. 
+                This permits add path OSNR calculation based on the input power levels to the add block without knowing the ROADM path losses to the add amplifier. 
+                Measured in dB.";
+        }
+        description "none";
+    }
+    grouping roadm-drop-path {
+        container frequency-range {
+            config false;
+            uses frequency-range;
+            description "none";
+        }
+        leaf roadm-pmd {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Polarization Mode Dispersion, in picoseconds per square root kilometer.";
+        }
+        leaf roadm-cd {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Chromatic Dispersion in ps/nm (picoseconds per nanometer).";
+        }
+        leaf roadm-pdl {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Polarization Dependent Loss, in dB.";
+        }
+        leaf roadm-inband-crosstalk {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "In-band crosstalk, or coherent crosstalk, can occur in components that can have multiple same wavelength inputs, with the inputs either routed to different output ports,or all but 1 blocked.
+                In the case of drop path it is the total of the ingress to drop e.g. WSS and drop block crosstalk contributions.
+                Measured in dB.";
+        }
+        leaf roadm-maxloss {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "The net loss from the ROADM input,to the output of the drop block. 
+                If ROADM ingress to drop path includes an amplifier, the amplifier gain reduces the net loss. 
+                This is before any additional drop path attenuation that may be required due to drop amplifier power contraints. 
+                The max value correspond to worst case expected loss, including amplifier gain ripple or uncertainty. 
+                It is the maximum output power of the drop amplifier.
+                Measured in dB.";
+        }
+        leaf roadm-minloss {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "The net loss from the ROADM input, to the output of the drop block. 
+                If this ROADM ingress to drop path includes an amplifier, the amplifier gain reduces the net loss. 
+                This is before any additional drop path attenuation that may be required due to drop amplifier power contraints. 
+                The min value correspond to best case expected loss, including amplifier gain ripple or uncertainty. 
+                Measured in dB.";
+        }
+        leaf roadm-typloss {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "The net loss from the ROADM input, to the output of the drop block. 
+                If this ROADM ingress to drop path includes an amplifier, the amplifier gain reduces the net loss. 
+                This is before any additional drop path attenuation that may be required due to drop amplifier power contraints. 
+                The typ value correspond to typical case expected loss. 
+                Measured in dB.";
+        }
+        leaf roadm-pmin {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "If the drop path has additional loss that is added, for example, to hit target power levels into a drop path amplifier, or simply, to reduce the power of a strong carrier (due to ripple, for example), then the use of the ROADM input power levels and the above drop losses is not appropriate. 
+                This parameter corresponds to the min per carrier power levels expected at the output of the drop block. 
+                Measured in dBm.";
+        }
+        leaf roadm-pmax {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "If the drop path has additional loss that is added, for example, to hit target power levels into a drop path amplifier, or simply, to reduce the power of a strong carrier (due to ripple,for example), then the use of the ROADM input power levels and the above drop losses is not appropriate. 
+                This parameter corresponds to the best case per carrier power levels expected at the output of the drop block.
+                Measured in dBm.";
+        }
+        leaf roadm-ptyp {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "If the drop path has additional loss that is added, for example, to hit target power levels into a drop path amplifier, or simply, to reduce the power of a strong carrier (due to ripple, for example), then the use of the ROADM input power levels and the above drop losses is not appropriate. 
+                This parameter corresponds to the typical case per carrier power levels expected at the output of the drop block. 
+                Measured in dBm.";
+        }
+        leaf roadm-osnr {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Optical Signal-to-Noise Ratio (OSNR). 
+                Expected OSNR contribution of the drop path amplifier (if present) for the case of additional drop path loss (before this amplifier) in order to hit a target power level (per carrier). 
+                If both,
+                - the OSNR based on the ROADM input power level (Pcarrier = Pref+10Log(carrier-baudrate/ref-baud) + delta-power) and the input inferred NF(NF.drop), and 
+                - this OSNR value,
+                are defined, the minimum value between these two should be used. 
+                Measured in dB@0.1nm (over 0.1 nm resolution bandwidth).";
+        }
+        leaf roadm-noise-figure {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Drop path Noise Figure. 
+                If the drop path contains an amplifier, this is the noise figure of that amplifier, inferred to the ROADM ingress port. 
+                This permits to determine amplifier OSNR contribution without having to specify the ROADM node’s losses to that amplifier. 
+                This applies for the case of no additional drop path loss, before the amplifier, in order to reduce the power of the carriers to a target value.
+                Measured in dB.";
+        }
+        description "none";
+    }
+    grouping geolocation {
+        leaf altitude {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Distance above sea level.
+                Measured in millimeters.";
+        }
+        leaf latitude {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Relative position north or south on the Earth's surface, in decimal degree (DD) used to express latitude and longitude geographic coordinates. 
+                Range: '-90..90'";
+        }
+        leaf longitude {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Angular distance east or west on the Earth's surface in decimal degree (DD) used to express latitude and longitude geographic coordinates. 
+                Range: '-180..180'";
+        }
+        description "GPS location.";
+    }
+    grouping fixed-gain-amplification {
+        container frequency-range {
+            config false;
+            uses frequency-range;
+            description "none";
+        }
+        container gain-range {
+            config false;
+            uses gain-range;
+            description "none";
+        }
+        leaf noise-figure {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Noise figure of the amplifier.
+                Measured in dB.";
+        }
+        leaf p-max {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Maximum output power.
+                Measured in dBm.";
+        }
+        description "none";
+    }
+    grouping amplification {
+        container frequency-range {
+            config false;
+            uses frequency-range;
+            description "none";
+        }
+        leaf ingress-direction {
+            type boolean;
+            config false;
+            description "ingressDirection is 'true' in case: 
+                1) The same bidir CEP better approximates the output of two amplification functions (in the two directions) 
+                2) The Amplification parameters are related to a Preamplifier (amplification function from line to internal) ";
+        }
+        leaf actual-gain {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Actual gain in dB.";
+        }
+        leaf actual-tilt {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Actual tilt in dB.";
+        }
+        leaf out-voa {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "In dB.";
+        }
+        leaf in-voa {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "In dB.";
+        }
+        leaf optical-output-power {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "In dBm.";
+        }
+        leaf optical-input-power {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "In dBm.";
+        }
+        container profile {
+            uses tapi-common:profile-ref;
+            config false;
+            description "none";
+        }
+        list amplification {
+            uses amplification-ref;
+            key 'topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid amplification-local-id';
+            config false;
+            description "none";
+        }
+        container geolocation {
+            config false;
+            uses geolocation;
+            description "none";
+        }
+        uses tapi-common:local-class;
+        description "The CEP which includes the Amplification impairments is the CEP which better approximates the output of the amplification function.";
+    }
+    grouping otsi-power-config {
+        container transmit-power {
+            uses power-properties;
+            description "none";
+        }
+        leaf total-power-warn-threshold-upper {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            description "Allows to configure the upper power threshold which is expected to be different from Default, but within the Min and Max values specified by capability.";
+        }
+        leaf total-power-warn-threshold-lower {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            description "Allows to configure the lower power threshold which is expected to be different from Default, but within the Min and Max values specified as capability.";
+        }
+        leaf rx-total-power {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            description "Maximum rx optical power for all the channels received at the interface.
+                Measured in dBm.";
+        }
+        description "none";
+    }
+    grouping ots-fiber-span-impairments {
+        leaf fiber-type-variety {
+            type string;
+            config false;
+            description "Fiber type.";
+        }
+        leaf length {
+            type uint64;
+            config false;
+            description "Length of the fiber in Km.";
+        }
+        leaf loss-coef {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Loss coefficient of the fiber in dB/Km.";
+        }
+        leaf total-loss {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Includes all losses: Fiber loss and connector in and connector out losses, in dB.";
+        }
+        leaf pmd {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Polarization Mode Dispersion in picoseconds per square root kilometer.";
+        }
+        leaf connector-in {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Loss by the input connector, in dB.";
+        }
+        leaf connector-out {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Loss by the output connector, in dB.";
+        }
+        description "none";
+    }
+    grouping amplification-config {
+        leaf target-gain {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            description "none";
+        }
+        leaf target-gain-tilt {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            description "none";
+        }
+        leaf target-out-voa {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            description "In dB.";
+        }
+        leaf target-in-voa {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            description "In dB.";
+        }
+        leaf optical-output-power {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            description "none";
+        }
+        leaf optical-input-power {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            description "none";
+        }
+        container power-params {
+            uses power-params;
+            description "none";
+        }
+        description "none";
+    }
+    grouping power-params {
+        container power-spectral-density {
+            uses power-spectral-density;
+            description "none";
+        }
+        container channel-power {
+            uses channel-power;
+            description "none";
+        }
+        description "Optical power or PSD after the ROADM or after the out-voa.";
+    }
+    grouping ots-impairments {
+        list impairment-route {
+            config false;
+            uses impairment-route-entry;
+            description "none";
+        }
+        leaf ingress-direction {
+            type boolean;
+            default "true";
+            config false;
+            description "This attribute applies only in case of bidirectional NEP, where parameters related to ingressing and egressing direction can be separately specified. 
+                ingressDirection is true when the object instance describes the parameters of the ingressing direction, false for the parameters of the egressing direction.";
+        }
+        description "none";
+    }
+    grouping ots-node-edge-point-spec {
+        list otsimpairments {
+            config false;
+            max-elements 2;
+            uses ots-impairments;
+            description "none";
+        }
+        description "none";
+    }
+    grouping impairment-route-entry {
+        container ots-concentrated-loss {
+            config false;
+            uses ots-concentrated-loss;
+            description "none";
+        }
+        container ots-fiber-span-impairments {
+            config false;
+            uses ots-fiber-span-impairments;
+            description "none";
+        }
+        description "none";
+    }
+    grouping variable-gain-amplification {
+        container frequency-range {
+            config false;
+            uses frequency-range;
+            description "none";
+        }
+        container gain-range {
+            config false;
+            uses gain-range;
+            description "none";
+        }
+        leaf noise-figure-min {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Min noise figure of the amplifier.
+                Measured in dB.";
+        }
+        leaf noise-figure-max {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Max noise figure of the amplifier.
+                Measured in dB.";
+        }
+        leaf p-max {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Maximum output power.
+                Measured in dBm.";
+        }
         description "none";
     }
 
@@ -1108,9 +2029,85 @@ module tapi-photonic-media {
         base PHOTONIC_LAYER_QUALIFIER;
         description "none";
     }
+    identity TRANSCEIVER_TERMINATION_TYPE {
+        description "none";
+    }
+    identity TRANSCEIVER_TERMINATION_TYPE_TUNNEL_ONLY {
+        base TRANSCEIVER_TERMINATION_TYPE;
+        description "The transponder can only be used in an Optical Tunnel termination configuration.";
+    }
+    identity TRANSCEIVER_TERMINATION_TYPE_UNIDIR_3R_ONLY {
+        base TRANSCEIVER_TERMINATION_TYPE;
+        description "The transponder can only be used in a 3R configuration, unidirectional.";
+    }
+    identity TRANSCEIVER_TERMINATION_TYPE_UNIDIR_3R_OR_TUNNEL {
+        base TRANSCEIVER_TERMINATION_TYPE;
+        description "The transponder can be configure to be used either in an Optical Tunnel termination configuration or in a 3R configuration, unidirectional.";
+    }
+    identity TRANSCEIVER_TERMINATION_TYPE_BIDIR_3R_ONLY {
+        base TRANSCEIVER_TERMINATION_TYPE;
+        description "The transponder can only be used in a 3R configuration, bidirectional.";
+    }
+    identity TRANSCEIVER_TERMINATION_TYPE_BIDIR_3R_OR_TUNNEL {
+        base TRANSCEIVER_TERMINATION_TYPE;
+        description "The transponder can be configure to be used either in an Optical Tunnel termination configuration or in a 3R configuration, bidirectional.";
+    }
+    identity AMPLIFICATION_TYPE_VARIETY {
+        description "none";
+    }
+    identity AMPLIFICATION_TYPE_VARIETY_FIXED_GAIN {
+        base AMPLIFICATION_TYPE_VARIETY;
+        description "none";
+    }
+    identity AMPLIFICATION_TYPE_VARIETY_VARIABLE_GAIN {
+        base AMPLIFICATION_TYPE_VARIETY;
+        description "none";
+    }
+    identity LINE_CODING {
+        description "none";
+    }
+    identity LINE_CODING_NRZ-2P5G {
+        base LINE_CODING;
+        description "none";
+    }
+    identity LINE_CODING_NRZ-OTU1 {
+        base LINE_CODING;
+        description "none";
+    }
+    identity LINE_CODING_NRZ-10G {
+        base LINE_CODING;
+        description "none";
+    }
+    identity LINE_CODING_NRZ-OTU2 {
+        base LINE_CODING;
+        description "none";
+    }
+    identity FEC_TYPE {
+        description "none";
+    }
+    identity FEC_TYPE_G_FEC {
+        base FEC_TYPE;
+        description "Generic FEC.";
+    }
+    identity FEC_TYPE_E_FEC {
+        base FEC_TYPE;
+        description "Enhanced FEC.";
+    }
+    identity FEC_TYPE_REED_SOLOMON {
+        base FEC_TYPE;
+        description "Reed-Solomon error correction.";
+    }
+    identity FEC_TYPE_HAMMING_CODE {
+        base FEC_TYPE;
+        description "Hamming Code error correction.";
+    }
+    identity FEC_TYPE_GOLAY {
+        base FEC_TYPE;
+        description "Golay error correction.";
+    }
     grouping application-identifier {
         leaf application-identifier-type {
-            type application-identifier-type;
+            type standard-application-mode;
             description "The ITU-T recommendation which defines the application code format.";
         }
         leaf application-code {
@@ -1156,25 +2153,34 @@ module tapi-photonic-media {
         }
         description "none";
     }
-    typedef application-identifier-type {
+    typedef standard-application-mode {
         type enumeration {
-            enum PROPRIETARY {
-                description "none";
-            }
             enum ITUT_G959_1 {
-                description "none";
+                description "G959.1 Optical transport network physical layer interfaces
+                    Application code notation [PnWx-ytz]
+                    This Recommendation provides physical layer inter-domain interface (IrDI) specifications for optical networks that may employ wavelength division multiplexing (WDM).
+                    The IrDI may be realized as either a single-channel interface or a multichannel interface.";
             }
             enum ITUT_G698_1 {
-                description "none";
+                description "G698.1 Multichannel DWDM applications with single-channel optical interfaces
+                    Application code notation [DScW-ytz(v)]
+                    This Recommendation defines and provides values for single-channel optical interface parameters of physical point-to-point and ring DWDM applications (with transmission distance in the range of about 30 km to about 80 km) on single-mode optical fibres through the use of the 'black link' approach.";
             }
             enum ITUT_G698_2 {
-                description "none";
+                description "G698.2 Amplified multichannel DWDM applications with single channel optical interfaces
+                    Application code notation [DScW-ytz(v)]
+                    The black links covered by this Recommendation may contain optical amplifiers.";
             }
             enum ITUT_G696_1 {
-                description "none";
+                description "G696.1 Longitudinally compatible intra-domain DWDM applications
+                    Application code notation [n.B-xWF(s)]
+                    This Recommendation provides physical layer specifications for intra-domain (IaD) DWDM optical networking applications.
+                    These specifications are provided for point-to-point, multichannel line systems with or without line amplifiers.";
             }
             enum ITUT_G695 {
-                description "none";
+                description "G695 Optical interfaces for coarse wavelength division multiplexing applications
+                    Application code notation [CnWx-ytz]
+                    This Recommendation applies to optical interfaces for coarse wavelength division multiplexing (CWDM) optical line systems for network applications using single-mode optical fibres.";
             }
         }
         description "none";
@@ -1233,11 +2239,15 @@ module tapi-photonic-media {
     }
     grouping spectrum-band {
         leaf upper-frequency {
-            type uint64;
+            type decimal64 {
+                fraction-digits 7;
+            }
             description "The upper frequency bound of the media channel spectrum specified in MHz";
         }
         leaf lower-frequency {
-            type uint64;
+            type decimal64 {
+                fraction-digits 7;
+            }
             description "The lower frequency bound of the media channel spectrum specified in MHz";
         }
         container frequency-constraint {
@@ -1413,6 +2423,101 @@ module tapi-photonic-media {
             description "none";
         }
         description "The standardModulationTechnique and proprietaryModulationTechnique attributes are mutually exclusive.";
+    }
+    typedef transceiver-termination-type {
+        type identityref {
+            base TRANSCEIVER_TERMINATION_TYPE;
+        }
+        description "none";
+    }
+    grouping gain-range {
+        leaf min-gain {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            description "In dB.";
+        }
+        leaf max-gain {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            description "In dB.";
+        }
+        description "none";
+    }
+    grouping frequency-range {
+        leaf upper-frequency {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            description "The upper frequency bound of the frequency range specified in THz.";
+        }
+        leaf lower-frequency {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            description "The lower frequency bound of the frequency range specified in THz.";
+        }
+        description "none";
+    }
+    typedef amplification-type-variety {
+        type identityref {
+            base AMPLIFICATION_TYPE_VARIETY;
+        }
+        description "none";
+    }
+    typedef line-coding {
+        type identityref {
+            base LINE_CODING;
+        }
+        description "ITU-T G.698.2-201811 section 7.";
+    }
+    grouping cd-pmd-penalty {
+        leaf chromatic-dispersion {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            description "Chromatic dispersion. 
+                Measured in ps/nm (picoseconds per nanometer).";
+        }
+        leaf polarization-mode-dispersion {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            description "Polarization mode dispersion. 
+                Measured in picoseconds per square root kilometer.";
+        }
+        leaf penalty {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            description "Associated penalty on the receiver. 
+                Measured in dB.";
+        }
+        description "Entries of table; triplet chromatic dispersion, polarization mode dispersion and associated penalty.";
+    }
+    grouping pdl-penalty {
+        leaf max-polarization-dependent-loss {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            description "Maximum acceptable accumulate polarization dependent loss. 
+                Measured in dB.";
+        }
+        leaf penalty {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            description "Associated penalty on the receiver. 
+                Measured in dB.";
+        }
+        description "Entries of table; pair of values polarization dependent loss and associated penalty.";
+    }
+    typedef fec-type {
+        type identityref {
+            base FEC_TYPE;
+        }
+        description "none";
     }
 
 }

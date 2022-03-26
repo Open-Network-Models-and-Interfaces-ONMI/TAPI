@@ -1067,6 +1067,30 @@ paths:
             $ref: "#/definitions/tapi.connectivity.ResilienceRouteWrapper"
         400:
           description: "Internal error"
+  /data/tapi-common:context/tapi-connectivity:connectivity-context/connection={uuid}/server-connection={connection-uuid}/:
+    get:
+      tags:
+      - "tapi-connectivity"
+      summary: "returns tapi.connectivity.ConnectionRef"
+      description: "The server layer Connections supporting this Connection."
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of connection"
+        required: true
+        type: "string"
+      - name: "connection-uuid"
+        in: "path"
+        description: "Id of server-connection"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.connectivity.ConnectionRef"
+          schema:
+            $ref: "#/definitions/tapi.connectivity.ConnectionRefWrapper"
+        400:
+          description: "Internal error"
   ? /data/tapi-common:context/tapi-connectivity:connectivity-context/connection={uuid}/supported-client-link={topology-uuid},{link-uuid}/
   : get:
       tags:
@@ -2147,7 +2171,7 @@ paths:
             $ref: "#/definitions/tapi.equipment.PhysicalRouteListWrapper"
         400:
           description: "Internal error"
-  ? /data/tapi-common:context/tapi-connectivity:connectivity-context/connection={uuid}/tapi-equipment:physical-route-list/physical-route/
+  ? /data/tapi-common:context/tapi-connectivity:connectivity-context/connection={uuid}/tapi-equipment:physical-route-list/physical-route={local-id}/
   : get:
       tags:
       - "tapi-equipment"
@@ -2159,6 +2183,11 @@ paths:
         description: "Id of connection"
         required: true
         type: "string"
+      - name: "local-id"
+        in: "path"
+        description: "Id of physical-route"
+        required: true
+        type: "string"
       responses:
         200:
           description: "tapi.equipment.PhysicalRoute"
@@ -2166,27 +2195,76 @@ paths:
             $ref: "#/definitions/tapi.equipment.PhysicalRouteWrapper"
         400:
           description: "Internal error"
-  ? /data/tapi-common:context/tapi-connectivity:connectivity-context/connection={uuid}/tapi-equipment:physical-route-list/physical-route/access-port={device-uuid},{access-port-uuid}/
+  ? /data/tapi-common:context/tapi-connectivity:connectivity-context/connection={uuid}/tapi-equipment:physical-route-list/physical-route={local-id}/name={value-name}/
   : get:
       tags:
       - "tapi-equipment"
-      summary: "returns tapi.equipment.AccessPortRef"
-      description: "Reference to the AccessPorts composing one PhysicalRoute of a\
-        \ Connection."
+      summary: "returns tapi.common.NameAndValue"
+      description: "List of names. This value is unique in some namespace but may\
+        \ change during the life of the entity.\r\n                A name carries\
+        \ no semantics with respect to the purpose of the entity."
       parameters:
       - name: "uuid"
         in: "path"
         description: "Id of connection"
         required: true
         type: "string"
-      - name: "device-uuid"
+      - name: "local-id"
         in: "path"
-        description: "Id of access-port"
+        description: "Id of physical-route"
         required: true
         type: "string"
-      - name: "access-port-uuid"
+      - name: "value-name"
         in: "path"
-        description: "Id of access-port"
+        description: "Id of name"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.common.NameAndValue"
+          schema:
+            $ref: "#/definitions/tapi.common.NameAndValueWrapper"
+        400:
+          description: "Internal error"
+  ? /data/tapi-common:context/tapi-connectivity:connectivity-context/connection={uuid}/tapi-equipment:physical-route-list/physical-route={local-id}/physical-route-element/
+  : get:
+      tags:
+      - "tapi-equipment"
+      summary: "returns tapi.equipment.PhysicalRouteElement"
+      description: "none"
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of connection"
+        required: true
+        type: "string"
+      - name: "local-id"
+        in: "path"
+        description: "Id of physical-route"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.equipment.PhysicalRouteElement"
+          schema:
+            $ref: "#/definitions/tapi.equipment.PhysicalRouteElementWrapper"
+        400:
+          description: "Internal error"
+  ? /data/tapi-common:context/tapi-connectivity:connectivity-context/connection={uuid}/tapi-equipment:physical-route-list/physical-route={local-id}/physical-route-element/access-port-in-route/
+  : get:
+      tags:
+      - "tapi-equipment"
+      summary: "returns tapi.equipment.AccessPortRef"
+      description: "The AccessPort included in the physical route."
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of connection"
+        required: true
+        type: "string"
+      - name: "local-id"
+        in: "path"
+        description: "Id of physical-route"
         required: true
         type: "string"
       responses:
@@ -2196,23 +2274,100 @@ paths:
             $ref: "#/definitions/tapi.equipment.AccessPortRefWrapper"
         400:
           description: "Internal error"
-  ? /data/tapi-common:context/tapi-connectivity:connectivity-context/connection={uuid}/tapi-equipment:physical-route-list/physical-route/resilience-physical-route/
+  ? /data/tapi-common:context/tapi-connectivity:connectivity-context/connection={uuid}/tapi-equipment:physical-route-list/physical-route={local-id}/physical-route-element/connector-pin-in-route={device-uuid},{equipment-uuid},{connector-identification},{pin-identification}/
   : get:
       tags:
       - "tapi-equipment"
-      summary: "returns tapi.equipment.ResiliencePhysicalRoute"
-      description: "Provides optional resilience and state attributes to the PhysicalRoute."
+      summary: "returns tapi.equipment.ConnectorPinAddress"
+      description: "none"
       parameters:
       - name: "uuid"
         in: "path"
         description: "Id of connection"
         required: true
         type: "string"
+      - name: "local-id"
+        in: "path"
+        description: "Id of physical-route"
+        required: true
+        type: "string"
+      - name: "device-uuid"
+        in: "path"
+        description: "Id of connector-pin-in-route"
+        required: true
+        type: "string"
+      - name: "equipment-uuid"
+        in: "path"
+        description: "Id of connector-pin-in-route"
+        required: true
+        type: "string"
+      - name: "connector-identification"
+        in: "path"
+        description: "Id of connector-pin-in-route"
+        required: true
+        type: "string"
+      - name: "pin-identification"
+        in: "path"
+        description: "Id of connector-pin-in-route"
+        required: true
+        type: "string"
       responses:
         200:
-          description: "tapi.equipment.ResiliencePhysicalRoute"
+          description: "tapi.equipment.ConnectorPinAddress"
           schema:
-            $ref: "#/definitions/tapi.equipment.ResiliencePhysicalRouteWrapper"
+            $ref: "#/definitions/tapi.equipment.ConnectorPinAddressWrapper"
+        400:
+          description: "Internal error"
+  ? /data/tapi-common:context/tapi-connectivity:connectivity-context/connection={uuid}/tapi-equipment:physical-route-list/physical-route={local-id}/physical-route-element/connector-pin-in-route={device-uuid},{equipment-uuid},{connector-identification},{pin-identification}/pin-and-role={location-in-connector}/
+  : get:
+      tags:
+      - "tapi-equipment"
+      summary: "returns tapi.equipment.PinAndRole"
+      description: "If there is more than one pin used in a connector and/or there\
+        \ is a need to identify the role of one or more pins then this property can\
+        \ be used.\r\n                For simple cases pinIdentification can be used\
+        \ instead."
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of connection"
+        required: true
+        type: "string"
+      - name: "local-id"
+        in: "path"
+        description: "Id of physical-route"
+        required: true
+        type: "string"
+      - name: "device-uuid"
+        in: "path"
+        description: "Id of connector-pin-in-route"
+        required: true
+        type: "string"
+      - name: "equipment-uuid"
+        in: "path"
+        description: "Id of connector-pin-in-route"
+        required: true
+        type: "string"
+      - name: "connector-identification"
+        in: "path"
+        description: "Id of connector-pin-in-route"
+        required: true
+        type: "string"
+      - name: "pin-identification"
+        in: "path"
+        description: "Id of connector-pin-in-route"
+        required: true
+        type: "string"
+      - name: "location-in-connector"
+        in: "path"
+        description: "Id of pin-and-role"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.equipment.PinAndRole"
+          schema:
+            $ref: "#/definitions/tapi.equipment.PinAndRoleWrapper"
         400:
           description: "Internal error"
   /data/tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service/:
@@ -3758,6 +3913,272 @@ paths:
             $ref: "#/definitions/tapi.connectivity.ConnectivityServiceSpecReferenceWrapper"
         400:
           description: "Internal error"
+  ? /data/tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service={uuid}/end-point={local-id}/layer-protocol-constraint/
+  : post:
+      tags:
+      - "tapi-connectivity"
+      summary: "creates tapi.connectivity.LayerProtocolConstraint"
+      description: "The constraints applicable at specific layers."
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of connectivity-service"
+        required: true
+        type: "string"
+      - name: "local-id"
+        in: "path"
+        description: "Id of end-point"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "tapi.connectivity.LayerProtocolConstraint.body-param"
+        description: "tapi.connectivity.LayerProtocolConstraint to be added to list"
+        required: false
+        schema:
+          $ref: "#/definitions/tapi.connectivity.LayerProtocolConstraintWrapper"
+      responses:
+        201:
+          description: "Object created"
+        400:
+          description: "Internal error"
+        409:
+          description: "Object already exists"
+  ? /data/tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service={uuid}/end-point={local-id}/layer-protocol-constraint={layer-protocol-constraint-local-id}/
+  : get:
+      tags:
+      - "tapi-connectivity"
+      summary: "returns tapi.connectivity.LayerProtocolConstraint"
+      description: "The constraints applicable at specific layers."
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of connectivity-service"
+        required: true
+        type: "string"
+      - name: "local-id"
+        in: "path"
+        description: "Id of end-point"
+        required: true
+        type: "string"
+      - name: "layer-protocol-constraint-local-id"
+        in: "path"
+        description: "Id of layer-protocol-constraint"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.connectivity.LayerProtocolConstraint"
+          schema:
+            $ref: "#/definitions/tapi.connectivity.LayerProtocolConstraintWrapper"
+        400:
+          description: "Internal error"
+    put:
+      tags:
+      - "tapi-connectivity"
+      summary: "creates or updates tapi.connectivity.LayerProtocolConstraint"
+      description: "The constraints applicable at specific layers."
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of connectivity-service"
+        required: true
+        type: "string"
+      - name: "local-id"
+        in: "path"
+        description: "Id of end-point"
+        required: true
+        type: "string"
+      - name: "layer-protocol-constraint-local-id"
+        in: "path"
+        description: "Id of layer-protocol-constraint"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "tapi.connectivity.LayerProtocolConstraint.body-param"
+        description: "tapi.connectivity.LayerProtocolConstraint to be added or updated"
+        required: false
+        schema:
+          $ref: "#/definitions/tapi.connectivity.LayerProtocolConstraintWrapper"
+      responses:
+        201:
+          description: "Object created"
+        400:
+          description: "Internal error"
+        204:
+          description: "Object modified"
+    delete:
+      tags:
+      - "tapi-connectivity"
+      summary: "removes tapi.connectivity.LayerProtocolConstraint"
+      description: "The constraints applicable at specific layers."
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of connectivity-service"
+        required: true
+        type: "string"
+      - name: "local-id"
+        in: "path"
+        description: "Id of end-point"
+        required: true
+        type: "string"
+      - name: "layer-protocol-constraint-local-id"
+        in: "path"
+        description: "Id of layer-protocol-constraint"
+        required: true
+        type: "string"
+      responses:
+        400:
+          description: "Internal error"
+        204:
+          description: "Object deleted"
+  ? /data/tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service={uuid}/end-point={local-id}/layer-protocol-constraint={layer-protocol-constraint-local-id}/name/
+  : post:
+      tags:
+      - "tapi-connectivity"
+      summary: "creates tapi.common.NameAndValue"
+      description: "List of names. This value is unique in some namespace but may\
+        \ change during the life of the entity.\r\n                A name carries\
+        \ no semantics with respect to the purpose of the entity."
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of connectivity-service"
+        required: true
+        type: "string"
+      - name: "local-id"
+        in: "path"
+        description: "Id of end-point"
+        required: true
+        type: "string"
+      - name: "layer-protocol-constraint-local-id"
+        in: "path"
+        description: "Id of layer-protocol-constraint"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "tapi.common.NameAndValue.body-param"
+        description: "tapi.common.NameAndValue to be added to list"
+        required: false
+        schema:
+          $ref: "#/definitions/tapi.common.NameAndValueWrapper"
+      responses:
+        201:
+          description: "Object created"
+        400:
+          description: "Internal error"
+        409:
+          description: "Object already exists"
+  ? /data/tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service={uuid}/end-point={local-id}/layer-protocol-constraint={layer-protocol-constraint-local-id}/name={value-name}/
+  : get:
+      tags:
+      - "tapi-connectivity"
+      summary: "returns tapi.common.NameAndValue"
+      description: "List of names. This value is unique in some namespace but may\
+        \ change during the life of the entity.\r\n                A name carries\
+        \ no semantics with respect to the purpose of the entity."
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of connectivity-service"
+        required: true
+        type: "string"
+      - name: "local-id"
+        in: "path"
+        description: "Id of end-point"
+        required: true
+        type: "string"
+      - name: "layer-protocol-constraint-local-id"
+        in: "path"
+        description: "Id of layer-protocol-constraint"
+        required: true
+        type: "string"
+      - name: "value-name"
+        in: "path"
+        description: "Id of name"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.common.NameAndValue"
+          schema:
+            $ref: "#/definitions/tapi.common.NameAndValueWrapper"
+        400:
+          description: "Internal error"
+    put:
+      tags:
+      - "tapi-connectivity"
+      summary: "creates or updates tapi.common.NameAndValue"
+      description: "List of names. This value is unique in some namespace but may\
+        \ change during the life of the entity.\r\n                A name carries\
+        \ no semantics with respect to the purpose of the entity."
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of connectivity-service"
+        required: true
+        type: "string"
+      - name: "local-id"
+        in: "path"
+        description: "Id of end-point"
+        required: true
+        type: "string"
+      - name: "layer-protocol-constraint-local-id"
+        in: "path"
+        description: "Id of layer-protocol-constraint"
+        required: true
+        type: "string"
+      - name: "value-name"
+        in: "path"
+        description: "Id of name"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "tapi.common.NameAndValue.body-param"
+        description: "tapi.common.NameAndValue to be added or updated"
+        required: false
+        schema:
+          $ref: "#/definitions/tapi.common.NameAndValueWrapper"
+      responses:
+        201:
+          description: "Object created"
+        400:
+          description: "Internal error"
+        204:
+          description: "Object modified"
+    delete:
+      tags:
+      - "tapi-connectivity"
+      summary: "removes tapi.common.NameAndValue"
+      description: "List of names. This value is unique in some namespace but may\
+        \ change during the life of the entity.\r\n                A name carries\
+        \ no semantics with respect to the purpose of the entity."
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of connectivity-service"
+        required: true
+        type: "string"
+      - name: "local-id"
+        in: "path"
+        description: "Id of end-point"
+        required: true
+        type: "string"
+      - name: "layer-protocol-constraint-local-id"
+        in: "path"
+        description: "Id of layer-protocol-constraint"
+        required: true
+        type: "string"
+      - name: "value-name"
+        in: "path"
+        description: "Id of name"
+        required: true
+        type: "string"
+      responses:
+        400:
+          description: "Internal error"
+        204:
+          description: "Object deleted"
   /data/tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service={uuid}/end-point={local-id}/name/:
     post:
       tags:
@@ -3994,6 +4415,35 @@ paths:
           description: "Internal error"
         204:
           description: "Object deleted"
+  ? /data/tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service={uuid}/end-point={local-id}/profile={profile-uuid}/
+  : get:
+      tags:
+      - "tapi-connectivity"
+      summary: "returns tapi.common.ProfileRef"
+      description: "none"
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of connectivity-service"
+        required: true
+        type: "string"
+      - name: "local-id"
+        in: "path"
+        description: "Id of end-point"
+        required: true
+        type: "string"
+      - name: "profile-uuid"
+        in: "path"
+        description: "Id of profile"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.common.ProfileRef"
+          schema:
+            $ref: "#/definitions/tapi.common.ProfileRefWrapper"
+        400:
+          description: "Internal error"
   ? /data/tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service={uuid}/end-point={local-id}/protecting-connectivity-service-end-point/
   : get:
       tags:
@@ -4212,272 +4662,6 @@ paths:
           description: "Internal error"
         204:
           description: "Object deleted"
-  ? /data/tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service={uuid}/end-point={local-id}/server-constraint/
-  : post:
-      tags:
-      - "tapi-connectivity"
-      summary: "creates tapi.connectivity.ServerConstraint"
-      description: "The server constraints."
-      parameters:
-      - name: "uuid"
-        in: "path"
-        description: "Id of connectivity-service"
-        required: true
-        type: "string"
-      - name: "local-id"
-        in: "path"
-        description: "Id of end-point"
-        required: true
-        type: "string"
-      - in: "body"
-        name: "tapi.connectivity.ServerConstraint.body-param"
-        description: "tapi.connectivity.ServerConstraint to be added to list"
-        required: false
-        schema:
-          $ref: "#/definitions/tapi.connectivity.ServerConstraintWrapper"
-      responses:
-        201:
-          description: "Object created"
-        400:
-          description: "Internal error"
-        409:
-          description: "Object already exists"
-  ? /data/tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service={uuid}/end-point={local-id}/server-constraint={server-constraint-local-id}/
-  : get:
-      tags:
-      - "tapi-connectivity"
-      summary: "returns tapi.connectivity.ServerConstraint"
-      description: "The server constraints."
-      parameters:
-      - name: "uuid"
-        in: "path"
-        description: "Id of connectivity-service"
-        required: true
-        type: "string"
-      - name: "local-id"
-        in: "path"
-        description: "Id of end-point"
-        required: true
-        type: "string"
-      - name: "server-constraint-local-id"
-        in: "path"
-        description: "Id of server-constraint"
-        required: true
-        type: "string"
-      responses:
-        200:
-          description: "tapi.connectivity.ServerConstraint"
-          schema:
-            $ref: "#/definitions/tapi.connectivity.ServerConstraintWrapper"
-        400:
-          description: "Internal error"
-    put:
-      tags:
-      - "tapi-connectivity"
-      summary: "creates or updates tapi.connectivity.ServerConstraint"
-      description: "The server constraints."
-      parameters:
-      - name: "uuid"
-        in: "path"
-        description: "Id of connectivity-service"
-        required: true
-        type: "string"
-      - name: "local-id"
-        in: "path"
-        description: "Id of end-point"
-        required: true
-        type: "string"
-      - name: "server-constraint-local-id"
-        in: "path"
-        description: "Id of server-constraint"
-        required: true
-        type: "string"
-      - in: "body"
-        name: "tapi.connectivity.ServerConstraint.body-param"
-        description: "tapi.connectivity.ServerConstraint to be added or updated"
-        required: false
-        schema:
-          $ref: "#/definitions/tapi.connectivity.ServerConstraintWrapper"
-      responses:
-        201:
-          description: "Object created"
-        400:
-          description: "Internal error"
-        204:
-          description: "Object modified"
-    delete:
-      tags:
-      - "tapi-connectivity"
-      summary: "removes tapi.connectivity.ServerConstraint"
-      description: "The server constraints."
-      parameters:
-      - name: "uuid"
-        in: "path"
-        description: "Id of connectivity-service"
-        required: true
-        type: "string"
-      - name: "local-id"
-        in: "path"
-        description: "Id of end-point"
-        required: true
-        type: "string"
-      - name: "server-constraint-local-id"
-        in: "path"
-        description: "Id of server-constraint"
-        required: true
-        type: "string"
-      responses:
-        400:
-          description: "Internal error"
-        204:
-          description: "Object deleted"
-  ? /data/tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service={uuid}/end-point={local-id}/server-constraint={server-constraint-local-id}/name/
-  : post:
-      tags:
-      - "tapi-connectivity"
-      summary: "creates tapi.common.NameAndValue"
-      description: "List of names. This value is unique in some namespace but may\
-        \ change during the life of the entity.\r\n                A name carries\
-        \ no semantics with respect to the purpose of the entity."
-      parameters:
-      - name: "uuid"
-        in: "path"
-        description: "Id of connectivity-service"
-        required: true
-        type: "string"
-      - name: "local-id"
-        in: "path"
-        description: "Id of end-point"
-        required: true
-        type: "string"
-      - name: "server-constraint-local-id"
-        in: "path"
-        description: "Id of server-constraint"
-        required: true
-        type: "string"
-      - in: "body"
-        name: "tapi.common.NameAndValue.body-param"
-        description: "tapi.common.NameAndValue to be added to list"
-        required: false
-        schema:
-          $ref: "#/definitions/tapi.common.NameAndValueWrapper"
-      responses:
-        201:
-          description: "Object created"
-        400:
-          description: "Internal error"
-        409:
-          description: "Object already exists"
-  ? /data/tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service={uuid}/end-point={local-id}/server-constraint={server-constraint-local-id}/name={value-name}/
-  : get:
-      tags:
-      - "tapi-connectivity"
-      summary: "returns tapi.common.NameAndValue"
-      description: "List of names. This value is unique in some namespace but may\
-        \ change during the life of the entity.\r\n                A name carries\
-        \ no semantics with respect to the purpose of the entity."
-      parameters:
-      - name: "uuid"
-        in: "path"
-        description: "Id of connectivity-service"
-        required: true
-        type: "string"
-      - name: "local-id"
-        in: "path"
-        description: "Id of end-point"
-        required: true
-        type: "string"
-      - name: "server-constraint-local-id"
-        in: "path"
-        description: "Id of server-constraint"
-        required: true
-        type: "string"
-      - name: "value-name"
-        in: "path"
-        description: "Id of name"
-        required: true
-        type: "string"
-      responses:
-        200:
-          description: "tapi.common.NameAndValue"
-          schema:
-            $ref: "#/definitions/tapi.common.NameAndValueWrapper"
-        400:
-          description: "Internal error"
-    put:
-      tags:
-      - "tapi-connectivity"
-      summary: "creates or updates tapi.common.NameAndValue"
-      description: "List of names. This value is unique in some namespace but may\
-        \ change during the life of the entity.\r\n                A name carries\
-        \ no semantics with respect to the purpose of the entity."
-      parameters:
-      - name: "uuid"
-        in: "path"
-        description: "Id of connectivity-service"
-        required: true
-        type: "string"
-      - name: "local-id"
-        in: "path"
-        description: "Id of end-point"
-        required: true
-        type: "string"
-      - name: "server-constraint-local-id"
-        in: "path"
-        description: "Id of server-constraint"
-        required: true
-        type: "string"
-      - name: "value-name"
-        in: "path"
-        description: "Id of name"
-        required: true
-        type: "string"
-      - in: "body"
-        name: "tapi.common.NameAndValue.body-param"
-        description: "tapi.common.NameAndValue to be added or updated"
-        required: false
-        schema:
-          $ref: "#/definitions/tapi.common.NameAndValueWrapper"
-      responses:
-        201:
-          description: "Object created"
-        400:
-          description: "Internal error"
-        204:
-          description: "Object modified"
-    delete:
-      tags:
-      - "tapi-connectivity"
-      summary: "removes tapi.common.NameAndValue"
-      description: "List of names. This value is unique in some namespace but may\
-        \ change during the life of the entity.\r\n                A name carries\
-        \ no semantics with respect to the purpose of the entity."
-      parameters:
-      - name: "uuid"
-        in: "path"
-        description: "Id of connectivity-service"
-        required: true
-        type: "string"
-      - name: "local-id"
-        in: "path"
-        description: "Id of end-point"
-        required: true
-        type: "string"
-      - name: "server-constraint-local-id"
-        in: "path"
-        description: "Id of server-constraint"
-        required: true
-        type: "string"
-      - name: "value-name"
-        in: "path"
-        description: "Id of name"
-        required: true
-        type: "string"
-      responses:
-        400:
-          description: "Internal error"
-        204:
-          description: "Object deleted"
   ? /data/tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service={uuid}/end-point={local-id}/service-interface-point/
   : get:
       tags:
@@ -4581,6 +4765,64 @@ paths:
           description: "Internal error"
         204:
           description: "Object deleted"
+  ? /data/tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service={uuid}/end-point={local-id}/sink-profile={profile-uuid}/
+  : get:
+      tags:
+      - "tapi-connectivity"
+      summary: "returns tapi.common.ProfileRef"
+      description: "none"
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of connectivity-service"
+        required: true
+        type: "string"
+      - name: "local-id"
+        in: "path"
+        description: "Id of end-point"
+        required: true
+        type: "string"
+      - name: "profile-uuid"
+        in: "path"
+        description: "Id of sink-profile"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.common.ProfileRef"
+          schema:
+            $ref: "#/definitions/tapi.common.ProfileRefWrapper"
+        400:
+          description: "Internal error"
+  ? /data/tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service={uuid}/end-point={local-id}/source-profile={profile-uuid}/
+  : get:
+      tags:
+      - "tapi-connectivity"
+      summary: "returns tapi.common.ProfileRef"
+      description: "none"
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of connectivity-service"
+        required: true
+        type: "string"
+      - name: "local-id"
+        in: "path"
+        description: "Id of end-point"
+        required: true
+        type: "string"
+      - name: "profile-uuid"
+        in: "path"
+        description: "Id of source-profile"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.common.ProfileRef"
+          schema:
+            $ref: "#/definitions/tapi.common.ProfileRefWrapper"
+        400:
+          description: "Internal error"
   /data/tapi-common:context/tapi-connectivity:connectivity-context/connectivity-service={uuid}/internal-point/:
     post:
       tags:
@@ -10024,7 +10266,7 @@ paths:
             $ref: "#/definitions/tapi.equipment.AccessPortWrapper"
         400:
           description: "Internal error"
-  ? /data/tapi-common:context/tapi-equipment:physical-context/device={uuid}/access-port={access-port-uuid}/connector-pin={connector-identification},{pin-identification},{equipment-uuid}/
+  ? /data/tapi-common:context/tapi-equipment:physical-context/device={uuid}/access-port={access-port-uuid}/connector-pin={device-uuid},{equipment-uuid},{connector-identification},{pin-identification}/
   : get:
       tags:
       - "tapi-equipment"
@@ -10041,17 +10283,22 @@ paths:
         description: "Id of access-port"
         required: true
         type: "string"
+      - name: "device-uuid"
+        in: "path"
+        description: "Id of connector-pin"
+        required: true
+        type: "string"
+      - name: "equipment-uuid"
+        in: "path"
+        description: "Id of connector-pin"
+        required: true
+        type: "string"
       - name: "connector-identification"
         in: "path"
         description: "Id of connector-pin"
         required: true
         type: "string"
       - name: "pin-identification"
-        in: "path"
-        description: "Id of connector-pin"
-        required: true
-        type: "string"
-      - name: "equipment-uuid"
         in: "path"
         description: "Id of connector-pin"
         required: true
@@ -10063,7 +10310,7 @@ paths:
             $ref: "#/definitions/tapi.equipment.ConnectorPinAddressWrapper"
         400:
           description: "Internal error"
-  ? /data/tapi-common:context/tapi-equipment:physical-context/device={uuid}/access-port={access-port-uuid}/connector-pin={connector-identification},{pin-identification},{equipment-uuid}/pin-and-role={location-in-connector}/
+  ? /data/tapi-common:context/tapi-equipment:physical-context/device={uuid}/access-port={access-port-uuid}/connector-pin={device-uuid},{equipment-uuid},{connector-identification},{pin-identification}/pin-and-role={location-in-connector}/
   : get:
       tags:
       - "tapi-equipment"
@@ -10083,17 +10330,22 @@ paths:
         description: "Id of access-port"
         required: true
         type: "string"
+      - name: "device-uuid"
+        in: "path"
+        description: "Id of connector-pin"
+        required: true
+        type: "string"
+      - name: "equipment-uuid"
+        in: "path"
+        description: "Id of connector-pin"
+        required: true
+        type: "string"
       - name: "connector-identification"
         in: "path"
         description: "Id of connector-pin"
         required: true
         type: "string"
       - name: "pin-identification"
-        in: "path"
-        description: "Id of connector-pin"
-        required: true
-        type: "string"
-      - name: "equipment-uuid"
         in: "path"
         description: "Id of connector-pin"
         required: true
@@ -10900,7 +11152,7 @@ paths:
             $ref: "#/definitions/tapi.equipment.AbstractStrandRefWrapper"
         400:
           description: "Internal error"
-  ? /data/tapi-common:context/tapi-equipment:physical-context/physical-span={uuid}/abstract-strand={local-id}/connector-pin={connector-identification},{pin-identification},{equipment-uuid}/
+  ? /data/tapi-common:context/tapi-equipment:physical-context/physical-span={uuid}/abstract-strand={local-id}/connector-pin={device-uuid},{equipment-uuid},{connector-identification},{pin-identification}/
   : get:
       tags:
       - "tapi-equipment"
@@ -10926,17 +11178,22 @@ paths:
         description: "Id of abstract-strand"
         required: true
         type: "string"
+      - name: "device-uuid"
+        in: "path"
+        description: "Id of connector-pin"
+        required: true
+        type: "string"
+      - name: "equipment-uuid"
+        in: "path"
+        description: "Id of connector-pin"
+        required: true
+        type: "string"
       - name: "connector-identification"
         in: "path"
         description: "Id of connector-pin"
         required: true
         type: "string"
       - name: "pin-identification"
-        in: "path"
-        description: "Id of connector-pin"
-        required: true
-        type: "string"
-      - name: "equipment-uuid"
         in: "path"
         description: "Id of connector-pin"
         required: true
@@ -10948,7 +11205,7 @@ paths:
             $ref: "#/definitions/tapi.equipment.ConnectorPinAddressWrapper"
         400:
           description: "Internal error"
-  ? /data/tapi-common:context/tapi-equipment:physical-context/physical-span={uuid}/abstract-strand={local-id}/connector-pin={connector-identification},{pin-identification},{equipment-uuid}/pin-and-role={location-in-connector}/
+  ? /data/tapi-common:context/tapi-equipment:physical-context/physical-span={uuid}/abstract-strand={local-id}/connector-pin={device-uuid},{equipment-uuid},{connector-identification},{pin-identification}/pin-and-role={location-in-connector}/
   : get:
       tags:
       - "tapi-equipment"
@@ -10968,17 +11225,22 @@ paths:
         description: "Id of abstract-strand"
         required: true
         type: "string"
+      - name: "device-uuid"
+        in: "path"
+        description: "Id of connector-pin"
+        required: true
+        type: "string"
+      - name: "equipment-uuid"
+        in: "path"
+        description: "Id of connector-pin"
+        required: true
+        type: "string"
       - name: "connector-identification"
         in: "path"
         description: "Id of connector-pin"
         required: true
         type: "string"
       - name: "pin-identification"
-        in: "path"
-        description: "Id of connector-pin"
-        required: true
-        type: "string"
-      - name: "equipment-uuid"
         in: "path"
         description: "Id of connector-pin"
         required: true
@@ -11587,6 +11849,78 @@ paths:
             $ref: "#/definitions/tapi.topology.NodeEdgePointRefWrapper"
         400:
           description: "Internal error"
+  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-connectivity:connection-end-point/profile={profile-uuid}/
+  : get:
+      tags:
+      - "tapi-connectivity"
+      summary: "returns tapi.common.ProfileRef"
+      description: "none"
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of event-notification"
+        required: true
+        type: "string"
+      - name: "profile-uuid"
+        in: "path"
+        description: "Id of profile"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.common.ProfileRef"
+          schema:
+            $ref: "#/definitions/tapi.common.ProfileRefWrapper"
+        400:
+          description: "Internal error"
+  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-connectivity:connection-end-point/sink-profile={profile-uuid}/
+  : get:
+      tags:
+      - "tapi-connectivity"
+      summary: "returns tapi.common.ProfileRef"
+      description: "none"
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of event-notification"
+        required: true
+        type: "string"
+      - name: "profile-uuid"
+        in: "path"
+        description: "Id of sink-profile"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.common.ProfileRef"
+          schema:
+            $ref: "#/definitions/tapi.common.ProfileRefWrapper"
+        400:
+          description: "Internal error"
+  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-connectivity:connection-end-point/source-profile={profile-uuid}/
+  : get:
+      tags:
+      - "tapi-connectivity"
+      summary: "returns tapi.common.ProfileRef"
+      description: "none"
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of event-notification"
+        required: true
+        type: "string"
+      - name: "profile-uuid"
+        in: "path"
+        description: "Id of source-profile"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.common.ProfileRef"
+          schema:
+            $ref: "#/definitions/tapi.common.ProfileRefWrapper"
+        400:
+          description: "Internal error"
   /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-connectivity:connection/:
     get:
       tags:
@@ -11862,6 +12196,30 @@ paths:
           description: "tapi.connectivity.ResilienceRoute"
           schema:
             $ref: "#/definitions/tapi.connectivity.ResilienceRouteWrapper"
+        400:
+          description: "Internal error"
+  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-connectivity:connection/server-connection={connection-uuid}/
+  : get:
+      tags:
+      - "tapi-connectivity"
+      summary: "returns tapi.connectivity.ConnectionRef"
+      description: "The server layer Connections supporting this Connection."
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of event-notification"
+        required: true
+        type: "string"
+      - name: "connection-uuid"
+        in: "path"
+        description: "Id of server-connection"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.connectivity.ConnectionRef"
+          schema:
+            $ref: "#/definitions/tapi.connectivity.ConnectionRefWrapper"
         400:
           description: "Internal error"
   ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-connectivity:connection/supported-client-link={topology-uuid},{link-uuid}/
@@ -13101,6 +13459,61 @@ paths:
             $ref: "#/definitions/tapi.connectivity.ConnectivityServiceSpecReferenceWrapper"
         400:
           description: "Internal error"
+  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-connectivity:connectivity-service-end-point/layer-protocol-constraint={local-id}/
+  : get:
+      tags:
+      - "tapi-connectivity"
+      summary: "returns tapi.connectivity.LayerProtocolConstraint"
+      description: "The constraints applicable at specific layers."
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of event-notification"
+        required: true
+        type: "string"
+      - name: "local-id"
+        in: "path"
+        description: "Id of layer-protocol-constraint"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.connectivity.LayerProtocolConstraint"
+          schema:
+            $ref: "#/definitions/tapi.connectivity.LayerProtocolConstraintWrapper"
+        400:
+          description: "Internal error"
+  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-connectivity:connectivity-service-end-point/layer-protocol-constraint={local-id}/name={value-name}/
+  : get:
+      tags:
+      - "tapi-connectivity"
+      summary: "returns tapi.common.NameAndValue"
+      description: "List of names. This value is unique in some namespace but may\
+        \ change during the life of the entity.\r\n                A name carries\
+        \ no semantics with respect to the purpose of the entity."
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of event-notification"
+        required: true
+        type: "string"
+      - name: "local-id"
+        in: "path"
+        description: "Id of layer-protocol-constraint"
+        required: true
+        type: "string"
+      - name: "value-name"
+        in: "path"
+        description: "Id of name"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.common.NameAndValue"
+          schema:
+            $ref: "#/definitions/tapi.common.NameAndValueWrapper"
+        400:
+          description: "Internal error"
   ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-connectivity:connectivity-service-end-point/name={value-name}/
   : get:
       tags:
@@ -13147,6 +13560,30 @@ paths:
             $ref: "#/definitions/tapi.connectivity.ConnectivityServiceEndPointRefWrapper"
         400:
           description: "Internal error"
+  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-connectivity:connectivity-service-end-point/profile={profile-uuid}/
+  : get:
+      tags:
+      - "tapi-connectivity"
+      summary: "returns tapi.common.ProfileRef"
+      description: "none"
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of event-notification"
+        required: true
+        type: "string"
+      - name: "profile-uuid"
+        in: "path"
+        description: "Id of profile"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.common.ProfileRef"
+          schema:
+            $ref: "#/definitions/tapi.common.ProfileRefWrapper"
+        400:
+          description: "Internal error"
   ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-connectivity:connectivity-service-end-point/protecting-connectivity-service-end-point/
   : get:
       tags:
@@ -13187,61 +13624,6 @@ paths:
             $ref: "#/definitions/tapi.connectivity.ConnectivityServiceEndPointRefWrapper"
         400:
           description: "Internal error"
-  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-connectivity:connectivity-service-end-point/server-constraint={local-id}/
-  : get:
-      tags:
-      - "tapi-connectivity"
-      summary: "returns tapi.connectivity.ServerConstraint"
-      description: "The server constraints."
-      parameters:
-      - name: "uuid"
-        in: "path"
-        description: "Id of event-notification"
-        required: true
-        type: "string"
-      - name: "local-id"
-        in: "path"
-        description: "Id of server-constraint"
-        required: true
-        type: "string"
-      responses:
-        200:
-          description: "tapi.connectivity.ServerConstraint"
-          schema:
-            $ref: "#/definitions/tapi.connectivity.ServerConstraintWrapper"
-        400:
-          description: "Internal error"
-  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-connectivity:connectivity-service-end-point/server-constraint={local-id}/name={value-name}/
-  : get:
-      tags:
-      - "tapi-connectivity"
-      summary: "returns tapi.common.NameAndValue"
-      description: "List of names. This value is unique in some namespace but may\
-        \ change during the life of the entity.\r\n                A name carries\
-        \ no semantics with respect to the purpose of the entity."
-      parameters:
-      - name: "uuid"
-        in: "path"
-        description: "Id of event-notification"
-        required: true
-        type: "string"
-      - name: "local-id"
-        in: "path"
-        description: "Id of server-constraint"
-        required: true
-        type: "string"
-      - name: "value-name"
-        in: "path"
-        description: "Id of name"
-        required: true
-        type: "string"
-      responses:
-        200:
-          description: "tapi.common.NameAndValue"
-          schema:
-            $ref: "#/definitions/tapi.common.NameAndValueWrapper"
-        400:
-          description: "Internal error"
   ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-connectivity:connectivity-service-end-point/service-interface-point/
   : get:
       tags:
@@ -13259,6 +13641,54 @@ paths:
           description: "tapi.common.ServiceInterfacePointRef"
           schema:
             $ref: "#/definitions/tapi.common.ServiceInterfacePointRefWrapper"
+        400:
+          description: "Internal error"
+  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-connectivity:connectivity-service-end-point/sink-profile={profile-uuid}/
+  : get:
+      tags:
+      - "tapi-connectivity"
+      summary: "returns tapi.common.ProfileRef"
+      description: "none"
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of event-notification"
+        required: true
+        type: "string"
+      - name: "profile-uuid"
+        in: "path"
+        description: "Id of sink-profile"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.common.ProfileRef"
+          schema:
+            $ref: "#/definitions/tapi.common.ProfileRefWrapper"
+        400:
+          description: "Internal error"
+  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-connectivity:connectivity-service-end-point/source-profile={profile-uuid}/
+  : get:
+      tags:
+      - "tapi-connectivity"
+      summary: "returns tapi.common.ProfileRef"
+      description: "none"
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of event-notification"
+        required: true
+        type: "string"
+      - name: "profile-uuid"
+        in: "path"
+        description: "Id of source-profile"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.common.ProfileRef"
+          schema:
+            $ref: "#/definitions/tapi.common.ProfileRefWrapper"
         400:
           description: "Internal error"
   ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-connectivity:connectivity-service/
@@ -13727,6 +14157,71 @@ paths:
             $ref: "#/definitions/tapi.connectivity.ConnectivityServiceSpecReferenceWrapper"
         400:
           description: "Internal error"
+  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-connectivity:connectivity-service/end-point={local-id}/layer-protocol-constraint={layer-protocol-constraint-local-id}/
+  : get:
+      tags:
+      - "tapi-connectivity"
+      summary: "returns tapi.connectivity.LayerProtocolConstraint"
+      description: "The constraints applicable at specific layers."
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of event-notification"
+        required: true
+        type: "string"
+      - name: "local-id"
+        in: "path"
+        description: "Id of end-point"
+        required: true
+        type: "string"
+      - name: "layer-protocol-constraint-local-id"
+        in: "path"
+        description: "Id of layer-protocol-constraint"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.connectivity.LayerProtocolConstraint"
+          schema:
+            $ref: "#/definitions/tapi.connectivity.LayerProtocolConstraintWrapper"
+        400:
+          description: "Internal error"
+  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-connectivity:connectivity-service/end-point={local-id}/layer-protocol-constraint={layer-protocol-constraint-local-id}/name={value-name}/
+  : get:
+      tags:
+      - "tapi-connectivity"
+      summary: "returns tapi.common.NameAndValue"
+      description: "List of names. This value is unique in some namespace but may\
+        \ change during the life of the entity.\r\n                A name carries\
+        \ no semantics with respect to the purpose of the entity."
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of event-notification"
+        required: true
+        type: "string"
+      - name: "local-id"
+        in: "path"
+        description: "Id of end-point"
+        required: true
+        type: "string"
+      - name: "layer-protocol-constraint-local-id"
+        in: "path"
+        description: "Id of layer-protocol-constraint"
+        required: true
+        type: "string"
+      - name: "value-name"
+        in: "path"
+        description: "Id of name"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.common.NameAndValue"
+          schema:
+            $ref: "#/definitions/tapi.common.NameAndValueWrapper"
+        400:
+          description: "Internal error"
   ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-connectivity:connectivity-service/end-point={local-id}/name={value-name}/
   : get:
       tags:
@@ -13783,6 +14278,35 @@ paths:
             $ref: "#/definitions/tapi.connectivity.ConnectivityServiceEndPointRefWrapper"
         400:
           description: "Internal error"
+  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-connectivity:connectivity-service/end-point={local-id}/profile={profile-uuid}/
+  : get:
+      tags:
+      - "tapi-connectivity"
+      summary: "returns tapi.common.ProfileRef"
+      description: "none"
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of event-notification"
+        required: true
+        type: "string"
+      - name: "local-id"
+        in: "path"
+        description: "Id of end-point"
+        required: true
+        type: "string"
+      - name: "profile-uuid"
+        in: "path"
+        description: "Id of profile"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.common.ProfileRef"
+          schema:
+            $ref: "#/definitions/tapi.common.ProfileRefWrapper"
+        400:
+          description: "Internal error"
   ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-connectivity:connectivity-service/end-point={local-id}/protecting-connectivity-service-end-point/
   : get:
       tags:
@@ -13833,71 +14357,6 @@ paths:
             $ref: "#/definitions/tapi.connectivity.ConnectivityServiceEndPointRefWrapper"
         400:
           description: "Internal error"
-  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-connectivity:connectivity-service/end-point={local-id}/server-constraint={server-constraint-local-id}/
-  : get:
-      tags:
-      - "tapi-connectivity"
-      summary: "returns tapi.connectivity.ServerConstraint"
-      description: "The server constraints."
-      parameters:
-      - name: "uuid"
-        in: "path"
-        description: "Id of event-notification"
-        required: true
-        type: "string"
-      - name: "local-id"
-        in: "path"
-        description: "Id of end-point"
-        required: true
-        type: "string"
-      - name: "server-constraint-local-id"
-        in: "path"
-        description: "Id of server-constraint"
-        required: true
-        type: "string"
-      responses:
-        200:
-          description: "tapi.connectivity.ServerConstraint"
-          schema:
-            $ref: "#/definitions/tapi.connectivity.ServerConstraintWrapper"
-        400:
-          description: "Internal error"
-  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-connectivity:connectivity-service/end-point={local-id}/server-constraint={server-constraint-local-id}/name={value-name}/
-  : get:
-      tags:
-      - "tapi-connectivity"
-      summary: "returns tapi.common.NameAndValue"
-      description: "List of names. This value is unique in some namespace but may\
-        \ change during the life of the entity.\r\n                A name carries\
-        \ no semantics with respect to the purpose of the entity."
-      parameters:
-      - name: "uuid"
-        in: "path"
-        description: "Id of event-notification"
-        required: true
-        type: "string"
-      - name: "local-id"
-        in: "path"
-        description: "Id of end-point"
-        required: true
-        type: "string"
-      - name: "server-constraint-local-id"
-        in: "path"
-        description: "Id of server-constraint"
-        required: true
-        type: "string"
-      - name: "value-name"
-        in: "path"
-        description: "Id of name"
-        required: true
-        type: "string"
-      responses:
-        200:
-          description: "tapi.common.NameAndValue"
-          schema:
-            $ref: "#/definitions/tapi.common.NameAndValueWrapper"
-        400:
-          description: "Internal error"
   ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-connectivity:connectivity-service/end-point={local-id}/service-interface-point/
   : get:
       tags:
@@ -13920,6 +14379,64 @@ paths:
           description: "tapi.common.ServiceInterfacePointRef"
           schema:
             $ref: "#/definitions/tapi.common.ServiceInterfacePointRefWrapper"
+        400:
+          description: "Internal error"
+  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-connectivity:connectivity-service/end-point={local-id}/sink-profile={profile-uuid}/
+  : get:
+      tags:
+      - "tapi-connectivity"
+      summary: "returns tapi.common.ProfileRef"
+      description: "none"
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of event-notification"
+        required: true
+        type: "string"
+      - name: "local-id"
+        in: "path"
+        description: "Id of end-point"
+        required: true
+        type: "string"
+      - name: "profile-uuid"
+        in: "path"
+        description: "Id of sink-profile"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.common.ProfileRef"
+          schema:
+            $ref: "#/definitions/tapi.common.ProfileRefWrapper"
+        400:
+          description: "Internal error"
+  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-connectivity:connectivity-service/end-point={local-id}/source-profile={profile-uuid}/
+  : get:
+      tags:
+      - "tapi-connectivity"
+      summary: "returns tapi.common.ProfileRef"
+      description: "none"
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of event-notification"
+        required: true
+        type: "string"
+      - name: "local-id"
+        in: "path"
+        description: "Id of end-point"
+        required: true
+        type: "string"
+      - name: "profile-uuid"
+        in: "path"
+        description: "Id of source-profile"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.common.ProfileRef"
+          schema:
+            $ref: "#/definitions/tapi.common.ProfileRefWrapper"
         400:
           description: "Internal error"
   ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-connectivity:connectivity-service/internal-point={local-id}/
@@ -16426,7 +16943,7 @@ paths:
             $ref: "#/definitions/tapi.equipment.AbstractStrandRefWrapper"
         400:
           description: "Internal error"
-  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-equipment:abstract-strand/connector-pin={connector-identification},{pin-identification},{equipment-uuid}/
+  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-equipment:abstract-strand/connector-pin={device-uuid},{equipment-uuid},{connector-identification},{pin-identification}/
   : get:
       tags:
       - "tapi-equipment"
@@ -16447,17 +16964,22 @@ paths:
         description: "Id of event-notification"
         required: true
         type: "string"
+      - name: "device-uuid"
+        in: "path"
+        description: "Id of connector-pin"
+        required: true
+        type: "string"
+      - name: "equipment-uuid"
+        in: "path"
+        description: "Id of connector-pin"
+        required: true
+        type: "string"
       - name: "connector-identification"
         in: "path"
         description: "Id of connector-pin"
         required: true
         type: "string"
       - name: "pin-identification"
-        in: "path"
-        description: "Id of connector-pin"
-        required: true
-        type: "string"
-      - name: "equipment-uuid"
         in: "path"
         description: "Id of connector-pin"
         required: true
@@ -16469,7 +16991,7 @@ paths:
             $ref: "#/definitions/tapi.equipment.ConnectorPinAddressWrapper"
         400:
           description: "Internal error"
-  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-equipment:abstract-strand/connector-pin={connector-identification},{pin-identification},{equipment-uuid}/pin-and-role={location-in-connector}/
+  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-equipment:abstract-strand/connector-pin={device-uuid},{equipment-uuid},{connector-identification},{pin-identification}/pin-and-role={location-in-connector}/
   : get:
       tags:
       - "tapi-equipment"
@@ -16484,17 +17006,22 @@ paths:
         description: "Id of event-notification"
         required: true
         type: "string"
+      - name: "device-uuid"
+        in: "path"
+        description: "Id of connector-pin"
+        required: true
+        type: "string"
+      - name: "equipment-uuid"
+        in: "path"
+        description: "Id of connector-pin"
+        required: true
+        type: "string"
       - name: "connector-identification"
         in: "path"
         description: "Id of connector-pin"
         required: true
         type: "string"
       - name: "pin-identification"
-        in: "path"
-        description: "Id of connector-pin"
-        required: true
-        type: "string"
-      - name: "equipment-uuid"
         in: "path"
         description: "Id of connector-pin"
         required: true
@@ -16609,7 +17136,7 @@ paths:
             $ref: "#/definitions/tapi.equipment.AccessPortWrapper"
         400:
           description: "Internal error"
-  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-equipment:access-port/connector-pin={connector-identification},{pin-identification},{equipment-uuid}/
+  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-equipment:access-port/connector-pin={device-uuid},{equipment-uuid},{connector-identification},{pin-identification}/
   : get:
       tags:
       - "tapi-equipment"
@@ -16619,6 +17146,16 @@ paths:
       - name: "uuid"
         in: "path"
         description: "Id of event-notification"
+        required: true
+        type: "string"
+      - name: "device-uuid"
+        in: "path"
+        description: "Id of connector-pin"
+        required: true
+        type: "string"
+      - name: "equipment-uuid"
+        in: "path"
+        description: "Id of connector-pin"
         required: true
         type: "string"
       - name: "connector-identification"
@@ -16631,11 +17168,6 @@ paths:
         description: "Id of connector-pin"
         required: true
         type: "string"
-      - name: "equipment-uuid"
-        in: "path"
-        description: "Id of connector-pin"
-        required: true
-        type: "string"
       responses:
         200:
           description: "tapi.equipment.ConnectorPinAddress"
@@ -16643,7 +17175,7 @@ paths:
             $ref: "#/definitions/tapi.equipment.ConnectorPinAddressWrapper"
         400:
           description: "Internal error"
-  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-equipment:access-port/connector-pin={connector-identification},{pin-identification},{equipment-uuid}/pin-and-role={location-in-connector}/
+  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-equipment:access-port/connector-pin={device-uuid},{equipment-uuid},{connector-identification},{pin-identification}/pin-and-role={location-in-connector}/
   : get:
       tags:
       - "tapi-equipment"
@@ -16658,17 +17190,22 @@ paths:
         description: "Id of event-notification"
         required: true
         type: "string"
+      - name: "device-uuid"
+        in: "path"
+        description: "Id of connector-pin"
+        required: true
+        type: "string"
+      - name: "equipment-uuid"
+        in: "path"
+        description: "Id of connector-pin"
+        required: true
+        type: "string"
       - name: "connector-identification"
         in: "path"
         description: "Id of connector-pin"
         required: true
         type: "string"
       - name: "pin-identification"
-        in: "path"
-        description: "Id of connector-pin"
-        required: true
-        type: "string"
-      - name: "equipment-uuid"
         in: "path"
         description: "Id of connector-pin"
         required: true
@@ -16754,7 +17291,7 @@ paths:
             $ref: "#/definitions/tapi.equipment.AccessPortWrapper"
         400:
           description: "Internal error"
-  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-equipment:device/access-port={access-port-uuid}/connector-pin={connector-identification},{pin-identification},{equipment-uuid}/
+  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-equipment:device/access-port={access-port-uuid}/connector-pin={device-uuid},{equipment-uuid},{connector-identification},{pin-identification}/
   : get:
       tags:
       - "tapi-equipment"
@@ -16771,17 +17308,22 @@ paths:
         description: "Id of access-port"
         required: true
         type: "string"
+      - name: "device-uuid"
+        in: "path"
+        description: "Id of connector-pin"
+        required: true
+        type: "string"
+      - name: "equipment-uuid"
+        in: "path"
+        description: "Id of connector-pin"
+        required: true
+        type: "string"
       - name: "connector-identification"
         in: "path"
         description: "Id of connector-pin"
         required: true
         type: "string"
       - name: "pin-identification"
-        in: "path"
-        description: "Id of connector-pin"
-        required: true
-        type: "string"
-      - name: "equipment-uuid"
         in: "path"
         description: "Id of connector-pin"
         required: true
@@ -16793,7 +17335,7 @@ paths:
             $ref: "#/definitions/tapi.equipment.ConnectorPinAddressWrapper"
         400:
           description: "Internal error"
-  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-equipment:device/access-port={access-port-uuid}/connector-pin={connector-identification},{pin-identification},{equipment-uuid}/pin-and-role={location-in-connector}/
+  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-equipment:device/access-port={access-port-uuid}/connector-pin={device-uuid},{equipment-uuid},{connector-identification},{pin-identification}/pin-and-role={location-in-connector}/
   : get:
       tags:
       - "tapi-equipment"
@@ -16813,17 +17355,22 @@ paths:
         description: "Id of access-port"
         required: true
         type: "string"
+      - name: "device-uuid"
+        in: "path"
+        description: "Id of connector-pin"
+        required: true
+        type: "string"
+      - name: "equipment-uuid"
+        in: "path"
+        description: "Id of connector-pin"
+        required: true
+        type: "string"
       - name: "connector-identification"
         in: "path"
         description: "Id of connector-pin"
         required: true
         type: "string"
       - name: "pin-identification"
-        in: "path"
-        description: "Id of connector-pin"
-        required: true
-        type: "string"
-      - name: "equipment-uuid"
         in: "path"
         description: "Id of connector-pin"
         required: true
@@ -18312,7 +18859,7 @@ paths:
             $ref: "#/definitions/tapi.equipment.AbstractStrandRefWrapper"
         400:
           description: "Internal error"
-  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-equipment:physical-span/abstract-strand={local-id}/connector-pin={connector-identification},{pin-identification},{equipment-uuid}/
+  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-equipment:physical-span/abstract-strand={local-id}/connector-pin={device-uuid},{equipment-uuid},{connector-identification},{pin-identification}/
   : get:
       tags:
       - "tapi-equipment"
@@ -18338,17 +18885,22 @@ paths:
         description: "Id of abstract-strand"
         required: true
         type: "string"
+      - name: "device-uuid"
+        in: "path"
+        description: "Id of connector-pin"
+        required: true
+        type: "string"
+      - name: "equipment-uuid"
+        in: "path"
+        description: "Id of connector-pin"
+        required: true
+        type: "string"
       - name: "connector-identification"
         in: "path"
         description: "Id of connector-pin"
         required: true
         type: "string"
       - name: "pin-identification"
-        in: "path"
-        description: "Id of connector-pin"
-        required: true
-        type: "string"
-      - name: "equipment-uuid"
         in: "path"
         description: "Id of connector-pin"
         required: true
@@ -18360,7 +18912,7 @@ paths:
             $ref: "#/definitions/tapi.equipment.ConnectorPinAddressWrapper"
         400:
           description: "Internal error"
-  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-equipment:physical-span/abstract-strand={local-id}/connector-pin={connector-identification},{pin-identification},{equipment-uuid}/pin-and-role={location-in-connector}/
+  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-equipment:physical-span/abstract-strand={local-id}/connector-pin={device-uuid},{equipment-uuid},{connector-identification},{pin-identification}/pin-and-role={location-in-connector}/
   : get:
       tags:
       - "tapi-equipment"
@@ -18380,17 +18932,22 @@ paths:
         description: "Id of abstract-strand"
         required: true
         type: "string"
+      - name: "device-uuid"
+        in: "path"
+        description: "Id of connector-pin"
+        required: true
+        type: "string"
+      - name: "equipment-uuid"
+        in: "path"
+        description: "Id of connector-pin"
+        required: true
+        type: "string"
       - name: "connector-identification"
         in: "path"
         description: "Id of connector-pin"
         required: true
         type: "string"
       - name: "pin-identification"
-        in: "path"
-        description: "Id of connector-pin"
-        required: true
-        type: "string"
-      - name: "equipment-uuid"
         in: "path"
         description: "Id of connector-pin"
         required: true
@@ -20774,6 +21331,78 @@ paths:
           description: "tapi.common.NameAndValue"
           schema:
             $ref: "#/definitions/tapi.common.NameAndValueWrapper"
+        400:
+          description: "Internal error"
+  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-topology:node-edge-point/profile={profile-uuid}/
+  : get:
+      tags:
+      - "tapi-topology"
+      summary: "returns tapi.common.ProfileRef"
+      description: "none"
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of event-notification"
+        required: true
+        type: "string"
+      - name: "profile-uuid"
+        in: "path"
+        description: "Id of profile"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.common.ProfileRef"
+          schema:
+            $ref: "#/definitions/tapi.common.ProfileRefWrapper"
+        400:
+          description: "Internal error"
+  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-topology:node-edge-point/sink-profile={profile-uuid}/
+  : get:
+      tags:
+      - "tapi-topology"
+      summary: "returns tapi.common.ProfileRef"
+      description: "none"
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of event-notification"
+        required: true
+        type: "string"
+      - name: "profile-uuid"
+        in: "path"
+        description: "Id of sink-profile"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.common.ProfileRef"
+          schema:
+            $ref: "#/definitions/tapi.common.ProfileRefWrapper"
+        400:
+          description: "Internal error"
+  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-topology:node-edge-point/source-profile={profile-uuid}/
+  : get:
+      tags:
+      - "tapi-topology"
+      summary: "returns tapi.common.ProfileRef"
+      description: "none"
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of event-notification"
+        required: true
+        type: "string"
+      - name: "profile-uuid"
+        in: "path"
+        description: "Id of source-profile"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.common.ProfileRef"
+          schema:
+            $ref: "#/definitions/tapi.common.ProfileRefWrapper"
         400:
           description: "Internal error"
   ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-topology:node-edge-point/supported-cep-layer-protocol={layer-protocol-qualifier}/
@@ -23307,6 +23936,93 @@ paths:
             $ref: "#/definitions/tapi.common.NameAndValueWrapper"
         400:
           description: "Internal error"
+  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-topology:node/owned-node-edge-point={owned-node-edge-point-uuid}/profile={profile-uuid}/
+  : get:
+      tags:
+      - "tapi-topology"
+      summary: "returns tapi.common.ProfileRef"
+      description: "none"
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of event-notification"
+        required: true
+        type: "string"
+      - name: "owned-node-edge-point-uuid"
+        in: "path"
+        description: "Id of owned-node-edge-point"
+        required: true
+        type: "string"
+      - name: "profile-uuid"
+        in: "path"
+        description: "Id of profile"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.common.ProfileRef"
+          schema:
+            $ref: "#/definitions/tapi.common.ProfileRefWrapper"
+        400:
+          description: "Internal error"
+  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-topology:node/owned-node-edge-point={owned-node-edge-point-uuid}/sink-profile={profile-uuid}/
+  : get:
+      tags:
+      - "tapi-topology"
+      summary: "returns tapi.common.ProfileRef"
+      description: "none"
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of event-notification"
+        required: true
+        type: "string"
+      - name: "owned-node-edge-point-uuid"
+        in: "path"
+        description: "Id of owned-node-edge-point"
+        required: true
+        type: "string"
+      - name: "profile-uuid"
+        in: "path"
+        description: "Id of sink-profile"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.common.ProfileRef"
+          schema:
+            $ref: "#/definitions/tapi.common.ProfileRefWrapper"
+        400:
+          description: "Internal error"
+  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-topology:node/owned-node-edge-point={owned-node-edge-point-uuid}/source-profile={profile-uuid}/
+  : get:
+      tags:
+      - "tapi-topology"
+      summary: "returns tapi.common.ProfileRef"
+      description: "none"
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of event-notification"
+        required: true
+        type: "string"
+      - name: "owned-node-edge-point-uuid"
+        in: "path"
+        description: "Id of owned-node-edge-point"
+        required: true
+        type: "string"
+      - name: "profile-uuid"
+        in: "path"
+        description: "Id of source-profile"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.common.ProfileRef"
+          schema:
+            $ref: "#/definitions/tapi.common.ProfileRefWrapper"
+        400:
+          description: "Internal error"
   ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-topology:node/owned-node-edge-point={owned-node-edge-point-uuid}/supported-cep-layer-protocol={layer-protocol-qualifier}/
   : get:
       tags:
@@ -25822,6 +26538,108 @@ paths:
           description: "tapi.common.NameAndValue"
           schema:
             $ref: "#/definitions/tapi.common.NameAndValueWrapper"
+        400:
+          description: "Internal error"
+  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-topology:topology/node={node-uuid}/owned-node-edge-point={owned-node-edge-point-uuid}/profile={profile-uuid}/
+  : get:
+      tags:
+      - "tapi-topology"
+      summary: "returns tapi.common.ProfileRef"
+      description: "none"
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of event-notification"
+        required: true
+        type: "string"
+      - name: "node-uuid"
+        in: "path"
+        description: "Id of node"
+        required: true
+        type: "string"
+      - name: "owned-node-edge-point-uuid"
+        in: "path"
+        description: "Id of owned-node-edge-point"
+        required: true
+        type: "string"
+      - name: "profile-uuid"
+        in: "path"
+        description: "Id of profile"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.common.ProfileRef"
+          schema:
+            $ref: "#/definitions/tapi.common.ProfileRefWrapper"
+        400:
+          description: "Internal error"
+  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-topology:topology/node={node-uuid}/owned-node-edge-point={owned-node-edge-point-uuid}/sink-profile={profile-uuid}/
+  : get:
+      tags:
+      - "tapi-topology"
+      summary: "returns tapi.common.ProfileRef"
+      description: "none"
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of event-notification"
+        required: true
+        type: "string"
+      - name: "node-uuid"
+        in: "path"
+        description: "Id of node"
+        required: true
+        type: "string"
+      - name: "owned-node-edge-point-uuid"
+        in: "path"
+        description: "Id of owned-node-edge-point"
+        required: true
+        type: "string"
+      - name: "profile-uuid"
+        in: "path"
+        description: "Id of sink-profile"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.common.ProfileRef"
+          schema:
+            $ref: "#/definitions/tapi.common.ProfileRefWrapper"
+        400:
+          description: "Internal error"
+  ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-topology:topology/node={node-uuid}/owned-node-edge-point={owned-node-edge-point-uuid}/source-profile={profile-uuid}/
+  : get:
+      tags:
+      - "tapi-topology"
+      summary: "returns tapi.common.ProfileRef"
+      description: "none"
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of event-notification"
+        required: true
+        type: "string"
+      - name: "node-uuid"
+        in: "path"
+        description: "Id of node"
+        required: true
+        type: "string"
+      - name: "owned-node-edge-point-uuid"
+        in: "path"
+        description: "Id of owned-node-edge-point"
+        required: true
+        type: "string"
+      - name: "profile-uuid"
+        in: "path"
+        description: "Id of source-profile"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.common.ProfileRef"
+          schema:
+            $ref: "#/definitions/tapi.common.ProfileRefWrapper"
         400:
           description: "Internal error"
   ? /data/tapi-common:context/tapi-notification:notification-context/event-notification={uuid}/tapi-topology:topology/node={node-uuid}/owned-node-edge-point={owned-node-edge-point-uuid}/supported-cep-layer-protocol={layer-protocol-qualifier}/
@@ -33581,6 +34399,108 @@ paths:
             $ref: "#/definitions/tapi.common.NameAndValueWrapper"
         400:
           description: "Internal error"
+  ? /data/tapi-common:context/tapi-topology:topology-context/topology={uuid}/node={node-uuid}/owned-node-edge-point={owned-node-edge-point-uuid}/profile={profile-uuid}/
+  : get:
+      tags:
+      - "tapi-topology"
+      summary: "returns tapi.common.ProfileRef"
+      description: "none"
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of topology"
+        required: true
+        type: "string"
+      - name: "node-uuid"
+        in: "path"
+        description: "Id of node"
+        required: true
+        type: "string"
+      - name: "owned-node-edge-point-uuid"
+        in: "path"
+        description: "Id of owned-node-edge-point"
+        required: true
+        type: "string"
+      - name: "profile-uuid"
+        in: "path"
+        description: "Id of profile"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.common.ProfileRef"
+          schema:
+            $ref: "#/definitions/tapi.common.ProfileRefWrapper"
+        400:
+          description: "Internal error"
+  ? /data/tapi-common:context/tapi-topology:topology-context/topology={uuid}/node={node-uuid}/owned-node-edge-point={owned-node-edge-point-uuid}/sink-profile={profile-uuid}/
+  : get:
+      tags:
+      - "tapi-topology"
+      summary: "returns tapi.common.ProfileRef"
+      description: "none"
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of topology"
+        required: true
+        type: "string"
+      - name: "node-uuid"
+        in: "path"
+        description: "Id of node"
+        required: true
+        type: "string"
+      - name: "owned-node-edge-point-uuid"
+        in: "path"
+        description: "Id of owned-node-edge-point"
+        required: true
+        type: "string"
+      - name: "profile-uuid"
+        in: "path"
+        description: "Id of sink-profile"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.common.ProfileRef"
+          schema:
+            $ref: "#/definitions/tapi.common.ProfileRefWrapper"
+        400:
+          description: "Internal error"
+  ? /data/tapi-common:context/tapi-topology:topology-context/topology={uuid}/node={node-uuid}/owned-node-edge-point={owned-node-edge-point-uuid}/source-profile={profile-uuid}/
+  : get:
+      tags:
+      - "tapi-topology"
+      summary: "returns tapi.common.ProfileRef"
+      description: "none"
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of topology"
+        required: true
+        type: "string"
+      - name: "node-uuid"
+        in: "path"
+        description: "Id of node"
+        required: true
+        type: "string"
+      - name: "owned-node-edge-point-uuid"
+        in: "path"
+        description: "Id of owned-node-edge-point"
+        required: true
+        type: "string"
+      - name: "profile-uuid"
+        in: "path"
+        description: "Id of source-profile"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.common.ProfileRef"
+          schema:
+            $ref: "#/definitions/tapi.common.ProfileRefWrapper"
+        400:
+          description: "Internal error"
   ? /data/tapi-common:context/tapi-topology:topology-context/topology={uuid}/node={node-uuid}/owned-node-edge-point={owned-node-edge-point-uuid}/supported-cep-layer-protocol={layer-protocol-qualifier}/
   : get:
       tags:
@@ -34049,6 +34969,123 @@ paths:
           description: "tapi.topology.NodeEdgePointRef"
           schema:
             $ref: "#/definitions/tapi.topology.NodeEdgePointRefWrapper"
+        400:
+          description: "Internal error"
+  ? /data/tapi-common:context/tapi-topology:topology-context/topology={uuid}/node={node-uuid}/owned-node-edge-point={owned-node-edge-point-uuid}/tapi-connectivity:cep-list/connection-end-point={connection-end-point-uuid}/profile={profile-uuid}/
+  : get:
+      tags:
+      - "tapi-connectivity"
+      summary: "returns tapi.common.ProfileRef"
+      description: "none"
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of topology"
+        required: true
+        type: "string"
+      - name: "node-uuid"
+        in: "path"
+        description: "Id of node"
+        required: true
+        type: "string"
+      - name: "owned-node-edge-point-uuid"
+        in: "path"
+        description: "Id of owned-node-edge-point"
+        required: true
+        type: "string"
+      - name: "connection-end-point-uuid"
+        in: "path"
+        description: "Id of connection-end-point"
+        required: true
+        type: "string"
+      - name: "profile-uuid"
+        in: "path"
+        description: "Id of profile"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.common.ProfileRef"
+          schema:
+            $ref: "#/definitions/tapi.common.ProfileRefWrapper"
+        400:
+          description: "Internal error"
+  ? /data/tapi-common:context/tapi-topology:topology-context/topology={uuid}/node={node-uuid}/owned-node-edge-point={owned-node-edge-point-uuid}/tapi-connectivity:cep-list/connection-end-point={connection-end-point-uuid}/sink-profile={profile-uuid}/
+  : get:
+      tags:
+      - "tapi-connectivity"
+      summary: "returns tapi.common.ProfileRef"
+      description: "none"
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of topology"
+        required: true
+        type: "string"
+      - name: "node-uuid"
+        in: "path"
+        description: "Id of node"
+        required: true
+        type: "string"
+      - name: "owned-node-edge-point-uuid"
+        in: "path"
+        description: "Id of owned-node-edge-point"
+        required: true
+        type: "string"
+      - name: "connection-end-point-uuid"
+        in: "path"
+        description: "Id of connection-end-point"
+        required: true
+        type: "string"
+      - name: "profile-uuid"
+        in: "path"
+        description: "Id of sink-profile"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.common.ProfileRef"
+          schema:
+            $ref: "#/definitions/tapi.common.ProfileRefWrapper"
+        400:
+          description: "Internal error"
+  ? /data/tapi-common:context/tapi-topology:topology-context/topology={uuid}/node={node-uuid}/owned-node-edge-point={owned-node-edge-point-uuid}/tapi-connectivity:cep-list/connection-end-point={connection-end-point-uuid}/source-profile={profile-uuid}/
+  : get:
+      tags:
+      - "tapi-connectivity"
+      summary: "returns tapi.common.ProfileRef"
+      description: "none"
+      parameters:
+      - name: "uuid"
+        in: "path"
+        description: "Id of topology"
+        required: true
+        type: "string"
+      - name: "node-uuid"
+        in: "path"
+        description: "Id of node"
+        required: true
+        type: "string"
+      - name: "owned-node-edge-point-uuid"
+        in: "path"
+        description: "Id of owned-node-edge-point"
+        required: true
+        type: "string"
+      - name: "connection-end-point-uuid"
+        in: "path"
+        description: "Id of connection-end-point"
+        required: true
+        type: "string"
+      - name: "profile-uuid"
+        in: "path"
+        description: "Id of source-profile"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "tapi.common.ProfileRef"
+          schema:
+            $ref: "#/definitions/tapi.common.ProfileRefWrapper"
         400:
           description: "Internal error"
   ? /data/tapi-common:context/tapi-topology:topology-context/topology={uuid}/node={node-uuid}/owned-node-edge-point={owned-node-edge-point-uuid}/tapi-equipment:supporting-access-port/
@@ -35084,6 +36121,17 @@ definitions:
           \n                Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-'\
           \ + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} \r\n                Example of a UUID\
           \ in string representation: f81d4fae-7dec-11d0-a765-00a0c91e6bf6"
+  tapi.common.ProfileRef:
+    type: "object"
+    properties:
+      profile-uuid:
+        type: "string"
+        description: "none"
+        x-path: "/tapi-common:context/tapi-common:profile/tapi-common:uuid"
+  tapi.common.ProfileRefWrapper:
+    properties:
+      profile:
+        $ref: "#/definitions/tapi.common.ProfileRef"
   tapi.common.ProfileWrapper:
     properties:
       profile:
@@ -35305,6 +36353,11 @@ definitions:
           description: "Provides the reference to the spec that defines the connection\
             \ type and cepRoles."
           $ref: "#/definitions/tapi.connectivity.ConnectionSpecReference"
+        server-connection:
+          type: "array"
+          description: "The server layer Connections supporting this Connection."
+          items:
+            $ref: "#/definitions/tapi.connectivity.ConnectionRef"
         layer-protocol-name:
           description: "The layer protocol of the Connection."
           $ref: "#/definitions/tapi.common.LayerProtocolName"
@@ -35338,20 +36391,19 @@ definitions:
           description: "The protection role of the (conceptual) port of the associated\
             \ Connection. It is recommended the alignment with the priority of ResilienceRoute."
           $ref: "#/definitions/tapi.connectivity.ProtectionRole"
-        client-node-edge-point:
-          type: "array"
-          description: "The supported NodeEdgePoint instance(s)."
-          items:
-            $ref: "#/definitions/tapi.topology.NodeEdgePointRef"
         connection-port-role:
           description: "The role of the (conceptual) port of the associated Connection."
           $ref: "#/definitions/tapi.common.PortRole"
-        layer-protocol-name:
-          description: "The layer protocol of the ConnectionEndPoint (CEP)."
-          $ref: "#/definitions/tapi.common.LayerProtocolName"
-        layer-protocol-qualifier:
-          type: "string"
-          description: "The layer protocol qualifier of the ConnectionEndPoint (CEP)."
+        profile:
+          type: "array"
+          description: "none"
+          items:
+            $ref: "#/definitions/tapi.common.ProfileRef"
+        sink-profile:
+          type: "array"
+          description: "none"
+          items:
+            $ref: "#/definitions/tapi.common.ProfileRef"
         parent-node-edge-point:
           description: "The supporting NodeEdgePoint (NEP) instance."
           $ref: "#/definitions/tapi.topology.NodeEdgePointRef"
@@ -35370,6 +36422,22 @@ definitions:
             \ Connection associated with the CEP."
           items:
             $ref: "#/definitions/tapi.connectivity.CepRole"
+        client-node-edge-point:
+          type: "array"
+          description: "The supported NodeEdgePoint instance(s)."
+          items:
+            $ref: "#/definitions/tapi.topology.NodeEdgePointRef"
+        source-profile:
+          type: "array"
+          description: "none"
+          items:
+            $ref: "#/definitions/tapi.common.ProfileRef"
+        layer-protocol-name:
+          description: "The layer protocol of the ConnectionEndPoint (CEP)."
+          $ref: "#/definitions/tapi.common.LayerProtocolName"
+        layer-protocol-qualifier:
+          type: "string"
+          description: "The layer protocol qualifier of the ConnectionEndPoint (CEP)."
         connection-port-direction:
           description: "The orientation of flow at the (conceptual) port of the associated\
             \ Connection."
@@ -35570,6 +36638,16 @@ definitions:
           description: "The associated ConnectivityServiceEndPoint (CSEP) instance\
             \ from forwarding perspective."
           $ref: "#/definitions/tapi.connectivity.ConnectivityServiceEndPointRef"
+        profile:
+          type: "array"
+          description: "none"
+          items:
+            $ref: "#/definitions/tapi.common.ProfileRef"
+        sink-profile:
+          type: "array"
+          description: "none"
+          items:
+            $ref: "#/definitions/tapi.common.ProfileRef"
         csep-role:
           type: "array"
           description: "Defines the role of the CSEP in the context of the Connectivity\
@@ -35581,14 +36659,19 @@ definitions:
         capacity:
           description: "The ConnectivityServiceEndPoint (CSEP) capacity."
           $ref: "#/definitions/tapi.common.Capacity"
-        server-constraint:
+        source-profile:
           type: "array"
-          description: "The server constraints."
+          description: "none"
           items:
-            $ref: "#/definitions/tapi.connectivity.ServerConstraint"
+            $ref: "#/definitions/tapi.common.ProfileRef"
         service-interface-point:
           description: "The supporting ServiceInterfacePoint (SIP) instance."
           $ref: "#/definitions/tapi.common.ServiceInterfacePointRef"
+        layer-protocol-constraint:
+          type: "array"
+          description: "The constraints applicable at specific layers."
+          items:
+            $ref: "#/definitions/tapi.connectivity.LayerProtocolConstraint"
         layer-protocol-name:
           description: "The layer protocol of the ConnectivityServiceEndPoint (CSEP)."
           $ref: "#/definitions/tapi.common.LayerProtocolName"
@@ -35807,6 +36890,23 @@ definitions:
     properties:
       output:
         $ref: "#/definitions/tapi.connectivity.getconnectivityservicelist.Output"
+  tapi.connectivity.LayerProtocolConstraint:
+    allOf:
+    - $ref: "#/definitions/tapi.common.LocalClass"
+    - type: "object"
+      properties:
+        layer-protocol-name:
+          description: "none"
+          $ref: "#/definitions/tapi.common.LayerProtocolName"
+        layer-protocol-qualifier:
+          type: "string"
+          description: "none"
+      description: "LayerProtocolConstraint allows to specify constraints at any layer,\
+        \ by allowing the technology specific augmentations of the generic CSEP."
+  tapi.connectivity.LayerProtocolConstraintWrapper:
+    properties:
+      layer-protocol-constraint:
+        $ref: "#/definitions/tapi.connectivity.LayerProtocolConstraint"
   tapi.connectivity.OwnedNodeEdgePointAugmentation2:
     type: "object"
     properties:
@@ -36008,24 +37108,6 @@ definitions:
     - "WAIT_TO_REVERT"
     - "SIGNAL_DEGRADE"
     - "SIGNAL_FAIL"
-  tapi.connectivity.ServerConstraint:
-    type: "object"
-    properties:
-      name:
-        type: "array"
-        description: "List of names. This value is unique in some namespace but may\
-          \ change during the life of the entity.\r\n                A name carries\
-          \ no semantics with respect to the purpose of the entity."
-        items:
-          $ref: "#/definitions/tapi.common.NameAndValue"
-      local-id:
-        type: "string"
-        description: "An identifier that is unique in the context of the GlobalClass\
-          \ from which it is inseparable."
-  tapi.connectivity.ServerConstraintWrapper:
-    properties:
-      server-constraint:
-        $ref: "#/definitions/tapi.connectivity.ServerConstraint"
   tapi.connectivity.ServiceType:
     type: "string"
     enum:
@@ -36439,7 +37521,7 @@ definitions:
         \ one pin removed from the group will prevent all signals of the signal group\
         \ from flowing successfully.\r\n            In some cases the AccessPort may\
         \ simply reference a single connector (e.g., where the pin-connector association\
-        \ is simpe such that the AccessPort references all pinsof one connector)."
+        \ is simple such that the AccessPort references all pins of one connector)."
   tapi.equipment.AccessPortRef:
     allOf:
     - $ref: "#/definitions/tapi.equipment.DeviceRef"
@@ -36452,7 +37534,7 @@ definitions:
       description: "none"
   tapi.equipment.AccessPortRefWrapper:
     properties:
-      access-port:
+      access-port-in-route:
         $ref: "#/definitions/tapi.equipment.AccessPortRef"
   tapi.equipment.AccessPortWrapper:
     properties:
@@ -36605,7 +37687,8 @@ definitions:
           \ Equipment."
       equipment-uuid:
         type: "string"
-        description: "Reference to the Equipment that is fitted with the Connector/Pin."
+        description: "none"
+        x-path: "/tapi-common:context/tapi-equipment:physical-context/tapi-equipment:device/tapi-equipment:equipment/tapi-equipment:uuid"
       pin-and-role:
         type: "array"
         description: "If there is more than one pin used in a connector and/or there\
@@ -36614,6 +37697,10 @@ definitions:
           \ be used instead."
         items:
           $ref: "#/definitions/tapi.equipment.PinAndRole"
+      device-uuid:
+        type: "string"
+        description: "none"
+        x-path: "/tapi-common:context/tapi-equipment:physical-context/tapi-equipment:device/tapi-equipment:uuid"
       pin-identification:
         type: "string"
         description: "Where relevant, identification of the Pin in the context of\
@@ -36622,7 +37709,7 @@ definitions:
           \ to pinAndRole."
   tapi.equipment.ConnectorPinAddressWrapper:
     properties:
-      connector-pin:
+      connector-pin-in-route:
         $ref: "#/definitions/tapi.equipment.ConnectorPinAddress"
   tapi.equipment.ContextAugmentation5:
     type: "object"
@@ -36747,18 +37834,18 @@ definitions:
   tapi.equipment.EventNotificationAugmentation7:
     type: "object"
     properties:
-      access-port:
+      abstract-strand:
         description: "none"
-        $ref: "#/definitions/tapi.equipment.AccessPort"
+        $ref: "#/definitions/tapi.equipment.AbstractStrand"
     x-augmentation:
       prefix: "tapi-equipment"
       namespace: "urn:onf:otcc:yang:tapi-equipment"
   tapi.equipment.EventNotificationAugmentation8:
     type: "object"
     properties:
-      abstract-strand:
+      access-port:
         description: "none"
-        $ref: "#/definitions/tapi.equipment.AbstractStrand"
+        $ref: "#/definitions/tapi.equipment.AccessPort"
     x-augmentation:
       prefix: "tapi-equipment"
       namespace: "urn:onf:otcc:yang:tapi-equipment"
@@ -36900,17 +37987,36 @@ definitions:
       tapi-equipment:physical-context:
         $ref: "#/definitions/tapi.equipment.PhysicalContext"
   tapi.equipment.PhysicalRoute:
+    allOf:
+    - $ref: "#/definitions/tapi.common.LocalClass"
+    - type: "object"
+      properties:
+        physical-route-element:
+          type: "array"
+          description: "none"
+          items:
+            $ref: "#/definitions/tapi.equipment.PhysicalRouteElement"
+        physical-route-state:
+          type: "string"
+          description: "none"
+      description: "The PhysicalRoute of a Connection is modeled as an ordered sequence\
+        \ of AccessPorts and (a subset of) their connectorPins.\r\n            The\
+        \ order informs on the forwarding direction."
+  tapi.equipment.PhysicalRouteElement:
     type: "object"
     properties:
-      access-port:
+      connector-pin-in-route:
         type: "array"
-        description: "Reference to the AccessPorts composing one PhysicalRoute of\
-          \ a Connection."
+        description: "none"
         items:
-          $ref: "#/definitions/tapi.equipment.AccessPortRef"
-      resilience-physical-route:
-        description: "Provides optional resilience and state attributes to the PhysicalRoute."
-        $ref: "#/definitions/tapi.equipment.ResiliencePhysicalRoute"
+          $ref: "#/definitions/tapi.equipment.ConnectorPinAddress"
+      access-port-in-route:
+        description: "The AccessPort included in the physical route."
+        $ref: "#/definitions/tapi.equipment.AccessPortRef"
+  tapi.equipment.PhysicalRouteElementWrapper:
+    properties:
+      physical-route-element:
+        $ref: "#/definitions/tapi.equipment.PhysicalRouteElement"
   tapi.equipment.PhysicalRouteList:
     type: "object"
     properties:
@@ -36992,23 +38098,6 @@ definitions:
     properties:
       pin-and-role:
         $ref: "#/definitions/tapi.equipment.PinAndRole"
-  tapi.equipment.ResiliencePhysicalRoute:
-    type: "object"
-    properties:
-      physical-route-state:
-        type: "string"
-        description: "Current information on the route selection."
-      physical-route-priority:
-        type: "integer"
-        format: "int32"
-        description: "Value of 0 (zero) means 'unspecified priority'.\r\n        \
-          \        Highest priority is 1, sometimes referred as 'preferred' or 'main'\
-          \ or 'intended' route.\r\n                2 has lower priority than 1, 3\
-          \ has lower priority than 2, etc."
-  tapi.equipment.ResiliencePhysicalRouteWrapper:
-    properties:
-      resilience-physical-route:
-        $ref: "#/definitions/tapi.equipment.ResiliencePhysicalRoute"
   tapi.equipment.SupportingAccessPort:
     type: "object"
     properties:
@@ -38502,18 +39591,18 @@ definitions:
   tapi.topology.EventNotificationAugmentation4:
     type: "object"
     properties:
-      link:
+      inter-rule-group:
         description: "none"
-        $ref: "#/definitions/tapi.topology.Link"
+        $ref: "#/definitions/tapi.topology.InterRuleGroup"
     x-augmentation:
       prefix: "tapi-topology"
       namespace: "urn:onf:otcc:yang:tapi-topology"
   tapi.topology.EventNotificationAugmentation5:
     type: "object"
     properties:
-      inter-rule-group:
+      link:
         description: "none"
-        $ref: "#/definitions/tapi.topology.InterRuleGroup"
+        $ref: "#/definitions/tapi.topology.Link"
     x-augmentation:
       prefix: "tapi-topology"
       namespace: "urn:onf:otcc:yang:tapi-topology"
@@ -38722,9 +39811,11 @@ definitions:
         \ ODU1; ODU2; ODU4 : 80\r\n            - ODU0; ODU1; ODU2; ODU3; ODU4 : 64\r\
         \n            - ODUflex; ODU2; ODU3; ODU4 : 64 [64/ts] : 10G\r\n         \
         \   - ODUflex; ODU2; ODU4: 80 [80/ts] : 10G\r\n            - ODU1; ODU2; ODU3;\
-        \ ODUCn : 40 [mult. for n]\r\n            - OTSiMC; MC; OMS; OTS : 80 : 50G\r\
-        \n            - ODUCn; OTSi : 2 : 200G\r\n            - ODUCn; OTSi : 1 :\
-        \ 400G\r\n            "
+        \ ODUCn : 40 [mult. for n]\r\n            - ODU2; ODU4; ODUCn: 10 [mult. for\
+        \ n]\r\n            - ODU2; ODU3: ODU4; ODUCn: 8 [mult. for n]\r\n       \
+        \     - ODU3; ODU4; ODUCn: 2 [mult. for n]\r\n            - OTSiMC; MC; OMS;\
+        \ OTS : 80 : 50G\r\n            - ODUCn; OTSi : 2 : 200G\r\n            -\
+        \ ODUCn; OTSi : 1 : 400G\r\n            "
   tapi.topology.MultiplexingSequenceWrapper:
     properties:
       available-mux-sequence:
@@ -38819,9 +39910,6 @@ definitions:
     - $ref: "#/definitions/tapi.common.TerminationPac"
     - type: "object"
       properties:
-        link-port-role:
-          description: "The role of the (conceptual) port of the associated Link."
-          $ref: "#/definitions/tapi.common.PortRole"
         mapped-service-interface-point:
           type: "array"
           description: "A NodeEdgePoint (NEP) may be associated to a ServiceInterfacePoint\
@@ -38831,6 +39919,37 @@ definitions:
             \ be considered experimental."
           items:
             $ref: "#/definitions/tapi.common.ServiceInterfacePointRef"
+        supported-mux-sequence:
+          type: "array"
+          description: "More detailed description of (potential) capability than 'supportedCepLayerProtocol'."
+          items:
+            $ref: "#/definitions/tapi.topology.MultiplexingSequence"
+        profile:
+          type: "array"
+          description: "none"
+          items:
+            $ref: "#/definitions/tapi.common.ProfileRef"
+        sink-profile:
+          type: "array"
+          description: "none"
+          items:
+            $ref: "#/definitions/tapi.common.ProfileRef"
+        available-mux-sequence:
+          type: "array"
+          description: "More detailed description of available capability than 'supportedCepLayerProtocol'."
+          items:
+            $ref: "#/definitions/tapi.topology.MultiplexingSequence"
+        inter-domain-plug-in-pac:
+          description: "ENNI Identifier."
+          $ref: "#/definitions/tapi.topology.InterDomainPlugInPac"
+        link-port-role:
+          description: "The role of the (conceptual) port of the associated Link."
+          $ref: "#/definitions/tapi.common.PortRole"
+        source-profile:
+          type: "array"
+          description: "none"
+          items:
+            $ref: "#/definitions/tapi.common.ProfileRef"
         aggregated-node-edge-point:
           type: "array"
           description: "A NodeEdgePoint (NEP) instance may aggregate one or more other\
@@ -38838,19 +39957,9 @@ definitions:
             \ are equivalent for usage."
           items:
             $ref: "#/definitions/tapi.topology.NodeEdgePointRef"
-        supported-mux-sequence:
-          type: "array"
-          description: "More detailed description of (potential) capability than 'supportedCepLayerProtocol'."
-          items:
-            $ref: "#/definitions/tapi.topology.MultiplexingSequence"
         layer-protocol-name:
           description: "The layer protocol of the NodeEdgePoint (NEP)."
           $ref: "#/definitions/tapi.common.LayerProtocolName"
-        available-mux-sequence:
-          type: "array"
-          description: "More detailed description of available capability than 'supportedCepLayerProtocol'."
-          items:
-            $ref: "#/definitions/tapi.topology.MultiplexingSequence"
         supported-cep-layer-protocol:
           type: "array"
           description: "The potentially supported protocols and flows.\r\n       \
@@ -38861,9 +39970,6 @@ definitions:
         base-layer-protocol-qualifier:
           type: "string"
           description: "The layer protocol qualifier at the bottom of supported stack."
-        inter-domain-plug-in-pac:
-          description: "ENNI Identifier."
-          $ref: "#/definitions/tapi.topology.InterDomainPlugInPac"
         link-port-direction:
           description: "The orientation of flow at the (conceptual) port of the associated\
             \ Link."
