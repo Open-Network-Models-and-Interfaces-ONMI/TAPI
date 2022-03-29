@@ -231,10 +231,10 @@ module tapi-common {
             description "The supported sub-layer(s) or rate(s) of Layer Protocol.";
         }
         leaf direction {
-            type port-direction;
+            type direction;
             config false;
-            description "The orientation of flow at the (conceptual) port of the potentially supported ConnectivityService(s).
-                If direction attribute is missing the ServiceInterfacePoint (SIP) instance is to be intended as 'BIDIRECTIONAL'";
+            description "The SIP direction.
+                If direction attribute is missing the ServiceInterfacePoint (SIP) instance is to be intended as 'BIDIRECTIONAL'.";
         }
         uses global-class;
         uses admin-state-pac;
@@ -253,19 +253,6 @@ module tapi-common {
             description "Capacity available to be assigned.";
         }
         description "Provides capacity related attributes.";
-    }
-    grouping termination-pac {
-        leaf termination-direction {
-            type termination-direction;
-            config false;
-            description "The overall directionality of the termination entity.";
-        }
-        leaf termination-state {
-            type termination-state;
-            config false;
-            description "Indicates whether the layer is terminated and if so how.";
-        }
-        description "Specifies the direction and layer termination state of a termination entity, e.g. CEP, NEP.";
     }
     grouping profile {
         uses global-class;
@@ -439,23 +426,6 @@ module tapi-common {
         }
         description "The possible values of the operationalState.";
     }
-    typedef port-direction {
-        type enumeration {
-            enum BIDIRECTIONAL {
-                description "The Port has both an INPUT flow and an OUTPUT flow defined.";
-            }
-            enum INPUT {
-                description "The port only has definition for a flow into the forwarding entity, (i.e. an ingress flow of e.g Link or Connection, hence an egress flow of NEP or CEP, CSEP etc.).";
-            }
-            enum OUTPUT {
-                description "The port only has definition for a flow out of the forwarding entity (i.e. an egress flow of e.g. Link or Connection, hence an ingress flow of NEP or CEP, CSEP etc.).";
-            }
-            enum UNIDENTIFIED_OR_UNKNOWN {
-                description "Not a normal state. The system is unable to determine the correct value.";
-            }
-        }
-        description "The orientation of flow at the (conceptual) port of a forwarding entity, e.g. Link, ConnectivityService, Connection, PathComputationService, Path, VirtualNetworkService.";
-    }
     typedef port-role {
         type enumeration {
             enum SYMMETRIC {
@@ -479,34 +449,22 @@ module tapi-common {
         }
         description "The role of a (conceptual) port of a forwarding entity, e.g. Link, ConnectivityService, Connection, PathComputationService, Path, VirtualNetworkService.";
     }
-    typedef termination-direction {
+    typedef direction {
         type enumeration {
             enum BIDIRECTIONAL {
                 description "A termination entity with both SINK and SOURCE flows.";
             }
             enum SINK {
-                description "The flow is up the layer stack from the server side to the client side. 
-                    Considering an example of a termination function within the termination entity, a SINK flow:
-                    1) will arrive at the base of the termination function (the server side) where it is essentially at an INPUT to the termination function,
-                    2) then will be decoded and deconstructed, 
-                    3) then the relevant parts of the flow will be sent out of the termination function (the client side) where it is essentially at an OUTPUT from the termination function.
-                    A SINK termination function is one that only supports a SINK flow.
-                    A SINK termination function can be bound to an OUTPUT (conceptual) port of a forwarding entity, e.g. Link, ConnectivityService, Connection, PathComputationService, Path.";
+                description "The flow is up the layer stack from the server side to the client side.";
             }
             enum SOURCE {
-                description "The flow is down the layer stack from the client side to the server side. 
-                    Considering an example of a termination function within the termination entity, a SOURCE flow:
-                    1) will arrive at the top of the termination function (the client side) where it is essentially at an INPUT to the termination function,
-                    2) then will be assembled with various overheads etc and will be coded,
-                    3) then the coded form of the assembly of flow will be sent out of the termination function (the server side) where it is essentially at an OUTPUT from the termination function.
-                    A SOURCE termination is one that only supports a SOURCE flow.
-                    A SOURCE termination can be bound to an INPUT (conceptual) port of a forwarding entity, e.g. Link, ConnectivityService, Connection, PathComputationService, Path.";
+                description "The flow is down the layer stack from the client side to the server side.";
             }
             enum UNDEFINED_OR_UNKNOWN {
                 description "Not a normal state. The system is unable to determine the correct value.";
             }
         }
-        description "The directionality of a termination entity, e.g. CEP, NEP.";
+        description "The directionality of an entity, e.g. CSEP, CEP, NEP.";
     }
     typedef termination-state {
         type enumeration {
