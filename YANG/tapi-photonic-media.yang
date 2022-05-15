@@ -301,13 +301,6 @@ module tapi-photonic-media {
         }
         description "none";
     }
-    augment "/tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point" {
-        container otsi-mcg-connectivity-service-end-point-spec {
-            uses otsi-mcg-connectivity-service-end-point-spec;
-            description "none";
-        }
-        description "none";
-    }
     augment "/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point" {
         container otsi-mc-connection-end-point-spec {
             uses otsi-mc-connection-end-point-spec;
@@ -332,13 +325,6 @@ module tapi-photonic-media {
     augment "/tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point/tapi-connectivity:layer-protocol-constraint" {
         container mcg-connectivity-service-end-point-spec {
             uses mcg-connectivity-service-end-point-spec;
-            description "none";
-        }
-        description "none";
-    }
-    augment "/tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point" {
-        container otsia-csep-ttp-pac {
-            uses otsia-csep-ttp-pac;
             description "none";
         }
         description "none";
@@ -379,29 +365,29 @@ module tapi-photonic-media {
         description "none";
     }
     augment "/tapi-common:context/tapi-common:profile" {
-        container fixed-gain-amplification {
-            uses fixed-gain-amplification;
+        container fixed-gain-amplification-profile {
+            uses fixed-gain-amplification-profile;
             description "none";
         }
         description "none";
     }
     augment "/tapi-common:context/tapi-common:profile" {
-        container roadm-add-path {
-            uses roadm-add-path;
+        container roadm-add-path-profile {
+            uses roadm-add-path-profile;
             description "none";
         }
         description "none";
     }
     augment "/tapi-common:context/tapi-common:profile" {
-        container roadm-drop-path {
-            uses roadm-drop-path;
+        container roadm-drop-path-profile {
+            uses roadm-drop-path-profile;
             description "none";
         }
         description "none";
     }
     augment "/tapi-common:context/tapi-common:profile" {
-        container roadm-express-path {
-            uses roadm-express-path;
+        container roadm-express-path-profile {
+            uses roadm-express-path-profile;
             description "none";
         }
         description "none";
@@ -414,8 +400,8 @@ module tapi-photonic-media {
         description "none";
     }
     augment "/tapi-common:context/tapi-common:profile" {
-        container variable-gain-amplification {
-            uses variable-gain-amplification;
+        container variable-gain-amplification-profile {
+            uses variable-gain-amplification-profile;
             description "none";
         }
         description "none";
@@ -452,31 +438,23 @@ module tapi-photonic-media {
         description "none";
     }
     grouping otsi-termination-pac {
-        container selected-central-frequency {
+        leaf selected-central-frequency {
+            type decimal64 {
+                fraction-digits 7;
+            }
             config false;
-            uses central-frequency;
-            description "none";
-        }
-        container selected-application-identifier {
-            config false;
-            uses application-identifier;
-            description "This attribute indicates the selected Application Identifier that is used by the OCh trail termination function. The syntax of ApplicationIdentifier is a pair {ApplicationIdentifierType, PrintableString}.
-                The value of ApplicationIdentifierType is either STANDARD or PROPRIETARY.
-                The value of PrintableString represents the standard application code as defined in the ITU-T Recommendations or a vendor-specific proprietary code.
-                If the ApplicationIdentifierType is STANDARD the value of PrintableString represents a standard application code as defined in the ITU-T Recommendations.
-                If the ApplicationIdentifierType is PROPRIETARY, the first six characters of the PrintableString must contain the Hexadecimal representation of an OUI assigned to the vendor whose implementation generated the Application Identifier; the remaining octets of the PrintableString are unspecified.
-                The value of this attribute of an object instance has to be one of the values identified in the attribute SupportableApplicationIdentifierList of the same object instance.
-                The values and value ranges of the optical interface parameters of a standard application code must be consistent with those values specified in the ITU-T Recommendation for that application code.";
-        }
-        container selected-modulation {
-            config false;
-            uses modulation-technique;
-            description "This parameter defines the modulation used at the source.";
+            description "The central frequency of the laser. It is the oscillation frequency of the corresponding electromagnetic wave.
+                Measured in THz.";
         }
         container selected-spectrum {
             config false;
             uses spectrum-band;
             description "none";
+        }
+        container laser-properties {
+            config false;
+            uses laser-properties;
+            description "Laser properties.";
         }
         container transmited-power {
             config false;
@@ -487,11 +465,6 @@ module tapi-photonic-media {
             config false;
             uses power-properties;
             description "none";
-        }
-        container laser-properties {
-            config false;
-            uses laser-properties;
-            description "Laser properties.";
         }
         leaf rx-total-power {
             type decimal64 {
@@ -559,11 +532,6 @@ module tapi-photonic-media {
         description "none";
     }
     grouping otsi-capability-pac {
-        leaf max-number-of-otsi {
-            type uint64;
-            config false;
-            description "none";
-        }
         container total-power-threshold-pac {
             config false;
             uses total-power-threshold-pac;
@@ -826,6 +794,11 @@ module tapi-photonic-media {
             uses otsi-mc-freq-config-pac;
             description "none";
         }
+        leaf number-of-otsi-mc {
+            type uint64;
+            default "1";
+            description "none";
+        }
         description "OTSiMCG CSEP is provisioned also in case OTSiMC layer is not explicitly represented on Resource side, i.e. no OTSiMC Connections and CEPs are instantiated.
             OTSiMCG provisioning scenarios: analogous to McgConnectivityServiceEndPointSpec provisioning scenarios.";
     }
@@ -921,10 +894,13 @@ module tapi-photonic-media {
             uses spectrum-band;
             description "none";
         }
-        container central-frequency {
+        leaf central-frequency {
+            type decimal64 {
+                fraction-digits 7;
+            }
             config false;
-            uses central-frequency;
-            description "The central frequency of the laser. It is the oscillation frequency of the corresponding electromagnetic wave";
+            description "The central frequency of the OTSi. It is the oscillation frequency of the corresponding electromagnetic wave.
+                Measured in THz.";
         }
         leaf spectrum-bandwidth {
             type uint64;
@@ -1239,7 +1215,7 @@ module tapi-photonic-media {
             description "Optional penalty associated with the maximum acceptable accumulated polarization dependent loss. 
                 This list of pair pdl and penalty can be used to sample the function pdl = f(penalty).";
         }
-        leaf available-modulation-type {
+        leaf standard-modulation-type {
             type standard-modulation-technique;
             config false;
             description "Modulation type this transceiver profile can support.";
@@ -1260,7 +1236,7 @@ module tapi-photonic-media {
             description "Min Qfactor at FEC threshold.
                 Measured in dB.";
         }
-        leaf available-baud-rate {
+        leaf baud-rate {
             type uint64;
             config false;
             description "Baud-rate the specific transceiver in the list can support. 
@@ -1286,7 +1262,7 @@ module tapi-photonic-media {
                 In case of heterogeneous OTSi it is up to path computation engine to determine the minimum distance between the carrier frequency of the two adjacent OTSi.
                 Measured in GHz.";
         }
-        leaf available-fec-type {
+        leaf fec-type {
             type fec-type;
             config false;
             description "Available FEC.";
@@ -1396,7 +1372,7 @@ module tapi-photonic-media {
         }
         description "none";
     }
-    grouping roadm-express-path {
+    grouping roadm-express-path-profile {
         container frequency-range {
             config false;
             uses frequency-range;
@@ -1441,7 +1417,7 @@ module tapi-photonic-media {
         }
         description "none";
     }
-    grouping roadm-add-path {
+    grouping roadm-add-path-profile {
         container frequency-range {
             config false;
             uses frequency-range;
@@ -1518,7 +1494,7 @@ module tapi-photonic-media {
         }
         description "none";
     }
-    grouping roadm-drop-path {
+    grouping roadm-drop-path-profile {
         container frequency-range {
             config false;
             uses frequency-range;
@@ -1668,7 +1644,7 @@ module tapi-photonic-media {
         }
         description "GPS location.";
     }
-    grouping fixed-gain-amplification {
+    grouping fixed-gain-amplification-profile {
         container frequency-range {
             config false;
             uses frequency-range;
@@ -1803,6 +1779,13 @@ module tapi-photonic-media {
             config false;
             description "Fiber type.";
         }
+        leaf pmd {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Polarization Mode Dispersion in picoseconds per square root kilometer.";
+        }
         leaf length {
             type uint64;
             config false;
@@ -1821,13 +1804,6 @@ module tapi-photonic-media {
             }
             config false;
             description "Includes all losses: Fiber loss and connector in and connector out losses, in dB.";
-        }
-        leaf pmd {
-            type decimal64 {
-                fraction-digits 7;
-            }
-            config false;
-            description "Polarization Mode Dispersion in picoseconds per square root kilometer.";
         }
         leaf connector-in {
             type decimal64 {
@@ -1909,13 +1885,16 @@ module tapi-photonic-media {
             type boolean;
             default "true";
             config false;
-            description "This attribute applies only in case of bidirectional NEP, where parameters related to ingressing and egressing direction can be separately specified. 
-                ingressDirection is true when the object instance describes the parameters of the ingressing direction, false for the parameters of the egressing direction.";
+            description "For bidirectional NEPs, 
+                If one  instance of ots-impairments parameters is present, it is related to the NEP sink/ingress direction. In such case, ingress-direction MUST be true.
+                If  two instances of ots-impairments parameters are present, the instance with ingress-direction true applies to the NEP sink/ingress direction. The other instance MUST have ingress-direction false, since applies to the NEP source/egress direction. 
+                For unidirectional NEPs,
+                At most one instance MUST be present (it is expected that the linked NEP contains the instance if this NEP does not). This attribute MUST match the direction of the NEP (true for NEPS with SINK  direction and false with SOURCE direction).";
         }
         description "none";
     }
     grouping ots-node-edge-point-spec {
-        list otsimpairments {
+        list ots-impairments {
             config false;
             max-elements 2;
             uses ots-impairments;
@@ -1936,7 +1915,7 @@ module tapi-photonic-media {
         }
         description "none";
     }
-    grouping variable-gain-amplification {
+    grouping variable-gain-amplification-profile {
         container frequency-range {
             config false;
             uses frequency-range;
@@ -2026,6 +2005,10 @@ module tapi-photonic-media {
         description "none";
     }
     identity PHOTONIC_LAYER_QUALIFIER_OTS_OMS {
+        base PHOTONIC_LAYER_QUALIFIER;
+        description "none";
+    }
+    identity PHOTONIC_LAYER_QUALIFIER_OTS_MEDIA {
         base PHOTONIC_LAYER_QUALIFIER;
         description "none";
     }

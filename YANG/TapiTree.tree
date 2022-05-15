@@ -2,8 +2,31 @@ module: tapi-common
   +--rw context
      +--rw service-interface-point* [uuid]
      |  +--ro layer-protocol-name?                                              layer-protocol-name
-     |  +--ro supported-layer-protocol-qualifier*                               layer-protocol-qualifier
+     |  +--ro supported-cep-layer-protocol-qualifier-instances* []
+     |  |  +--ro layer-protocol-qualifier?   layer-protocol-qualifier
+     |  |  +--ro number-of-cep-instances?    uint64
+     |  +--ro available-cep-layer-protocol-qualifier-instances* []
+     |  |  +--ro layer-protocol-qualifier?   layer-protocol-qualifier
+     |  |  +--ro number-of-cep-instances?    uint64
+     |  +--ro supported-payload-structure* []
+     |  |  +--ro multiplexing-sequence*     layer-protocol-qualifier
+     |  |  +--ro number-of-cep-instances?   uint64
+     |  |  +--ro capacity
+     |  |     +--ro value?   decimal64
+     |  |     +--ro unit?    capacity-unit
+     |  +--ro available-payload-structure* []
+     |  |  +--ro multiplexing-sequence*     layer-protocol-qualifier
+     |  |  +--ro number-of-cep-instances?   uint64
+     |  |  +--ro capacity
+     |  |     +--ro value?   decimal64
+     |  |     +--ro unit?    capacity-unit
      |  +--ro direction?                                                        direction
+     |  +--ro profile* [profile-uuid]
+     |  |  +--ro profile-uuid    -> /context/profile/uuid
+     |  +--ro sink-profile* [profile-uuid]
+     |  |  +--ro profile-uuid    -> /context/profile/uuid
+     |  +--ro source-profile* [profile-uuid]
+     |  |  +--ro profile-uuid    -> /context/profile/uuid
      |  +--rw uuid                                                              uuid
      |  +--rw name* [value-name]
      |  |  +--rw value-name    string
@@ -13,15 +36,14 @@ module: tapi-common
      |  +--ro lifecycle-state?                                                  lifecycle-state
      |  +--ro total-potential-capacity
      |  |  +--ro total-size
-     |  |     +--ro value?   uint64
+     |  |     +--ro value?   decimal64
      |  |     +--ro unit?    capacity-unit
      |  +--ro available-capacity
      |  |  +--ro total-size
-     |  |     +--ro value?   uint64
+     |  |     +--ro value?   decimal64
      |  |     +--ro unit?    capacity-unit
      |  +--rw tapi-photonic-media:otsi-service-interface-point-spec
      |  |  +--ro tapi-photonic-media:otsi-capability-pac
-     |  |     +--ro tapi-photonic-media:max-number-of-otsi?          uint64
      |  |     +--ro tapi-photonic-media:total-power-threshold-pac
      |  |        +--ro tapi-photonic-media:total-power-upper-warn-threshold-default?   decimal64
      |  |        +--ro tapi-photonic-media:total-power-upper-warn-threshold-min?       decimal64
@@ -62,14 +84,25 @@ module: tapi-common
      |  |     +--ro tapi-photonic-media:tolerable-minimum-input-power
      |  |        +--ro tapi-photonic-media:total-power?              decimal64
      |  |        +--ro tapi-photonic-media:power-spectral-density?   decimal64
+     |  +--rw tapi-equipment:supporting-access-port
+     |  |  +--ro tapi-equipment:access-port
+     |  |     +--ro tapi-equipment:device-uuid?        -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+     |  |     +--ro tapi-equipment:access-port-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/access-port/uuid
      |  +--rw tapi-eth:eth-service-inteface-point-spec
      |     +--ro tapi-eth:phy-type?        ety-phy-type
      |     +--ro tapi-eth:phy-type-list*   ety-phy-type
      +--rw profile* [uuid]
-     |  +--rw uuid                                                      uuid
+     |  +--rw uuid                                                       uuid
      |  +--rw name* [value-name]
      |  |  +--rw value-name    string
      |  |  +--rw value?        string
+     |  +--rw transmission-capability-profile
+     |  |  +--ro potential-payload-structure* []
+     |  |     +--ro multiplexing-sequence*     layer-protocol-qualifier
+     |  |     +--ro number-of-cep-instances?   uint64
+     |  |     +--ro capacity
+     |  |        +--ro value?   decimal64
+     |  |        +--ro unit?    capacity-unit
      |  +--rw tapi-photonic-media:fiber-profile
      |  |  +--ro tapi-photonic-media:type-variety?     string
      |  |  +--ro tapi-photonic-media:loss-coef?        decimal64
@@ -98,13 +131,13 @@ module: tapi-common
      |  |  |  +--ro tapi-photonic-media:max-polarization-dependent-loss-penalty* []
      |  |  |  |  +--ro tapi-photonic-media:max-polarization-dependent-loss?   decimal64
      |  |  |  |  +--ro tapi-photonic-media:penalty?                           decimal64
-     |  |  |  +--ro tapi-photonic-media:available-modulation-type?                       standard-modulation-technique
+     |  |  |  +--ro tapi-photonic-media:standard-modulation-type?                        standard-modulation-technique
      |  |  |  +--ro tapi-photonic-media:min-osnr?                                        decimal64
      |  |  |  +--ro tapi-photonic-media:min-qfactor?                                     decimal64
-     |  |  |  +--ro tapi-photonic-media:available-baud-rate?                             uint64
+     |  |  |  +--ro tapi-photonic-media:baud-rate?                                       uint64
      |  |  |  +--ro tapi-photonic-media:roll-off?                                        decimal64
      |  |  |  +--ro tapi-photonic-media:min-carrier-spacing?                             decimal64
-     |  |  |  +--ro tapi-photonic-media:available-fec-type?                              fec-type
+     |  |  |  +--ro tapi-photonic-media:fec-type?                                        fec-type
      |  |  |  +--ro tapi-photonic-media:fec-code-rate?                                   decimal64
      |  |  |  +--ro tapi-photonic-media:fec-threshold?                                   decimal64
      |  |  +--ro tapi-photonic-media:supported-standard-application-codes
@@ -126,7 +159,7 @@ module: tapi-common
      |  |     +--ro tapi-photonic-media:rx-total-power-max?       decimal64
      |  +--rw tapi-photonic-media:transceiver-standard-profile
      |  |  +--ro tapi-photonic-media:application-code?   standard-application-mode
-     |  +--rw tapi-photonic-media:fixed-gain-amplification
+     |  +--rw tapi-photonic-media:fixed-gain-amplification-profile
      |  |  +--ro tapi-photonic-media:frequency-range
      |  |  |  +--ro tapi-photonic-media:upper-frequency?   decimal64
      |  |  |  +--ro tapi-photonic-media:lower-frequency?   decimal64
@@ -135,7 +168,7 @@ module: tapi-common
      |  |  |  +--ro tapi-photonic-media:max-gain?   decimal64
      |  |  +--ro tapi-photonic-media:noise-figure?      decimal64
      |  |  +--ro tapi-photonic-media:p-max?             decimal64
-     |  +--rw tapi-photonic-media:roadm-add-path
+     |  +--rw tapi-photonic-media:roadm-add-path-profile
      |  |  +--ro tapi-photonic-media:frequency-range
      |  |  |  +--ro tapi-photonic-media:upper-frequency?   decimal64
      |  |  |  +--ro tapi-photonic-media:lower-frequency?   decimal64
@@ -147,7 +180,7 @@ module: tapi-common
      |  |  +--ro tapi-photonic-media:roadm-pmax?               decimal64
      |  |  +--ro tapi-photonic-media:roadm-osnr?               decimal64
      |  |  +--ro tapi-photonic-media:roadm-noise-figure?       decimal64
-     |  +--rw tapi-photonic-media:roadm-drop-path
+     |  +--rw tapi-photonic-media:roadm-drop-path-profile
      |  |  +--ro tapi-photonic-media:frequency-range
      |  |  |  +--ro tapi-photonic-media:upper-frequency?   decimal64
      |  |  |  +--ro tapi-photonic-media:lower-frequency?   decimal64
@@ -163,7 +196,7 @@ module: tapi-common
      |  |  +--ro tapi-photonic-media:roadm-ptyp?               decimal64
      |  |  +--ro tapi-photonic-media:roadm-osnr?               decimal64
      |  |  +--ro tapi-photonic-media:roadm-noise-figure?       decimal64
-     |  +--rw tapi-photonic-media:roadm-express-path
+     |  +--rw tapi-photonic-media:roadm-express-path-profile
      |  |  +--ro tapi-photonic-media:frequency-range
      |  |  |  +--ro tapi-photonic-media:upper-frequency?   decimal64
      |  |  |  +--ro tapi-photonic-media:lower-frequency?   decimal64
@@ -172,7 +205,7 @@ module: tapi-common
      |  |  +--ro tapi-photonic-media:roadm-pdl?                decimal64
      |  |  +--ro tapi-photonic-media:roadm-inband-crosstalk?   decimal64
      |  |  +--ro tapi-photonic-media:roadm-maxloss?            decimal64
-     |  +--rw tapi-photonic-media:variable-gain-amplification
+     |  +--rw tapi-photonic-media:variable-gain-amplification-profile
      |  |  +--ro tapi-photonic-media:frequency-range
      |  |  |  +--ro tapi-photonic-media:upper-frequency?   decimal64
      |  |  |  +--ro tapi-photonic-media:lower-frequency?   decimal64
@@ -346,82 +379,99 @@ module: tapi-common
      |     +--ro tapi-notification:attribute-value-change
      |     |  +--ro tapi-notification:changed-attributes?   string
      |     +--ro tapi-notification:service-interface-point
-     |     |  +--ro tapi-notification:layer-protocol-name?                  layer-protocol-name
-     |     |  +--ro tapi-notification:supported-layer-protocol-qualifier*   layer-protocol-qualifier
-     |     |  +--ro tapi-notification:direction?                            direction
-     |     |  +--ro tapi-notification:uuid?                                 uuid
+     |     |  +--ro tapi-notification:layer-protocol-name?                                layer-protocol-name
+     |     |  +--ro tapi-notification:supported-cep-layer-protocol-qualifier-instances* []
+     |     |  |  +--ro tapi-notification:layer-protocol-qualifier?   layer-protocol-qualifier
+     |     |  |  +--ro tapi-notification:number-of-cep-instances?    uint64
+     |     |  +--ro tapi-notification:available-cep-layer-protocol-qualifier-instances* []
+     |     |  |  +--ro tapi-notification:layer-protocol-qualifier?   layer-protocol-qualifier
+     |     |  |  +--ro tapi-notification:number-of-cep-instances?    uint64
+     |     |  +--ro tapi-notification:supported-payload-structure* []
+     |     |  |  +--ro tapi-notification:multiplexing-sequence*     layer-protocol-qualifier
+     |     |  |  +--ro tapi-notification:number-of-cep-instances?   uint64
+     |     |  |  +--ro tapi-notification:capacity
+     |     |  |     +--ro tapi-notification:value?   decimal64
+     |     |  |     +--ro tapi-notification:unit?    capacity-unit
+     |     |  +--ro tapi-notification:available-payload-structure* []
+     |     |  |  +--ro tapi-notification:multiplexing-sequence*     layer-protocol-qualifier
+     |     |  |  +--ro tapi-notification:number-of-cep-instances?   uint64
+     |     |  |  +--ro tapi-notification:capacity
+     |     |  |     +--ro tapi-notification:value?   decimal64
+     |     |  |     +--ro tapi-notification:unit?    capacity-unit
+     |     |  +--ro tapi-notification:direction?                                          direction
+     |     |  +--ro tapi-notification:profile* [profile-uuid]
+     |     |  |  +--ro tapi-notification:profile-uuid    -> /tapi-common:context/profile/uuid
+     |     |  +--ro tapi-notification:sink-profile* [profile-uuid]
+     |     |  |  +--ro tapi-notification:profile-uuid    -> /tapi-common:context/profile/uuid
+     |     |  +--ro tapi-notification:source-profile* [profile-uuid]
+     |     |  |  +--ro tapi-notification:profile-uuid    -> /tapi-common:context/profile/uuid
+     |     |  +--ro tapi-notification:uuid?                                               uuid
      |     |  +--ro tapi-notification:name* [value-name]
      |     |  |  +--ro tapi-notification:value-name    string
      |     |  |  +--ro tapi-notification:value?        string
-     |     |  +--ro tapi-notification:administrative-state?                 administrative-state
-     |     |  +--ro tapi-notification:operational-state?                    operational-state
-     |     |  +--ro tapi-notification:lifecycle-state?                      lifecycle-state
+     |     |  +--ro tapi-notification:administrative-state?                               administrative-state
+     |     |  +--ro tapi-notification:operational-state?                                  operational-state
+     |     |  +--ro tapi-notification:lifecycle-state?                                    lifecycle-state
      |     |  +--ro tapi-notification:total-potential-capacity
      |     |  |  +--ro tapi-notification:total-size
-     |     |  |     +--ro tapi-notification:value?   uint64
+     |     |  |     +--ro tapi-notification:value?   decimal64
      |     |  |     +--ro tapi-notification:unit?    capacity-unit
      |     |  +--ro tapi-notification:available-capacity
      |     |     +--ro tapi-notification:total-size
-     |     |        +--ro tapi-notification:value?   uint64
+     |     |        +--ro tapi-notification:value?   decimal64
      |     |        +--ro tapi-notification:unit?    capacity-unit
      |     +--ro tapi-topology:node
      |     |  +--ro tapi-topology:owned-node-edge-point* [uuid]
-     |     |  |  +--ro tapi-topology:layer-protocol-name?              tapi-common:layer-protocol-name
-     |     |  |  +--ro tapi-topology:base-layer-protocol-qualifier?    tapi-common:layer-protocol-qualifier
-     |     |  |  +--ro tapi-topology:supported-cep-layer-protocol* [layer-protocol-qualifier]
-     |     |  |  |  +--ro tapi-topology:layer-protocol-qualifier    tapi-common:layer-protocol-qualifier
+     |     |  |  +--ro tapi-topology:layer-protocol-name?                                tapi-common:layer-protocol-name
+     |     |  |  +--ro tapi-topology:supported-cep-layer-protocol-qualifier-instances* []
+     |     |  |  |  +--ro tapi-topology:layer-protocol-qualifier?   layer-protocol-qualifier
      |     |  |  |  +--ro tapi-topology:number-of-cep-instances?    uint64
-     |     |  |  +--ro tapi-topology:supported-mux-sequence* [local-id]
-     |     |  |  |  +--ro tapi-topology:layer-protocol-qualifier*   tapi-common:layer-protocol-qualifier
+     |     |  |  +--ro tapi-topology:available-cep-layer-protocol-qualifier-instances* []
+     |     |  |  |  +--ro tapi-topology:layer-protocol-qualifier?   layer-protocol-qualifier
      |     |  |  |  +--ro tapi-topology:number-of-cep-instances?    uint64
+     |     |  |  +--ro tapi-topology:supported-layer-protocol-qualifier* []
+     |     |  |  |  +--ro tapi-topology:multiplexing-sequence*     layer-protocol-qualifier
+     |     |  |  |  +--ro tapi-topology:number-of-cep-instances?   uint64
      |     |  |  |  +--ro tapi-topology:capacity
-     |     |  |  |  |  +--ro tapi-topology:value?   uint64
-     |     |  |  |  |  +--ro tapi-topology:unit?    capacity-unit
-     |     |  |  |  +--ro tapi-topology:local-id                    string
-     |     |  |  |  +--ro tapi-topology:name* [value-name]
-     |     |  |  |     +--ro tapi-topology:value-name    string
-     |     |  |  |     +--ro tapi-topology:value?        string
-     |     |  |  +--ro tapi-topology:available-mux-sequence* [local-id]
-     |     |  |  |  +--ro tapi-topology:layer-protocol-qualifier*   tapi-common:layer-protocol-qualifier
-     |     |  |  |  +--ro tapi-topology:number-of-cep-instances?    uint64
+     |     |  |  |     +--ro tapi-topology:value?   decimal64
+     |     |  |  |     +--ro tapi-topology:unit?    capacity-unit
+     |     |  |  +--ro tapi-topology:available-payload-structure* []
+     |     |  |  |  +--ro tapi-topology:multiplexing-sequence*     layer-protocol-qualifier
+     |     |  |  |  +--ro tapi-topology:number-of-cep-instances?   uint64
      |     |  |  |  +--ro tapi-topology:capacity
-     |     |  |  |  |  +--ro tapi-topology:value?   uint64
-     |     |  |  |  |  +--ro tapi-topology:unit?    capacity-unit
-     |     |  |  |  +--ro tapi-topology:local-id                    string
-     |     |  |  |  +--ro tapi-topology:name* [value-name]
-     |     |  |  |     +--ro tapi-topology:value-name    string
-     |     |  |  |     +--ro tapi-topology:value?        string
-     |     |  |  +--ro tapi-topology:direction?                        tapi-common:direction
-     |     |  |  +--ro tapi-topology:link-port-role?                   tapi-common:port-role
+     |     |  |  |     +--ro tapi-topology:value?   decimal64
+     |     |  |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  |  +--ro tapi-topology:aggregated-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
      |     |  |  |  +--ro tapi-topology:topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
      |     |  |  |  +--ro tapi-topology:node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
      |     |  |  |  +--ro tapi-topology:node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
      |     |  |  +--ro tapi-topology:mapped-service-interface-point* [service-interface-point-uuid]
      |     |  |  |  +--ro tapi-topology:service-interface-point-uuid    -> /tapi-common:context/service-interface-point/uuid
-     |     |  |  +--ro tapi-topology:inter-domain-plug-in-pac
+     |     |  |  +--ro tapi-topology:inter-domain-plug-id-pac
      |     |  |  |  +--ro tapi-topology:plug-id-inter-domain-local-id?    string
      |     |  |  |  +--ro tapi-topology:plug-id-inter-domain-remote-id?   string
+     |     |  |  +--ro tapi-topology:profile* [profile-uuid]
+     |     |  |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
      |     |  |  +--ro tapi-topology:sink-profile* [profile-uuid]
      |     |  |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
      |     |  |  +--ro tapi-topology:source-profile* [profile-uuid]
      |     |  |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
-     |     |  |  +--ro tapi-topology:profile* [profile-uuid]
-     |     |  |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
-     |     |  |  +--ro tapi-topology:uuid                              uuid
+     |     |  |  +--ro tapi-topology:direction?                                          tapi-common:direction
+     |     |  |  +--ro tapi-topology:link-port-role?                                     tapi-common:port-role
+     |     |  |  +--ro tapi-topology:uuid                                                uuid
      |     |  |  +--ro tapi-topology:name* [value-name]
      |     |  |  |  +--ro tapi-topology:value-name    string
      |     |  |  |  +--ro tapi-topology:value?        string
-     |     |  |  +--ro tapi-topology:administrative-state?             administrative-state
-     |     |  |  +--ro tapi-topology:operational-state?                operational-state
-     |     |  |  +--ro tapi-topology:lifecycle-state?                  lifecycle-state
+     |     |  |  +--ro tapi-topology:administrative-state?                               administrative-state
+     |     |  |  +--ro tapi-topology:operational-state?                                  operational-state
+     |     |  |  +--ro tapi-topology:lifecycle-state?                                    lifecycle-state
      |     |  |  +--ro tapi-topology:total-potential-capacity
      |     |  |  |  +--ro tapi-topology:total-size
-     |     |  |  |     +--ro tapi-topology:value?   uint64
+     |     |  |  |     +--ro tapi-topology:value?   decimal64
      |     |  |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  |  +--ro tapi-topology:available-capacity
      |     |  |     +--ro tapi-topology:total-size
-     |     |  |        +--ro tapi-topology:value?   uint64
+     |     |  |        +--ro tapi-topology:value?   decimal64
      |     |  |        +--ro tapi-topology:unit?    capacity-unit
      |     |  +--ro tapi-topology:aggregated-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
      |     |  |  +--ro tapi-topology:topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
@@ -491,11 +541,11 @@ module: tapi-common
      |     |  |  |  |  +--ro tapi-topology:value?        string
      |     |  |  |  +--ro tapi-topology:total-potential-capacity
      |     |  |  |  |  +--ro tapi-topology:total-size
-     |     |  |  |  |     +--ro tapi-topology:value?   uint64
+     |     |  |  |  |     +--ro tapi-topology:value?   decimal64
      |     |  |  |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  |  |  +--ro tapi-topology:available-capacity
      |     |  |  |  |  +--ro tapi-topology:total-size
-     |     |  |  |  |     +--ro tapi-topology:value?   uint64
+     |     |  |  |  |     +--ro tapi-topology:value?   decimal64
      |     |  |  |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  |  |  +--ro tapi-topology:cost-characteristic* [cost-name]
      |     |  |  |  |  +--ro tapi-topology:cost-name         string
@@ -516,11 +566,11 @@ module: tapi-common
      |     |  |  |  +--ro tapi-topology:value?        string
      |     |  |  +--ro tapi-topology:total-potential-capacity
      |     |  |  |  +--ro tapi-topology:total-size
-     |     |  |  |     +--ro tapi-topology:value?   uint64
+     |     |  |  |     +--ro tapi-topology:value?   decimal64
      |     |  |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  |  +--ro tapi-topology:available-capacity
      |     |  |  |  +--ro tapi-topology:total-size
-     |     |  |  |     +--ro tapi-topology:value?   uint64
+     |     |  |  |     +--ro tapi-topology:value?   decimal64
      |     |  |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  |  +--ro tapi-topology:cost-characteristic* [cost-name]
      |     |  |  |  +--ro tapi-topology:cost-name         string
@@ -547,11 +597,11 @@ module: tapi-common
      |     |  +--ro tapi-topology:lifecycle-state?                           lifecycle-state
      |     |  +--ro tapi-topology:total-potential-capacity
      |     |  |  +--ro tapi-topology:total-size
-     |     |  |     +--ro tapi-topology:value?   uint64
+     |     |  |     +--ro tapi-topology:value?   decimal64
      |     |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  +--ro tapi-topology:available-capacity
      |     |  |  +--ro tapi-topology:total-size
-     |     |  |     +--ro tapi-topology:value?   uint64
+     |     |  |     +--ro tapi-topology:value?   decimal64
      |     |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  +--ro tapi-topology:cost-characteristic* [cost-name]
      |     |  |  +--ro tapi-topology:cost-name         string
@@ -572,62 +622,56 @@ module: tapi-common
      |     +--ro tapi-topology:topology
      |     |  +--ro tapi-topology:node* [uuid]
      |     |  |  +--ro tapi-topology:owned-node-edge-point* [uuid]
-     |     |  |  |  +--ro tapi-topology:layer-protocol-name?              tapi-common:layer-protocol-name
-     |     |  |  |  +--ro tapi-topology:base-layer-protocol-qualifier?    tapi-common:layer-protocol-qualifier
-     |     |  |  |  +--ro tapi-topology:supported-cep-layer-protocol* [layer-protocol-qualifier]
-     |     |  |  |  |  +--ro tapi-topology:layer-protocol-qualifier    tapi-common:layer-protocol-qualifier
+     |     |  |  |  +--ro tapi-topology:layer-protocol-name?                                tapi-common:layer-protocol-name
+     |     |  |  |  +--ro tapi-topology:supported-cep-layer-protocol-qualifier-instances* []
+     |     |  |  |  |  +--ro tapi-topology:layer-protocol-qualifier?   layer-protocol-qualifier
      |     |  |  |  |  +--ro tapi-topology:number-of-cep-instances?    uint64
-     |     |  |  |  +--ro tapi-topology:supported-mux-sequence* [local-id]
-     |     |  |  |  |  +--ro tapi-topology:layer-protocol-qualifier*   tapi-common:layer-protocol-qualifier
+     |     |  |  |  +--ro tapi-topology:available-cep-layer-protocol-qualifier-instances* []
+     |     |  |  |  |  +--ro tapi-topology:layer-protocol-qualifier?   layer-protocol-qualifier
      |     |  |  |  |  +--ro tapi-topology:number-of-cep-instances?    uint64
+     |     |  |  |  +--ro tapi-topology:supported-layer-protocol-qualifier* []
+     |     |  |  |  |  +--ro tapi-topology:multiplexing-sequence*     layer-protocol-qualifier
+     |     |  |  |  |  +--ro tapi-topology:number-of-cep-instances?   uint64
      |     |  |  |  |  +--ro tapi-topology:capacity
-     |     |  |  |  |  |  +--ro tapi-topology:value?   uint64
-     |     |  |  |  |  |  +--ro tapi-topology:unit?    capacity-unit
-     |     |  |  |  |  +--ro tapi-topology:local-id                    string
-     |     |  |  |  |  +--ro tapi-topology:name* [value-name]
-     |     |  |  |  |     +--ro tapi-topology:value-name    string
-     |     |  |  |  |     +--ro tapi-topology:value?        string
-     |     |  |  |  +--ro tapi-topology:available-mux-sequence* [local-id]
-     |     |  |  |  |  +--ro tapi-topology:layer-protocol-qualifier*   tapi-common:layer-protocol-qualifier
-     |     |  |  |  |  +--ro tapi-topology:number-of-cep-instances?    uint64
+     |     |  |  |  |     +--ro tapi-topology:value?   decimal64
+     |     |  |  |  |     +--ro tapi-topology:unit?    capacity-unit
+     |     |  |  |  +--ro tapi-topology:available-payload-structure* []
+     |     |  |  |  |  +--ro tapi-topology:multiplexing-sequence*     layer-protocol-qualifier
+     |     |  |  |  |  +--ro tapi-topology:number-of-cep-instances?   uint64
      |     |  |  |  |  +--ro tapi-topology:capacity
-     |     |  |  |  |  |  +--ro tapi-topology:value?   uint64
-     |     |  |  |  |  |  +--ro tapi-topology:unit?    capacity-unit
-     |     |  |  |  |  +--ro tapi-topology:local-id                    string
-     |     |  |  |  |  +--ro tapi-topology:name* [value-name]
-     |     |  |  |  |     +--ro tapi-topology:value-name    string
-     |     |  |  |  |     +--ro tapi-topology:value?        string
-     |     |  |  |  +--ro tapi-topology:direction?                        tapi-common:direction
-     |     |  |  |  +--ro tapi-topology:link-port-role?                   tapi-common:port-role
+     |     |  |  |  |     +--ro tapi-topology:value?   decimal64
+     |     |  |  |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  |  |  +--ro tapi-topology:aggregated-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
      |     |  |  |  |  +--ro tapi-topology:topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
      |     |  |  |  |  +--ro tapi-topology:node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
      |     |  |  |  |  +--ro tapi-topology:node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
      |     |  |  |  +--ro tapi-topology:mapped-service-interface-point* [service-interface-point-uuid]
      |     |  |  |  |  +--ro tapi-topology:service-interface-point-uuid    -> /tapi-common:context/service-interface-point/uuid
-     |     |  |  |  +--ro tapi-topology:inter-domain-plug-in-pac
+     |     |  |  |  +--ro tapi-topology:inter-domain-plug-id-pac
      |     |  |  |  |  +--ro tapi-topology:plug-id-inter-domain-local-id?    string
      |     |  |  |  |  +--ro tapi-topology:plug-id-inter-domain-remote-id?   string
+     |     |  |  |  +--ro tapi-topology:profile* [profile-uuid]
+     |     |  |  |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
      |     |  |  |  +--ro tapi-topology:sink-profile* [profile-uuid]
      |     |  |  |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
      |     |  |  |  +--ro tapi-topology:source-profile* [profile-uuid]
      |     |  |  |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
-     |     |  |  |  +--ro tapi-topology:profile* [profile-uuid]
-     |     |  |  |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
-     |     |  |  |  +--ro tapi-topology:uuid                              uuid
+     |     |  |  |  +--ro tapi-topology:direction?                                          tapi-common:direction
+     |     |  |  |  +--ro tapi-topology:link-port-role?                                     tapi-common:port-role
+     |     |  |  |  +--ro tapi-topology:uuid                                                uuid
      |     |  |  |  +--ro tapi-topology:name* [value-name]
      |     |  |  |  |  +--ro tapi-topology:value-name    string
      |     |  |  |  |  +--ro tapi-topology:value?        string
-     |     |  |  |  +--ro tapi-topology:administrative-state?             administrative-state
-     |     |  |  |  +--ro tapi-topology:operational-state?                operational-state
-     |     |  |  |  +--ro tapi-topology:lifecycle-state?                  lifecycle-state
+     |     |  |  |  +--ro tapi-topology:administrative-state?                               administrative-state
+     |     |  |  |  +--ro tapi-topology:operational-state?                                  operational-state
+     |     |  |  |  +--ro tapi-topology:lifecycle-state?                                    lifecycle-state
      |     |  |  |  +--ro tapi-topology:total-potential-capacity
      |     |  |  |  |  +--ro tapi-topology:total-size
-     |     |  |  |  |     +--ro tapi-topology:value?   uint64
+     |     |  |  |  |     +--ro tapi-topology:value?   decimal64
      |     |  |  |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  |  |  +--ro tapi-topology:available-capacity
      |     |  |  |     +--ro tapi-topology:total-size
-     |     |  |  |        +--ro tapi-topology:value?   uint64
+     |     |  |  |        +--ro tapi-topology:value?   decimal64
      |     |  |  |        +--ro tapi-topology:unit?    capacity-unit
      |     |  |  +--ro tapi-topology:aggregated-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
      |     |  |  |  +--ro tapi-topology:topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
@@ -697,11 +741,11 @@ module: tapi-common
      |     |  |  |  |  |  +--ro tapi-topology:value?        string
      |     |  |  |  |  +--ro tapi-topology:total-potential-capacity
      |     |  |  |  |  |  +--ro tapi-topology:total-size
-     |     |  |  |  |  |     +--ro tapi-topology:value?   uint64
+     |     |  |  |  |  |     +--ro tapi-topology:value?   decimal64
      |     |  |  |  |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  |  |  |  +--ro tapi-topology:available-capacity
      |     |  |  |  |  |  +--ro tapi-topology:total-size
-     |     |  |  |  |  |     +--ro tapi-topology:value?   uint64
+     |     |  |  |  |  |     +--ro tapi-topology:value?   decimal64
      |     |  |  |  |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  |  |  |  +--ro tapi-topology:cost-characteristic* [cost-name]
      |     |  |  |  |  |  +--ro tapi-topology:cost-name         string
@@ -722,11 +766,11 @@ module: tapi-common
      |     |  |  |  |  +--ro tapi-topology:value?        string
      |     |  |  |  +--ro tapi-topology:total-potential-capacity
      |     |  |  |  |  +--ro tapi-topology:total-size
-     |     |  |  |  |     +--ro tapi-topology:value?   uint64
+     |     |  |  |  |     +--ro tapi-topology:value?   decimal64
      |     |  |  |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  |  |  +--ro tapi-topology:available-capacity
      |     |  |  |  |  +--ro tapi-topology:total-size
-     |     |  |  |  |     +--ro tapi-topology:value?   uint64
+     |     |  |  |  |     +--ro tapi-topology:value?   decimal64
      |     |  |  |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  |  |  +--ro tapi-topology:cost-characteristic* [cost-name]
      |     |  |  |  |  +--ro tapi-topology:cost-name         string
@@ -753,11 +797,11 @@ module: tapi-common
      |     |  |  +--ro tapi-topology:lifecycle-state?                           lifecycle-state
      |     |  |  +--ro tapi-topology:total-potential-capacity
      |     |  |  |  +--ro tapi-topology:total-size
-     |     |  |  |     +--ro tapi-topology:value?   uint64
+     |     |  |  |     +--ro tapi-topology:value?   decimal64
      |     |  |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  |  +--ro tapi-topology:available-capacity
      |     |  |  |  +--ro tapi-topology:total-size
-     |     |  |  |     +--ro tapi-topology:value?   uint64
+     |     |  |  |     +--ro tapi-topology:value?   decimal64
      |     |  |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  |  +--ro tapi-topology:cost-characteristic* [cost-name]
      |     |  |  |  +--ro tapi-topology:cost-name         string
@@ -794,11 +838,11 @@ module: tapi-common
      |     |  |  +--ro tapi-topology:lifecycle-state?                           lifecycle-state
      |     |  |  +--ro tapi-topology:total-potential-capacity
      |     |  |  |  +--ro tapi-topology:total-size
-     |     |  |  |     +--ro tapi-topology:value?   uint64
+     |     |  |  |     +--ro tapi-topology:value?   decimal64
      |     |  |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  |  +--ro tapi-topology:available-capacity
      |     |  |  |  +--ro tapi-topology:total-size
-     |     |  |  |     +--ro tapi-topology:value?   uint64
+     |     |  |  |     +--ro tapi-topology:value?   decimal64
      |     |  |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  |  +--ro tapi-topology:cost-characteristic* [cost-name]
      |     |  |  |  +--ro tapi-topology:cost-name         string
@@ -834,62 +878,56 @@ module: tapi-common
      |     |     +--ro tapi-topology:value-name    string
      |     |     +--ro tapi-topology:value?        string
      |     +--ro tapi-topology:node-edge-point
-     |     |  +--ro tapi-topology:layer-protocol-name?              tapi-common:layer-protocol-name
-     |     |  +--ro tapi-topology:base-layer-protocol-qualifier?    tapi-common:layer-protocol-qualifier
-     |     |  +--ro tapi-topology:supported-cep-layer-protocol* [layer-protocol-qualifier]
-     |     |  |  +--ro tapi-topology:layer-protocol-qualifier    tapi-common:layer-protocol-qualifier
+     |     |  +--ro tapi-topology:layer-protocol-name?                                tapi-common:layer-protocol-name
+     |     |  +--ro tapi-topology:supported-cep-layer-protocol-qualifier-instances* []
+     |     |  |  +--ro tapi-topology:layer-protocol-qualifier?   layer-protocol-qualifier
      |     |  |  +--ro tapi-topology:number-of-cep-instances?    uint64
-     |     |  +--ro tapi-topology:supported-mux-sequence* [local-id]
-     |     |  |  +--ro tapi-topology:layer-protocol-qualifier*   tapi-common:layer-protocol-qualifier
+     |     |  +--ro tapi-topology:available-cep-layer-protocol-qualifier-instances* []
+     |     |  |  +--ro tapi-topology:layer-protocol-qualifier?   layer-protocol-qualifier
      |     |  |  +--ro tapi-topology:number-of-cep-instances?    uint64
+     |     |  +--ro tapi-topology:supported-layer-protocol-qualifier* []
+     |     |  |  +--ro tapi-topology:multiplexing-sequence*     layer-protocol-qualifier
+     |     |  |  +--ro tapi-topology:number-of-cep-instances?   uint64
      |     |  |  +--ro tapi-topology:capacity
-     |     |  |  |  +--ro tapi-topology:value?   uint64
-     |     |  |  |  +--ro tapi-topology:unit?    capacity-unit
-     |     |  |  +--ro tapi-topology:local-id                    string
-     |     |  |  +--ro tapi-topology:name* [value-name]
-     |     |  |     +--ro tapi-topology:value-name    string
-     |     |  |     +--ro tapi-topology:value?        string
-     |     |  +--ro tapi-topology:available-mux-sequence* [local-id]
-     |     |  |  +--ro tapi-topology:layer-protocol-qualifier*   tapi-common:layer-protocol-qualifier
-     |     |  |  +--ro tapi-topology:number-of-cep-instances?    uint64
+     |     |  |     +--ro tapi-topology:value?   decimal64
+     |     |  |     +--ro tapi-topology:unit?    capacity-unit
+     |     |  +--ro tapi-topology:available-payload-structure* []
+     |     |  |  +--ro tapi-topology:multiplexing-sequence*     layer-protocol-qualifier
+     |     |  |  +--ro tapi-topology:number-of-cep-instances?   uint64
      |     |  |  +--ro tapi-topology:capacity
-     |     |  |  |  +--ro tapi-topology:value?   uint64
-     |     |  |  |  +--ro tapi-topology:unit?    capacity-unit
-     |     |  |  +--ro tapi-topology:local-id                    string
-     |     |  |  +--ro tapi-topology:name* [value-name]
-     |     |  |     +--ro tapi-topology:value-name    string
-     |     |  |     +--ro tapi-topology:value?        string
-     |     |  +--ro tapi-topology:direction?                        tapi-common:direction
-     |     |  +--ro tapi-topology:link-port-role?                   tapi-common:port-role
+     |     |  |     +--ro tapi-topology:value?   decimal64
+     |     |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  +--ro tapi-topology:aggregated-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
      |     |  |  +--ro tapi-topology:topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
      |     |  |  +--ro tapi-topology:node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
      |     |  |  +--ro tapi-topology:node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
      |     |  +--ro tapi-topology:mapped-service-interface-point* [service-interface-point-uuid]
      |     |  |  +--ro tapi-topology:service-interface-point-uuid    -> /tapi-common:context/service-interface-point/uuid
-     |     |  +--ro tapi-topology:inter-domain-plug-in-pac
+     |     |  +--ro tapi-topology:inter-domain-plug-id-pac
      |     |  |  +--ro tapi-topology:plug-id-inter-domain-local-id?    string
      |     |  |  +--ro tapi-topology:plug-id-inter-domain-remote-id?   string
+     |     |  +--ro tapi-topology:profile* [profile-uuid]
+     |     |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
      |     |  +--ro tapi-topology:sink-profile* [profile-uuid]
      |     |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
      |     |  +--ro tapi-topology:source-profile* [profile-uuid]
      |     |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
-     |     |  +--ro tapi-topology:profile* [profile-uuid]
-     |     |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
-     |     |  +--ro tapi-topology:uuid?                             uuid
+     |     |  +--ro tapi-topology:direction?                                          tapi-common:direction
+     |     |  +--ro tapi-topology:link-port-role?                                     tapi-common:port-role
+     |     |  +--ro tapi-topology:uuid?                                               uuid
      |     |  +--ro tapi-topology:name* [value-name]
      |     |  |  +--ro tapi-topology:value-name    string
      |     |  |  +--ro tapi-topology:value?        string
-     |     |  +--ro tapi-topology:administrative-state?             administrative-state
-     |     |  +--ro tapi-topology:operational-state?                operational-state
-     |     |  +--ro tapi-topology:lifecycle-state?                  lifecycle-state
+     |     |  +--ro tapi-topology:administrative-state?                               administrative-state
+     |     |  +--ro tapi-topology:operational-state?                                  operational-state
+     |     |  +--ro tapi-topology:lifecycle-state?                                    lifecycle-state
      |     |  +--ro tapi-topology:total-potential-capacity
      |     |  |  +--ro tapi-topology:total-size
-     |     |  |     +--ro tapi-topology:value?   uint64
+     |     |  |     +--ro tapi-topology:value?   decimal64
      |     |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  +--ro tapi-topology:available-capacity
      |     |     +--ro tapi-topology:total-size
-     |     |        +--ro tapi-topology:value?   uint64
+     |     |        +--ro tapi-topology:value?   decimal64
      |     |        +--ro tapi-topology:unit?    capacity-unit
      |     +--ro tapi-topology:network-topology-service
      |     |  +--ro tapi-topology:topology* [topology-uuid]
@@ -962,11 +1000,11 @@ module: tapi-common
      |     |  |  |  +--ro tapi-topology:value?        string
      |     |  |  +--ro tapi-topology:total-potential-capacity
      |     |  |  |  +--ro tapi-topology:total-size
-     |     |  |  |     +--ro tapi-topology:value?   uint64
+     |     |  |  |     +--ro tapi-topology:value?   decimal64
      |     |  |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  |  +--ro tapi-topology:available-capacity
      |     |  |  |  +--ro tapi-topology:total-size
-     |     |  |  |     +--ro tapi-topology:value?   uint64
+     |     |  |  |     +--ro tapi-topology:value?   decimal64
      |     |  |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  |  +--ro tapi-topology:cost-characteristic* [cost-name]
      |     |  |  |  +--ro tapi-topology:cost-name         string
@@ -987,11 +1025,11 @@ module: tapi-common
      |     |  |  +--ro tapi-topology:value?        string
      |     |  +--ro tapi-topology:total-potential-capacity
      |     |  |  +--ro tapi-topology:total-size
-     |     |  |     +--ro tapi-topology:value?   uint64
+     |     |  |     +--ro tapi-topology:value?   decimal64
      |     |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  +--ro tapi-topology:available-capacity
      |     |  |  +--ro tapi-topology:total-size
-     |     |  |     +--ro tapi-topology:value?   uint64
+     |     |  |     +--ro tapi-topology:value?   decimal64
      |     |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  +--ro tapi-topology:cost-characteristic* [cost-name]
      |     |  |  +--ro tapi-topology:cost-name         string
@@ -1061,11 +1099,11 @@ module: tapi-common
      |     |  |  +--ro tapi-topology:value?        string
      |     |  +--ro tapi-topology:total-potential-capacity
      |     |  |  +--ro tapi-topology:total-size
-     |     |  |     +--ro tapi-topology:value?   uint64
+     |     |  |     +--ro tapi-topology:value?   decimal64
      |     |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  +--ro tapi-topology:available-capacity
      |     |  |  +--ro tapi-topology:total-size
-     |     |  |     +--ro tapi-topology:value?   uint64
+     |     |  |     +--ro tapi-topology:value?   decimal64
      |     |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  +--ro tapi-topology:cost-characteristic* [cost-name]
      |     |  |  +--ro tapi-topology:cost-name         string
@@ -1099,11 +1137,11 @@ module: tapi-common
      |     |  +--ro tapi-topology:lifecycle-state?                           lifecycle-state
      |     |  +--ro tapi-topology:total-potential-capacity
      |     |  |  +--ro tapi-topology:total-size
-     |     |  |     +--ro tapi-topology:value?   uint64
+     |     |  |     +--ro tapi-topology:value?   decimal64
      |     |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  +--ro tapi-topology:available-capacity
      |     |  |  +--ro tapi-topology:total-size
-     |     |  |     +--ro tapi-topology:value?   uint64
+     |     |  |     +--ro tapi-topology:value?   decimal64
      |     |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  +--ro tapi-topology:cost-characteristic* [cost-name]
      |     |  |  +--ro tapi-topology:cost-name         string
@@ -1139,7 +1177,7 @@ module: tapi-common
      |     |  |  +--ro tapi-path-computation:layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
      |     |  |  +--ro tapi-path-computation:capacity
      |     |  |  |  +--ro tapi-path-computation:total-size
-     |     |  |  |     +--ro tapi-path-computation:value?   uint64
+     |     |  |  |     +--ro tapi-path-computation:value?   decimal64
      |     |  |  |     +--ro tapi-path-computation:unit?    capacity-unit
      |     |  |  +--ro tapi-path-computation:role?                       tapi-common:port-role
      |     |  |  +--ro tapi-path-computation:direction?                  tapi-common:direction
@@ -1239,7 +1277,7 @@ module: tapi-common
      |     |  +--ro tapi-path-computation:layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
      |     |  +--ro tapi-path-computation:capacity
      |     |  |  +--ro tapi-path-computation:total-size
-     |     |  |     +--ro tapi-path-computation:value?   uint64
+     |     |  |     +--ro tapi-path-computation:value?   decimal64
      |     |  |     +--ro tapi-path-computation:unit?    capacity-unit
      |     |  +--ro tapi-path-computation:role?                       tapi-common:port-role
      |     |  +--ro tapi-path-computation:direction?                  tapi-common:direction
@@ -1317,7 +1355,7 @@ module: tapi-common
      |     |  |  |     +--ro tapi-connectivity:connectivity-service-spec-id?     tapi-common:uuid
      |     |  |  +--ro tapi-connectivity:capacity
      |     |  |  |  +--ro tapi-connectivity:total-size
-     |     |  |  |     +--ro tapi-connectivity:value?   uint64
+     |     |  |  |     +--ro tapi-connectivity:value?   decimal64
      |     |  |  |     +--ro tapi-connectivity:unit?    capacity-unit
      |     |  |  +--ro tapi-connectivity:service-interface-point
      |     |  |  |  +--ro tapi-connectivity:service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
@@ -1363,7 +1401,7 @@ module: tapi-common
      |     |  |  +--ro tapi-connectivity:service-level?          string
      |     |  |  +--ro tapi-connectivity:requested-capacity
      |     |  |  |  +--ro tapi-connectivity:total-size
-     |     |  |  |     +--ro tapi-connectivity:value?   uint64
+     |     |  |  |     +--ro tapi-connectivity:value?   decimal64
      |     |  |  |     +--ro tapi-connectivity:unit?    capacity-unit
      |     |  |  +--ro tapi-connectivity:schedule
      |     |  |  |  +--ro tapi-connectivity:start-time?   date-and-time
@@ -1564,7 +1602,7 @@ module: tapi-common
      |     |  |     +--ro tapi-connectivity:connectivity-service-spec-id?     tapi-common:uuid
      |     |  +--ro tapi-connectivity:capacity
      |     |  |  +--ro tapi-connectivity:total-size
-     |     |  |     +--ro tapi-connectivity:value?   uint64
+     |     |  |     +--ro tapi-connectivity:value?   decimal64
      |     |  |     +--ro tapi-connectivity:unit?    capacity-unit
      |     |  +--ro tapi-connectivity:service-interface-point
      |     |  |  +--ro tapi-connectivity:service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
@@ -2543,7 +2581,7 @@ module: tapi-common
      |     |  |  |  +--ro tapi-virtual-network:virtual-nw-service-uuid    -> /tapi-common:context/tapi-virtual-network:virtual-network-context/virtual-nw-service/uuid
      |     |  |  +--ro tapi-virtual-network:requested-capacity
      |     |  |  |  +--ro tapi-virtual-network:total-size
-     |     |  |  |     +--ro tapi-virtual-network:value?   uint64
+     |     |  |  |     +--ro tapi-virtual-network:value?   decimal64
      |     |  |  |     +--ro tapi-virtual-network:unit?    capacity-unit
      |     |  |  +--ro tapi-virtual-network:service-level?            string
      |     |  |  +--ro tapi-virtual-network:service-layer*            tapi-common:layer-protocol-name
@@ -2592,7 +2630,7 @@ module: tapi-common
      |        |  +--ro tapi-virtual-network:virtual-nw-service-uuid    -> /tapi-common:context/tapi-virtual-network:virtual-network-context/virtual-nw-service/uuid
      |        +--ro tapi-virtual-network:requested-capacity
      |        |  +--ro tapi-virtual-network:total-size
-     |        |     +--ro tapi-virtual-network:value?   uint64
+     |        |     +--ro tapi-virtual-network:value?   decimal64
      |        |     +--ro tapi-virtual-network:unit?    capacity-unit
      |        +--ro tapi-virtual-network:service-level?            string
      |        +--ro tapi-virtual-network:service-layer*            tapi-common:layer-protocol-name
@@ -2666,62 +2704,56 @@ module: tapi-common
      |  +--ro tapi-topology:topology* [uuid]
      |     +--ro tapi-topology:node* [uuid]
      |     |  +--ro tapi-topology:owned-node-edge-point* [uuid]
-     |     |  |  +--ro tapi-topology:layer-protocol-name?                        tapi-common:layer-protocol-name
-     |     |  |  +--ro tapi-topology:base-layer-protocol-qualifier?              tapi-common:layer-protocol-qualifier
-     |     |  |  +--ro tapi-topology:supported-cep-layer-protocol* [layer-protocol-qualifier]
-     |     |  |  |  +--ro tapi-topology:layer-protocol-qualifier    tapi-common:layer-protocol-qualifier
+     |     |  |  +--ro tapi-topology:layer-protocol-name?                                tapi-common:layer-protocol-name
+     |     |  |  +--ro tapi-topology:supported-cep-layer-protocol-qualifier-instances* []
+     |     |  |  |  +--ro tapi-topology:layer-protocol-qualifier?   layer-protocol-qualifier
      |     |  |  |  +--ro tapi-topology:number-of-cep-instances?    uint64
-     |     |  |  +--ro tapi-topology:supported-mux-sequence* [local-id]
-     |     |  |  |  +--ro tapi-topology:layer-protocol-qualifier*   tapi-common:layer-protocol-qualifier
+     |     |  |  +--ro tapi-topology:available-cep-layer-protocol-qualifier-instances* []
+     |     |  |  |  +--ro tapi-topology:layer-protocol-qualifier?   layer-protocol-qualifier
      |     |  |  |  +--ro tapi-topology:number-of-cep-instances?    uint64
+     |     |  |  +--ro tapi-topology:supported-layer-protocol-qualifier* []
+     |     |  |  |  +--ro tapi-topology:multiplexing-sequence*     layer-protocol-qualifier
+     |     |  |  |  +--ro tapi-topology:number-of-cep-instances?   uint64
      |     |  |  |  +--ro tapi-topology:capacity
-     |     |  |  |  |  +--ro tapi-topology:value?   uint64
-     |     |  |  |  |  +--ro tapi-topology:unit?    capacity-unit
-     |     |  |  |  +--ro tapi-topology:local-id                    string
-     |     |  |  |  +--ro tapi-topology:name* [value-name]
-     |     |  |  |     +--ro tapi-topology:value-name    string
-     |     |  |  |     +--ro tapi-topology:value?        string
-     |     |  |  +--ro tapi-topology:available-mux-sequence* [local-id]
-     |     |  |  |  +--ro tapi-topology:layer-protocol-qualifier*   tapi-common:layer-protocol-qualifier
-     |     |  |  |  +--ro tapi-topology:number-of-cep-instances?    uint64
+     |     |  |  |     +--ro tapi-topology:value?   decimal64
+     |     |  |  |     +--ro tapi-topology:unit?    capacity-unit
+     |     |  |  +--ro tapi-topology:available-payload-structure* []
+     |     |  |  |  +--ro tapi-topology:multiplexing-sequence*     layer-protocol-qualifier
+     |     |  |  |  +--ro tapi-topology:number-of-cep-instances?   uint64
      |     |  |  |  +--ro tapi-topology:capacity
-     |     |  |  |  |  +--ro tapi-topology:value?   uint64
-     |     |  |  |  |  +--ro tapi-topology:unit?    capacity-unit
-     |     |  |  |  +--ro tapi-topology:local-id                    string
-     |     |  |  |  +--ro tapi-topology:name* [value-name]
-     |     |  |  |     +--ro tapi-topology:value-name    string
-     |     |  |  |     +--ro tapi-topology:value?        string
-     |     |  |  +--ro tapi-topology:direction?                                  tapi-common:direction
-     |     |  |  +--ro tapi-topology:link-port-role?                             tapi-common:port-role
+     |     |  |  |     +--ro tapi-topology:value?   decimal64
+     |     |  |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  |  +--ro tapi-topology:aggregated-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
      |     |  |  |  +--ro tapi-topology:topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
      |     |  |  |  +--ro tapi-topology:node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
      |     |  |  |  +--ro tapi-topology:node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
      |     |  |  +--ro tapi-topology:mapped-service-interface-point* [service-interface-point-uuid]
      |     |  |  |  +--ro tapi-topology:service-interface-point-uuid    -> /tapi-common:context/service-interface-point/uuid
-     |     |  |  +--ro tapi-topology:inter-domain-plug-in-pac
+     |     |  |  +--ro tapi-topology:inter-domain-plug-id-pac
      |     |  |  |  +--ro tapi-topology:plug-id-inter-domain-local-id?    string
      |     |  |  |  +--ro tapi-topology:plug-id-inter-domain-remote-id?   string
+     |     |  |  +--ro tapi-topology:profile* [profile-uuid]
+     |     |  |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
      |     |  |  +--ro tapi-topology:sink-profile* [profile-uuid]
      |     |  |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
      |     |  |  +--ro tapi-topology:source-profile* [profile-uuid]
      |     |  |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
-     |     |  |  +--ro tapi-topology:profile* [profile-uuid]
-     |     |  |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
-     |     |  |  +--ro tapi-topology:uuid                                        uuid
+     |     |  |  +--ro tapi-topology:direction?                                          tapi-common:direction
+     |     |  |  +--ro tapi-topology:link-port-role?                                     tapi-common:port-role
+     |     |  |  +--ro tapi-topology:uuid                                                uuid
      |     |  |  +--ro tapi-topology:name* [value-name]
      |     |  |  |  +--ro tapi-topology:value-name    string
      |     |  |  |  +--ro tapi-topology:value?        string
-     |     |  |  +--ro tapi-topology:administrative-state?                       administrative-state
-     |     |  |  +--ro tapi-topology:operational-state?                          operational-state
-     |     |  |  +--ro tapi-topology:lifecycle-state?                            lifecycle-state
+     |     |  |  +--ro tapi-topology:administrative-state?                               administrative-state
+     |     |  |  +--ro tapi-topology:operational-state?                                  operational-state
+     |     |  |  +--ro tapi-topology:lifecycle-state?                                    lifecycle-state
      |     |  |  +--ro tapi-topology:total-potential-capacity
      |     |  |  |  +--ro tapi-topology:total-size
-     |     |  |  |     +--ro tapi-topology:value?   uint64
+     |     |  |  |     +--ro tapi-topology:value?   decimal64
      |     |  |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  |  +--ro tapi-topology:available-capacity
      |     |  |  |  +--ro tapi-topology:total-size
-     |     |  |  |     +--ro tapi-topology:value?   uint64
+     |     |  |  |     +--ro tapi-topology:value?   decimal64
      |     |  |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  |  +--ro tapi-connectivity:cep-list
      |     |  |  |  +--ro tapi-connectivity:connection-end-point* [uuid]
@@ -2763,35 +2795,25 @@ module: tapi-common
      |     |  |  |     +--ro tapi-connectivity:lifecycle-state?                             lifecycle-state
      |     |  |  |     +--ro tapi-photonic-media:otsi-connection-end-point-spec
      |     |  |  |     |  +--ro tapi-photonic-media:otsi-termination-pac
-     |     |  |  |     |     +--ro tapi-photonic-media:selected-central-frequency
-     |     |  |  |     |     |  +--ro tapi-photonic-media:frequency-constraint
-     |     |  |  |     |     |  |  +--ro tapi-photonic-media:adjustment-granularity?   adjustment-granularity
-     |     |  |  |     |     |  |  +--ro tapi-photonic-media:grid-type?                grid-type
-     |     |  |  |     |     |  +--ro tapi-photonic-media:central-frequency?      uint64
-     |     |  |  |     |     +--ro tapi-photonic-media:selected-application-identifier
-     |     |  |  |     |     |  +--ro tapi-photonic-media:application-identifier-type?   standard-application-mode
-     |     |  |  |     |     |  +--ro tapi-photonic-media:application-code?              string
-     |     |  |  |     |     +--ro tapi-photonic-media:selected-modulation
-     |     |  |  |     |     |  +--ro tapi-photonic-media:standard-modulation-technique?      standard-modulation-technique
-     |     |  |  |     |     |  +--ro tapi-photonic-media:proprietary-modulation-technique?   string
+     |     |  |  |     |     +--ro tapi-photonic-media:selected-central-frequency?   decimal64
      |     |  |  |     |     +--ro tapi-photonic-media:selected-spectrum
      |     |  |  |     |     |  +--ro tapi-photonic-media:upper-frequency?        decimal64
      |     |  |  |     |     |  +--ro tapi-photonic-media:lower-frequency?        decimal64
      |     |  |  |     |     |  +--ro tapi-photonic-media:frequency-constraint
      |     |  |  |     |     |     +--ro tapi-photonic-media:adjustment-granularity?   adjustment-granularity
      |     |  |  |     |     |     +--ro tapi-photonic-media:grid-type?                grid-type
+     |     |  |  |     |     +--ro tapi-photonic-media:laser-properties
+     |     |  |  |     |     |  +--ro tapi-photonic-media:laser-status?             laser-control-status-type
+     |     |  |  |     |     |  +--ro tapi-photonic-media:laser-application-type?   laser-type
+     |     |  |  |     |     |  +--ro tapi-photonic-media:laser-bias-current?       decimal64
+     |     |  |  |     |     |  +--ro tapi-photonic-media:laser-temperature?        decimal64
      |     |  |  |     |     +--ro tapi-photonic-media:transmited-power
      |     |  |  |     |     |  +--ro tapi-photonic-media:total-power?              decimal64
      |     |  |  |     |     |  +--ro tapi-photonic-media:power-spectral-density?   decimal64
      |     |  |  |     |     +--ro tapi-photonic-media:received-power
      |     |  |  |     |     |  +--ro tapi-photonic-media:total-power?              decimal64
      |     |  |  |     |     |  +--ro tapi-photonic-media:power-spectral-density?   decimal64
-     |     |  |  |     |     +--ro tapi-photonic-media:laser-properties
-     |     |  |  |     |     |  +--ro tapi-photonic-media:laser-status?             laser-control-status-type
-     |     |  |  |     |     |  +--ro tapi-photonic-media:laser-application-type?   laser-type
-     |     |  |  |     |     |  +--ro tapi-photonic-media:laser-bias-current?       decimal64
-     |     |  |  |     |     |  +--ro tapi-photonic-media:laser-temperature?        decimal64
-     |     |  |  |     |     +--ro tapi-photonic-media:rx-total-power?                    decimal64
+     |     |  |  |     |     +--ro tapi-photonic-media:rx-total-power?               decimal64
      |     |  |  |     +--ro tapi-photonic-media:media-channel-connection-end-point-spec
      |     |  |  |     |  +--ro tapi-photonic-media:otsi-mc-properties-pac* [local-id]
      |     |  |  |     |  |  +--ro tapi-photonic-media:occupied-spectrum
@@ -2800,11 +2822,7 @@ module: tapi-common
      |     |  |  |     |  |  |  +--ro tapi-photonic-media:frequency-constraint
      |     |  |  |     |  |  |     +--ro tapi-photonic-media:adjustment-granularity?   adjustment-granularity
      |     |  |  |     |  |  |     +--ro tapi-photonic-media:grid-type?                grid-type
-     |     |  |  |     |  |  +--ro tapi-photonic-media:central-frequency
-     |     |  |  |     |  |  |  +--ro tapi-photonic-media:frequency-constraint
-     |     |  |  |     |  |  |  |  +--ro tapi-photonic-media:adjustment-granularity?   adjustment-granularity
-     |     |  |  |     |  |  |  |  +--ro tapi-photonic-media:grid-type?                grid-type
-     |     |  |  |     |  |  |  +--ro tapi-photonic-media:central-frequency?      uint64
+     |     |  |  |     |  |  +--ro tapi-photonic-media:central-frequency?        decimal64
      |     |  |  |     |  |  +--ro tapi-photonic-media:spectrum-bandwidth?       uint64
      |     |  |  |     |  |  +--ro tapi-photonic-media:measured-power-ingress
      |     |  |  |     |  |  |  +--ro tapi-photonic-media:total-power?              decimal64
@@ -2916,11 +2934,7 @@ module: tapi-common
      |     |  |  |     |     |  +--ro tapi-photonic-media:frequency-constraint
      |     |  |  |     |     |     +--ro tapi-photonic-media:adjustment-granularity?   adjustment-granularity
      |     |  |  |     |     |     +--ro tapi-photonic-media:grid-type?                grid-type
-     |     |  |  |     |     +--ro tapi-photonic-media:central-frequency
-     |     |  |  |     |     |  +--ro tapi-photonic-media:frequency-constraint
-     |     |  |  |     |     |  |  +--ro tapi-photonic-media:adjustment-granularity?   adjustment-granularity
-     |     |  |  |     |     |  |  +--ro tapi-photonic-media:grid-type?                grid-type
-     |     |  |  |     |     |  +--ro tapi-photonic-media:central-frequency?      uint64
+     |     |  |  |     |     +--ro tapi-photonic-media:central-frequency?        decimal64
      |     |  |  |     |     +--ro tapi-photonic-media:spectrum-bandwidth?       uint64
      |     |  |  |     |     +--ro tapi-photonic-media:measured-power-ingress
      |     |  |  |     |     |  +--ro tapi-photonic-media:total-power?              decimal64
@@ -3150,7 +3164,6 @@ module: tapi-common
      |     |  |  |        +--ro tapi-photonic-media:lower-frequency?   decimal64
      |     |  |  +--ro tapi-photonic-media:otsi-node-edge-point-spec
      |     |  |  |  +--ro tapi-photonic-media:otsi-capability-pac
-     |     |  |  |     +--ro tapi-photonic-media:max-number-of-otsi?          uint64
      |     |  |  |     +--ro tapi-photonic-media:total-power-threshold-pac
      |     |  |  |        +--ro tapi-photonic-media:total-power-upper-warn-threshold-default?   decimal64
      |     |  |  |        +--ro tapi-photonic-media:total-power-upper-warn-threshold-min?       decimal64
@@ -3159,16 +3172,16 @@ module: tapi-common
      |     |  |  |        +--ro tapi-photonic-media:total-power-lower-warn-threshold-max?       decimal64
      |     |  |  |        +--ro tapi-photonic-media:total-power-lower-warn-threshold-min?       decimal64
      |     |  |  +--ro tapi-photonic-media:ots-node-edge-point-spec
-     |     |  |  |  +--ro tapi-photonic-media:otsimpairments* []
+     |     |  |  |  +--ro tapi-photonic-media:ots-impairments* []
      |     |  |  |     +--ro tapi-photonic-media:impairment-route* []
      |     |  |  |     |  +--ro tapi-photonic-media:ots-concentrated-loss
      |     |  |  |     |  |  +--ro tapi-photonic-media:concentrated-loss?   decimal64
      |     |  |  |     |  +--ro tapi-photonic-media:ots-fiber-span-impairments
      |     |  |  |     |     +--ro tapi-photonic-media:fiber-type-variety?   string
+     |     |  |  |     |     +--ro tapi-photonic-media:pmd?                  decimal64
      |     |  |  |     |     +--ro tapi-photonic-media:length?               uint64
      |     |  |  |     |     +--ro tapi-photonic-media:loss-coef?            decimal64
      |     |  |  |     |     +--ro tapi-photonic-media:total-loss?           decimal64
-     |     |  |  |     |     +--ro tapi-photonic-media:pmd?                  decimal64
      |     |  |  |     |     +--ro tapi-photonic-media:connector-in?         decimal64
      |     |  |  |     |     +--ro tapi-photonic-media:connector-out?        decimal64
      |     |  |  |     +--ro tapi-photonic-media:ingress-direction?   boolean
@@ -3180,14 +3193,9 @@ module: tapi-common
      |     |  |  |     +--ro tapi-oam:meg-uuid        -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
      |     |  |  |     +--ro tapi-oam:mip-local-id    -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
      |     |  |  +--ro tapi-equipment:supporting-access-port
-     |     |  |  |  +--ro tapi-equipment:access-port
-     |     |  |  |     +--ro tapi-equipment:device-uuid?        -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
-     |     |  |  |     +--ro tapi-equipment:access-port-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/access-port/uuid
-     |     |  |  +--ro tapi-digital-otn:odu-node-edge-point-spec
-     |     |  |     +--ro tapi-digital-otn:odu-pool
-     |     |  |        +--ro tapi-digital-otn:client-capacity?        uint64
-     |     |  |        +--ro tapi-digital-otn:max-client-instances?   uint64
-     |     |  |        +--ro tapi-digital-otn:max-client-size?        uint64
+     |     |  |     +--ro tapi-equipment:access-port
+     |     |  |        +--ro tapi-equipment:device-uuid?        -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+     |     |  |        +--ro tapi-equipment:access-port-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/access-port/uuid
      |     |  +--ro tapi-topology:aggregated-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
      |     |  |  +--ro tapi-topology:topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
      |     |  |  +--ro tapi-topology:node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
@@ -3256,11 +3264,11 @@ module: tapi-common
      |     |  |  |  |  +--ro tapi-topology:value?        string
      |     |  |  |  +--ro tapi-topology:total-potential-capacity
      |     |  |  |  |  +--ro tapi-topology:total-size
-     |     |  |  |  |     +--ro tapi-topology:value?   uint64
+     |     |  |  |  |     +--ro tapi-topology:value?   decimal64
      |     |  |  |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  |  |  +--ro tapi-topology:available-capacity
      |     |  |  |  |  +--ro tapi-topology:total-size
-     |     |  |  |  |     +--ro tapi-topology:value?   uint64
+     |     |  |  |  |     +--ro tapi-topology:value?   decimal64
      |     |  |  |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  |  |  +--ro tapi-topology:cost-characteristic* [cost-name]
      |     |  |  |  |  +--ro tapi-topology:cost-name         string
@@ -3281,11 +3289,11 @@ module: tapi-common
      |     |  |  |  +--ro tapi-topology:value?        string
      |     |  |  +--ro tapi-topology:total-potential-capacity
      |     |  |  |  +--ro tapi-topology:total-size
-     |     |  |  |     +--ro tapi-topology:value?   uint64
+     |     |  |  |     +--ro tapi-topology:value?   decimal64
      |     |  |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  |  +--ro tapi-topology:available-capacity
      |     |  |  |  +--ro tapi-topology:total-size
-     |     |  |  |     +--ro tapi-topology:value?   uint64
+     |     |  |  |     +--ro tapi-topology:value?   decimal64
      |     |  |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  |  +--ro tapi-topology:cost-characteristic* [cost-name]
      |     |  |  |  +--ro tapi-topology:cost-name         string
@@ -3312,11 +3320,11 @@ module: tapi-common
      |     |  +--ro tapi-topology:lifecycle-state?                           lifecycle-state
      |     |  +--ro tapi-topology:total-potential-capacity
      |     |  |  +--ro tapi-topology:total-size
-     |     |  |     +--ro tapi-topology:value?   uint64
+     |     |  |     +--ro tapi-topology:value?   decimal64
      |     |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  +--ro tapi-topology:available-capacity
      |     |  |  +--ro tapi-topology:total-size
-     |     |  |     +--ro tapi-topology:value?   uint64
+     |     |  |     +--ro tapi-topology:value?   decimal64
      |     |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  +--ro tapi-topology:cost-characteristic* [cost-name]
      |     |  |  +--ro tapi-topology:cost-name         string
@@ -3353,11 +3361,11 @@ module: tapi-common
      |     |  +--ro tapi-topology:lifecycle-state?                           lifecycle-state
      |     |  +--ro tapi-topology:total-potential-capacity
      |     |  |  +--ro tapi-topology:total-size
-     |     |  |     +--ro tapi-topology:value?   uint64
+     |     |  |     +--ro tapi-topology:value?   decimal64
      |     |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  +--ro tapi-topology:available-capacity
      |     |  |  +--ro tapi-topology:total-size
-     |     |  |     +--ro tapi-topology:value?   uint64
+     |     |  |     +--ro tapi-topology:value?   decimal64
      |     |  |     +--ro tapi-topology:unit?    capacity-unit
      |     |  +--ro tapi-topology:cost-characteristic* [cost-name]
      |     |  |  +--ro tapi-topology:cost-name         string
@@ -3406,7 +3414,7 @@ module: tapi-common
      |  |  |  +--rw tapi-path-computation:layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
      |  |  |  +--rw tapi-path-computation:capacity
      |  |  |  |  +--rw tapi-path-computation:total-size
-     |  |  |  |     +--rw tapi-path-computation:value?   uint64
+     |  |  |  |     +--rw tapi-path-computation:value?   decimal64
      |  |  |  |     +--rw tapi-path-computation:unit?    capacity-unit
      |  |  |  +--rw tapi-path-computation:role?                       tapi-common:port-role
      |  |  |  +--rw tapi-path-computation:direction?                  tapi-common:direction
@@ -3554,7 +3562,7 @@ module: tapi-common
      |  |  |  |     +--ro tapi-connectivity:connectivity-service-spec-id?     tapi-common:uuid
      |  |  |  +--rw tapi-connectivity:capacity
      |  |  |  |  +--rw tapi-connectivity:total-size
-     |  |  |  |     +--rw tapi-connectivity:value?   uint64
+     |  |  |  |     +--rw tapi-connectivity:value?   decimal64
      |  |  |  |     +--rw tapi-connectivity:unit?    capacity-unit
      |  |  |  +--rw tapi-connectivity:service-interface-point
      |  |  |  |  +--rw tapi-connectivity:service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
@@ -3613,7 +3621,7 @@ module: tapi-common
      |  |  |  |  |  |     +--rw tapi-photonic-media:value?        string
      |  |  |  |  |  +--rw tapi-photonic-media:media-channel-bw-config-pac* [local-id]
      |  |  |  |  |     +--rw tapi-photonic-media:capacity
-     |  |  |  |  |     |  +--rw tapi-photonic-media:value?   uint64
+     |  |  |  |  |     |  +--rw tapi-photonic-media:value?   decimal64
      |  |  |  |  |     |  +--rw tapi-photonic-media:unit?    capacity-unit
      |  |  |  |  |     +--rw tapi-photonic-media:edge-frequency-constraint
      |  |  |  |  |     |  +--rw tapi-photonic-media:adjustment-granularity?   adjustment-granularity
@@ -3657,7 +3665,7 @@ module: tapi-common
      |  |  |  |  +--rw tapi-photonic-media:otsi-mcg-connectivity-service-end-point-spec
      |  |  |  |  |  +--rw tapi-photonic-media:otsi-mc-bw-config-pac* [local-id]
      |  |  |  |  |  |  +--rw tapi-photonic-media:capacity
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:value?   uint64
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:value?   decimal64
      |  |  |  |  |  |  |  +--rw tapi-photonic-media:unit?    capacity-unit
      |  |  |  |  |  |  +--rw tapi-photonic-media:center-frequency-constraint
      |  |  |  |  |  |  |  +--rw tapi-photonic-media:adjustment-granularity?   adjustment-granularity
@@ -3717,36 +3725,37 @@ module: tapi-common
      |  |  |  |  |  |     +--rw tapi-photonic-media:value-name    string
      |  |  |  |  |  |     +--rw tapi-photonic-media:value?        string
      |  |  |  |  |  +--rw tapi-photonic-media:otsi-mc-freq-config-pac* [local-id]
-     |  |  |  |  |     +--rw tapi-photonic-media:central-frequency
-     |  |  |  |  |     |  +--rw tapi-photonic-media:frequency-constraint
-     |  |  |  |  |     |  |  +--rw tapi-photonic-media:adjustment-granularity?   adjustment-granularity
-     |  |  |  |  |     |  |  +--rw tapi-photonic-media:grid-type?                grid-type
-     |  |  |  |  |     |  +--rw tapi-photonic-media:central-frequency?      uint64
-     |  |  |  |  |     +--rw tapi-photonic-media:spectrum-bandwidth?            uint64
-     |  |  |  |  |     +--rw tapi-photonic-media:center-frequency-constraint
-     |  |  |  |  |     |  +--rw tapi-photonic-media:adjustment-granularity?   adjustment-granularity
-     |  |  |  |  |     |  +--rw tapi-photonic-media:grid-type?                grid-type
-     |  |  |  |  |     +--rw tapi-photonic-media:edge-frequency-constraint
-     |  |  |  |  |     |  +--rw tapi-photonic-media:adjustment-granularity?   adjustment-granularity
-     |  |  |  |  |     |  +--rw tapi-photonic-media:grid-type?                grid-type
-     |  |  |  |  |     +--rw tapi-photonic-media:center-frequency-offset?       uint64
-     |  |  |  |  |     +--rw tapi-photonic-media:power-management-config-pac
-     |  |  |  |  |     |  +--rw tapi-photonic-media:intended-maximum-output-power
-     |  |  |  |  |     |  |  +--rw tapi-photonic-media:total-power?              decimal64
-     |  |  |  |  |     |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  |  |     |  +--rw tapi-photonic-media:intended-minimum-output-power
-     |  |  |  |  |     |  |  +--rw tapi-photonic-media:total-power?              decimal64
-     |  |  |  |  |     |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  |  |     |  +--rw tapi-photonic-media:expected-maximum-input-power
-     |  |  |  |  |     |  |  +--rw tapi-photonic-media:total-power?              decimal64
-     |  |  |  |  |     |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  |  |     |  +--rw tapi-photonic-media:expected-minimum-input-power
-     |  |  |  |  |     |     +--rw tapi-photonic-media:total-power?              decimal64
-     |  |  |  |  |     |     +--rw tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  |  |     +--rw tapi-photonic-media:local-id                       string
-     |  |  |  |  |     +--rw tapi-photonic-media:name* [value-name]
-     |  |  |  |  |        +--rw tapi-photonic-media:value-name    string
-     |  |  |  |  |        +--rw tapi-photonic-media:value?        string
+     |  |  |  |  |  |  +--rw tapi-photonic-media:central-frequency
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:frequency-constraint
+     |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:adjustment-granularity?   adjustment-granularity
+     |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:grid-type?                grid-type
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:central-frequency?      uint64
+     |  |  |  |  |  |  +--rw tapi-photonic-media:spectrum-bandwidth?            uint64
+     |  |  |  |  |  |  +--rw tapi-photonic-media:center-frequency-constraint
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:adjustment-granularity?   adjustment-granularity
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:grid-type?                grid-type
+     |  |  |  |  |  |  +--rw tapi-photonic-media:edge-frequency-constraint
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:adjustment-granularity?   adjustment-granularity
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:grid-type?                grid-type
+     |  |  |  |  |  |  +--rw tapi-photonic-media:center-frequency-offset?       uint64
+     |  |  |  |  |  |  +--rw tapi-photonic-media:power-management-config-pac
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:intended-maximum-output-power
+     |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:total-power?              decimal64
+     |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:intended-minimum-output-power
+     |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:total-power?              decimal64
+     |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:expected-maximum-input-power
+     |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:total-power?              decimal64
+     |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:expected-minimum-input-power
+     |  |  |  |  |  |  |     +--rw tapi-photonic-media:total-power?              decimal64
+     |  |  |  |  |  |  |     +--rw tapi-photonic-media:power-spectral-density?   decimal64
+     |  |  |  |  |  |  +--rw tapi-photonic-media:local-id                       string
+     |  |  |  |  |  |  +--rw tapi-photonic-media:name* [value-name]
+     |  |  |  |  |  |     +--rw tapi-photonic-media:value-name    string
+     |  |  |  |  |  |     +--rw tapi-photonic-media:value?        string
+     |  |  |  |  |  +--rw tapi-photonic-media:number-of-otsi-mc?         uint64
      |  |  |  |  +--rw tapi-digital-otn:odu-connectivity-service-end-point-spec
      |  |  |  |  |  +--rw tapi-digital-otn:odu-csep-common-pac
      |  |  |  |  |  |  +--rw tapi-digital-otn:odu-type?                  odu-type
@@ -3767,12 +3776,12 @@ module: tapi-common
      |  |  |  |  |     +--rw tapi-digital-otn:baud-rate?   uint64
      |  |  |  |  +--rw tapi-digital-otn:odu-cn-csep-ttp-pac
      |  |  |  |     +--rw tapi-digital-otn:number-of-odu-c?   uint64
-     |  |  |  +--ro tapi-connectivity:profile* [profile-uuid]
-     |  |  |  |  +--ro tapi-connectivity:profile-uuid    -> /tapi-common:context/profile/uuid
-     |  |  |  +--ro tapi-connectivity:sink-profile* [profile-uuid]
-     |  |  |  |  +--ro tapi-connectivity:profile-uuid    -> /tapi-common:context/profile/uuid
-     |  |  |  +--ro tapi-connectivity:source-profile* [profile-uuid]
-     |  |  |  |  +--ro tapi-connectivity:profile-uuid    -> /tapi-common:context/profile/uuid
+     |  |  |  +--rw tapi-connectivity:profile* [profile-uuid]
+     |  |  |  |  +--rw tapi-connectivity:profile-uuid    -> /tapi-common:context/profile/uuid
+     |  |  |  +--rw tapi-connectivity:sink-profile* [profile-uuid]
+     |  |  |  |  +--rw tapi-connectivity:profile-uuid    -> /tapi-common:context/profile/uuid
+     |  |  |  +--rw tapi-connectivity:source-profile* [profile-uuid]
+     |  |  |  |  +--rw tapi-connectivity:profile-uuid    -> /tapi-common:context/profile/uuid
      |  |  |  +--rw tapi-connectivity:local-id                                               string
      |  |  |  +--rw tapi-connectivity:name* [value-name]
      |  |  |  |  +--rw tapi-connectivity:value-name    string
@@ -3825,7 +3834,7 @@ module: tapi-common
      |  |  |  |  |     +--rw tapi-photonic-media:value?        string
      |  |  |  |  +--rw tapi-photonic-media:media-channel-bw-config-pac
      |  |  |  |     +--rw tapi-photonic-media:capacity
-     |  |  |  |     |  +--rw tapi-photonic-media:value?   uint64
+     |  |  |  |     |  +--rw tapi-photonic-media:value?   decimal64
      |  |  |  |     |  +--rw tapi-photonic-media:unit?    capacity-unit
      |  |  |  |     +--rw tapi-photonic-media:edge-frequency-constraint
      |  |  |  |     |  +--rw tapi-photonic-media:adjustment-granularity?   adjustment-granularity
@@ -3879,105 +3888,12 @@ module: tapi-common
      |  |  |  |  |     +--rw tapi-photonic-media:value?        string
      |  |  |  |  +--rw tapi-photonic-media:media-channel-bw-config-pac* [local-id]
      |  |  |  |     +--rw tapi-photonic-media:capacity
-     |  |  |  |     |  +--rw tapi-photonic-media:value?   uint64
+     |  |  |  |     |  +--rw tapi-photonic-media:value?   decimal64
      |  |  |  |     |  +--rw tapi-photonic-media:unit?    capacity-unit
      |  |  |  |     +--rw tapi-photonic-media:edge-frequency-constraint
      |  |  |  |     |  +--rw tapi-photonic-media:adjustment-granularity?   adjustment-granularity
      |  |  |  |     |  +--rw tapi-photonic-media:grid-type?                grid-type
      |  |  |  |     +--rw tapi-photonic-media:spectrum-bandwidth?            uint64
-     |  |  |  |     +--rw tapi-photonic-media:power-management-config-pac
-     |  |  |  |     |  +--rw tapi-photonic-media:intended-maximum-output-power
-     |  |  |  |     |  |  +--rw tapi-photonic-media:total-power?              decimal64
-     |  |  |  |     |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  |     |  +--rw tapi-photonic-media:intended-minimum-output-power
-     |  |  |  |     |  |  +--rw tapi-photonic-media:total-power?              decimal64
-     |  |  |  |     |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  |     |  +--rw tapi-photonic-media:expected-maximum-input-power
-     |  |  |  |     |  |  +--rw tapi-photonic-media:total-power?              decimal64
-     |  |  |  |     |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  |     |  +--rw tapi-photonic-media:expected-minimum-input-power
-     |  |  |  |     |     +--rw tapi-photonic-media:total-power?              decimal64
-     |  |  |  |     |     +--rw tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  |     +--rw tapi-photonic-media:local-id                       string
-     |  |  |  |     +--rw tapi-photonic-media:name* [value-name]
-     |  |  |  |        +--rw tapi-photonic-media:value-name    string
-     |  |  |  |        +--rw tapi-photonic-media:value?        string
-     |  |  |  +--rw tapi-photonic-media:otsi-mcg-connectivity-service-end-point-spec
-     |  |  |  |  +--rw tapi-photonic-media:otsi-mc-bw-config-pac* [local-id]
-     |  |  |  |  |  +--rw tapi-photonic-media:capacity
-     |  |  |  |  |  |  +--rw tapi-photonic-media:value?   uint64
-     |  |  |  |  |  |  +--rw tapi-photonic-media:unit?    capacity-unit
-     |  |  |  |  |  +--rw tapi-photonic-media:center-frequency-constraint
-     |  |  |  |  |  |  +--rw tapi-photonic-media:adjustment-granularity?   adjustment-granularity
-     |  |  |  |  |  |  +--rw tapi-photonic-media:grid-type?                grid-type
-     |  |  |  |  |  +--rw tapi-photonic-media:non-adjacent-spectrum?         uint64
-     |  |  |  |  |  +--rw tapi-photonic-media:edge-frequency-constraint
-     |  |  |  |  |  |  +--rw tapi-photonic-media:adjustment-granularity?   adjustment-granularity
-     |  |  |  |  |  |  +--rw tapi-photonic-media:grid-type?                grid-type
-     |  |  |  |  |  +--rw tapi-photonic-media:spectrum-bandwidth?            uint64
-     |  |  |  |  |  +--rw tapi-photonic-media:center-frequency-offset?       uint64
-     |  |  |  |  |  +--rw tapi-photonic-media:power-management-config-pac
-     |  |  |  |  |  |  +--rw tapi-photonic-media:intended-maximum-output-power
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:total-power?              decimal64
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  |  |  |  +--rw tapi-photonic-media:intended-minimum-output-power
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:total-power?              decimal64
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  |  |  |  +--rw tapi-photonic-media:expected-maximum-input-power
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:total-power?              decimal64
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  |  |  |  +--rw tapi-photonic-media:expected-minimum-input-power
-     |  |  |  |  |  |     +--rw tapi-photonic-media:total-power?              decimal64
-     |  |  |  |  |  |     +--rw tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  |  |  +--rw tapi-photonic-media:local-id                       string
-     |  |  |  |  |  +--rw tapi-photonic-media:name* [value-name]
-     |  |  |  |  |     +--rw tapi-photonic-media:value-name    string
-     |  |  |  |  |     +--rw tapi-photonic-media:value?        string
-     |  |  |  |  +--rw tapi-photonic-media:otsi-mc-config-pac* [local-id]
-     |  |  |  |  |  +--rw tapi-photonic-media:spectrum
-     |  |  |  |  |  |  +--rw tapi-photonic-media:upper-frequency?        decimal64
-     |  |  |  |  |  |  +--rw tapi-photonic-media:lower-frequency?        decimal64
-     |  |  |  |  |  |  +--rw tapi-photonic-media:frequency-constraint
-     |  |  |  |  |  |     +--rw tapi-photonic-media:adjustment-granularity?   adjustment-granularity
-     |  |  |  |  |  |     +--rw tapi-photonic-media:grid-type?                grid-type
-     |  |  |  |  |  +--rw tapi-photonic-media:center-frequency-constraint
-     |  |  |  |  |  |  +--rw tapi-photonic-media:adjustment-granularity?   adjustment-granularity
-     |  |  |  |  |  |  +--rw tapi-photonic-media:grid-type?                grid-type
-     |  |  |  |  |  +--rw tapi-photonic-media:edge-frequency-constraint
-     |  |  |  |  |  |  +--rw tapi-photonic-media:adjustment-granularity?   adjustment-granularity
-     |  |  |  |  |  |  +--rw tapi-photonic-media:grid-type?                grid-type
-     |  |  |  |  |  +--rw tapi-photonic-media:center-frequency-offset?       uint64
-     |  |  |  |  |  +--rw tapi-photonic-media:power-management-config-pac
-     |  |  |  |  |  |  +--rw tapi-photonic-media:intended-maximum-output-power
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:total-power?              decimal64
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  |  |  |  +--rw tapi-photonic-media:intended-minimum-output-power
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:total-power?              decimal64
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  |  |  |  +--rw tapi-photonic-media:expected-maximum-input-power
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:total-power?              decimal64
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  |  |  |  +--rw tapi-photonic-media:expected-minimum-input-power
-     |  |  |  |  |  |     +--rw tapi-photonic-media:total-power?              decimal64
-     |  |  |  |  |  |     +--rw tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  |  |  +--rw tapi-photonic-media:local-id                       string
-     |  |  |  |  |  +--rw tapi-photonic-media:name* [value-name]
-     |  |  |  |  |     +--rw tapi-photonic-media:value-name    string
-     |  |  |  |  |     +--rw tapi-photonic-media:value?        string
-     |  |  |  |  +--rw tapi-photonic-media:otsi-mc-freq-config-pac* [local-id]
-     |  |  |  |     +--rw tapi-photonic-media:central-frequency
-     |  |  |  |     |  +--rw tapi-photonic-media:frequency-constraint
-     |  |  |  |     |  |  +--rw tapi-photonic-media:adjustment-granularity?   adjustment-granularity
-     |  |  |  |     |  |  +--rw tapi-photonic-media:grid-type?                grid-type
-     |  |  |  |     |  +--rw tapi-photonic-media:central-frequency?      uint64
-     |  |  |  |     +--rw tapi-photonic-media:spectrum-bandwidth?            uint64
-     |  |  |  |     +--rw tapi-photonic-media:center-frequency-constraint
-     |  |  |  |     |  +--rw tapi-photonic-media:adjustment-granularity?   adjustment-granularity
-     |  |  |  |     |  +--rw tapi-photonic-media:grid-type?                grid-type
-     |  |  |  |     +--rw tapi-photonic-media:edge-frequency-constraint
-     |  |  |  |     |  +--rw tapi-photonic-media:adjustment-granularity?   adjustment-granularity
-     |  |  |  |     |  +--rw tapi-photonic-media:grid-type?                grid-type
-     |  |  |  |     +--rw tapi-photonic-media:center-frequency-offset?       uint64
      |  |  |  |     +--rw tapi-photonic-media:power-management-config-pac
      |  |  |  |     |  +--rw tapi-photonic-media:intended-maximum-output-power
      |  |  |  |     |  |  +--rw tapi-photonic-media:total-power?              decimal64
@@ -4029,7 +3945,7 @@ module: tapi-common
      |  |  |  |  |     +--rw tapi-photonic-media:value?        string
      |  |  |  |  +--rw tapi-photonic-media:otsi-mc-bw-config-pac
      |  |  |  |  |  +--rw tapi-photonic-media:capacity
-     |  |  |  |  |  |  +--rw tapi-photonic-media:value?   uint64
+     |  |  |  |  |  |  +--rw tapi-photonic-media:value?   decimal64
      |  |  |  |  |  |  +--rw tapi-photonic-media:unit?    capacity-unit
      |  |  |  |  |  +--rw tapi-photonic-media:center-frequency-constraint
      |  |  |  |  |  |  +--rw tapi-photonic-media:adjustment-granularity?   adjustment-granularity
@@ -4088,24 +4004,6 @@ module: tapi-common
      |  |  |  |     +--rw tapi-photonic-media:name* [value-name]
      |  |  |  |        +--rw tapi-photonic-media:value-name    string
      |  |  |  |        +--rw tapi-photonic-media:value?        string
-     |  |  |  +--rw tapi-photonic-media:otsia-csep-ttp-pac
-     |  |  |  |  +--rw tapi-photonic-media:otsi-config* [local-id]
-     |  |  |  |  |  +--rw tapi-photonic-media:central-frequency?   decimal64
-     |  |  |  |  |  +--rw tapi-photonic-media:laser-control?       laser-control-type
-     |  |  |  |  |  +--rw tapi-photonic-media:otsi-power-config
-     |  |  |  |  |  |  +--rw tapi-photonic-media:transmit-power
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:total-power?              decimal64
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  |  |  |  +--rw tapi-photonic-media:total-power-warn-threshold-upper?   decimal64
-     |  |  |  |  |  |  +--rw tapi-photonic-media:total-power-warn-threshold-lower?   decimal64
-     |  |  |  |  |  |  +--rw tapi-photonic-media:rx-total-power?                     decimal64
-     |  |  |  |  |  +--rw tapi-photonic-media:local-id             string
-     |  |  |  |  |  +--rw tapi-photonic-media:name* [value-name]
-     |  |  |  |  |     +--rw tapi-photonic-media:value-name    string
-     |  |  |  |  |     +--rw tapi-photonic-media:value?        string
-     |  |  |  |  +--rw tapi-photonic-media:number-of-otsi?                     uint64
-     |  |  |  |  +--rw tapi-photonic-media:total-power-warn-threshold-upper?   decimal64
-     |  |  |  |  +--rw tapi-photonic-media:total-power-warn-threshold-lower?   decimal64
      |  |  |  +--rw tapi-oam:connectivity-oam-job
      |  |  |  |  +--rw tapi-oam:oam-job-type?   oam-job-type
      |  |  |  |  +--rw tapi-oam:schedule
@@ -4333,7 +4231,7 @@ module: tapi-common
      |  |  |  +--rw tapi-connectivity:service-level?          string
      |  |  |  +--rw tapi-connectivity:requested-capacity
      |  |  |  |  +--rw tapi-connectivity:total-size
-     |  |  |  |     +--rw tapi-connectivity:value?   uint64
+     |  |  |  |     +--rw tapi-connectivity:value?   decimal64
      |  |  |  |     +--rw tapi-connectivity:unit?    capacity-unit
      |  |  |  +--rw tapi-connectivity:schedule
      |  |  |  |  +--rw tapi-connectivity:start-time?   date-and-time
@@ -5862,7 +5760,7 @@ module: tapi-common
            |  |  +--ro tapi-virtual-network:virtual-nw-service-uuid    -> /tapi-common:context/tapi-virtual-network:virtual-network-context/virtual-nw-service/uuid
            |  +--rw tapi-virtual-network:requested-capacity
            |  |  +--rw tapi-virtual-network:total-size
-           |  |     +--rw tapi-virtual-network:value?   uint64
+           |  |     +--rw tapi-virtual-network:value?   decimal64
            |  |     +--rw tapi-virtual-network:unit?    capacity-unit
            |  +--rw tapi-virtual-network:service-level?            string
            |  +--rw tapi-virtual-network:service-layer*            tapi-common:layer-protocol-name
@@ -5900,8 +5798,31 @@ module: tapi-common
     |  +--ro output
     |     +--ro sip
     |        +--ro layer-protocol-name?                                              layer-protocol-name
-    |        +--ro supported-layer-protocol-qualifier*                               layer-protocol-qualifier
+    |        +--ro supported-cep-layer-protocol-qualifier-instances* []
+    |        |  +--ro layer-protocol-qualifier?   layer-protocol-qualifier
+    |        |  +--ro number-of-cep-instances?    uint64
+    |        +--ro available-cep-layer-protocol-qualifier-instances* []
+    |        |  +--ro layer-protocol-qualifier?   layer-protocol-qualifier
+    |        |  +--ro number-of-cep-instances?    uint64
+    |        +--ro supported-payload-structure* []
+    |        |  +--ro multiplexing-sequence*     layer-protocol-qualifier
+    |        |  +--ro number-of-cep-instances?   uint64
+    |        |  +--ro capacity
+    |        |     +--ro value?   decimal64
+    |        |     +--ro unit?    capacity-unit
+    |        +--ro available-payload-structure* []
+    |        |  +--ro multiplexing-sequence*     layer-protocol-qualifier
+    |        |  +--ro number-of-cep-instances?   uint64
+    |        |  +--ro capacity
+    |        |     +--ro value?   decimal64
+    |        |     +--ro unit?    capacity-unit
     |        +--ro direction?                                                        direction
+    |        +--ro profile* [profile-uuid]
+    |        |  +--ro profile-uuid    -> /context/profile/uuid
+    |        +--ro sink-profile* [profile-uuid]
+    |        |  +--ro profile-uuid    -> /context/profile/uuid
+    |        +--ro source-profile* [profile-uuid]
+    |        |  +--ro profile-uuid    -> /context/profile/uuid
     |        +--ro uuid?                                                             uuid
     |        +--ro name* [value-name]
     |        |  +--ro value-name    string
@@ -5911,11 +5832,11 @@ module: tapi-common
     |        +--ro lifecycle-state?                                                  lifecycle-state
     |        +--ro total-potential-capacity
     |        |  +--ro total-size
-    |        |     +--ro value?   uint64
+    |        |     +--ro value?   decimal64
     |        |     +--ro unit?    capacity-unit
     |        +--ro available-capacity
     |        |  +--ro total-size
-    |        |     +--ro value?   uint64
+    |        |     +--ro value?   decimal64
     |        |     +--ro unit?    capacity-unit
     |        +--ro tapi-photonic-media:media-channel-service-interface-point-spec
     |        |  +--ro tapi-photonic-media:media-channel-pool-capability-pac
@@ -5952,7 +5873,6 @@ module: tapi-common
     |        |        +--ro tapi-photonic-media:power-spectral-density?   decimal64
     |        +--ro tapi-photonic-media:otsi-service-interface-point-spec
     |        |  +--ro tapi-photonic-media:otsi-capability-pac
-    |        |     +--ro tapi-photonic-media:max-number-of-otsi?          uint64
     |        |     +--ro tapi-photonic-media:total-power-threshold-pac
     |        |        +--ro tapi-photonic-media:total-power-upper-warn-threshold-default?   decimal64
     |        |        +--ro tapi-photonic-media:total-power-upper-warn-threshold-min?       decimal64
@@ -5967,8 +5887,31 @@ module: tapi-common
     |  +--ro output
     |     +--ro sip* [uuid]
     |        +--ro layer-protocol-name?                                              layer-protocol-name
-    |        +--ro supported-layer-protocol-qualifier*                               layer-protocol-qualifier
+    |        +--ro supported-cep-layer-protocol-qualifier-instances* []
+    |        |  +--ro layer-protocol-qualifier?   layer-protocol-qualifier
+    |        |  +--ro number-of-cep-instances?    uint64
+    |        +--ro available-cep-layer-protocol-qualifier-instances* []
+    |        |  +--ro layer-protocol-qualifier?   layer-protocol-qualifier
+    |        |  +--ro number-of-cep-instances?    uint64
+    |        +--ro supported-payload-structure* []
+    |        |  +--ro multiplexing-sequence*     layer-protocol-qualifier
+    |        |  +--ro number-of-cep-instances?   uint64
+    |        |  +--ro capacity
+    |        |     +--ro value?   decimal64
+    |        |     +--ro unit?    capacity-unit
+    |        +--ro available-payload-structure* []
+    |        |  +--ro multiplexing-sequence*     layer-protocol-qualifier
+    |        |  +--ro number-of-cep-instances?   uint64
+    |        |  +--ro capacity
+    |        |     +--ro value?   decimal64
+    |        |     +--ro unit?    capacity-unit
     |        +--ro direction?                                                        direction
+    |        +--ro profile* [profile-uuid]
+    |        |  +--ro profile-uuid    -> /context/profile/uuid
+    |        +--ro sink-profile* [profile-uuid]
+    |        |  +--ro profile-uuid    -> /context/profile/uuid
+    |        +--ro source-profile* [profile-uuid]
+    |        |  +--ro profile-uuid    -> /context/profile/uuid
     |        +--ro uuid                                                              uuid
     |        +--ro name* [value-name]
     |        |  +--ro value-name    string
@@ -5978,11 +5921,11 @@ module: tapi-common
     |        +--ro lifecycle-state?                                                  lifecycle-state
     |        +--ro total-potential-capacity
     |        |  +--ro total-size
-    |        |     +--ro value?   uint64
+    |        |     +--ro value?   decimal64
     |        |     +--ro unit?    capacity-unit
     |        +--ro available-capacity
     |        |  +--ro total-size
-    |        |     +--ro value?   uint64
+    |        |     +--ro value?   decimal64
     |        |     +--ro unit?    capacity-unit
     |        +--ro tapi-photonic-media:media-channel-service-interface-point-spec
     |        |  +--ro tapi-photonic-media:media-channel-pool-capability-pac
@@ -6019,7 +5962,6 @@ module: tapi-common
     |        |        +--ro tapi-photonic-media:power-spectral-density?   decimal64
     |        +--ro tapi-photonic-media:otsi-service-interface-point-spec
     |        |  +--ro tapi-photonic-media:otsi-capability-pac
-    |        |     +--ro tapi-photonic-media:max-number-of-otsi?          uint64
     |        |     +--ro tapi-photonic-media:total-power-threshold-pac
     |        |        +--ro tapi-photonic-media:total-power-upper-warn-threshold-default?   decimal64
     |        |        +--ro tapi-photonic-media:total-power-upper-warn-threshold-min?       decimal64
@@ -6209,7 +6151,7 @@ module: tapi-connectivity
     |        |  |     +--ro connectivity-service-spec-id?     tapi-common:uuid
     |        |  +--ro capacity
     |        |  |  +--ro total-size
-    |        |  |     +--ro value?   uint64
+    |        |  |     +--ro value?   decimal64
     |        |  |     +--ro unit?    capacity-unit
     |        |  +--ro service-interface-point
     |        |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
@@ -6280,7 +6222,7 @@ module: tapi-connectivity
     |        |  |  |     +--ro tapi-photonic-media:value?        string
     |        |  |  +--ro tapi-photonic-media:media-channel-bw-config-pac
     |        |  |     +--ro tapi-photonic-media:capacity
-    |        |  |     |  +--ro tapi-photonic-media:value?   uint64
+    |        |  |     |  +--ro tapi-photonic-media:value?   decimal64
     |        |  |     |  +--ro tapi-photonic-media:unit?    capacity-unit
     |        |  |     +--ro tapi-photonic-media:edge-frequency-constraint
     |        |  |     |  +--ro tapi-photonic-media:adjustment-granularity?   adjustment-granularity
@@ -6410,7 +6352,7 @@ module: tapi-connectivity
     |        |  +--ro service-level?          string
     |        |  +--ro requested-capacity
     |        |  |  +--ro total-size
-    |        |  |     +--ro value?   uint64
+    |        |  |     +--ro value?   decimal64
     |        |  |     +--ro unit?    capacity-unit
     |        |  +--ro schedule
     |        |  |  +--ro start-time?   date-and-time
@@ -6620,7 +6562,7 @@ module: tapi-connectivity
     |        |  |     +--ro connectivity-service-spec-id?     tapi-common:uuid
     |        |  +--ro capacity
     |        |  |  +--ro total-size
-    |        |  |     +--ro value?   uint64
+    |        |  |     +--ro value?   decimal64
     |        |  |     +--ro unit?    capacity-unit
     |        |  +--ro service-interface-point
     |        |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
@@ -6691,7 +6633,7 @@ module: tapi-connectivity
     |        |  |  |     +--ro tapi-photonic-media:value?        string
     |        |  |  +--ro tapi-photonic-media:media-channel-bw-config-pac
     |        |  |     +--ro tapi-photonic-media:capacity
-    |        |  |     |  +--ro tapi-photonic-media:value?   uint64
+    |        |  |     |  +--ro tapi-photonic-media:value?   decimal64
     |        |  |     |  +--ro tapi-photonic-media:unit?    capacity-unit
     |        |  |     +--ro tapi-photonic-media:edge-frequency-constraint
     |        |  |     |  +--ro tapi-photonic-media:adjustment-granularity?   adjustment-granularity
@@ -6821,7 +6763,7 @@ module: tapi-connectivity
     |        |  +--ro service-level?          string
     |        |  +--ro requested-capacity
     |        |  |  +--ro total-size
-    |        |  |     +--ro value?   uint64
+    |        |  |     +--ro value?   decimal64
     |        |  |     +--ro unit?    capacity-unit
     |        |  +--ro schedule
     |        |  |  +--ro start-time?   date-and-time
@@ -7030,7 +6972,7 @@ module: tapi-connectivity
     |  |  |  |     +---w connectivity-service-spec-id?     tapi-common:uuid
     |  |  |  +---w capacity
     |  |  |  |  +---w total-size
-    |  |  |  |     +---w value?   uint64
+    |  |  |  |     +---w value?   decimal64
     |  |  |  |     +---w unit?    capacity-unit
     |  |  |  +---w service-interface-point
     |  |  |  |  +---w service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
@@ -7101,7 +7043,7 @@ module: tapi-connectivity
     |  |  |  |  |     +---w tapi-photonic-media:value?        string
     |  |  |  |  +---w tapi-photonic-media:media-channel-bw-config-pac
     |  |  |  |     +---w tapi-photonic-media:capacity
-    |  |  |  |     |  +---w tapi-photonic-media:value?   uint64
+    |  |  |  |     |  +---w tapi-photonic-media:value?   decimal64
     |  |  |  |     |  +---w tapi-photonic-media:unit?    capacity-unit
     |  |  |  |     +---w tapi-photonic-media:edge-frequency-constraint
     |  |  |  |     |  +---w tapi-photonic-media:adjustment-granularity?   adjustment-granularity
@@ -7231,7 +7173,7 @@ module: tapi-connectivity
     |  |  |  +---w service-level?          string
     |  |  |  +---w requested-capacity
     |  |  |  |  +---w total-size
-    |  |  |  |     +---w value?   uint64
+    |  |  |  |     +---w value?   decimal64
     |  |  |  |     +---w unit?    capacity-unit
     |  |  |  +---w schedule
     |  |  |  |  +---w start-time?   date-and-time
@@ -7411,7 +7353,7 @@ module: tapi-connectivity
     |        |  |     +--ro connectivity-service-spec-id?     tapi-common:uuid
     |        |  +--ro capacity
     |        |  |  +--ro total-size
-    |        |  |     +--ro value?   uint64
+    |        |  |     +--ro value?   decimal64
     |        |  |     +--ro unit?    capacity-unit
     |        |  +--ro service-interface-point
     |        |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
@@ -7482,7 +7424,7 @@ module: tapi-connectivity
     |        |  |  |     +--ro tapi-photonic-media:value?        string
     |        |  |  +--ro tapi-photonic-media:media-channel-bw-config-pac
     |        |  |     +--ro tapi-photonic-media:capacity
-    |        |  |     |  +--ro tapi-photonic-media:value?   uint64
+    |        |  |     |  +--ro tapi-photonic-media:value?   decimal64
     |        |  |     |  +--ro tapi-photonic-media:unit?    capacity-unit
     |        |  |     +--ro tapi-photonic-media:edge-frequency-constraint
     |        |  |     |  +--ro tapi-photonic-media:adjustment-granularity?   adjustment-granularity
@@ -7612,7 +7554,7 @@ module: tapi-connectivity
     |        |  +--ro service-level?          string
     |        |  +--ro requested-capacity
     |        |  |  +--ro total-size
-    |        |  |     +--ro value?   uint64
+    |        |  |     +--ro value?   decimal64
     |        |  |     +--ro unit?    capacity-unit
     |        |  +--ro schedule
     |        |  |  +--ro start-time?   date-and-time
@@ -7820,7 +7762,7 @@ module: tapi-connectivity
     |  |  |  |     +---w connectivity-service-spec-id?     tapi-common:uuid
     |  |  |  +---w capacity
     |  |  |  |  +---w total-size
-    |  |  |  |     +---w value?   uint64
+    |  |  |  |     +---w value?   decimal64
     |  |  |  |     +---w unit?    capacity-unit
     |  |  |  +---w service-interface-point
     |  |  |  |  +---w service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
@@ -7891,7 +7833,7 @@ module: tapi-connectivity
     |  |  |  |  |     +---w tapi-photonic-media:value?        string
     |  |  |  |  +---w tapi-photonic-media:media-channel-bw-config-pac
     |  |  |  |     +---w tapi-photonic-media:capacity
-    |  |  |  |     |  +---w tapi-photonic-media:value?   uint64
+    |  |  |  |     |  +---w tapi-photonic-media:value?   decimal64
     |  |  |  |     |  +---w tapi-photonic-media:unit?    capacity-unit
     |  |  |  |     +---w tapi-photonic-media:edge-frequency-constraint
     |  |  |  |     |  +---w tapi-photonic-media:adjustment-granularity?   adjustment-granularity
@@ -8021,7 +7963,7 @@ module: tapi-connectivity
     |  |  |  +---w service-level?          string
     |  |  |  +---w requested-capacity
     |  |  |  |  +---w total-size
-    |  |  |  |     +---w value?   uint64
+    |  |  |  |     +---w value?   decimal64
     |  |  |  |     +---w unit?    capacity-unit
     |  |  |  +---w schedule
     |  |  |  |  +---w start-time?   date-and-time
@@ -8201,7 +8143,7 @@ module: tapi-connectivity
     |        |  |     +--ro connectivity-service-spec-id?     tapi-common:uuid
     |        |  +--ro capacity
     |        |  |  +--ro total-size
-    |        |  |     +--ro value?   uint64
+    |        |  |     +--ro value?   decimal64
     |        |  |     +--ro unit?    capacity-unit
     |        |  +--ro service-interface-point
     |        |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
@@ -8272,7 +8214,7 @@ module: tapi-connectivity
     |        |  |  |     +--ro tapi-photonic-media:value?        string
     |        |  |  +--ro tapi-photonic-media:media-channel-bw-config-pac
     |        |  |     +--ro tapi-photonic-media:capacity
-    |        |  |     |  +--ro tapi-photonic-media:value?   uint64
+    |        |  |     |  +--ro tapi-photonic-media:value?   decimal64
     |        |  |     |  +--ro tapi-photonic-media:unit?    capacity-unit
     |        |  |     +--ro tapi-photonic-media:edge-frequency-constraint
     |        |  |     |  +--ro tapi-photonic-media:adjustment-granularity?   adjustment-granularity
@@ -8402,7 +8344,7 @@ module: tapi-connectivity
     |        |  +--ro service-level?          string
     |        |  +--ro requested-capacity
     |        |  |  +--ro total-size
-    |        |  |     +--ro value?   uint64
+    |        |  |     +--ro value?   decimal64
     |        |  |     +--ro unit?    capacity-unit
     |        |  +--ro schedule
     |        |  |  +--ro start-time?   date-and-time
@@ -8643,11 +8585,7 @@ module: tapi-connectivity
              |  |  |  +--ro tapi-photonic-media:frequency-constraint
              |  |  |     +--ro tapi-photonic-media:adjustment-granularity?   adjustment-granularity
              |  |  |     +--ro tapi-photonic-media:grid-type?                grid-type
-             |  |  +--ro tapi-photonic-media:central-frequency
-             |  |  |  +--ro tapi-photonic-media:frequency-constraint
-             |  |  |  |  +--ro tapi-photonic-media:adjustment-granularity?   adjustment-granularity
-             |  |  |  |  +--ro tapi-photonic-media:grid-type?                grid-type
-             |  |  |  +--ro tapi-photonic-media:central-frequency?      uint64
+             |  |  +--ro tapi-photonic-media:central-frequency?        decimal64
              |  |  +--ro tapi-photonic-media:spectrum-bandwidth?       uint64
              |  |  +--ro tapi-photonic-media:measured-power-ingress
              |  |  |  +--ro tapi-photonic-media:total-power?              decimal64
@@ -8753,35 +8691,25 @@ module: tapi-connectivity
              |           +--ro tapi-photonic-media:power-spectral-density?   decimal64
              +--ro tapi-photonic-media:otsi-connection-end-point-spec
                 +--ro tapi-photonic-media:otsi-termination-pac
-                   +--ro tapi-photonic-media:selected-central-frequency
-                   |  +--ro tapi-photonic-media:frequency-constraint
-                   |  |  +--ro tapi-photonic-media:adjustment-granularity?   adjustment-granularity
-                   |  |  +--ro tapi-photonic-media:grid-type?                grid-type
-                   |  +--ro tapi-photonic-media:central-frequency?      uint64
-                   +--ro tapi-photonic-media:selected-application-identifier
-                   |  +--ro tapi-photonic-media:application-identifier-type?   standard-application-mode
-                   |  +--ro tapi-photonic-media:application-code?              string
-                   +--ro tapi-photonic-media:selected-modulation
-                   |  +--ro tapi-photonic-media:standard-modulation-technique?      standard-modulation-technique
-                   |  +--ro tapi-photonic-media:proprietary-modulation-technique?   string
+                   +--ro tapi-photonic-media:selected-central-frequency?   decimal64
                    +--ro tapi-photonic-media:selected-spectrum
                    |  +--ro tapi-photonic-media:upper-frequency?        decimal64
                    |  +--ro tapi-photonic-media:lower-frequency?        decimal64
                    |  +--ro tapi-photonic-media:frequency-constraint
                    |     +--ro tapi-photonic-media:adjustment-granularity?   adjustment-granularity
                    |     +--ro tapi-photonic-media:grid-type?                grid-type
+                   +--ro tapi-photonic-media:laser-properties
+                   |  +--ro tapi-photonic-media:laser-status?             laser-control-status-type
+                   |  +--ro tapi-photonic-media:laser-application-type?   laser-type
+                   |  +--ro tapi-photonic-media:laser-bias-current?       decimal64
+                   |  +--ro tapi-photonic-media:laser-temperature?        decimal64
                    +--ro tapi-photonic-media:transmited-power
                    |  +--ro tapi-photonic-media:total-power?              decimal64
                    |  +--ro tapi-photonic-media:power-spectral-density?   decimal64
                    +--ro tapi-photonic-media:received-power
                    |  +--ro tapi-photonic-media:total-power?              decimal64
                    |  +--ro tapi-photonic-media:power-spectral-density?   decimal64
-                   +--ro tapi-photonic-media:laser-properties
-                   |  +--ro tapi-photonic-media:laser-status?             laser-control-status-type
-                   |  +--ro tapi-photonic-media:laser-application-type?   laser-type
-                   |  +--ro tapi-photonic-media:laser-bias-current?       decimal64
-                   |  +--ro tapi-photonic-media:laser-temperature?        decimal64
-                   +--ro tapi-photonic-media:rx-total-power?                    decimal64
+                   +--ro tapi-photonic-media:rx-total-power?               decimal64
 module: tapi-equipment
 
   rpcs:
@@ -11627,7 +11555,7 @@ module: tapi-path-computation
     |  |     +---w layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
     |  |     +---w capacity
     |  |     |  +---w total-size
-    |  |     |     +---w value?   uint64
+    |  |     |     +---w value?   decimal64
     |  |     |     +---w unit?    capacity-unit
     |  |     +---w role?                       tapi-common:port-role
     |  |     +---w direction?                  tapi-common:direction
@@ -11646,7 +11574,7 @@ module: tapi-path-computation
     |        |  +--ro layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
     |        |  +--ro capacity
     |        |  |  +--ro total-size
-    |        |  |     +--ro value?   uint64
+    |        |  |     +--ro value?   decimal64
     |        |  |     +--ro unit?    capacity-unit
     |        |  +--ro role?                       tapi-common:port-role
     |        |  +--ro direction?                  tapi-common:direction
@@ -11799,7 +11727,7 @@ module: tapi-path-computation
     |        |  +--ro layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
     |        |  +--ro capacity
     |        |  |  +--ro total-size
-    |        |  |     +--ro value?   uint64
+    |        |  |     +--ro value?   decimal64
     |        |  |     +--ro unit?    capacity-unit
     |        |  +--ro role?                       tapi-common:port-role
     |        |  +--ro direction?                  tapi-common:direction
@@ -11906,7 +11834,7 @@ module: tapi-path-computation
              |  +--ro layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
              |  +--ro capacity
              |  |  +--ro total-size
-             |  |     +--ro value?   uint64
+             |  |     +--ro value?   decimal64
              |  |     +--ro unit?    capacity-unit
              |  +--ro role?                       tapi-common:port-role
              |  +--ro direction?                  tapi-common:direction
@@ -12134,82 +12062,99 @@ module: tapi-streaming
              |     +--ro value-name    string
              |     +--ro value?        string
              +--ro service-interface-point {tapi-streaming}?
-             |  +--ro layer-protocol-name?                  layer-protocol-name
-             |  +--ro supported-layer-protocol-qualifier*   layer-protocol-qualifier
-             |  +--ro direction?                            direction
-             |  +--ro uuid?                                 uuid
+             |  +--ro layer-protocol-name?                                layer-protocol-name
+             |  +--ro supported-cep-layer-protocol-qualifier-instances* []
+             |  |  +--ro layer-protocol-qualifier?   layer-protocol-qualifier
+             |  |  +--ro number-of-cep-instances?    uint64
+             |  +--ro available-cep-layer-protocol-qualifier-instances* []
+             |  |  +--ro layer-protocol-qualifier?   layer-protocol-qualifier
+             |  |  +--ro number-of-cep-instances?    uint64
+             |  +--ro supported-payload-structure* []
+             |  |  +--ro multiplexing-sequence*     layer-protocol-qualifier
+             |  |  +--ro number-of-cep-instances?   uint64
+             |  |  +--ro capacity
+             |  |     +--ro value?   decimal64
+             |  |     +--ro unit?    capacity-unit
+             |  +--ro available-payload-structure* []
+             |  |  +--ro multiplexing-sequence*     layer-protocol-qualifier
+             |  |  +--ro number-of-cep-instances?   uint64
+             |  |  +--ro capacity
+             |  |     +--ro value?   decimal64
+             |  |     +--ro unit?    capacity-unit
+             |  +--ro direction?                                          direction
+             |  +--ro profile* [profile-uuid]
+             |  |  +--ro profile-uuid    -> /tapi-common:context/profile/uuid
+             |  +--ro sink-profile* [profile-uuid]
+             |  |  +--ro profile-uuid    -> /tapi-common:context/profile/uuid
+             |  +--ro source-profile* [profile-uuid]
+             |  |  +--ro profile-uuid    -> /tapi-common:context/profile/uuid
+             |  +--ro uuid?                                               uuid
              |  +--ro name* [value-name]
              |  |  +--ro value-name    string
              |  |  +--ro value?        string
-             |  +--ro administrative-state?                 administrative-state
-             |  +--ro operational-state?                    operational-state
-             |  +--ro lifecycle-state?                      lifecycle-state
+             |  +--ro administrative-state?                               administrative-state
+             |  +--ro operational-state?                                  operational-state
+             |  +--ro lifecycle-state?                                    lifecycle-state
              |  +--ro total-potential-capacity
              |  |  +--ro total-size
-             |  |     +--ro value?   uint64
+             |  |     +--ro value?   decimal64
              |  |     +--ro unit?    capacity-unit
              |  +--ro available-capacity
              |     +--ro total-size
-             |        +--ro value?   uint64
+             |        +--ro value?   decimal64
              |        +--ro unit?    capacity-unit
              +--ro tapi-topology:node
              |  +--ro tapi-topology:owned-node-edge-point* [uuid]
-             |  |  +--ro tapi-topology:layer-protocol-name?              tapi-common:layer-protocol-name
-             |  |  +--ro tapi-topology:base-layer-protocol-qualifier?    tapi-common:layer-protocol-qualifier
-             |  |  +--ro tapi-topology:supported-cep-layer-protocol* [layer-protocol-qualifier]
-             |  |  |  +--ro tapi-topology:layer-protocol-qualifier    tapi-common:layer-protocol-qualifier
+             |  |  +--ro tapi-topology:layer-protocol-name?                                tapi-common:layer-protocol-name
+             |  |  +--ro tapi-topology:supported-cep-layer-protocol-qualifier-instances* []
+             |  |  |  +--ro tapi-topology:layer-protocol-qualifier?   layer-protocol-qualifier
              |  |  |  +--ro tapi-topology:number-of-cep-instances?    uint64
-             |  |  +--ro tapi-topology:supported-mux-sequence* [local-id]
-             |  |  |  +--ro tapi-topology:layer-protocol-qualifier*   tapi-common:layer-protocol-qualifier
+             |  |  +--ro tapi-topology:available-cep-layer-protocol-qualifier-instances* []
+             |  |  |  +--ro tapi-topology:layer-protocol-qualifier?   layer-protocol-qualifier
              |  |  |  +--ro tapi-topology:number-of-cep-instances?    uint64
+             |  |  +--ro tapi-topology:supported-layer-protocol-qualifier* []
+             |  |  |  +--ro tapi-topology:multiplexing-sequence*     layer-protocol-qualifier
+             |  |  |  +--ro tapi-topology:number-of-cep-instances?   uint64
              |  |  |  +--ro tapi-topology:capacity
-             |  |  |  |  +--ro tapi-topology:value?   uint64
-             |  |  |  |  +--ro tapi-topology:unit?    capacity-unit
-             |  |  |  +--ro tapi-topology:local-id                    string
-             |  |  |  +--ro tapi-topology:name* [value-name]
-             |  |  |     +--ro tapi-topology:value-name    string
-             |  |  |     +--ro tapi-topology:value?        string
-             |  |  +--ro tapi-topology:available-mux-sequence* [local-id]
-             |  |  |  +--ro tapi-topology:layer-protocol-qualifier*   tapi-common:layer-protocol-qualifier
-             |  |  |  +--ro tapi-topology:number-of-cep-instances?    uint64
+             |  |  |     +--ro tapi-topology:value?   decimal64
+             |  |  |     +--ro tapi-topology:unit?    capacity-unit
+             |  |  +--ro tapi-topology:available-payload-structure* []
+             |  |  |  +--ro tapi-topology:multiplexing-sequence*     layer-protocol-qualifier
+             |  |  |  +--ro tapi-topology:number-of-cep-instances?   uint64
              |  |  |  +--ro tapi-topology:capacity
-             |  |  |  |  +--ro tapi-topology:value?   uint64
-             |  |  |  |  +--ro tapi-topology:unit?    capacity-unit
-             |  |  |  +--ro tapi-topology:local-id                    string
-             |  |  |  +--ro tapi-topology:name* [value-name]
-             |  |  |     +--ro tapi-topology:value-name    string
-             |  |  |     +--ro tapi-topology:value?        string
-             |  |  +--ro tapi-topology:direction?                        tapi-common:direction
-             |  |  +--ro tapi-topology:link-port-role?                   tapi-common:port-role
+             |  |  |     +--ro tapi-topology:value?   decimal64
+             |  |  |     +--ro tapi-topology:unit?    capacity-unit
              |  |  +--ro tapi-topology:aggregated-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
              |  |  |  +--ro tapi-topology:topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
              |  |  |  +--ro tapi-topology:node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
              |  |  |  +--ro tapi-topology:node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
              |  |  +--ro tapi-topology:mapped-service-interface-point* [service-interface-point-uuid]
              |  |  |  +--ro tapi-topology:service-interface-point-uuid    -> /tapi-common:context/service-interface-point/uuid
-             |  |  +--ro tapi-topology:inter-domain-plug-in-pac
+             |  |  +--ro tapi-topology:inter-domain-plug-id-pac
              |  |  |  +--ro tapi-topology:plug-id-inter-domain-local-id?    string
              |  |  |  +--ro tapi-topology:plug-id-inter-domain-remote-id?   string
+             |  |  +--ro tapi-topology:profile* [profile-uuid]
+             |  |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
              |  |  +--ro tapi-topology:sink-profile* [profile-uuid]
              |  |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
              |  |  +--ro tapi-topology:source-profile* [profile-uuid]
              |  |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
-             |  |  +--ro tapi-topology:profile* [profile-uuid]
-             |  |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
-             |  |  +--ro tapi-topology:uuid                              uuid
+             |  |  +--ro tapi-topology:direction?                                          tapi-common:direction
+             |  |  +--ro tapi-topology:link-port-role?                                     tapi-common:port-role
+             |  |  +--ro tapi-topology:uuid                                                uuid
              |  |  +--ro tapi-topology:name* [value-name]
              |  |  |  +--ro tapi-topology:value-name    string
              |  |  |  +--ro tapi-topology:value?        string
-             |  |  +--ro tapi-topology:administrative-state?             administrative-state
-             |  |  +--ro tapi-topology:operational-state?                operational-state
-             |  |  +--ro tapi-topology:lifecycle-state?                  lifecycle-state
+             |  |  +--ro tapi-topology:administrative-state?                               administrative-state
+             |  |  +--ro tapi-topology:operational-state?                                  operational-state
+             |  |  +--ro tapi-topology:lifecycle-state?                                    lifecycle-state
              |  |  +--ro tapi-topology:total-potential-capacity
              |  |  |  +--ro tapi-topology:total-size
-             |  |  |     +--ro tapi-topology:value?   uint64
+             |  |  |     +--ro tapi-topology:value?   decimal64
              |  |  |     +--ro tapi-topology:unit?    capacity-unit
              |  |  +--ro tapi-topology:available-capacity
              |  |     +--ro tapi-topology:total-size
-             |  |        +--ro tapi-topology:value?   uint64
+             |  |        +--ro tapi-topology:value?   decimal64
              |  |        +--ro tapi-topology:unit?    capacity-unit
              |  +--ro tapi-topology:aggregated-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
              |  |  +--ro tapi-topology:topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
@@ -12279,11 +12224,11 @@ module: tapi-streaming
              |  |  |  |  +--ro tapi-topology:value?        string
              |  |  |  +--ro tapi-topology:total-potential-capacity
              |  |  |  |  +--ro tapi-topology:total-size
-             |  |  |  |     +--ro tapi-topology:value?   uint64
+             |  |  |  |     +--ro tapi-topology:value?   decimal64
              |  |  |  |     +--ro tapi-topology:unit?    capacity-unit
              |  |  |  +--ro tapi-topology:available-capacity
              |  |  |  |  +--ro tapi-topology:total-size
-             |  |  |  |     +--ro tapi-topology:value?   uint64
+             |  |  |  |     +--ro tapi-topology:value?   decimal64
              |  |  |  |     +--ro tapi-topology:unit?    capacity-unit
              |  |  |  +--ro tapi-topology:cost-characteristic* [cost-name]
              |  |  |  |  +--ro tapi-topology:cost-name         string
@@ -12304,11 +12249,11 @@ module: tapi-streaming
              |  |  |  +--ro tapi-topology:value?        string
              |  |  +--ro tapi-topology:total-potential-capacity
              |  |  |  +--ro tapi-topology:total-size
-             |  |  |     +--ro tapi-topology:value?   uint64
+             |  |  |     +--ro tapi-topology:value?   decimal64
              |  |  |     +--ro tapi-topology:unit?    capacity-unit
              |  |  +--ro tapi-topology:available-capacity
              |  |  |  +--ro tapi-topology:total-size
-             |  |  |     +--ro tapi-topology:value?   uint64
+             |  |  |     +--ro tapi-topology:value?   decimal64
              |  |  |     +--ro tapi-topology:unit?    capacity-unit
              |  |  +--ro tapi-topology:cost-characteristic* [cost-name]
              |  |  |  +--ro tapi-topology:cost-name         string
@@ -12335,11 +12280,11 @@ module: tapi-streaming
              |  +--ro tapi-topology:lifecycle-state?                           lifecycle-state
              |  +--ro tapi-topology:total-potential-capacity
              |  |  +--ro tapi-topology:total-size
-             |  |     +--ro tapi-topology:value?   uint64
+             |  |     +--ro tapi-topology:value?   decimal64
              |  |     +--ro tapi-topology:unit?    capacity-unit
              |  +--ro tapi-topology:available-capacity
              |  |  +--ro tapi-topology:total-size
-             |  |     +--ro tapi-topology:value?   uint64
+             |  |     +--ro tapi-topology:value?   decimal64
              |  |     +--ro tapi-topology:unit?    capacity-unit
              |  +--ro tapi-topology:cost-characteristic* [cost-name]
              |  |  +--ro tapi-topology:cost-name         string
@@ -12360,62 +12305,56 @@ module: tapi-streaming
              +--ro tapi-topology:topology
              |  +--ro tapi-topology:node* [uuid]
              |  |  +--ro tapi-topology:owned-node-edge-point* [uuid]
-             |  |  |  +--ro tapi-topology:layer-protocol-name?              tapi-common:layer-protocol-name
-             |  |  |  +--ro tapi-topology:base-layer-protocol-qualifier?    tapi-common:layer-protocol-qualifier
-             |  |  |  +--ro tapi-topology:supported-cep-layer-protocol* [layer-protocol-qualifier]
-             |  |  |  |  +--ro tapi-topology:layer-protocol-qualifier    tapi-common:layer-protocol-qualifier
+             |  |  |  +--ro tapi-topology:layer-protocol-name?                                tapi-common:layer-protocol-name
+             |  |  |  +--ro tapi-topology:supported-cep-layer-protocol-qualifier-instances* []
+             |  |  |  |  +--ro tapi-topology:layer-protocol-qualifier?   layer-protocol-qualifier
              |  |  |  |  +--ro tapi-topology:number-of-cep-instances?    uint64
-             |  |  |  +--ro tapi-topology:supported-mux-sequence* [local-id]
-             |  |  |  |  +--ro tapi-topology:layer-protocol-qualifier*   tapi-common:layer-protocol-qualifier
+             |  |  |  +--ro tapi-topology:available-cep-layer-protocol-qualifier-instances* []
+             |  |  |  |  +--ro tapi-topology:layer-protocol-qualifier?   layer-protocol-qualifier
              |  |  |  |  +--ro tapi-topology:number-of-cep-instances?    uint64
+             |  |  |  +--ro tapi-topology:supported-layer-protocol-qualifier* []
+             |  |  |  |  +--ro tapi-topology:multiplexing-sequence*     layer-protocol-qualifier
+             |  |  |  |  +--ro tapi-topology:number-of-cep-instances?   uint64
              |  |  |  |  +--ro tapi-topology:capacity
-             |  |  |  |  |  +--ro tapi-topology:value?   uint64
-             |  |  |  |  |  +--ro tapi-topology:unit?    capacity-unit
-             |  |  |  |  +--ro tapi-topology:local-id                    string
-             |  |  |  |  +--ro tapi-topology:name* [value-name]
-             |  |  |  |     +--ro tapi-topology:value-name    string
-             |  |  |  |     +--ro tapi-topology:value?        string
-             |  |  |  +--ro tapi-topology:available-mux-sequence* [local-id]
-             |  |  |  |  +--ro tapi-topology:layer-protocol-qualifier*   tapi-common:layer-protocol-qualifier
-             |  |  |  |  +--ro tapi-topology:number-of-cep-instances?    uint64
+             |  |  |  |     +--ro tapi-topology:value?   decimal64
+             |  |  |  |     +--ro tapi-topology:unit?    capacity-unit
+             |  |  |  +--ro tapi-topology:available-payload-structure* []
+             |  |  |  |  +--ro tapi-topology:multiplexing-sequence*     layer-protocol-qualifier
+             |  |  |  |  +--ro tapi-topology:number-of-cep-instances?   uint64
              |  |  |  |  +--ro tapi-topology:capacity
-             |  |  |  |  |  +--ro tapi-topology:value?   uint64
-             |  |  |  |  |  +--ro tapi-topology:unit?    capacity-unit
-             |  |  |  |  +--ro tapi-topology:local-id                    string
-             |  |  |  |  +--ro tapi-topology:name* [value-name]
-             |  |  |  |     +--ro tapi-topology:value-name    string
-             |  |  |  |     +--ro tapi-topology:value?        string
-             |  |  |  +--ro tapi-topology:direction?                        tapi-common:direction
-             |  |  |  +--ro tapi-topology:link-port-role?                   tapi-common:port-role
+             |  |  |  |     +--ro tapi-topology:value?   decimal64
+             |  |  |  |     +--ro tapi-topology:unit?    capacity-unit
              |  |  |  +--ro tapi-topology:aggregated-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
              |  |  |  |  +--ro tapi-topology:topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
              |  |  |  |  +--ro tapi-topology:node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
              |  |  |  |  +--ro tapi-topology:node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
              |  |  |  +--ro tapi-topology:mapped-service-interface-point* [service-interface-point-uuid]
              |  |  |  |  +--ro tapi-topology:service-interface-point-uuid    -> /tapi-common:context/service-interface-point/uuid
-             |  |  |  +--ro tapi-topology:inter-domain-plug-in-pac
+             |  |  |  +--ro tapi-topology:inter-domain-plug-id-pac
              |  |  |  |  +--ro tapi-topology:plug-id-inter-domain-local-id?    string
              |  |  |  |  +--ro tapi-topology:plug-id-inter-domain-remote-id?   string
+             |  |  |  +--ro tapi-topology:profile* [profile-uuid]
+             |  |  |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
              |  |  |  +--ro tapi-topology:sink-profile* [profile-uuid]
              |  |  |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
              |  |  |  +--ro tapi-topology:source-profile* [profile-uuid]
              |  |  |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
-             |  |  |  +--ro tapi-topology:profile* [profile-uuid]
-             |  |  |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
-             |  |  |  +--ro tapi-topology:uuid                              uuid
+             |  |  |  +--ro tapi-topology:direction?                                          tapi-common:direction
+             |  |  |  +--ro tapi-topology:link-port-role?                                     tapi-common:port-role
+             |  |  |  +--ro tapi-topology:uuid                                                uuid
              |  |  |  +--ro tapi-topology:name* [value-name]
              |  |  |  |  +--ro tapi-topology:value-name    string
              |  |  |  |  +--ro tapi-topology:value?        string
-             |  |  |  +--ro tapi-topology:administrative-state?             administrative-state
-             |  |  |  +--ro tapi-topology:operational-state?                operational-state
-             |  |  |  +--ro tapi-topology:lifecycle-state?                  lifecycle-state
+             |  |  |  +--ro tapi-topology:administrative-state?                               administrative-state
+             |  |  |  +--ro tapi-topology:operational-state?                                  operational-state
+             |  |  |  +--ro tapi-topology:lifecycle-state?                                    lifecycle-state
              |  |  |  +--ro tapi-topology:total-potential-capacity
              |  |  |  |  +--ro tapi-topology:total-size
-             |  |  |  |     +--ro tapi-topology:value?   uint64
+             |  |  |  |     +--ro tapi-topology:value?   decimal64
              |  |  |  |     +--ro tapi-topology:unit?    capacity-unit
              |  |  |  +--ro tapi-topology:available-capacity
              |  |  |     +--ro tapi-topology:total-size
-             |  |  |        +--ro tapi-topology:value?   uint64
+             |  |  |        +--ro tapi-topology:value?   decimal64
              |  |  |        +--ro tapi-topology:unit?    capacity-unit
              |  |  +--ro tapi-topology:aggregated-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
              |  |  |  +--ro tapi-topology:topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
@@ -12485,11 +12424,11 @@ module: tapi-streaming
              |  |  |  |  |  +--ro tapi-topology:value?        string
              |  |  |  |  +--ro tapi-topology:total-potential-capacity
              |  |  |  |  |  +--ro tapi-topology:total-size
-             |  |  |  |  |     +--ro tapi-topology:value?   uint64
+             |  |  |  |  |     +--ro tapi-topology:value?   decimal64
              |  |  |  |  |     +--ro tapi-topology:unit?    capacity-unit
              |  |  |  |  +--ro tapi-topology:available-capacity
              |  |  |  |  |  +--ro tapi-topology:total-size
-             |  |  |  |  |     +--ro tapi-topology:value?   uint64
+             |  |  |  |  |     +--ro tapi-topology:value?   decimal64
              |  |  |  |  |     +--ro tapi-topology:unit?    capacity-unit
              |  |  |  |  +--ro tapi-topology:cost-characteristic* [cost-name]
              |  |  |  |  |  +--ro tapi-topology:cost-name         string
@@ -12510,11 +12449,11 @@ module: tapi-streaming
              |  |  |  |  +--ro tapi-topology:value?        string
              |  |  |  +--ro tapi-topology:total-potential-capacity
              |  |  |  |  +--ro tapi-topology:total-size
-             |  |  |  |     +--ro tapi-topology:value?   uint64
+             |  |  |  |     +--ro tapi-topology:value?   decimal64
              |  |  |  |     +--ro tapi-topology:unit?    capacity-unit
              |  |  |  +--ro tapi-topology:available-capacity
              |  |  |  |  +--ro tapi-topology:total-size
-             |  |  |  |     +--ro tapi-topology:value?   uint64
+             |  |  |  |     +--ro tapi-topology:value?   decimal64
              |  |  |  |     +--ro tapi-topology:unit?    capacity-unit
              |  |  |  +--ro tapi-topology:cost-characteristic* [cost-name]
              |  |  |  |  +--ro tapi-topology:cost-name         string
@@ -12541,11 +12480,11 @@ module: tapi-streaming
              |  |  +--ro tapi-topology:lifecycle-state?                           lifecycle-state
              |  |  +--ro tapi-topology:total-potential-capacity
              |  |  |  +--ro tapi-topology:total-size
-             |  |  |     +--ro tapi-topology:value?   uint64
+             |  |  |     +--ro tapi-topology:value?   decimal64
              |  |  |     +--ro tapi-topology:unit?    capacity-unit
              |  |  +--ro tapi-topology:available-capacity
              |  |  |  +--ro tapi-topology:total-size
-             |  |  |     +--ro tapi-topology:value?   uint64
+             |  |  |     +--ro tapi-topology:value?   decimal64
              |  |  |     +--ro tapi-topology:unit?    capacity-unit
              |  |  +--ro tapi-topology:cost-characteristic* [cost-name]
              |  |  |  +--ro tapi-topology:cost-name         string
@@ -12582,11 +12521,11 @@ module: tapi-streaming
              |  |  +--ro tapi-topology:lifecycle-state?                           lifecycle-state
              |  |  +--ro tapi-topology:total-potential-capacity
              |  |  |  +--ro tapi-topology:total-size
-             |  |  |     +--ro tapi-topology:value?   uint64
+             |  |  |     +--ro tapi-topology:value?   decimal64
              |  |  |     +--ro tapi-topology:unit?    capacity-unit
              |  |  +--ro tapi-topology:available-capacity
              |  |  |  +--ro tapi-topology:total-size
-             |  |  |     +--ro tapi-topology:value?   uint64
+             |  |  |     +--ro tapi-topology:value?   decimal64
              |  |  |     +--ro tapi-topology:unit?    capacity-unit
              |  |  +--ro tapi-topology:cost-characteristic* [cost-name]
              |  |  |  +--ro tapi-topology:cost-name         string
@@ -12640,11 +12579,11 @@ module: tapi-streaming
              |  +--ro tapi-topology:lifecycle-state?                           lifecycle-state
              |  +--ro tapi-topology:total-potential-capacity
              |  |  +--ro tapi-topology:total-size
-             |  |     +--ro tapi-topology:value?   uint64
+             |  |     +--ro tapi-topology:value?   decimal64
              |  |     +--ro tapi-topology:unit?    capacity-unit
              |  +--ro tapi-topology:available-capacity
              |  |  +--ro tapi-topology:total-size
-             |  |     +--ro tapi-topology:value?   uint64
+             |  |     +--ro tapi-topology:value?   decimal64
              |  |     +--ro tapi-topology:unit?    capacity-unit
              |  +--ro tapi-topology:cost-characteristic* [cost-name]
              |  |  +--ro tapi-topology:cost-name         string
@@ -12671,62 +12610,56 @@ module: tapi-streaming
              |  |  +--ro tapi-topology:validation-robustness?                string
              |  +--ro tapi-topology:transitioned-layer-protocol-name*          string
              +--ro tapi-topology:node-edge-point
-             |  +--ro tapi-topology:layer-protocol-name?              tapi-common:layer-protocol-name
-             |  +--ro tapi-topology:base-layer-protocol-qualifier?    tapi-common:layer-protocol-qualifier
-             |  +--ro tapi-topology:supported-cep-layer-protocol* [layer-protocol-qualifier]
-             |  |  +--ro tapi-topology:layer-protocol-qualifier    tapi-common:layer-protocol-qualifier
+             |  +--ro tapi-topology:layer-protocol-name?                                tapi-common:layer-protocol-name
+             |  +--ro tapi-topology:supported-cep-layer-protocol-qualifier-instances* []
+             |  |  +--ro tapi-topology:layer-protocol-qualifier?   layer-protocol-qualifier
              |  |  +--ro tapi-topology:number-of-cep-instances?    uint64
-             |  +--ro tapi-topology:supported-mux-sequence* [local-id]
-             |  |  +--ro tapi-topology:layer-protocol-qualifier*   tapi-common:layer-protocol-qualifier
+             |  +--ro tapi-topology:available-cep-layer-protocol-qualifier-instances* []
+             |  |  +--ro tapi-topology:layer-protocol-qualifier?   layer-protocol-qualifier
              |  |  +--ro tapi-topology:number-of-cep-instances?    uint64
+             |  +--ro tapi-topology:supported-layer-protocol-qualifier* []
+             |  |  +--ro tapi-topology:multiplexing-sequence*     layer-protocol-qualifier
+             |  |  +--ro tapi-topology:number-of-cep-instances?   uint64
              |  |  +--ro tapi-topology:capacity
-             |  |  |  +--ro tapi-topology:value?   uint64
-             |  |  |  +--ro tapi-topology:unit?    capacity-unit
-             |  |  +--ro tapi-topology:local-id                    string
-             |  |  +--ro tapi-topology:name* [value-name]
-             |  |     +--ro tapi-topology:value-name    string
-             |  |     +--ro tapi-topology:value?        string
-             |  +--ro tapi-topology:available-mux-sequence* [local-id]
-             |  |  +--ro tapi-topology:layer-protocol-qualifier*   tapi-common:layer-protocol-qualifier
-             |  |  +--ro tapi-topology:number-of-cep-instances?    uint64
+             |  |     +--ro tapi-topology:value?   decimal64
+             |  |     +--ro tapi-topology:unit?    capacity-unit
+             |  +--ro tapi-topology:available-payload-structure* []
+             |  |  +--ro tapi-topology:multiplexing-sequence*     layer-protocol-qualifier
+             |  |  +--ro tapi-topology:number-of-cep-instances?   uint64
              |  |  +--ro tapi-topology:capacity
-             |  |  |  +--ro tapi-topology:value?   uint64
-             |  |  |  +--ro tapi-topology:unit?    capacity-unit
-             |  |  +--ro tapi-topology:local-id                    string
-             |  |  +--ro tapi-topology:name* [value-name]
-             |  |     +--ro tapi-topology:value-name    string
-             |  |     +--ro tapi-topology:value?        string
-             |  +--ro tapi-topology:direction?                        tapi-common:direction
-             |  +--ro tapi-topology:link-port-role?                   tapi-common:port-role
+             |  |     +--ro tapi-topology:value?   decimal64
+             |  |     +--ro tapi-topology:unit?    capacity-unit
              |  +--ro tapi-topology:aggregated-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
              |  |  +--ro tapi-topology:topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
              |  |  +--ro tapi-topology:node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
              |  |  +--ro tapi-topology:node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
              |  +--ro tapi-topology:mapped-service-interface-point* [service-interface-point-uuid]
              |  |  +--ro tapi-topology:service-interface-point-uuid    -> /tapi-common:context/service-interface-point/uuid
-             |  +--ro tapi-topology:inter-domain-plug-in-pac
+             |  +--ro tapi-topology:inter-domain-plug-id-pac
              |  |  +--ro tapi-topology:plug-id-inter-domain-local-id?    string
              |  |  +--ro tapi-topology:plug-id-inter-domain-remote-id?   string
+             |  +--ro tapi-topology:profile* [profile-uuid]
+             |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
              |  +--ro tapi-topology:sink-profile* [profile-uuid]
              |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
              |  +--ro tapi-topology:source-profile* [profile-uuid]
              |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
-             |  +--ro tapi-topology:profile* [profile-uuid]
-             |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
-             |  +--ro tapi-topology:uuid?                             uuid
+             |  +--ro tapi-topology:direction?                                          tapi-common:direction
+             |  +--ro tapi-topology:link-port-role?                                     tapi-common:port-role
+             |  +--ro tapi-topology:uuid?                                               uuid
              |  +--ro tapi-topology:name* [value-name]
              |  |  +--ro tapi-topology:value-name    string
              |  |  +--ro tapi-topology:value?        string
-             |  +--ro tapi-topology:administrative-state?             administrative-state
-             |  +--ro tapi-topology:operational-state?                operational-state
-             |  +--ro tapi-topology:lifecycle-state?                  lifecycle-state
+             |  +--ro tapi-topology:administrative-state?                               administrative-state
+             |  +--ro tapi-topology:operational-state?                                  operational-state
+             |  +--ro tapi-topology:lifecycle-state?                                    lifecycle-state
              |  +--ro tapi-topology:total-potential-capacity
              |  |  +--ro tapi-topology:total-size
-             |  |     +--ro tapi-topology:value?   uint64
+             |  |     +--ro tapi-topology:value?   decimal64
              |  |     +--ro tapi-topology:unit?    capacity-unit
              |  +--ro tapi-topology:available-capacity
              |     +--ro tapi-topology:total-size
-             |        +--ro tapi-topology:value?   uint64
+             |        +--ro tapi-topology:value?   decimal64
              |        +--ro tapi-topology:unit?    capacity-unit
              +--ro tapi-topology:network-topology-service
              |  +--ro tapi-topology:topology* [topology-uuid]
@@ -12799,11 +12732,11 @@ module: tapi-streaming
              |  |  |  +--ro tapi-topology:value?        string
              |  |  +--ro tapi-topology:total-potential-capacity
              |  |  |  +--ro tapi-topology:total-size
-             |  |  |     +--ro tapi-topology:value?   uint64
+             |  |  |     +--ro tapi-topology:value?   decimal64
              |  |  |     +--ro tapi-topology:unit?    capacity-unit
              |  |  +--ro tapi-topology:available-capacity
              |  |  |  +--ro tapi-topology:total-size
-             |  |  |     +--ro tapi-topology:value?   uint64
+             |  |  |     +--ro tapi-topology:value?   decimal64
              |  |  |     +--ro tapi-topology:unit?    capacity-unit
              |  |  +--ro tapi-topology:cost-characteristic* [cost-name]
              |  |  |  +--ro tapi-topology:cost-name         string
@@ -12824,11 +12757,11 @@ module: tapi-streaming
              |  |  +--ro tapi-topology:value?        string
              |  +--ro tapi-topology:total-potential-capacity
              |  |  +--ro tapi-topology:total-size
-             |  |     +--ro tapi-topology:value?   uint64
+             |  |     +--ro tapi-topology:value?   decimal64
              |  |     +--ro tapi-topology:unit?    capacity-unit
              |  +--ro tapi-topology:available-capacity
              |  |  +--ro tapi-topology:total-size
-             |  |     +--ro tapi-topology:value?   uint64
+             |  |     +--ro tapi-topology:value?   decimal64
              |  |     +--ro tapi-topology:unit?    capacity-unit
              |  +--ro tapi-topology:cost-characteristic* [cost-name]
              |  |  +--ro tapi-topology:cost-name         string
@@ -12876,11 +12809,11 @@ module: tapi-streaming
              |  |  +--ro tapi-topology:value?        string
              |  +--ro tapi-topology:total-potential-capacity
              |  |  +--ro tapi-topology:total-size
-             |  |     +--ro tapi-topology:value?   uint64
+             |  |     +--ro tapi-topology:value?   decimal64
              |  |     +--ro tapi-topology:unit?    capacity-unit
              |  +--ro tapi-topology:available-capacity
              |  |  +--ro tapi-topology:total-size
-             |  |     +--ro tapi-topology:value?   uint64
+             |  |     +--ro tapi-topology:value?   decimal64
              |  |     +--ro tapi-topology:unit?    capacity-unit
              |  +--ro tapi-topology:cost-characteristic* [cost-name]
              |  |  +--ro tapi-topology:cost-name         string
@@ -12964,7 +12897,7 @@ module: tapi-streaming
              |  |  +--ro tapi-path-computation:layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
              |  |  +--ro tapi-path-computation:capacity
              |  |  |  +--ro tapi-path-computation:total-size
-             |  |  |     +--ro tapi-path-computation:value?   uint64
+             |  |  |     +--ro tapi-path-computation:value?   decimal64
              |  |  |     +--ro tapi-path-computation:unit?    capacity-unit
              |  |  +--ro tapi-path-computation:role?                       tapi-common:port-role
              |  |  +--ro tapi-path-computation:direction?                  tapi-common:direction
@@ -13064,7 +12997,7 @@ module: tapi-streaming
              |  +--ro tapi-path-computation:layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
              |  +--ro tapi-path-computation:capacity
              |  |  +--ro tapi-path-computation:total-size
-             |  |     +--ro tapi-path-computation:value?   uint64
+             |  |     +--ro tapi-path-computation:value?   decimal64
              |  |     +--ro tapi-path-computation:unit?    capacity-unit
              |  +--ro tapi-path-computation:role?                       tapi-common:port-role
              |  +--ro tapi-path-computation:direction?                  tapi-common:direction
@@ -13291,7 +13224,7 @@ module: tapi-streaming
              |  |  |     +--ro tapi-connectivity:connectivity-service-spec-id?     tapi-common:uuid
              |  |  +--ro tapi-connectivity:capacity
              |  |  |  +--ro tapi-connectivity:total-size
-             |  |  |     +--ro tapi-connectivity:value?   uint64
+             |  |  |     +--ro tapi-connectivity:value?   decimal64
              |  |  |     +--ro tapi-connectivity:unit?    capacity-unit
              |  |  +--ro tapi-connectivity:service-interface-point
              |  |  |  +--ro tapi-connectivity:service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
@@ -13337,7 +13270,7 @@ module: tapi-streaming
              |  |  +--ro tapi-connectivity:service-level?          string
              |  |  +--ro tapi-connectivity:requested-capacity
              |  |  |  +--ro tapi-connectivity:total-size
-             |  |  |     +--ro tapi-connectivity:value?   uint64
+             |  |  |     +--ro tapi-connectivity:value?   decimal64
              |  |  |     +--ro tapi-connectivity:unit?    capacity-unit
              |  |  +--ro tapi-connectivity:schedule
              |  |  |  +--ro tapi-connectivity:start-time?   date-and-time
@@ -13538,7 +13471,7 @@ module: tapi-streaming
              |  |     +--ro tapi-connectivity:connectivity-service-spec-id?     tapi-common:uuid
              |  +--ro tapi-connectivity:capacity
              |  |  +--ro tapi-connectivity:total-size
-             |  |     +--ro tapi-connectivity:value?   uint64
+             |  |     +--ro tapi-connectivity:value?   decimal64
              |  |     +--ro tapi-connectivity:unit?    capacity-unit
              |  +--ro tapi-connectivity:service-interface-point
              |  |  +--ro tapi-connectivity:service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
@@ -14308,7 +14241,7 @@ module: tapi-streaming
              |  |  |  +--ro tapi-virtual-network:virtual-nw-service-uuid    -> /tapi-common:context/tapi-virtual-network:virtual-network-context/virtual-nw-service/uuid
              |  |  +--ro tapi-virtual-network:requested-capacity
              |  |  |  +--ro tapi-virtual-network:total-size
-             |  |  |     +--ro tapi-virtual-network:value?   uint64
+             |  |  |     +--ro tapi-virtual-network:value?   decimal64
              |  |  |     +--ro tapi-virtual-network:unit?    capacity-unit
              |  |  +--ro tapi-virtual-network:service-level?            string
              |  |  +--ro tapi-virtual-network:service-layer*            tapi-common:layer-protocol-name
@@ -14357,7 +14290,7 @@ module: tapi-streaming
                 |  +--ro tapi-virtual-network:virtual-nw-service-uuid    -> /tapi-common:context/tapi-virtual-network:virtual-network-context/virtual-nw-service/uuid
                 +--ro tapi-virtual-network:requested-capacity
                 |  +--ro tapi-virtual-network:total-size
-                |     +--ro tapi-virtual-network:value?   uint64
+                |     +--ro tapi-virtual-network:value?   decimal64
                 |     +--ro tapi-virtual-network:unit?    capacity-unit
                 +--ro tapi-virtual-network:service-level?            string
                 +--ro tapi-virtual-network:service-layer*            tapi-common:layer-protocol-name
@@ -14385,62 +14318,56 @@ module: tapi-topology
     |     +--ro topology
     |        +--ro node* [uuid]
     |        |  +--ro owned-node-edge-point* [uuid]
-    |        |  |  +--ro layer-protocol-name?              tapi-common:layer-protocol-name
-    |        |  |  +--ro base-layer-protocol-qualifier?    tapi-common:layer-protocol-qualifier
-    |        |  |  +--ro supported-cep-layer-protocol* [layer-protocol-qualifier]
-    |        |  |  |  +--ro layer-protocol-qualifier    tapi-common:layer-protocol-qualifier
+    |        |  |  +--ro layer-protocol-name?                                tapi-common:layer-protocol-name
+    |        |  |  +--ro supported-cep-layer-protocol-qualifier-instances* []
+    |        |  |  |  +--ro layer-protocol-qualifier?   layer-protocol-qualifier
     |        |  |  |  +--ro number-of-cep-instances?    uint64
-    |        |  |  +--ro supported-mux-sequence* [local-id]
-    |        |  |  |  +--ro layer-protocol-qualifier*   tapi-common:layer-protocol-qualifier
+    |        |  |  +--ro available-cep-layer-protocol-qualifier-instances* []
+    |        |  |  |  +--ro layer-protocol-qualifier?   layer-protocol-qualifier
     |        |  |  |  +--ro number-of-cep-instances?    uint64
+    |        |  |  +--ro supported-layer-protocol-qualifier* []
+    |        |  |  |  +--ro multiplexing-sequence*     layer-protocol-qualifier
+    |        |  |  |  +--ro number-of-cep-instances?   uint64
     |        |  |  |  +--ro capacity
-    |        |  |  |  |  +--ro value?   uint64
-    |        |  |  |  |  +--ro unit?    capacity-unit
-    |        |  |  |  +--ro local-id                    string
-    |        |  |  |  +--ro name* [value-name]
-    |        |  |  |     +--ro value-name    string
-    |        |  |  |     +--ro value?        string
-    |        |  |  +--ro available-mux-sequence* [local-id]
-    |        |  |  |  +--ro layer-protocol-qualifier*   tapi-common:layer-protocol-qualifier
-    |        |  |  |  +--ro number-of-cep-instances?    uint64
+    |        |  |  |     +--ro value?   decimal64
+    |        |  |  |     +--ro unit?    capacity-unit
+    |        |  |  +--ro available-payload-structure* []
+    |        |  |  |  +--ro multiplexing-sequence*     layer-protocol-qualifier
+    |        |  |  |  +--ro number-of-cep-instances?   uint64
     |        |  |  |  +--ro capacity
-    |        |  |  |  |  +--ro value?   uint64
-    |        |  |  |  |  +--ro unit?    capacity-unit
-    |        |  |  |  +--ro local-id                    string
-    |        |  |  |  +--ro name* [value-name]
-    |        |  |  |     +--ro value-name    string
-    |        |  |  |     +--ro value?        string
-    |        |  |  +--ro direction?                        tapi-common:direction
-    |        |  |  +--ro link-port-role?                   tapi-common:port-role
+    |        |  |  |     +--ro value?   decimal64
+    |        |  |  |     +--ro unit?    capacity-unit
     |        |  |  +--ro aggregated-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
     |        |  |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
     |        |  |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
     |        |  |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
     |        |  |  +--ro mapped-service-interface-point* [service-interface-point-uuid]
     |        |  |  |  +--ro service-interface-point-uuid    -> /tapi-common:context/service-interface-point/uuid
-    |        |  |  +--ro inter-domain-plug-in-pac
+    |        |  |  +--ro inter-domain-plug-id-pac
     |        |  |  |  +--ro plug-id-inter-domain-local-id?    string
     |        |  |  |  +--ro plug-id-inter-domain-remote-id?   string
+    |        |  |  +--ro profile* [profile-uuid]
+    |        |  |  |  +--ro profile-uuid    -> /tapi-common:context/profile/uuid
     |        |  |  +--ro sink-profile* [profile-uuid]
     |        |  |  |  +--ro profile-uuid    -> /tapi-common:context/profile/uuid
     |        |  |  +--ro source-profile* [profile-uuid]
     |        |  |  |  +--ro profile-uuid    -> /tapi-common:context/profile/uuid
-    |        |  |  +--ro profile* [profile-uuid]
-    |        |  |  |  +--ro profile-uuid    -> /tapi-common:context/profile/uuid
-    |        |  |  +--ro uuid                              uuid
+    |        |  |  +--ro direction?                                          tapi-common:direction
+    |        |  |  +--ro link-port-role?                                     tapi-common:port-role
+    |        |  |  +--ro uuid                                                uuid
     |        |  |  +--ro name* [value-name]
     |        |  |  |  +--ro value-name    string
     |        |  |  |  +--ro value?        string
-    |        |  |  +--ro administrative-state?             administrative-state
-    |        |  |  +--ro operational-state?                operational-state
-    |        |  |  +--ro lifecycle-state?                  lifecycle-state
+    |        |  |  +--ro administrative-state?                               administrative-state
+    |        |  |  +--ro operational-state?                                  operational-state
+    |        |  |  +--ro lifecycle-state?                                    lifecycle-state
     |        |  |  +--ro total-potential-capacity
     |        |  |  |  +--ro total-size
-    |        |  |  |     +--ro value?   uint64
+    |        |  |  |     +--ro value?   decimal64
     |        |  |  |     +--ro unit?    capacity-unit
     |        |  |  +--ro available-capacity
     |        |  |     +--ro total-size
-    |        |  |        +--ro value?   uint64
+    |        |  |        +--ro value?   decimal64
     |        |  |        +--ro unit?    capacity-unit
     |        |  +--ro aggregated-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
     |        |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
@@ -14510,11 +14437,11 @@ module: tapi-topology
     |        |  |  |  |  +--ro value?        string
     |        |  |  |  +--ro total-potential-capacity
     |        |  |  |  |  +--ro total-size
-    |        |  |  |  |     +--ro value?   uint64
+    |        |  |  |  |     +--ro value?   decimal64
     |        |  |  |  |     +--ro unit?    capacity-unit
     |        |  |  |  +--ro available-capacity
     |        |  |  |  |  +--ro total-size
-    |        |  |  |  |     +--ro value?   uint64
+    |        |  |  |  |     +--ro value?   decimal64
     |        |  |  |  |     +--ro unit?    capacity-unit
     |        |  |  |  +--ro cost-characteristic* [cost-name]
     |        |  |  |  |  +--ro cost-name         string
@@ -14535,11 +14462,11 @@ module: tapi-topology
     |        |  |  |  +--ro value?        string
     |        |  |  +--ro total-potential-capacity
     |        |  |  |  +--ro total-size
-    |        |  |  |     +--ro value?   uint64
+    |        |  |  |     +--ro value?   decimal64
     |        |  |  |     +--ro unit?    capacity-unit
     |        |  |  +--ro available-capacity
     |        |  |  |  +--ro total-size
-    |        |  |  |     +--ro value?   uint64
+    |        |  |  |     +--ro value?   decimal64
     |        |  |  |     +--ro unit?    capacity-unit
     |        |  |  +--ro cost-characteristic* [cost-name]
     |        |  |  |  +--ro cost-name         string
@@ -14566,11 +14493,11 @@ module: tapi-topology
     |        |  +--ro lifecycle-state?                           lifecycle-state
     |        |  +--ro total-potential-capacity
     |        |  |  +--ro total-size
-    |        |  |     +--ro value?   uint64
+    |        |  |     +--ro value?   decimal64
     |        |  |     +--ro unit?    capacity-unit
     |        |  +--ro available-capacity
     |        |  |  +--ro total-size
-    |        |  |     +--ro value?   uint64
+    |        |  |     +--ro value?   decimal64
     |        |  |     +--ro unit?    capacity-unit
     |        |  +--ro cost-characteristic* [cost-name]
     |        |  |  +--ro cost-name         string
@@ -14607,11 +14534,11 @@ module: tapi-topology
     |        |  +--ro lifecycle-state?                           lifecycle-state
     |        |  +--ro total-potential-capacity
     |        |  |  +--ro total-size
-    |        |  |     +--ro value?   uint64
+    |        |  |     +--ro value?   decimal64
     |        |  |     +--ro unit?    capacity-unit
     |        |  +--ro available-capacity
     |        |  |  +--ro total-size
-    |        |  |     +--ro value?   uint64
+    |        |  |     +--ro value?   decimal64
     |        |  |     +--ro unit?    capacity-unit
     |        |  +--ro cost-characteristic* [cost-name]
     |        |  |  +--ro cost-name         string
@@ -14653,62 +14580,56 @@ module: tapi-topology
     |  +--ro output
     |     +--ro node
     |        +--ro owned-node-edge-point* [uuid]
-    |        |  +--ro layer-protocol-name?              tapi-common:layer-protocol-name
-    |        |  +--ro base-layer-protocol-qualifier?    tapi-common:layer-protocol-qualifier
-    |        |  +--ro supported-cep-layer-protocol* [layer-protocol-qualifier]
-    |        |  |  +--ro layer-protocol-qualifier    tapi-common:layer-protocol-qualifier
+    |        |  +--ro layer-protocol-name?                                tapi-common:layer-protocol-name
+    |        |  +--ro supported-cep-layer-protocol-qualifier-instances* []
+    |        |  |  +--ro layer-protocol-qualifier?   layer-protocol-qualifier
     |        |  |  +--ro number-of-cep-instances?    uint64
-    |        |  +--ro supported-mux-sequence* [local-id]
-    |        |  |  +--ro layer-protocol-qualifier*   tapi-common:layer-protocol-qualifier
+    |        |  +--ro available-cep-layer-protocol-qualifier-instances* []
+    |        |  |  +--ro layer-protocol-qualifier?   layer-protocol-qualifier
     |        |  |  +--ro number-of-cep-instances?    uint64
+    |        |  +--ro supported-layer-protocol-qualifier* []
+    |        |  |  +--ro multiplexing-sequence*     layer-protocol-qualifier
+    |        |  |  +--ro number-of-cep-instances?   uint64
     |        |  |  +--ro capacity
-    |        |  |  |  +--ro value?   uint64
-    |        |  |  |  +--ro unit?    capacity-unit
-    |        |  |  +--ro local-id                    string
-    |        |  |  +--ro name* [value-name]
-    |        |  |     +--ro value-name    string
-    |        |  |     +--ro value?        string
-    |        |  +--ro available-mux-sequence* [local-id]
-    |        |  |  +--ro layer-protocol-qualifier*   tapi-common:layer-protocol-qualifier
-    |        |  |  +--ro number-of-cep-instances?    uint64
+    |        |  |     +--ro value?   decimal64
+    |        |  |     +--ro unit?    capacity-unit
+    |        |  +--ro available-payload-structure* []
+    |        |  |  +--ro multiplexing-sequence*     layer-protocol-qualifier
+    |        |  |  +--ro number-of-cep-instances?   uint64
     |        |  |  +--ro capacity
-    |        |  |  |  +--ro value?   uint64
-    |        |  |  |  +--ro unit?    capacity-unit
-    |        |  |  +--ro local-id                    string
-    |        |  |  +--ro name* [value-name]
-    |        |  |     +--ro value-name    string
-    |        |  |     +--ro value?        string
-    |        |  +--ro direction?                        tapi-common:direction
-    |        |  +--ro link-port-role?                   tapi-common:port-role
+    |        |  |     +--ro value?   decimal64
+    |        |  |     +--ro unit?    capacity-unit
     |        |  +--ro aggregated-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
     |        |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
     |        |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
     |        |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
     |        |  +--ro mapped-service-interface-point* [service-interface-point-uuid]
     |        |  |  +--ro service-interface-point-uuid    -> /tapi-common:context/service-interface-point/uuid
-    |        |  +--ro inter-domain-plug-in-pac
+    |        |  +--ro inter-domain-plug-id-pac
     |        |  |  +--ro plug-id-inter-domain-local-id?    string
     |        |  |  +--ro plug-id-inter-domain-remote-id?   string
+    |        |  +--ro profile* [profile-uuid]
+    |        |  |  +--ro profile-uuid    -> /tapi-common:context/profile/uuid
     |        |  +--ro sink-profile* [profile-uuid]
     |        |  |  +--ro profile-uuid    -> /tapi-common:context/profile/uuid
     |        |  +--ro source-profile* [profile-uuid]
     |        |  |  +--ro profile-uuid    -> /tapi-common:context/profile/uuid
-    |        |  +--ro profile* [profile-uuid]
-    |        |  |  +--ro profile-uuid    -> /tapi-common:context/profile/uuid
-    |        |  +--ro uuid                              uuid
+    |        |  +--ro direction?                                          tapi-common:direction
+    |        |  +--ro link-port-role?                                     tapi-common:port-role
+    |        |  +--ro uuid                                                uuid
     |        |  +--ro name* [value-name]
     |        |  |  +--ro value-name    string
     |        |  |  +--ro value?        string
-    |        |  +--ro administrative-state?             administrative-state
-    |        |  +--ro operational-state?                operational-state
-    |        |  +--ro lifecycle-state?                  lifecycle-state
+    |        |  +--ro administrative-state?                               administrative-state
+    |        |  +--ro operational-state?                                  operational-state
+    |        |  +--ro lifecycle-state?                                    lifecycle-state
     |        |  +--ro total-potential-capacity
     |        |  |  +--ro total-size
-    |        |  |     +--ro value?   uint64
+    |        |  |     +--ro value?   decimal64
     |        |  |     +--ro unit?    capacity-unit
     |        |  +--ro available-capacity
     |        |     +--ro total-size
-    |        |        +--ro value?   uint64
+    |        |        +--ro value?   decimal64
     |        |        +--ro unit?    capacity-unit
     |        +--ro aggregated-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
     |        |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
@@ -14778,11 +14699,11 @@ module: tapi-topology
     |        |  |  |  +--ro value?        string
     |        |  |  +--ro total-potential-capacity
     |        |  |  |  +--ro total-size
-    |        |  |  |     +--ro value?   uint64
+    |        |  |  |     +--ro value?   decimal64
     |        |  |  |     +--ro unit?    capacity-unit
     |        |  |  +--ro available-capacity
     |        |  |  |  +--ro total-size
-    |        |  |  |     +--ro value?   uint64
+    |        |  |  |     +--ro value?   decimal64
     |        |  |  |     +--ro unit?    capacity-unit
     |        |  |  +--ro cost-characteristic* [cost-name]
     |        |  |  |  +--ro cost-name         string
@@ -14803,11 +14724,11 @@ module: tapi-topology
     |        |  |  +--ro value?        string
     |        |  +--ro total-potential-capacity
     |        |  |  +--ro total-size
-    |        |  |     +--ro value?   uint64
+    |        |  |     +--ro value?   decimal64
     |        |  |     +--ro unit?    capacity-unit
     |        |  +--ro available-capacity
     |        |  |  +--ro total-size
-    |        |  |     +--ro value?   uint64
+    |        |  |     +--ro value?   decimal64
     |        |  |     +--ro unit?    capacity-unit
     |        |  +--ro cost-characteristic* [cost-name]
     |        |  |  +--ro cost-name         string
@@ -14834,11 +14755,11 @@ module: tapi-topology
     |        +--ro lifecycle-state?                           lifecycle-state
     |        +--ro total-potential-capacity
     |        |  +--ro total-size
-    |        |     +--ro value?   uint64
+    |        |     +--ro value?   decimal64
     |        |     +--ro unit?    capacity-unit
     |        +--ro available-capacity
     |        |  +--ro total-size
-    |        |     +--ro value?   uint64
+    |        |     +--ro value?   decimal64
     |        |     +--ro unit?    capacity-unit
     |        +--ro cost-characteristic* [cost-name]
     |        |  +--ro cost-name         string
@@ -14864,47 +14785,41 @@ module: tapi-topology
     |  +--ro output
     |     +--ro node-edge-point
     |        +--ro layer-protocol-name?                                      tapi-common:layer-protocol-name
-    |        +--ro base-layer-protocol-qualifier?                            tapi-common:layer-protocol-qualifier
-    |        +--ro supported-cep-layer-protocol* [layer-protocol-qualifier]
-    |        |  +--ro layer-protocol-qualifier    tapi-common:layer-protocol-qualifier
+    |        +--ro supported-cep-layer-protocol-qualifier-instances* []
+    |        |  +--ro layer-protocol-qualifier?   layer-protocol-qualifier
     |        |  +--ro number-of-cep-instances?    uint64
-    |        +--ro supported-mux-sequence* [local-id]
-    |        |  +--ro layer-protocol-qualifier*   tapi-common:layer-protocol-qualifier
+    |        +--ro available-cep-layer-protocol-qualifier-instances* []
+    |        |  +--ro layer-protocol-qualifier?   layer-protocol-qualifier
     |        |  +--ro number-of-cep-instances?    uint64
+    |        +--ro supported-layer-protocol-qualifier* []
+    |        |  +--ro multiplexing-sequence*     layer-protocol-qualifier
+    |        |  +--ro number-of-cep-instances?   uint64
     |        |  +--ro capacity
-    |        |  |  +--ro value?   uint64
-    |        |  |  +--ro unit?    capacity-unit
-    |        |  +--ro local-id                    string
-    |        |  +--ro name* [value-name]
-    |        |     +--ro value-name    string
-    |        |     +--ro value?        string
-    |        +--ro available-mux-sequence* [local-id]
-    |        |  +--ro layer-protocol-qualifier*   tapi-common:layer-protocol-qualifier
-    |        |  +--ro number-of-cep-instances?    uint64
+    |        |     +--ro value?   decimal64
+    |        |     +--ro unit?    capacity-unit
+    |        +--ro available-payload-structure* []
+    |        |  +--ro multiplexing-sequence*     layer-protocol-qualifier
+    |        |  +--ro number-of-cep-instances?   uint64
     |        |  +--ro capacity
-    |        |  |  +--ro value?   uint64
-    |        |  |  +--ro unit?    capacity-unit
-    |        |  +--ro local-id                    string
-    |        |  +--ro name* [value-name]
-    |        |     +--ro value-name    string
-    |        |     +--ro value?        string
-    |        +--ro direction?                                                tapi-common:direction
-    |        +--ro link-port-role?                                           tapi-common:port-role
+    |        |     +--ro value?   decimal64
+    |        |     +--ro unit?    capacity-unit
     |        +--ro aggregated-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
     |        |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
     |        |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
     |        |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
     |        +--ro mapped-service-interface-point* [service-interface-point-uuid]
     |        |  +--ro service-interface-point-uuid    -> /tapi-common:context/service-interface-point/uuid
-    |        +--ro inter-domain-plug-in-pac
+    |        +--ro inter-domain-plug-id-pac
     |        |  +--ro plug-id-inter-domain-local-id?    string
     |        |  +--ro plug-id-inter-domain-remote-id?   string
+    |        +--ro profile* [profile-uuid]
+    |        |  +--ro profile-uuid    -> /tapi-common:context/profile/uuid
     |        +--ro sink-profile* [profile-uuid]
     |        |  +--ro profile-uuid    -> /tapi-common:context/profile/uuid
     |        +--ro source-profile* [profile-uuid]
     |        |  +--ro profile-uuid    -> /tapi-common:context/profile/uuid
-    |        +--ro profile* [profile-uuid]
-    |        |  +--ro profile-uuid    -> /tapi-common:context/profile/uuid
+    |        +--ro direction?                                                tapi-common:direction
+    |        +--ro link-port-role?                                           tapi-common:port-role
     |        +--ro uuid?                                                     uuid
     |        +--ro name* [value-name]
     |        |  +--ro value-name    string
@@ -14914,11 +14829,11 @@ module: tapi-topology
     |        +--ro lifecycle-state?                                          lifecycle-state
     |        +--ro total-potential-capacity
     |        |  +--ro total-size
-    |        |     +--ro value?   uint64
+    |        |     +--ro value?   decimal64
     |        |     +--ro unit?    capacity-unit
     |        +--ro available-capacity
     |        |  +--ro total-size
-    |        |     +--ro value?   uint64
+    |        |     +--ro value?   decimal64
     |        |     +--ro unit?    capacity-unit
     |        +--ro tapi-photonic-media:media-channel-node-edge-point-spec
     |           +--ro tapi-photonic-media:media-channel-pool-capability-pac
@@ -14975,11 +14890,11 @@ module: tapi-topology
     |        +--ro lifecycle-state?                           lifecycle-state
     |        +--ro total-potential-capacity
     |        |  +--ro total-size
-    |        |     +--ro value?   uint64
+    |        |     +--ro value?   decimal64
     |        |     +--ro unit?    capacity-unit
     |        +--ro available-capacity
     |        |  +--ro total-size
-    |        |     +--ro value?   uint64
+    |        |     +--ro value?   decimal64
     |        |     +--ro unit?    capacity-unit
     |        +--ro cost-characteristic* [cost-name]
     |        |  +--ro cost-name         string
@@ -15010,62 +14925,56 @@ module: tapi-topology
           +--ro topology* [uuid]
              +--ro node* [uuid]
              |  +--ro owned-node-edge-point* [uuid]
-             |  |  +--ro layer-protocol-name?              tapi-common:layer-protocol-name
-             |  |  +--ro base-layer-protocol-qualifier?    tapi-common:layer-protocol-qualifier
-             |  |  +--ro supported-cep-layer-protocol* [layer-protocol-qualifier]
-             |  |  |  +--ro layer-protocol-qualifier    tapi-common:layer-protocol-qualifier
+             |  |  +--ro layer-protocol-name?                                tapi-common:layer-protocol-name
+             |  |  +--ro supported-cep-layer-protocol-qualifier-instances* []
+             |  |  |  +--ro layer-protocol-qualifier?   layer-protocol-qualifier
              |  |  |  +--ro number-of-cep-instances?    uint64
-             |  |  +--ro supported-mux-sequence* [local-id]
-             |  |  |  +--ro layer-protocol-qualifier*   tapi-common:layer-protocol-qualifier
+             |  |  +--ro available-cep-layer-protocol-qualifier-instances* []
+             |  |  |  +--ro layer-protocol-qualifier?   layer-protocol-qualifier
              |  |  |  +--ro number-of-cep-instances?    uint64
+             |  |  +--ro supported-layer-protocol-qualifier* []
+             |  |  |  +--ro multiplexing-sequence*     layer-protocol-qualifier
+             |  |  |  +--ro number-of-cep-instances?   uint64
              |  |  |  +--ro capacity
-             |  |  |  |  +--ro value?   uint64
-             |  |  |  |  +--ro unit?    capacity-unit
-             |  |  |  +--ro local-id                    string
-             |  |  |  +--ro name* [value-name]
-             |  |  |     +--ro value-name    string
-             |  |  |     +--ro value?        string
-             |  |  +--ro available-mux-sequence* [local-id]
-             |  |  |  +--ro layer-protocol-qualifier*   tapi-common:layer-protocol-qualifier
-             |  |  |  +--ro number-of-cep-instances?    uint64
+             |  |  |     +--ro value?   decimal64
+             |  |  |     +--ro unit?    capacity-unit
+             |  |  +--ro available-payload-structure* []
+             |  |  |  +--ro multiplexing-sequence*     layer-protocol-qualifier
+             |  |  |  +--ro number-of-cep-instances?   uint64
              |  |  |  +--ro capacity
-             |  |  |  |  +--ro value?   uint64
-             |  |  |  |  +--ro unit?    capacity-unit
-             |  |  |  +--ro local-id                    string
-             |  |  |  +--ro name* [value-name]
-             |  |  |     +--ro value-name    string
-             |  |  |     +--ro value?        string
-             |  |  +--ro direction?                        tapi-common:direction
-             |  |  +--ro link-port-role?                   tapi-common:port-role
+             |  |  |     +--ro value?   decimal64
+             |  |  |     +--ro unit?    capacity-unit
              |  |  +--ro aggregated-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
              |  |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
              |  |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
              |  |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
              |  |  +--ro mapped-service-interface-point* [service-interface-point-uuid]
              |  |  |  +--ro service-interface-point-uuid    -> /tapi-common:context/service-interface-point/uuid
-             |  |  +--ro inter-domain-plug-in-pac
+             |  |  +--ro inter-domain-plug-id-pac
              |  |  |  +--ro plug-id-inter-domain-local-id?    string
              |  |  |  +--ro plug-id-inter-domain-remote-id?   string
+             |  |  +--ro profile* [profile-uuid]
+             |  |  |  +--ro profile-uuid    -> /tapi-common:context/profile/uuid
              |  |  +--ro sink-profile* [profile-uuid]
              |  |  |  +--ro profile-uuid    -> /tapi-common:context/profile/uuid
              |  |  +--ro source-profile* [profile-uuid]
              |  |  |  +--ro profile-uuid    -> /tapi-common:context/profile/uuid
-             |  |  +--ro profile* [profile-uuid]
-             |  |  |  +--ro profile-uuid    -> /tapi-common:context/profile/uuid
-             |  |  +--ro uuid                              uuid
+             |  |  +--ro direction?                                          tapi-common:direction
+             |  |  +--ro link-port-role?                                     tapi-common:port-role
+             |  |  +--ro uuid                                                uuid
              |  |  +--ro name* [value-name]
              |  |  |  +--ro value-name    string
              |  |  |  +--ro value?        string
-             |  |  +--ro administrative-state?             administrative-state
-             |  |  +--ro operational-state?                operational-state
-             |  |  +--ro lifecycle-state?                  lifecycle-state
+             |  |  +--ro administrative-state?                               administrative-state
+             |  |  +--ro operational-state?                                  operational-state
+             |  |  +--ro lifecycle-state?                                    lifecycle-state
              |  |  +--ro total-potential-capacity
              |  |  |  +--ro total-size
-             |  |  |     +--ro value?   uint64
+             |  |  |     +--ro value?   decimal64
              |  |  |     +--ro unit?    capacity-unit
              |  |  +--ro available-capacity
              |  |     +--ro total-size
-             |  |        +--ro value?   uint64
+             |  |        +--ro value?   decimal64
              |  |        +--ro unit?    capacity-unit
              |  +--ro aggregated-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
              |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
@@ -15135,11 +15044,11 @@ module: tapi-topology
              |  |  |  |  +--ro value?        string
              |  |  |  +--ro total-potential-capacity
              |  |  |  |  +--ro total-size
-             |  |  |  |     +--ro value?   uint64
+             |  |  |  |     +--ro value?   decimal64
              |  |  |  |     +--ro unit?    capacity-unit
              |  |  |  +--ro available-capacity
              |  |  |  |  +--ro total-size
-             |  |  |  |     +--ro value?   uint64
+             |  |  |  |     +--ro value?   decimal64
              |  |  |  |     +--ro unit?    capacity-unit
              |  |  |  +--ro cost-characteristic* [cost-name]
              |  |  |  |  +--ro cost-name         string
@@ -15160,11 +15069,11 @@ module: tapi-topology
              |  |  |  +--ro value?        string
              |  |  +--ro total-potential-capacity
              |  |  |  +--ro total-size
-             |  |  |     +--ro value?   uint64
+             |  |  |     +--ro value?   decimal64
              |  |  |     +--ro unit?    capacity-unit
              |  |  +--ro available-capacity
              |  |  |  +--ro total-size
-             |  |  |     +--ro value?   uint64
+             |  |  |     +--ro value?   decimal64
              |  |  |     +--ro unit?    capacity-unit
              |  |  +--ro cost-characteristic* [cost-name]
              |  |  |  +--ro cost-name         string
@@ -15191,11 +15100,11 @@ module: tapi-topology
              |  +--ro lifecycle-state?                           lifecycle-state
              |  +--ro total-potential-capacity
              |  |  +--ro total-size
-             |  |     +--ro value?   uint64
+             |  |     +--ro value?   decimal64
              |  |     +--ro unit?    capacity-unit
              |  +--ro available-capacity
              |  |  +--ro total-size
-             |  |     +--ro value?   uint64
+             |  |     +--ro value?   decimal64
              |  |     +--ro unit?    capacity-unit
              |  +--ro cost-characteristic* [cost-name]
              |  |  +--ro cost-name         string
@@ -15232,11 +15141,11 @@ module: tapi-topology
              |  +--ro lifecycle-state?                           lifecycle-state
              |  +--ro total-potential-capacity
              |  |  +--ro total-size
-             |  |     +--ro value?   uint64
+             |  |     +--ro value?   decimal64
              |  |     +--ro unit?    capacity-unit
              |  +--ro available-capacity
              |  |  +--ro total-size
-             |  |     +--ro value?   uint64
+             |  |     +--ro value?   decimal64
              |  |     +--ro unit?    capacity-unit
              |  +--ro cost-characteristic* [cost-name]
              |  |  +--ro cost-name         string
@@ -15299,7 +15208,7 @@ module: tapi-virtual-network
     |  |  |  |  +---w virtual-nw-service-uuid    -> /tapi-common:context/tapi-virtual-network:virtual-network-context/virtual-nw-service/uuid
     |  |  |  +---w requested-capacity
     |  |  |  |  +---w total-size
-    |  |  |  |     +---w value?   uint64
+    |  |  |  |     +---w value?   decimal64
     |  |  |  |     +---w unit?    capacity-unit
     |  |  |  +---w service-level?            string
     |  |  |  +---w service-layer*            tapi-common:layer-protocol-name
@@ -15343,7 +15252,7 @@ module: tapi-virtual-network
     |        |  |  +--ro virtual-nw-service-uuid    -> /tapi-common:context/tapi-virtual-network:virtual-network-context/virtual-nw-service/uuid
     |        |  +--ro requested-capacity
     |        |  |  +--ro total-size
-    |        |  |     +--ro value?   uint64
+    |        |  |     +--ro value?   decimal64
     |        |  |     +--ro unit?    capacity-unit
     |        |  +--ro service-level?            string
     |        |  +--ro service-layer*            tapi-common:layer-protocol-name
@@ -15399,7 +15308,7 @@ module: tapi-virtual-network
     |        |  |  +--ro virtual-nw-service-uuid    -> /tapi-common:context/tapi-virtual-network:virtual-network-context/virtual-nw-service/uuid
     |        |  +--ro requested-capacity
     |        |  |  +--ro total-size
-    |        |  |     +--ro value?   uint64
+    |        |  |     +--ro value?   decimal64
     |        |  |     +--ro unit?    capacity-unit
     |        |  +--ro service-level?            string
     |        |  +--ro service-layer*            tapi-common:layer-protocol-name
@@ -15455,7 +15364,7 @@ module: tapi-virtual-network
     |        |  |  +--ro virtual-nw-service-uuid    -> /tapi-common:context/tapi-virtual-network:virtual-network-context/virtual-nw-service/uuid
     |        |  +--ro requested-capacity
     |        |  |  +--ro total-size
-    |        |  |     +--ro value?   uint64
+    |        |  |     +--ro value?   decimal64
     |        |  |     +--ro unit?    capacity-unit
     |        |  +--ro service-level?            string
     |        |  +--ro service-layer*            tapi-common:layer-protocol-name
@@ -15509,7 +15418,7 @@ module: tapi-virtual-network
              |  |  +--ro virtual-nw-service-uuid    -> /tapi-common:context/tapi-virtual-network:virtual-network-context/virtual-nw-service/uuid
              |  +--ro requested-capacity
              |  |  +--ro total-size
-             |  |     +--ro value?   uint64
+             |  |     +--ro value?   decimal64
              |  |     +--ro unit?    capacity-unit
              |  +--ro service-level?            string
              |  +--ro service-layer*            tapi-common:layer-protocol-name

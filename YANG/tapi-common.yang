@@ -103,6 +103,13 @@ module tapi-common {
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 6020, RFC 6087 and ONF TAPI UML model
                   <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.0.0/UML>";
     }
+    augment "/tapi-common:context/tapi-common:profile" {
+        container transmission-capability-profile {
+            uses transmission-capability-profile;
+            description "none";
+        }
+        description "none";
+    }
     /**************************
     * definitions of references
     **************************/
@@ -224,17 +231,50 @@ module tapi-common {
             description "The layer protocol of the ServiceInterfacePoint (SIP).
                 Usage of layerProtocolName [>1]  in the ServiceInterfacePoint should be considered experimental.";
         }
-        leaf-list supported-layer-protocol-qualifier {
-            type layer-protocol-qualifier;
+        list supported-cep-layer-protocol-qualifier-instances {
             config false;
             min-elements 1;
+            uses supported-layer-protocol-qualifier;
             description "The supported sub-layer(s) or rate(s) of Layer Protocol.";
+        }
+        list available-cep-layer-protocol-qualifier-instances {
+            config false;
+            uses supported-layer-protocol-qualifier;
+            description "none";
+        }
+        list supported-payload-structure {
+            config false;
+            uses payload-structure;
+            description "none";
+        }
+        list available-payload-structure {
+            config false;
+            uses payload-structure;
+            description "none";
         }
         leaf direction {
             type direction;
             config false;
             description "The SIP direction.
                 If direction attribute is missing the ServiceInterfacePoint (SIP) instance is to be intended as 'BIDIRECTIONAL'.";
+        }
+        list profile {
+            uses profile-ref;
+            key 'profile-uuid';
+            config false;
+            description "none";
+        }
+        list sink-profile {
+            uses profile-ref;
+            key 'profile-uuid';
+            config false;
+            description "none";
+        }
+        list source-profile {
+            uses profile-ref;
+            key 'profile-uuid';
+            config false;
+            description "none";
         }
         uses global-class;
         uses admin-state-pac;
@@ -258,10 +298,65 @@ module tapi-common {
         uses global-class;
         description "none";
     }
+    grouping transmission-capability-profile {
+        list potential-payload-structure {
+            config false;
+            uses payload-structure;
+            description "Description of (potential) capability.";
+        }
+        description "none";
+    }
 
     /**************************
     * package type-definitions
     **************************/ 
+    identity CAPACITY_UNIT {
+        description "none";
+    }
+    identity CAPACITY_UNIT_TB {
+        base CAPACITY_UNIT;
+        description "Indicates that the integer CapacityValue is in TeraBytes";
+    }
+    identity CAPACITY_UNIT_TBPS {
+        base CAPACITY_UNIT;
+        description "Indicates that the integer CapacityValue is in Terabit-per-second";
+    }
+    identity CAPACITY_UNIT_GB {
+        base CAPACITY_UNIT;
+        description "Indicates that the integer CapacityValue is in GigaBytes";
+    }
+    identity CAPACITY_UNIT_GBPS {
+        base CAPACITY_UNIT;
+        description "Indicates that the integer CapacityValue is in Gigabit-per-second";
+    }
+    identity CAPACITY_UNIT_MB {
+        base CAPACITY_UNIT;
+        description "Indicates that the integer CapacityValue is in MegaBytes";
+    }
+    identity CAPACITY_UNIT_MBPS {
+        base CAPACITY_UNIT;
+        description "Indicates that the integer CapacityValue is in Megabit-per-second";
+    }
+    identity CAPACITY_UNIT_KB {
+        base CAPACITY_UNIT;
+        description "Indicates that the integer CapacityValue is in KiloBytes";
+    }
+    identity CAPACITY_UNIT_KBPS {
+        base CAPACITY_UNIT;
+        description "Indicates that the integer CapacityValue is in Kilobit-per-second";
+    }
+    identity CAPACITY_UNIT_GHz {
+        base CAPACITY_UNIT;
+        description "Indicates that the integer CapacityValue is in gigahertz (spectrum)";
+    }
+    identity CAPACITY_UNIT_MHz {
+        base CAPACITY_UNIT;
+        description "Indicates that the integer CapacityValue is in megahertz (spectrum)";
+    }
+    identity CAPACITY_UNIT_THz {
+        base CAPACITY_UNIT;
+        description "Indicates that the integer CapacityValue is in terahertz (spectrum)";
+    }
     identity LAYER_PROTOCOL_QUALIFIER {
         description "none";
     }
@@ -508,7 +603,9 @@ module tapi-common {
     }
     grouping capacity-value {
         leaf value {
-            type uint64;
+            type decimal64 {
+                fraction-digits 7;
+            }
             description "The specific value of the capacity.";
         }
         leaf unit {
@@ -518,37 +615,8 @@ module tapi-common {
         description "The Capacity (Bandwidth) values that are applicable for digital layers.";
     }
     typedef capacity-unit {
-        type enumeration {
-            enum TB {
-                description "Indicates that the integer CapacityValue is in TeraBytes";
-            }
-            enum TBPS {
-                description "Indicates that the integer CapacityValue is in Terabit-per-second";
-            }
-            enum GB {
-                description "Indicates that the integer CapacityValue is in GigaBytes";
-            }
-            enum GBPS {
-                description "Indicates that the integer CapacityValue is in Gigabit-per-second";
-            }
-            enum MB {
-                description "Indicates that the integer CapacityValue is in MegaBytes";
-            }
-            enum MBPS {
-                description "Indicates that the integer CapacityValue is in Megabit-per-second";
-            }
-            enum KB {
-                description "Indicates that the integer CapacityValue is in KiloBytes";
-            }
-            enum KBPS {
-                description "Indicates that the integer CapacityValue is in Kilobit-per-second";
-            }
-            enum GHz {
-                description "Indicates that the integer CapacityValue is in gigahertz (spectrum)";
-            }
-            enum MHz {
-                description "Indicates that the integer CapacityValue is in megahertz (spectrum)";
-            }
+        type identityref {
+            base CAPACITY_UNIT;
         }
         description "Units of measurement of the capacity.";
     }
@@ -717,6 +785,44 @@ module tapi-common {
         }
         description "The alarm condition name, or alarm probable cause.
             This extensible enumeration can be augmented with specific alarm condition names in the other modules.";
+    }
+    grouping payload-structure {
+        leaf-list multiplexing-sequence {
+            type layer-protocol-qualifier;
+            description "List of layer protocol qualifiers composing the multiplexing sequence.";
+        }
+        leaf number-of-cep-instances {
+            type uint64;
+            description "The maximum number of uppermost client CEPs (non-terminated). This relates to the first entry of the mux sequence.";
+        }
+        container capacity {
+            uses capacity-value;
+            description "The maximum capacity of the multiplexing sequence. E.g. in case of ODUFlex.";
+        }
+        description "The supported multiplexing sequences, e.g.
+            - ODU0; ODU1; ODU2; ODU4 : 80
+            - ODU0; ODU1; ODU2; ODU3; ODU4 : 64
+            - ODUflex; ODU2; ODU3; ODU4 : 64 [64/ts] : 10G
+            - ODUflex; ODU2; ODU4: 80 [80/ts] : 10G
+            - ODU1; ODU2; ODU3; ODUCn : 40 [mult. for n]
+            - ODU2; ODU4; ODUCn: 10 [mult. for n]
+            - ODU2; ODU3: ODU4; ODUCn: 8 [mult. for n]
+            - ODU3; ODU4; ODUCn: 2 [mult. for n]
+            - OTSiMC; MC; OMS; OTS : 80 : 50G
+            - ODUCn; OTSi : 2 : 200G
+            - ODUCn; OTSi : 1 : 400G
+            In each sequence, the first entry indicates the upper most client (non-terminated) CEP, the rest of entries indicate the server terminated CEPs (forming the mux path).";
+    }
+    grouping supported-layer-protocol-qualifier {
+        leaf layer-protocol-qualifier {
+            type layer-protocol-qualifier;
+            description "none";
+        }
+        leaf number-of-cep-instances {
+            type uint64;
+            description "Number of CEP instances at the layer protocol qualifier.";
+        }
+        description "none";
     }
 
     /**************************
