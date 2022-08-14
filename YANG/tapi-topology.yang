@@ -199,14 +199,6 @@ module tapi-topology {
         }
         description "none";
     }
-    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification" {
-        when 'derived-from-or-self(tapi-notification:target-object-type, "TOPOLOGY_OBJECT_TYPE_NODE_RULE_GROUP")';
-        container node-rule-group {
-            uses node-rule-group;
-            description "none";
-        }
-        description "none";
-    }
     augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
         when 'derived-from-or-self(tapi-streaming:record-content, "TOPOLOGY_OBJECT_TYPE_INTER_RULE_GROUP")';
         container inter-rule-group {
@@ -243,6 +235,78 @@ module tapi-topology {
         when 'derived-from-or-self(tapi-notification:target-object-type, "TOPOLOGY_OBJECT_TYPE_LINK")';
         container link {
             uses link;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-notification:event-notification" {
+        when 'derived-from-or-self(tapi-notification:target-object-type, "TOPOLOGY_OBJECT_TYPE_NODE")';
+        container node {
+            uses node;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-notification:event-notification" {
+        when 'derived-from-or-self(tapi-notification:target-object-type, "TOPOLOGY_OBJECT_TYPE_TOPOLOGY")';
+        container topology {
+            uses topology;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-notification:event-notification" {
+        when 'derived-from-or-self(tapi-notification:target-object-type, "TOPOLOGY_OBJECT_TYPE_NODE_EDGE_POINT")';
+        container node-edge-point {
+            uses node-edge-point;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-notification:event-notification" {
+        when 'derived-from-or-self(tapi-notification:target-object-type, "TOPOLOGY_OBJECT_TYPE_NETWORK_TOPOLOGY_SERVICE")';
+        container network-topology-service {
+            uses network-topology-service;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-notification:event-notification" {
+        when 'derived-from-or-self(tapi-notification:target-object-type, "TOPOLOGY_OBJECT_TYPE_RULE")';
+        container rule {
+            uses rule;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-notification:event-notification" {
+        when 'derived-from-or-self(tapi-notification:target-object-type, "TOPOLOGY_OBJECT_TYPE_LINK")';
+        container link {
+            uses link;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification" {
+        when 'derived-from-or-self(tapi-notification:target-object-type, "TOPOLOGY_OBJECT_TYPE_NODE_RULE_GROUP")';
+        container node-rule-group {
+            uses node-rule-group;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-notification:event-notification" {
+        when 'derived-from-or-self(tapi-notification:target-object-type, "TOPOLOGY_OBJECT_TYPE_NODE_RULE_GROUP")';
+        container node-rule-group {
+            uses node-rule-group;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-notification:event-notification" {
+        when 'derived-from-or-self(tapi-notification:target-object-type, "TOPOLOGY_OBJECT_TYPE_INTER_RULE_GROUP")';
+        container inter-rule-group {
+            uses inter-rule-group;
             description "none";
         }
         description "none";
@@ -299,7 +363,6 @@ module tapi-topology {
         }
         description "none";
     }
-    
     /**************************
     * package object-classes
     **************************/ 
@@ -466,6 +529,12 @@ module tapi-topology {
             config false;
             uses inter-domain-plug-id-pac;
             description "ENNI Identifier.";
+        }
+        list node-rule-group {
+            uses node-rule-group-ref;
+            key 'topology-uuid node-uuid node-rule-group-uuid';
+            config false;
+            description "none";
         }
         list profile {
             uses tapi-common:profile-ref;
@@ -655,7 +724,6 @@ module tapi-topology {
             uses node-edge-point-ref;
             key 'topology-uuid node-uuid node-edge-point-uuid';
             config false;
-            min-elements 1;
             description "NEPs and their client CEPs that the rules apply to.";
         }
         list node-rule-group {
@@ -746,6 +814,24 @@ module tapi-topology {
             config false;
             description "Allows for more complex rules where the basic rule system is not sufficient.";
         }
+        list profile {
+            uses tapi-common:profile-ref;
+            key 'profile-uuid';
+            config false;
+            description "none";
+        }
+        list sink-profile {
+            uses tapi-common:profile-ref;
+            key 'profile-uuid';
+            config false;
+            description "none";
+        }
+        list source-profile {
+            uses tapi-common:profile-ref;
+            key 'profile-uuid';
+            config false;
+            description "none";
+        }
         uses tapi-common:local-class;
         description "Single complex rule statement.
             A Node with no rule group has no restrictions and is essentially May/Any.
@@ -782,6 +868,34 @@ module tapi-topology {
     /**************************
     * package type-definitions
     **************************/ 
+    identity FORWARDING_RULE {
+        description "none";
+    }
+    identity FORWARDING_RULE_MAY_FORWARD_ACROSS_GROUP {
+        base FORWARDING_RULE;
+        description "NEPs referenced by the NodeRuleGroup (or indirectly by the InterRuleGroup between NodeRuleGroups) may have Connections created between them unless some other rule overrides this.
+            For an InterRuleGroup points in a NodeRuleGroup at one end of the InterRuleGroup may be connected to points in a NodeRuleGroup at another end of the InterRuleGroup.";
+    }
+    identity FORWARDING_RULE_MUST_FORWARD_ACROSS_GROUP {
+        base FORWARDING_RULE;
+        description "NEPs referenced by the NodeRuleGroup (or indirectly by the InterRuleGroup between NodeRuleGroups) MUST have Connections created between them unless some other rule overrides this.
+            For an InterRuleGroup points in a NodeRuleGroup at one end of the InterRuleGroup MUST be connected to points in a NodeRuleGroup at another end of the InterRuleGroup.";
+    }
+    identity FORWARDING_RULE_CANNOT_FORWARD_ACROSS_GROUP {
+        base FORWARDING_RULE;
+        description "NEPs referenced by the NodeRuleGroup (or indirectly by the InterRuleGroup between NodeRuleGroups) MUST NOT have Connections created between them.
+            For an InterRuleGroup points in a NodeRuleGroup at one end of the InterRuleGroup MUST NOT be connected to points in an NodeRuleGroup at another end of the InterRuleGroup.";
+    }
+    identity FORWARDING_RULE_NO_STATEMENT_ON_FORWARDING {
+        base FORWARDING_RULE;
+        description "The rule group makes no statement on forwarding.";
+    }
+    identity FORWARDING_RULE_INTER_CONNECTION_CONTENTION {
+        base FORWARDING_RULE;
+        description "Connections to NEPs in the Rule Group contend for resources based upon a constraint of some signal property.
+            For example, each Connection to a NEP in the Group must use a different value of the signal property from all other Connections to NEPs in the Rule Group.
+            For example, each Connection to a NEP in the Group must use a same value of the signal property as all other Connections to NEPs in the Rule Group. In this case the first Connection created in the Rule Group sets the value and the Group constraint is freed when the last Connection is deleted.";
+    }
     identity TOPOLOGY_OBJECT_TYPE {
     	base tapi-common:OBJECT_TYPE;
         description "none";
@@ -930,27 +1044,8 @@ module tapi-topology {
         description "Identifies the validation mechanism and describes the characteristics of that mechanism.";
     }
     typedef forwarding-rule {
-        type enumeration {
-            enum MAY_FORWARD_ACROSS_GROUP {
-                description "NEPs referenced by the NodeRuleGroup (or indirectly by the InterRuleGroup between NodeRuleGroups) may have Connections created between them unless some other rule overrides this.
-                    For an InterRuleGroup points in a NodeRuleGroup at one end of the InterRuleGroup may be connected to points in a NodeRuleGroup at another end of the InterRuleGroup.";
-            }
-            enum MUST_FORWARD_ACROSS_GROUP {
-                description "NEPs referenced by the NodeRuleGroup (or indirectly by the InterRuleGroup between NodeRuleGroups) MUST have Connections created between them unless some other rule overrides this.
-                    For an InterRuleGroup points in a NodeRuleGroup at one end of the InterRuleGroup MUST be connected to points in a NodeRuleGroup at another end of the InterRuleGroup.";
-            }
-            enum CANNOT_FORWARD_ACROSS_GROUP {
-                description "NEPs referenced by the NodeRuleGroup (or indirectly by the InterRuleGroup between NodeRuleGroups) MUST NOT have Connections created between them.
-                    For an InterRuleGroup points in a NodeRuleGroup at one end of the InterRuleGroup MUST NOT be connected to points in an NodeRuleGroup at another end of the InterRuleGroup.";
-            }
-            enum NO_STATEMENT_ON_FORWARDING {
-                description "The rule group makes no statement on forwarding.";
-            }
-            enum INTER_CONNECTION_CONTENTION {
-                description "Connections to NEPs in the Rule Group contend for resources based upon a constraint of some signal property.
-                    For example, each Connection to a NEP in the Group must use a different value of the signal property from all other Connections to NEPs in the Rule Group.
-                    For example, each Connection to a NEP in the Group must use a same value of the signal property as all other Connections to NEPs in the Rule Group. In this case the first Connection created in the Rule Group sets the value and the Group constraint is freed when the last Connection is deleted.";
-            }
+        type identityref {
+            base FORWARDING_RULE;
         }
         description "Rule that restricts the creation/deletion of a Connection between points referenced by rule groups.";
     }

@@ -3,7 +3,6 @@ module: tapi-digital-otn
   augment /tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point:
     +--ro odu-connection-end-point-spec
        +--ro odu-common
-       |  +--ro odu-type?             odu-type
        |  +--ro odu-rate?             uint64
        |  +--ro odu-rate-tolerance?   uint64
        +--ro odu-term-and-adapter
@@ -13,7 +12,7 @@ module: tapi-digital-otn
        |  +--ro configured-mapping-type?           mapping-type
        |  +--ro accepted-payload-type
        |  |  +--ro named-payload-type?   odu-named-payload-type
-       |  |  +--ro hex-payload-type?     uint64
+       |  |  +--ro hex-payload-type?     string
        |  +--ro number-of-odu-c?                   uint64
        |  +--ro odu-cn-effective-time-slot-list*   uint64
        |  +--ro odu-mep
@@ -152,51 +151,51 @@ module: tapi-digital-otn
              +--ro operational-state?   tapi-common:operational-state
              +--ro acti?                string
   augment /tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:current-data:
-    +--ro odu-error-performance-data
-       +--ro near-end-odu-counters
+    +--ro otn-error-performance-data
+       +--ro near-end-otn-counters
        |  +--ro bbe?   uint64
        |  +--ro ses?   uint64
        |  +--ro uas?   uint64
-       +--ro far-end-odu-counters
+       +--ro far-end-otn-counters
        |  +--ro bbe?   uint64
        |  +--ro ses?   uint64
        |  +--ro uas?   uint64
        +--ro bidirectional-uas?               uint64
        +--ro codirectional?                   boolean
-       +--ro odu-cn-error-performance-data* [odu-cn-oh-index]
-          +--ro near-end-odu-counters
+       +--ro otn-cn-error-performance-data* [otn-cn-oh-index]
+          +--ro near-end-otn-counters
           |  +--ro bbe?   uint64
           |  +--ro ses?   uint64
           |  +--ro uas?   uint64
-          +--ro far-end-odu-counters
+          +--ro far-end-otn-counters
           |  +--ro bbe?   uint64
           |  +--ro ses?   uint64
           |  +--ro uas?   uint64
           +--ro bidirectional-uas?       uint64
-          +--ro odu-cn-oh-index          uint64
+          +--ro otn-cn-oh-index          uint64
   augment /tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:current-data/tapi-oam:history-data:
-    +--ro odu-error-performance-data
-       +--ro near-end-odu-counters
+    +--ro otn-error-performance-data
+       +--ro near-end-otn-counters
        |  +--ro bbe?   uint64
        |  +--ro ses?   uint64
        |  +--ro uas?   uint64
-       +--ro far-end-odu-counters
+       +--ro far-end-otn-counters
        |  +--ro bbe?   uint64
        |  +--ro ses?   uint64
        |  +--ro uas?   uint64
        +--ro bidirectional-uas?               uint64
        +--ro codirectional?                   boolean
-       +--ro odu-cn-error-performance-data* [odu-cn-oh-index]
-          +--ro near-end-odu-counters
+       +--ro otn-cn-error-performance-data* [otn-cn-oh-index]
+          +--ro near-end-otn-counters
           |  +--ro bbe?   uint64
           |  +--ro ses?   uint64
           |  +--ro uas?   uint64
-          +--ro far-end-odu-counters
+          +--ro far-end-otn-counters
           |  +--ro bbe?   uint64
           |  +--ro ses?   uint64
           |  +--ro uas?   uint64
           +--ro bidirectional-uas?       uint64
-          +--ro odu-cn-oh-index          uint64
+          +--ro otn-cn-oh-index          uint64
   augment /tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:current-data:
     +--ro otu-fec-performance-data
        +--ro fec-corrected-errors-count?   uint64
@@ -214,8 +213,9 @@ module: tapi-digital-otn
        +--ro uncorrectable-bits?           uint64
        +--ro corrected-bytes?              uint64
   augment /tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-service:
-    +--rw odu-tcm-oam-service
-       +--rw tcm-level?   uint64
+    +--rw otn-oam-service
+       +--rw odu-tcm-oam-service
+          +--rw tcm-level?   uint64
   augment /tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point:
     +--ro otu-connection-end-point-spec
        +--ro otu-ttp-pac
@@ -350,11 +350,14 @@ module: tapi-digital-otn
        |  +--rw tributary-port-number?   uint64
        |  +--rw tributary-slot-list*     uint64
        +--rw odu-csep-ttp-pac
-          +--rw configured-mapping-type?   mapping-type
-          +--rw configured-client-type?    tapi-dsr:digital-signal-type
+       |  +--rw configured-mapping-type?   mapping-type
+       |  +--rw configured-client-type?    tapi-dsr:digital-signal-type
+       +--rw odu-cn-csep-ttp-pac
+          +--rw number-of-odu-c?   uint64
   augment /tapi-common:context/tapi-oam:oam-context/tapi-oam:meg:
-    +--ro odu-tcm-meg-spec
-       +--ro tcm-level?   uint64
+    +--ro otn-meg-spec
+       +--ro odu-tcm-meg
+          +--ro tcm-level?   uint64
   augment /tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point/tapi-oam:connectivity-oam-service:
     +--rw otn-oam-mep-service-point
        +--rw odu-mep
@@ -452,7 +455,7 @@ module: tapi-digital-otn
              +--ro tcm-field?           uint64
              +--ro operational-state?   tapi-common:operational-state
              +--ro acti?                string
-  augment /tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:current-data:
+  augment /tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:current-data/tapi-oam:history-data:
     +--ro odu-delay-performance-data
        +--ro delay-frame-count?       uint64
        +--ro delay-measure-success?   boolean
@@ -464,6 +467,7 @@ module: tapi-digital-otn
           |  +--rw standard-fec-type?      standard-fec-type
           |  +--rw proprietary-fec-type?   string
           +--rw baud-rate?   uint64
-  augment /tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point/tapi-connectivity:layer-protocol-constraint:
-    +--rw odu-cn-csep-ttp-pac
-       +--rw number-of-odu-c?   uint64
+  augment /tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:current-data:
+    +--ro odu-delay-performance-data
+       +--ro delay-frame-count?       uint64
+       +--ro delay-measure-success?   boolean
