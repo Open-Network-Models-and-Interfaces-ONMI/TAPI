@@ -2,15 +2,16 @@
 module: tapi-streaming
   augment /tapi-common:context:
     +--rw stream-admin-context {tapi-streaming-admin}?
-       +--ro stream-monitor* [uuid]
-       |  +--ro id-of-last-record-read-from-log?    string
-       |  +--ro id-of-last-record-written-to-log?   string
+       +--ro stream-monitor* [uuid] {note-that-this-may-be-an-empty-list}?
        |  +--ro available-stream
        |  |  +--ro available-stream-uuid?   -> /tapi-common:context/tapi-streaming:stream-context/available-stream/uuid
-       |  +--ro client-id?                          string
-       |  +--ro last-updated?                       tapi-common:date-and-time
-       |  +--ro client-address?                     string
-       |  +--ro uuid                                uuid
+       |  +--ro client-id?             string
+       |  +--ro client-address?        string
+       |  +--ro dynamic-stream-data {mandatory-where-dynamic-data-is-to-be-reported}?
+       |  |  +--ro id-of-last-record-written-to-log?   string {mandatory-where-the-most-recent-record-written-is-being-recorded}?
+       |  |  +--ro id-of-last-record-read-from-log?    string {mandatory-where-last-record-read-is-being-recorded}?
+       |  |  +--ro last-updated?                       tapi-common:date-and-time
+       |  +--ro uuid                   uuid
        |  +--ro name* [value-name]
        |     +--ro value-name    string
        |     +--ro value?        string
@@ -20,139 +21,122 @@ module: tapi-streaming
           +--rw value?        string
   augment /tapi-common:context:
     +--rw stream-context {tapi-streaming}?
-       +--ro available-stream* [uuid]
-       |  +--ro connection-address?      string
-       |  +--ro stream-state?            stream-state
+       +--ro available-stream* [uuid] {note-that-this-may-be-an-empty-list}?
+       |  +--ro connection-address*      string
+       |  +--ro stream-state?            stream-state {mandatory-where-stream-state-is-not-always-default}?
        |  +--ro supported-stream-type
        |  |  +--ro supported-stream-type-uuid?   -> /tapi-common:context/tapi-streaming:stream-context/supported-stream-type/uuid
-       |  +--ro stream-id?               string
-       |  +--ro connection-protocol?     string
+       |  +--ro stream-id?               string {mandatory-where-an-alternative-id-to-the-uuid-is-available}?
+       |  +--ro connection-protocol?     connection-protocol {mandatory-where-not-default-and-multiple-options-offered-in-the-supported-stream-type}?
        |  +--ro uuid                     uuid
        |  +--ro name* [value-name]
        |     +--ro value-name    string
        |     +--ro value?        string
-       +--ro supported-stream-type* [uuid]
-          +--ro stream-type-name?              string
-          +--ro record-retention?              string
-          +--ro segment-size?                  string
-          +--ro stream-type-content*           tapi-common:object-type
-          +--ro log-storage-strategy?          log-storage-strategy
-          +--ro log-record-strategy?           log-record-strategy
+       +--ro supported-stream-type* [uuid] {note-that-this-may-be-an-empty-list}?
+          +--ro stream-type-name?              string {mandatory-where-assisted-human-interpretation-is-required}?
+          +--ro record-retention?              string {mandatory-if-not-default}?
+          +--ro segment-size?                  string {mandatory-where-log-is-segmented,-and-segment-size-is-considered-relevant-for-client-application-usage}?
+          +--ro stream-type-content*           tapi-common:object-type {mandatory-if-the-stream-propagates-tapi-entities-if-not-present-a-separate-augment-must-explain-stream-content}?
+          +--ro log-storage-strategy?          log-storage-strategy {mandatory-if-not-default}?
+          +--ro log-record-strategy?           log-record-strategy {mandatory-if-not-default}?
+          +--ro record-trigger?                record-trigger {mandatory-where-not-default}?
           +--ro uuid                           uuid
           +--ro name* [value-name]
           |  +--ro value-name    string
           |  +--ro value?        string
           +--rw compacted-log-details {tapi-streaming}?
-          |  +--ro tombstone-retention?   string
-          |  +--ro compaction-delay?      string
+          |  +--ro tombstone-retention?              string {mandatory-where-not-default}?
+          |  +--ro compaction-delay?                 string {mandatory-where-not-default}?
+          |  +--ro max-allowed-segment-roll-delay?   string {mandatory-if-not-default,-ie,-log-is-segmented-in-such-a-way-that-the-active-head-segment-is-not-available-for-compaction}?
+          |  +--ro max-compaction-lag?               string {mandatory-where-not-default}?
           +--ro connection-protocol-details {tapi-streaming}?
-             +--ro allowed-connection-protocols*   string
-
-  rpcs:
-    +---x connect-to-stream
-    |  +---w input
-    |     +---w start-from-token?     string
-    |     +---w connection-address?   string
-    +---x get-available-stream-connection-details
-    |  +--ro output
-    |     +--ro active-connections* []
-    |        +--ro connection-address?      string
-    |        +--ro stream-state?            stream-state
-    |        +--ro supported-stream-type
-    |        |  +--ro supported-stream-type-uuid?   -> /tapi-common:context/tapi-streaming:stream-context/supported-stream-type/uuid
-    |        +--ro stream-id?               string
-    |        +--ro connection-protocol?     string
-    |        +--ro uuid?                    uuid
-    |        +--ro name* [value-name]
-    |           +--ro value-name    string
-    |           +--ro value?        string
-    +---x get-supported-stream-connection-types
-       +--ro output
-          +--ro supported-stream-types* []
-             +--ro stream-type-name?       string
-             +--ro record-retention?       string
-             +--ro segment-size?           string
-             +--ro stream-type-content*    tapi-common:object-type
-             +--ro log-storage-strategy?   log-storage-strategy
-             +--ro log-record-strategy?    log-record-strategy
-             +--ro uuid?                   uuid
-             +--ro name* [value-name]
-                +--ro value-name    string
-                +--ro value?        string
+          |  +--ro allowed-connection-protocols*   connection-protocol {mandatory-if-not-default}?
+          |  +--ro encoding-format?                encoding-format {mandatory-if-not-default}?
+          +--ro information-record-strategy {tapi-streaming}?
+             +--ro record-suppression?                      record-suppression {mandatory-where-not-default}?
+             +--ro value-expectation?                       value-expectation {mandatory-where-not-default}?
+             +--ro allowed-dither-from-value-expectation?   value-expectation-dither {mandatory-where-not-default}?
 
   notifications:
     +---n stream-record
-       +--ro log-record* []
-          +--ro log-record-header
-          |  +--ro tapi-context?                tapi-common:uuid
-          |  +--ro token?                       string
+       +--ro log-record* [] {mandatory-where-there-is-one-or-more-conformant-log-records-to-stream}?
+          +--ro log-record-header {mandatory-where-log-record-header-properties-are-to-be-conveyed}?
+          |  +--ro tapi-context?                tapi-common:uuid {mandatory-where-there-is-information-related-to-more-than-one-tapi-context-in-the-stream}?
+          |  +--ro token?                       string {mandatory-where-the-stream-type-is-from-a-compacted-log-or-it-offers-an-opportunity-to-recover-from-a-particular-record-using-the-token}?
           |  +--ro full-log-record-offset-id* [value-name]
           |  |  +--ro value-name    string
           |  |  +--ro value?        string
-          |  +--ro log-append-time-stamp?       tapi-common:date-and-time
-          |  +--ro entity-key?                  string
-          |  +--ro record-type?                 record-type
-          |  +--ro record-authenticity-token?   string
-          +--ro log-record-body
-             +--ro event-time-stamp
+          |  +--ro log-append-time-stamp?       tapi-common:date-and-time {mandatory-for-compacted-logs}?
+          |  +--ro entity-key?                  string {mandatory-for-compacted-logs}?
+          |  +--ro record-type?                 record-type {mandatory-where-not-default}?
+          |  +--ro record-authenticity-token?   string {mandatory-where-authenticity-method-providing-a-token-is-required}?
+          +--ro log-record-body {mandatory-where-log-record-body-properties-are-to-be-conveyed}?
+             +--ro event-time-stamp {mandatory-where-event-time-is-not-conveyed-via-another-property}?
              |  +--ro primary-time-stamp?   tapi-common:date-and-time
-             |  +--ro start-time-stamp?     tapi-common:date-and-time
-             |  +--ro spread?               spread
-             |  +--ro source-precision?     source-precision
-             +--ro event-source?              event-source
-             +--ro additional-event-info* [value-name]
+             |  +--ro start-time-stamp?     tapi-common:date-and-time {mandatory-where-the-time-is-only-approximately-known-and-where-the-event-is-known-to-have-occurred-after-a-particular-time}?
+             |  +--ro spread?               spread {mandatory-if-not-default}?
+             |  +--ro source-precision?     source-precision {mandatory-if-not-default}?
+             +--ro event-source?              event-source {mandtory-where-not-default}?
+             +--ro additional-event-info* [value-name] {mandatory-where-there-is-additional-info-to-convey}?
              |  +--ro value-name    string
              |  +--ro value?        string
-             +--ro parent-address*            string
-             +--ro record-content?            tapi-common:object-type
-             +--rw condition-detector {tapi-streaming}?
+             +--ro parent-address*            string {mandatory-where-the-class-has-a-parent-and-the-parent-is-not-context}?
+             +--ro record-content?            tapi-common:object-type {mandatory-where-the-record-content-is-(the-whole-of-or-part-of)-a-standard-tapi-object}?
+             +--ro profile
+             |  +--ro uuid?   uuid
+             |  +--ro name* [value-name]
+             |     +--ro value-name    string
+             |     +--ro value?        string
+             +--ro condition-detector {tapi-streaming}?
              |  +--ro condition-native-name?             string
-             |  +--ro measured-entity-uuid?              tapi-common:uuid
+             |  +--ro measured-entity-uuid?              tapi-common:uuid {mandatory-where-there-is-a-standard-tapi-entity-(normally-the-case)}?
              |  +--ro measured-entity-native-id?         string
-             |  +--ro condition-normalized-name?         string
-             |  +--ro measured-entity-class?             tapi-common:object-type
-             |  +--ro detector-uuid?                     tapi-common:uuid
+             |  +--ro condition-normalized-name?         string {mandatory-where-the-condition-has-a-normalized-name}?
+             |  +--ro measured-entity-class?             tapi-common:object-type {mandatory-where-the-measured-entity-class-is-known}?
+             |  +--ro detector-uuid?                     tapi-common:uuid {mandatory-where-the-detector-has-a-normalized-form-with-a-uuid}?
              |  +--ro detector-native-id?                string
              |  +--ro condition-detector-type?           condition-detector-type
-             |  +--ro measured-entity-local-id*          string
+             |  +--ro measured-entity-local-id*          string {mandatory-where-the-measured-entity-is-a-local-class-and-hence-needs-local-id-as-well-as-parent-uuid}?
              |  +--ro alarm-condition-detector-detail {tapi-streaming}?
-             |     +--ro alarm-detector-state?   alarm-detector-state
-             |     +--ro legacy-properties
-             |        +--ro perceived-severity?      perceived-severity
-             |        +--ro service-affect?          service-affect
-             |        +--ro is-acknowledged?         boolean
+             |     +--ro alarm-detector-state?   alarm-detector-state {mandatory-where-the-detector-state-is-not-default}?
+             |     +--ro legacy-properties {mandatory-where-legacy-properties-are-to-be-conveyed}?
+             |        +--ro perceived-severity?      perceived-severity {mandatory-where-severity-is-known}?
+             |        +--ro service-affect?          service-affect {mandatory-where-it-is-known-whether-the-condition-detected-is-service-affecting-or-not}?
+             |        +--ro is-acknowledged?         boolean {mandatory-where-there-is-a-known-state-related-to-user-acknowledgement-of-the-condition}?
              |        +--ro additional-alarm-info*   string
              +--ro any-class {tapi-streaming}?
              +--ro stream-monitor {tapi-streaming-admin}?
-             |  +--ro id-of-last-record-read-from-log?    string
-             |  +--ro id-of-last-record-written-to-log?   string
              |  +--ro available-stream
              |  |  +--ro available-stream-uuid?   -> /tapi-common:context/tapi-streaming:stream-context/available-stream/uuid
-             |  +--ro client-id?                          string
-             |  +--ro last-updated?                       tapi-common:date-and-time
-             |  +--ro client-address?                     string
-             |  +--ro uuid?                               uuid
+             |  +--ro client-id?             string
+             |  +--ro client-address?        string
+             |  +--ro dynamic-stream-data {mandatory-where-dynamic-data-is-to-be-reported}?
+             |  |  +--ro id-of-last-record-written-to-log?   string {mandatory-where-the-most-recent-record-written-is-being-recorded}?
+             |  |  +--ro id-of-last-record-read-from-log?    string {mandatory-where-last-record-read-is-being-recorded}?
+             |  |  +--ro last-updated?                       tapi-common:date-and-time
+             |  +--ro uuid?                  uuid
              |  +--ro name* [value-name]
              |     +--ro value-name    string
              |     +--ro value?        string
              +--ro supported-stream-type {tapi-streaming}?
-             |  +--ro stream-type-name?       string
-             |  +--ro record-retention?       string
-             |  +--ro segment-size?           string
-             |  +--ro stream-type-content*    tapi-common:object-type
-             |  +--ro log-storage-strategy?   log-storage-strategy
-             |  +--ro log-record-strategy?    log-record-strategy
+             |  +--ro stream-type-name?       string {mandatory-where-assisted-human-interpretation-is-required}?
+             |  +--ro record-retention?       string {mandatory-if-not-default}?
+             |  +--ro segment-size?           string {mandatory-where-log-is-segmented,-and-segment-size-is-considered-relevant-for-client-application-usage}?
+             |  +--ro stream-type-content*    tapi-common:object-type {mandatory-if-the-stream-propagates-tapi-entities-if-not-present-a-separate-augment-must-explain-stream-content}?
+             |  +--ro log-storage-strategy?   log-storage-strategy {mandatory-if-not-default}?
+             |  +--ro log-record-strategy?    log-record-strategy {mandatory-if-not-default}?
+             |  +--ro record-trigger?         record-trigger {mandatory-where-not-default}?
              |  +--ro uuid?                   uuid
              |  +--ro name* [value-name]
              |     +--ro value-name    string
              |     +--ro value?        string
              +--ro available-stream {tapi-streaming}?
-             |  +--ro connection-address?      string
-             |  +--ro stream-state?            stream-state
+             |  +--ro connection-address*      string
+             |  +--ro stream-state?            stream-state {mandatory-where-stream-state-is-not-always-default}?
              |  +--ro supported-stream-type
              |  |  +--ro supported-stream-type-uuid?   -> /tapi-common:context/tapi-streaming:stream-context/supported-stream-type/uuid
-             |  +--ro stream-id?               string
-             |  +--ro connection-protocol?     string
+             |  +--ro stream-id?               string {mandatory-where-an-alternative-id-to-the-uuid-is-available}?
+             |  +--ro connection-protocol?     connection-protocol {mandatory-where-not-default-and-multiple-options-offered-in-the-supported-stream-type}?
              |  +--ro uuid?                    uuid
              |  +--ro name* [value-name]
              |     +--ro value-name    string

@@ -2,21 +2,21 @@
 module: tapi-equipment
   augment /tapi-common:context:
     +--rw physical-context
-       +--ro device* [uuid]
-       |  +--ro equipment* [uuid]
-       |  |  +--ro contained-holder* [uuid]
-       |  |  |  +--ro occupying-fru
+       +--ro device* [uuid] {mandatory-where-devices-are-present-and-to-be-listed}?
+       |  +--ro equipment* [uuid] {mandatory-where-the-device-has-equipment}?
+       |  |  +--ro contained-holder* [uuid] {mandatory-where-the-equipment-has-holders}?
+       |  |  |  +--ro occupying-fru {mandatory-where-an-occupying-fru-is-to-be-stated}?
        |  |  |  |  +--ro device-uuid?      -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
        |  |  |  |  +--ro equipment-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
-       |  |  |  +--ro expected-holder
+       |  |  |  +--ro expected-holder {mandatory-where-an-expected-holder-is-to-be-stated}?
        |  |  |  |  +--ro common-holder-properties
        |  |  |  |     +--ro holder-category?   holder-category
-       |  |  |  |     +--ro is-guided?         boolean
+       |  |  |  |     +--ro is-guided?         boolean {mandatory-where-not-default}?
        |  |  |  |     +--ro holder-location?   string
-       |  |  |  +--ro actual-holder
+       |  |  |  +--ro actual-holder {mandatory-where-an-actual-holder-is-to-be-stated}?
        |  |  |  |  +--ro common-holder-properties
        |  |  |  |     +--ro holder-category?   holder-category
-       |  |  |  |     +--ro is-guided?         boolean
+       |  |  |  |     +--ro is-guided?         boolean {mandatory-where-not-default}?
        |  |  |  |     +--ro holder-location?   string
        |  |  |  +--ro uuid               uuid
        |  |  |  +--ro name* [value-name]
@@ -24,63 +24,64 @@ module: tapi-equipment
        |  |  |     +--ro value?        string
        |  |  +--ro category?                      equipment-category
        |  |  +--ro equipment-location?            string
-       |  |  +--ro geographical-location?         string
-       |  |  +--ro is-expected-actual-mismatch?   boolean
-       |  |  +--ro expected-equipment* []
-       |  |  |  +--ro common-equipment-properties
-       |  |  |  |  +--ro asset-type-identifier?        string
-       |  |  |  |  +--ro equipment-type-description?   string
+       |  |  +--ro geographical-location?         string {mandatory-where-there-is-a-relevant-geographical-location-(only-for-equipments-not-in-holders)}?
+       |  |  +--ro is-expected-actual-mismatch?   boolean {mandatory-where-there-is-potential-for-expectation-and-hence-the-property-may-sometimes-be-not-default}?
+       |  |  +--ro expected-equipment* [] {mandatory-where-there-is-expectation-to-be-stated}?
+       |  |  |  +--ro common-equipment-properties {mandatory-where-not-equipment-not-expected}?
+       |  |  |  |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+       |  |  |  |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
        |  |  |  |  +--ro equipment-type-identifier?    string
-       |  |  |  |  +--ro equipment-type-name?          string
-       |  |  |  |  +--ro equipment-type-version?       string
+       |  |  |  |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+       |  |  |  |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
        |  |  |  |  +--ro manufacturer-identifier?      string
        |  |  |  |  +--ro manufacturer-name?            string
-       |  |  |  +--ro expected-non-field-replaceable-module* [local-id]
+       |  |  |  +--ro expected-non-field-replaceable-module* [local-id] {mandatory-where-expected-equipment-has-known-non-field-replaceble-modules}?
        |  |  |  |  +--ro common-equipment-properties
-       |  |  |  |  |  +--ro asset-type-identifier?        string
-       |  |  |  |  |  +--ro equipment-type-description?   string
+       |  |  |  |  |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+       |  |  |  |  |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
        |  |  |  |  |  +--ro equipment-type-identifier?    string
-       |  |  |  |  |  +--ro equipment-type-name?          string
-       |  |  |  |  |  +--ro equipment-type-version?       string
+       |  |  |  |  |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+       |  |  |  |  |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
        |  |  |  |  |  +--ro manufacturer-identifier?      string
        |  |  |  |  |  +--ro manufacturer-name?            string
        |  |  |  |  +--ro local-id                       string
        |  |  |  |  +--ro name* [value-name]
        |  |  |  |     +--ro value-name    string
        |  |  |  |     +--ro value?        string
-       |  |  |  +--ro expected-holder* []
-       |  |  |     +--ro common-holder-properties
-       |  |  |        +--ro holder-category?   holder-category
-       |  |  |        +--ro is-guided?         boolean
-       |  |  |        +--ro holder-location?   string
-       |  |  +--ro actual-equipment
+       |  |  |  +--ro expected-holder* [] {mandatory-where-expected-equipment-has-known-holders}?
+       |  |  |  |  +--ro common-holder-properties
+       |  |  |  |     +--ro holder-category?   holder-category
+       |  |  |  |     +--ro is-guided?         boolean {mandatory-where-not-default}?
+       |  |  |  |     +--ro holder-location?   string
+       |  |  |  +--ro equipment-not-expected?                  boolean {mandatory-where-not-default}?
+       |  |  +--ro actual-equipment {mandatory-where-a-real-equipment-is-to-be-represented}?
        |  |  |  +--ro common-equipment-properties
-       |  |  |  |  +--ro asset-type-identifier?        string
-       |  |  |  |  +--ro equipment-type-description?   string
+       |  |  |  |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+       |  |  |  |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
        |  |  |  |  +--ro equipment-type-identifier?    string
-       |  |  |  |  +--ro equipment-type-name?          string
-       |  |  |  |  +--ro equipment-type-version?       string
+       |  |  |  |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+       |  |  |  |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
        |  |  |  |  +--ro manufacturer-identifier?      string
        |  |  |  |  +--ro manufacturer-name?            string
        |  |  |  +--ro common-actual-properties
-       |  |  |  |  +--ro asset-instance-identifier?   string
-       |  |  |  |  +--ro is-powered?                  boolean
-       |  |  |  |  +--ro manufacture-date?            tapi-common:date-and-time
-       |  |  |  |  +--ro serial-number?               string
-       |  |  |  |  +--ro temperature?                 decimal64
-       |  |  |  +--ro actual-non-field-replaceable-module* [local-id]
+       |  |  |  |  +--ro asset-instance-identifier?   string {mandatory-where-there-is-an-opportunity-to-allocate-an-identifier-on-an-instance-basis-and-where-an-identifier-has-been-allocated}?
+       |  |  |  |  +--ro is-powered?                  boolean {mandatory-where-not-default-and-the-power-state-of-the-hardware-is-known}?
+       |  |  |  |  +--ro manufacture-date?            tapi-common:date-and-time {mandatory-where-the-manufacture-date-is-provided-by-the-actual-hardware}?
+       |  |  |  |  +--ro serial-number?               string {mandatory-where-the-serial-number-is-provided-by-the-actual-hardware}?
+       |  |  |  |  +--ro temperature?                 decimal64 {mandatory-where-the-equipment-provides-a-temperature-measurement}?
+       |  |  |  +--ro actual-non-field-replaceable-module* [local-id] {mandatory-where-there-are-non-field-replaceable-modules}?
        |  |  |     +--ro common-actual-properties
-       |  |  |     |  +--ro asset-instance-identifier?   string
-       |  |  |     |  +--ro is-powered?                  boolean
-       |  |  |     |  +--ro manufacture-date?            tapi-common:date-and-time
-       |  |  |     |  +--ro serial-number?               string
-       |  |  |     |  +--ro temperature?                 decimal64
+       |  |  |     |  +--ro asset-instance-identifier?   string {mandatory-where-there-is-an-opportunity-to-allocate-an-identifier-on-an-instance-basis-and-where-an-identifier-has-been-allocated}?
+       |  |  |     |  +--ro is-powered?                  boolean {mandatory-where-not-default-and-the-power-state-of-the-hardware-is-known}?
+       |  |  |     |  +--ro manufacture-date?            tapi-common:date-and-time {mandatory-where-the-manufacture-date-is-provided-by-the-actual-hardware}?
+       |  |  |     |  +--ro serial-number?               string {mandatory-where-the-serial-number-is-provided-by-the-actual-hardware}?
+       |  |  |     |  +--ro temperature?                 decimal64 {mandatory-where-the-equipment-provides-a-temperature-measurement}?
        |  |  |     +--ro common-equipment-properties
-       |  |  |     |  +--ro asset-type-identifier?        string
-       |  |  |     |  +--ro equipment-type-description?   string
+       |  |  |     |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+       |  |  |     |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
        |  |  |     |  +--ro equipment-type-identifier?    string
-       |  |  |     |  +--ro equipment-type-name?          string
-       |  |  |     |  +--ro equipment-type-version?       string
+       |  |  |     |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+       |  |  |     |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
        |  |  |     |  +--ro manufacturer-identifier?      string
        |  |  |     |  +--ro manufacturer-name?            string
        |  |  |     +--ro local-id                       string
@@ -91,16 +92,17 @@ module: tapi-equipment
        |  |  +--ro name* [value-name]
        |  |     +--ro value-name    string
        |  |     +--ro value?        string
-       |  +--ro access-port* [uuid]
+       |  +--ro access-port* [uuid] {mandatory-where-access-ports-are-present}?
        |  |  +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
+       |  |  |  +--ro connector-identification    string {mandatory-where-there-is-more-than-one-connector-on-the-equipment}?
+       |  |  |  +--ro pin-identification          string {mandatory-where-the-pin-and-role-is-not-being-used-but-there-is-a-need-to-simply-identify-the-relevant-pin}?
+       |  |  |  +--ro pin-and-role* [location-in-connector] {mandatory-where-there-is-more-than-one-pin-and/or-a-need-to-identify-pin-role}?
+       |  |  |  |  +--ro location-in-connector        string
+       |  |  |  |  +--ro pin-role*                    string {mandatory-where-pin-role-is-to-be-stated}?
+       |  |  |  |  +--ro pin-name?                    string {mandatory-where-pin-name-is-relevant-as-the-description-is-at-pin-grnaularity}?
+       |  |  |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation {mandatory-where-connector/pin-orientation-is-known-and-to-be-stated}?
        |  |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
        |  |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
-       |  |  |  +--ro connector-identification    string
-       |  |  |  +--ro pin-identification          string
-       |  |  |  +--ro pin-and-role* [location-in-connector]
-       |  |  |     +--ro location-in-connector    string
-       |  |  |     +--ro pin-role*                string
-       |  |  |     +--ro pin-name?                string
        |  |  +--ro uuid             uuid
        |  |  +--ro name* [value-name]
        |  |     +--ro value-name    string
@@ -109,29 +111,44 @@ module: tapi-equipment
        |  +--ro name* [value-name]
        |     +--ro value-name    string
        |     +--ro value?        string
-       +--ro physical-span* [uuid]
+       +--ro physical-span* [uuid] {mandatory-where-physical-spans-are-present-and-to-be-listed}?
           +--ro access-port* [device-uuid access-port-uuid]
           |  +--ro device-uuid         -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
           |  +--ro access-port-uuid    -> /tapi-common:context/tapi-equipment:physical-context/device/access-port/uuid
-          +--ro abstract-strand* [local-id]
-          |  +--ro adjacent-strand* [physical-span-uuid abstract-strand-local-id]
+          +--ro abstract-strand* [local-id] {mandatory-where-abstract-strands-are-to-be-stated}?
+          |  +--ro adjacent-strand* [physical-span-uuid abstract-strand-local-id] {mandatory-where-the-sequence-of-strands-in-a-physical-span-a-is-to-be-expressed-but-when-the-specific-interconnection-is-not-relevant}?
           |  |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
           |  |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
-          |  +--ro spliced-strand* [physical-span-uuid abstract-strand-local-id]
+          |  +--ro spliced-strand* [physical-span-uuid abstract-strand-local-id] {mandatory-where-a-simple-representation-of-a-splice-between-strands-is-required}?
           |  |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
           |  |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
-          |  +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
+          |  +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification] {mandatory-where-at-least-one-connector-pin-detail-is-to-be-represented}?
+          |  |  +--ro connector-identification    string {mandatory-where-there-is-more-than-one-connector-on-the-equipment}?
+          |  |  +--ro pin-identification          string {mandatory-where-the-pin-and-role-is-not-being-used-but-there-is-a-need-to-simply-identify-the-relevant-pin}?
+          |  |  +--ro pin-and-role* [location-in-connector] {mandatory-where-there-is-more-than-one-pin-and/or-a-need-to-identify-pin-role}?
+          |  |  |  +--ro location-in-connector        string
+          |  |  |  +--ro pin-role*                    string {mandatory-where-pin-role-is-to-be-stated}?
+          |  |  |  +--ro pin-name?                    string {mandatory-where-pin-name-is-relevant-as-the-description-is-at-pin-grnaularity}?
+          |  |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation {mandatory-where-connector/pin-orientation-is-known-and-to-be-stated}?
           |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
           |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
-          |  |  +--ro connector-identification    string
-          |  |  +--ro pin-identification          string
-          |  |  +--ro pin-and-role* [location-in-connector]
-          |  |     +--ro location-in-connector    string
-          |  |     +--ro pin-role*                string
-          |  |     +--ro pin-name?                string
-          |  +--ro strand-media-characteristics* [value-name]
+          |  +--ro strand-media-characteristics* [value-name] {mandatory-where-a-simple-form-of-strand-characteristics-is-to-be-conveyed}?
           |  |  +--ro value-name    string
           |  |  +--ro value?        string
+          |  +--ro to-strand-joint* [physical-span-uuid abstract-strand-local-id strand-joint-local-id]
+          |  |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+          |  |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+          |  |  +--ro strand-joint-local-id       -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/strand-joint/local-id
+          |  +--ro strand-joint* [local-id] {mandatory-where-details-of-properties-of-the-joint-need-to-be-expressed}?
+          |  |  +--ro to-abstract-strand {mandatory-where-strand-joint-is-not-at-far-end}?
+          |  |  |  +--ro physical-span-uuid?         -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+          |  |  |  +--ro abstract-strand-local-id?   -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+          |  |  +--ro applicable-to-flow-direction?   flow-direction {mandatory-where-not-default}?
+          |  |  +--ro reflection?                     boolean {mandatory-where-not-default}?
+          |  |  +--ro local-id                        string
+          |  |  +--ro name* [value-name]
+          |  |     +--ro value-name    string
+          |  |     +--ro value?        string
           |  +--ro local-id                        string
           |  +--ro name* [value-name]
           |     +--ro value-name    string
@@ -142,28 +159,28 @@ module: tapi-equipment
              +--ro value?        string
   augment /tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:link:
     +--ro supporting-physical-span
-       +--ro physical-span
+       +--ro physical-span {mandatory-where-the-link-is-supported-by-a-physical-span}?
           +--ro physical-span-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
   augment /tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point:
-    +--ro supporting-access-port
-       +--ro access-port
+    +--ro access-port-supports-nep
+       +--ro access-port {mandatory-where-the-nep-is-directly-supported-by-an-access-port}?
           +--ro device-uuid?        -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
           +--ro access-port-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/access-port/uuid
   augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
     +--ro equipment
-       +--ro contained-holder* [uuid]
-       |  +--ro occupying-fru
+       +--ro contained-holder* [uuid] {mandatory-where-the-equipment-has-holders}?
+       |  +--ro occupying-fru {mandatory-where-an-occupying-fru-is-to-be-stated}?
        |  |  +--ro device-uuid?      -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
        |  |  +--ro equipment-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
-       |  +--ro expected-holder
+       |  +--ro expected-holder {mandatory-where-an-expected-holder-is-to-be-stated}?
        |  |  +--ro common-holder-properties
        |  |     +--ro holder-category?   holder-category
-       |  |     +--ro is-guided?         boolean
+       |  |     +--ro is-guided?         boolean {mandatory-where-not-default}?
        |  |     +--ro holder-location?   string
-       |  +--ro actual-holder
+       |  +--ro actual-holder {mandatory-where-an-actual-holder-is-to-be-stated}?
        |  |  +--ro common-holder-properties
        |  |     +--ro holder-category?   holder-category
-       |  |     +--ro is-guided?         boolean
+       |  |     +--ro is-guided?         boolean {mandatory-where-not-default}?
        |  |     +--ro holder-location?   string
        |  +--ro uuid               uuid
        |  +--ro name* [value-name]
@@ -171,63 +188,64 @@ module: tapi-equipment
        |     +--ro value?        string
        +--ro category?                      equipment-category
        +--ro equipment-location?            string
-       +--ro geographical-location?         string
-       +--ro is-expected-actual-mismatch?   boolean
-       +--ro expected-equipment* []
-       |  +--ro common-equipment-properties
-       |  |  +--ro asset-type-identifier?        string
-       |  |  +--ro equipment-type-description?   string
+       +--ro geographical-location?         string {mandatory-where-there-is-a-relevant-geographical-location-(only-for-equipments-not-in-holders)}?
+       +--ro is-expected-actual-mismatch?   boolean {mandatory-where-there-is-potential-for-expectation-and-hence-the-property-may-sometimes-be-not-default}?
+       +--ro expected-equipment* [] {mandatory-where-there-is-expectation-to-be-stated}?
+       |  +--ro common-equipment-properties {mandatory-where-not-equipment-not-expected}?
+       |  |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+       |  |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
        |  |  +--ro equipment-type-identifier?    string
-       |  |  +--ro equipment-type-name?          string
-       |  |  +--ro equipment-type-version?       string
+       |  |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+       |  |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
        |  |  +--ro manufacturer-identifier?      string
        |  |  +--ro manufacturer-name?            string
-       |  +--ro expected-non-field-replaceable-module* [local-id]
+       |  +--ro expected-non-field-replaceable-module* [local-id] {mandatory-where-expected-equipment-has-known-non-field-replaceble-modules}?
        |  |  +--ro common-equipment-properties
-       |  |  |  +--ro asset-type-identifier?        string
-       |  |  |  +--ro equipment-type-description?   string
+       |  |  |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+       |  |  |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
        |  |  |  +--ro equipment-type-identifier?    string
-       |  |  |  +--ro equipment-type-name?          string
-       |  |  |  +--ro equipment-type-version?       string
+       |  |  |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+       |  |  |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
        |  |  |  +--ro manufacturer-identifier?      string
        |  |  |  +--ro manufacturer-name?            string
        |  |  +--ro local-id                       string
        |  |  +--ro name* [value-name]
        |  |     +--ro value-name    string
        |  |     +--ro value?        string
-       |  +--ro expected-holder* []
-       |     +--ro common-holder-properties
-       |        +--ro holder-category?   holder-category
-       |        +--ro is-guided?         boolean
-       |        +--ro holder-location?   string
-       +--ro actual-equipment
+       |  +--ro expected-holder* [] {mandatory-where-expected-equipment-has-known-holders}?
+       |  |  +--ro common-holder-properties
+       |  |     +--ro holder-category?   holder-category
+       |  |     +--ro is-guided?         boolean {mandatory-where-not-default}?
+       |  |     +--ro holder-location?   string
+       |  +--ro equipment-not-expected?                  boolean {mandatory-where-not-default}?
+       +--ro actual-equipment {mandatory-where-a-real-equipment-is-to-be-represented}?
        |  +--ro common-equipment-properties
-       |  |  +--ro asset-type-identifier?        string
-       |  |  +--ro equipment-type-description?   string
+       |  |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+       |  |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
        |  |  +--ro equipment-type-identifier?    string
-       |  |  +--ro equipment-type-name?          string
-       |  |  +--ro equipment-type-version?       string
+       |  |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+       |  |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
        |  |  +--ro manufacturer-identifier?      string
        |  |  +--ro manufacturer-name?            string
        |  +--ro common-actual-properties
-       |  |  +--ro asset-instance-identifier?   string
-       |  |  +--ro is-powered?                  boolean
-       |  |  +--ro manufacture-date?            tapi-common:date-and-time
-       |  |  +--ro serial-number?               string
-       |  |  +--ro temperature?                 decimal64
-       |  +--ro actual-non-field-replaceable-module* [local-id]
+       |  |  +--ro asset-instance-identifier?   string {mandatory-where-there-is-an-opportunity-to-allocate-an-identifier-on-an-instance-basis-and-where-an-identifier-has-been-allocated}?
+       |  |  +--ro is-powered?                  boolean {mandatory-where-not-default-and-the-power-state-of-the-hardware-is-known}?
+       |  |  +--ro manufacture-date?            tapi-common:date-and-time {mandatory-where-the-manufacture-date-is-provided-by-the-actual-hardware}?
+       |  |  +--ro serial-number?               string {mandatory-where-the-serial-number-is-provided-by-the-actual-hardware}?
+       |  |  +--ro temperature?                 decimal64 {mandatory-where-the-equipment-provides-a-temperature-measurement}?
+       |  +--ro actual-non-field-replaceable-module* [local-id] {mandatory-where-there-are-non-field-replaceable-modules}?
        |     +--ro common-actual-properties
-       |     |  +--ro asset-instance-identifier?   string
-       |     |  +--ro is-powered?                  boolean
-       |     |  +--ro manufacture-date?            tapi-common:date-and-time
-       |     |  +--ro serial-number?               string
-       |     |  +--ro temperature?                 decimal64
+       |     |  +--ro asset-instance-identifier?   string {mandatory-where-there-is-an-opportunity-to-allocate-an-identifier-on-an-instance-basis-and-where-an-identifier-has-been-allocated}?
+       |     |  +--ro is-powered?                  boolean {mandatory-where-not-default-and-the-power-state-of-the-hardware-is-known}?
+       |     |  +--ro manufacture-date?            tapi-common:date-and-time {mandatory-where-the-manufacture-date-is-provided-by-the-actual-hardware}?
+       |     |  +--ro serial-number?               string {mandatory-where-the-serial-number-is-provided-by-the-actual-hardware}?
+       |     |  +--ro temperature?                 decimal64 {mandatory-where-the-equipment-provides-a-temperature-measurement}?
        |     +--ro common-equipment-properties
-       |     |  +--ro asset-type-identifier?        string
-       |     |  +--ro equipment-type-description?   string
+       |     |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+       |     |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
        |     |  +--ro equipment-type-identifier?    string
-       |     |  +--ro equipment-type-name?          string
-       |     |  +--ro equipment-type-version?       string
+       |     |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+       |     |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
        |     |  +--ro manufacturer-identifier?      string
        |     |  +--ro manufacturer-name?            string
        |     +--ro local-id                       string
@@ -240,18 +258,18 @@ module: tapi-equipment
           +--ro value?        string
   augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
     +--ro holder
-       +--ro occupying-fru
+       +--ro occupying-fru {mandatory-where-an-occupying-fru-is-to-be-stated}?
        |  +--ro device-uuid?      -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
        |  +--ro equipment-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
-       +--ro expected-holder
+       +--ro expected-holder {mandatory-where-an-expected-holder-is-to-be-stated}?
        |  +--ro common-holder-properties
        |     +--ro holder-category?   holder-category
-       |     +--ro is-guided?         boolean
+       |     +--ro is-guided?         boolean {mandatory-where-not-default}?
        |     +--ro holder-location?   string
-       +--ro actual-holder
+       +--ro actual-holder {mandatory-where-an-actual-holder-is-to-be-stated}?
        |  +--ro common-holder-properties
        |     +--ro holder-category?   holder-category
-       |     +--ro is-guided?         boolean
+       |     +--ro is-guided?         boolean {mandatory-where-not-default}?
        |     +--ro holder-location?   string
        +--ro uuid?              uuid
        +--ro name* [value-name]
@@ -260,58 +278,74 @@ module: tapi-equipment
   augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
     +--ro access-port
        +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
+       |  +--ro connector-identification    string {mandatory-where-there-is-more-than-one-connector-on-the-equipment}?
+       |  +--ro pin-identification          string {mandatory-where-the-pin-and-role-is-not-being-used-but-there-is-a-need-to-simply-identify-the-relevant-pin}?
+       |  +--ro pin-and-role* [location-in-connector] {mandatory-where-there-is-more-than-one-pin-and/or-a-need-to-identify-pin-role}?
+       |  |  +--ro location-in-connector        string
+       |  |  +--ro pin-role*                    string {mandatory-where-pin-role-is-to-be-stated}?
+       |  |  +--ro pin-name?                    string {mandatory-where-pin-name-is-relevant-as-the-description-is-at-pin-grnaularity}?
+       |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation {mandatory-where-connector/pin-orientation-is-known-and-to-be-stated}?
        |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
        |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
-       |  +--ro connector-identification    string
-       |  +--ro pin-identification          string
-       |  +--ro pin-and-role* [location-in-connector]
-       |     +--ro location-in-connector    string
-       |     +--ro pin-role*                string
-       |     +--ro pin-name?                string
        +--ro uuid?            uuid
        +--ro name* [value-name]
           +--ro value-name    string
           +--ro value?        string
   augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
     +--ro abstract-strand
-       +--ro adjacent-strand* [physical-span-uuid abstract-strand-local-id]
+       +--ro adjacent-strand* [physical-span-uuid abstract-strand-local-id] {mandatory-where-the-sequence-of-strands-in-a-physical-span-a-is-to-be-expressed-but-when-the-specific-interconnection-is-not-relevant}?
        |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
        |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
-       +--ro spliced-strand* [physical-span-uuid abstract-strand-local-id]
+       +--ro spliced-strand* [physical-span-uuid abstract-strand-local-id] {mandatory-where-a-simple-representation-of-a-splice-between-strands-is-required}?
        |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
        |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
-       +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
+       +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification] {mandatory-where-at-least-one-connector-pin-detail-is-to-be-represented}?
+       |  +--ro connector-identification    string {mandatory-where-there-is-more-than-one-connector-on-the-equipment}?
+       |  +--ro pin-identification          string {mandatory-where-the-pin-and-role-is-not-being-used-but-there-is-a-need-to-simply-identify-the-relevant-pin}?
+       |  +--ro pin-and-role* [location-in-connector] {mandatory-where-there-is-more-than-one-pin-and/or-a-need-to-identify-pin-role}?
+       |  |  +--ro location-in-connector        string
+       |  |  +--ro pin-role*                    string {mandatory-where-pin-role-is-to-be-stated}?
+       |  |  +--ro pin-name?                    string {mandatory-where-pin-name-is-relevant-as-the-description-is-at-pin-grnaularity}?
+       |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation {mandatory-where-connector/pin-orientation-is-known-and-to-be-stated}?
        |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
        |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
-       |  +--ro connector-identification    string
-       |  +--ro pin-identification          string
-       |  +--ro pin-and-role* [location-in-connector]
-       |     +--ro location-in-connector    string
-       |     +--ro pin-role*                string
-       |     +--ro pin-name?                string
-       +--ro strand-media-characteristics* [value-name]
+       +--ro strand-media-characteristics* [value-name] {mandatory-where-a-simple-form-of-strand-characteristics-is-to-be-conveyed}?
        |  +--ro value-name    string
        |  +--ro value?        string
+       +--ro to-strand-joint* [physical-span-uuid abstract-strand-local-id strand-joint-local-id]
+       |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       |  +--ro strand-joint-local-id       -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/strand-joint/local-id
+       +--ro strand-joint* [local-id] {mandatory-where-details-of-properties-of-the-joint-need-to-be-expressed}?
+       |  +--ro to-abstract-strand {mandatory-where-strand-joint-is-not-at-far-end}?
+       |  |  +--ro physical-span-uuid?         -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  |  +--ro abstract-strand-local-id?   -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       |  +--ro applicable-to-flow-direction?   flow-direction {mandatory-where-not-default}?
+       |  +--ro reflection?                     boolean {mandatory-where-not-default}?
+       |  +--ro local-id                        string
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
        +--ro local-id?                       string
        +--ro name* [value-name]
           +--ro value-name    string
           +--ro value?        string
   augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
     +--ro device
-       +--ro equipment* [uuid]
-       |  +--ro contained-holder* [uuid]
-       |  |  +--ro occupying-fru
+       +--ro equipment* [uuid] {mandatory-where-the-device-has-equipment}?
+       |  +--ro contained-holder* [uuid] {mandatory-where-the-equipment-has-holders}?
+       |  |  +--ro occupying-fru {mandatory-where-an-occupying-fru-is-to-be-stated}?
        |  |  |  +--ro device-uuid?      -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
        |  |  |  +--ro equipment-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
-       |  |  +--ro expected-holder
+       |  |  +--ro expected-holder {mandatory-where-an-expected-holder-is-to-be-stated}?
        |  |  |  +--ro common-holder-properties
        |  |  |     +--ro holder-category?   holder-category
-       |  |  |     +--ro is-guided?         boolean
+       |  |  |     +--ro is-guided?         boolean {mandatory-where-not-default}?
        |  |  |     +--ro holder-location?   string
-       |  |  +--ro actual-holder
+       |  |  +--ro actual-holder {mandatory-where-an-actual-holder-is-to-be-stated}?
        |  |  |  +--ro common-holder-properties
        |  |  |     +--ro holder-category?   holder-category
-       |  |  |     +--ro is-guided?         boolean
+       |  |  |     +--ro is-guided?         boolean {mandatory-where-not-default}?
        |  |  |     +--ro holder-location?   string
        |  |  +--ro uuid               uuid
        |  |  +--ro name* [value-name]
@@ -319,63 +353,64 @@ module: tapi-equipment
        |  |     +--ro value?        string
        |  +--ro category?                      equipment-category
        |  +--ro equipment-location?            string
-       |  +--ro geographical-location?         string
-       |  +--ro is-expected-actual-mismatch?   boolean
-       |  +--ro expected-equipment* []
-       |  |  +--ro common-equipment-properties
-       |  |  |  +--ro asset-type-identifier?        string
-       |  |  |  +--ro equipment-type-description?   string
+       |  +--ro geographical-location?         string {mandatory-where-there-is-a-relevant-geographical-location-(only-for-equipments-not-in-holders)}?
+       |  +--ro is-expected-actual-mismatch?   boolean {mandatory-where-there-is-potential-for-expectation-and-hence-the-property-may-sometimes-be-not-default}?
+       |  +--ro expected-equipment* [] {mandatory-where-there-is-expectation-to-be-stated}?
+       |  |  +--ro common-equipment-properties {mandatory-where-not-equipment-not-expected}?
+       |  |  |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+       |  |  |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
        |  |  |  +--ro equipment-type-identifier?    string
-       |  |  |  +--ro equipment-type-name?          string
-       |  |  |  +--ro equipment-type-version?       string
+       |  |  |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+       |  |  |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
        |  |  |  +--ro manufacturer-identifier?      string
        |  |  |  +--ro manufacturer-name?            string
-       |  |  +--ro expected-non-field-replaceable-module* [local-id]
+       |  |  +--ro expected-non-field-replaceable-module* [local-id] {mandatory-where-expected-equipment-has-known-non-field-replaceble-modules}?
        |  |  |  +--ro common-equipment-properties
-       |  |  |  |  +--ro asset-type-identifier?        string
-       |  |  |  |  +--ro equipment-type-description?   string
+       |  |  |  |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+       |  |  |  |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
        |  |  |  |  +--ro equipment-type-identifier?    string
-       |  |  |  |  +--ro equipment-type-name?          string
-       |  |  |  |  +--ro equipment-type-version?       string
+       |  |  |  |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+       |  |  |  |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
        |  |  |  |  +--ro manufacturer-identifier?      string
        |  |  |  |  +--ro manufacturer-name?            string
        |  |  |  +--ro local-id                       string
        |  |  |  +--ro name* [value-name]
        |  |  |     +--ro value-name    string
        |  |  |     +--ro value?        string
-       |  |  +--ro expected-holder* []
-       |  |     +--ro common-holder-properties
-       |  |        +--ro holder-category?   holder-category
-       |  |        +--ro is-guided?         boolean
-       |  |        +--ro holder-location?   string
-       |  +--ro actual-equipment
+       |  |  +--ro expected-holder* [] {mandatory-where-expected-equipment-has-known-holders}?
+       |  |  |  +--ro common-holder-properties
+       |  |  |     +--ro holder-category?   holder-category
+       |  |  |     +--ro is-guided?         boolean {mandatory-where-not-default}?
+       |  |  |     +--ro holder-location?   string
+       |  |  +--ro equipment-not-expected?                  boolean {mandatory-where-not-default}?
+       |  +--ro actual-equipment {mandatory-where-a-real-equipment-is-to-be-represented}?
        |  |  +--ro common-equipment-properties
-       |  |  |  +--ro asset-type-identifier?        string
-       |  |  |  +--ro equipment-type-description?   string
+       |  |  |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+       |  |  |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
        |  |  |  +--ro equipment-type-identifier?    string
-       |  |  |  +--ro equipment-type-name?          string
-       |  |  |  +--ro equipment-type-version?       string
+       |  |  |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+       |  |  |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
        |  |  |  +--ro manufacturer-identifier?      string
        |  |  |  +--ro manufacturer-name?            string
        |  |  +--ro common-actual-properties
-       |  |  |  +--ro asset-instance-identifier?   string
-       |  |  |  +--ro is-powered?                  boolean
-       |  |  |  +--ro manufacture-date?            tapi-common:date-and-time
-       |  |  |  +--ro serial-number?               string
-       |  |  |  +--ro temperature?                 decimal64
-       |  |  +--ro actual-non-field-replaceable-module* [local-id]
+       |  |  |  +--ro asset-instance-identifier?   string {mandatory-where-there-is-an-opportunity-to-allocate-an-identifier-on-an-instance-basis-and-where-an-identifier-has-been-allocated}?
+       |  |  |  +--ro is-powered?                  boolean {mandatory-where-not-default-and-the-power-state-of-the-hardware-is-known}?
+       |  |  |  +--ro manufacture-date?            tapi-common:date-and-time {mandatory-where-the-manufacture-date-is-provided-by-the-actual-hardware}?
+       |  |  |  +--ro serial-number?               string {mandatory-where-the-serial-number-is-provided-by-the-actual-hardware}?
+       |  |  |  +--ro temperature?                 decimal64 {mandatory-where-the-equipment-provides-a-temperature-measurement}?
+       |  |  +--ro actual-non-field-replaceable-module* [local-id] {mandatory-where-there-are-non-field-replaceable-modules}?
        |  |     +--ro common-actual-properties
-       |  |     |  +--ro asset-instance-identifier?   string
-       |  |     |  +--ro is-powered?                  boolean
-       |  |     |  +--ro manufacture-date?            tapi-common:date-and-time
-       |  |     |  +--ro serial-number?               string
-       |  |     |  +--ro temperature?                 decimal64
+       |  |     |  +--ro asset-instance-identifier?   string {mandatory-where-there-is-an-opportunity-to-allocate-an-identifier-on-an-instance-basis-and-where-an-identifier-has-been-allocated}?
+       |  |     |  +--ro is-powered?                  boolean {mandatory-where-not-default-and-the-power-state-of-the-hardware-is-known}?
+       |  |     |  +--ro manufacture-date?            tapi-common:date-and-time {mandatory-where-the-manufacture-date-is-provided-by-the-actual-hardware}?
+       |  |     |  +--ro serial-number?               string {mandatory-where-the-serial-number-is-provided-by-the-actual-hardware}?
+       |  |     |  +--ro temperature?                 decimal64 {mandatory-where-the-equipment-provides-a-temperature-measurement}?
        |  |     +--ro common-equipment-properties
-       |  |     |  +--ro asset-type-identifier?        string
-       |  |     |  +--ro equipment-type-description?   string
+       |  |     |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+       |  |     |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
        |  |     |  +--ro equipment-type-identifier?    string
-       |  |     |  +--ro equipment-type-name?          string
-       |  |     |  +--ro equipment-type-version?       string
+       |  |     |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+       |  |     |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
        |  |     |  +--ro manufacturer-identifier?      string
        |  |     |  +--ro manufacturer-name?            string
        |  |     +--ro local-id                       string
@@ -386,16 +421,17 @@ module: tapi-equipment
        |  +--ro name* [value-name]
        |     +--ro value-name    string
        |     +--ro value?        string
-       +--ro access-port* [uuid]
+       +--ro access-port* [uuid] {mandatory-where-access-ports-are-present}?
        |  +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
+       |  |  +--ro connector-identification    string {mandatory-where-there-is-more-than-one-connector-on-the-equipment}?
+       |  |  +--ro pin-identification          string {mandatory-where-the-pin-and-role-is-not-being-used-but-there-is-a-need-to-simply-identify-the-relevant-pin}?
+       |  |  +--ro pin-and-role* [location-in-connector] {mandatory-where-there-is-more-than-one-pin-and/or-a-need-to-identify-pin-role}?
+       |  |  |  +--ro location-in-connector        string
+       |  |  |  +--ro pin-role*                    string {mandatory-where-pin-role-is-to-be-stated}?
+       |  |  |  +--ro pin-name?                    string {mandatory-where-pin-name-is-relevant-as-the-description-is-at-pin-grnaularity}?
+       |  |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation {mandatory-where-connector/pin-orientation-is-known-and-to-be-stated}?
        |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
        |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
-       |  |  +--ro connector-identification    string
-       |  |  +--ro pin-identification          string
-       |  |  +--ro pin-and-role* [location-in-connector]
-       |  |     +--ro location-in-connector    string
-       |  |     +--ro pin-role*                string
-       |  |     +--ro pin-name?                string
        |  +--ro uuid             uuid
        |  +--ro name* [value-name]
        |     +--ro value-name    string
@@ -409,25 +445,40 @@ module: tapi-equipment
        +--ro access-port* [device-uuid access-port-uuid]
        |  +--ro device-uuid         -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
        |  +--ro access-port-uuid    -> /tapi-common:context/tapi-equipment:physical-context/device/access-port/uuid
-       +--ro abstract-strand* [local-id]
-       |  +--ro adjacent-strand* [physical-span-uuid abstract-strand-local-id]
+       +--ro abstract-strand* [local-id] {mandatory-where-abstract-strands-are-to-be-stated}?
+       |  +--ro adjacent-strand* [physical-span-uuid abstract-strand-local-id] {mandatory-where-the-sequence-of-strands-in-a-physical-span-a-is-to-be-expressed-but-when-the-specific-interconnection-is-not-relevant}?
        |  |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
        |  |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
-       |  +--ro spliced-strand* [physical-span-uuid abstract-strand-local-id]
+       |  +--ro spliced-strand* [physical-span-uuid abstract-strand-local-id] {mandatory-where-a-simple-representation-of-a-splice-between-strands-is-required}?
        |  |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
        |  |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
-       |  +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
+       |  +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification] {mandatory-where-at-least-one-connector-pin-detail-is-to-be-represented}?
+       |  |  +--ro connector-identification    string {mandatory-where-there-is-more-than-one-connector-on-the-equipment}?
+       |  |  +--ro pin-identification          string {mandatory-where-the-pin-and-role-is-not-being-used-but-there-is-a-need-to-simply-identify-the-relevant-pin}?
+       |  |  +--ro pin-and-role* [location-in-connector] {mandatory-where-there-is-more-than-one-pin-and/or-a-need-to-identify-pin-role}?
+       |  |  |  +--ro location-in-connector        string
+       |  |  |  +--ro pin-role*                    string {mandatory-where-pin-role-is-to-be-stated}?
+       |  |  |  +--ro pin-name?                    string {mandatory-where-pin-name-is-relevant-as-the-description-is-at-pin-grnaularity}?
+       |  |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation {mandatory-where-connector/pin-orientation-is-known-and-to-be-stated}?
        |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
        |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
-       |  |  +--ro connector-identification    string
-       |  |  +--ro pin-identification          string
-       |  |  +--ro pin-and-role* [location-in-connector]
-       |  |     +--ro location-in-connector    string
-       |  |     +--ro pin-role*                string
-       |  |     +--ro pin-name?                string
-       |  +--ro strand-media-characteristics* [value-name]
+       |  +--ro strand-media-characteristics* [value-name] {mandatory-where-a-simple-form-of-strand-characteristics-is-to-be-conveyed}?
        |  |  +--ro value-name    string
        |  |  +--ro value?        string
+       |  +--ro to-strand-joint* [physical-span-uuid abstract-strand-local-id strand-joint-local-id]
+       |  |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       |  |  +--ro strand-joint-local-id       -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/strand-joint/local-id
+       |  +--ro strand-joint* [local-id] {mandatory-where-details-of-properties-of-the-joint-need-to-be-expressed}?
+       |  |  +--ro to-abstract-strand {mandatory-where-strand-joint-is-not-at-far-end}?
+       |  |  |  +--ro physical-span-uuid?         -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  |  |  +--ro abstract-strand-local-id?   -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       |  |  +--ro applicable-to-flow-direction?   flow-direction {mandatory-where-not-default}?
+       |  |  +--ro reflection?                     boolean {mandatory-where-not-default}?
+       |  |  +--ro local-id                        string
+       |  |  +--ro name* [value-name]
+       |  |     +--ro value-name    string
+       |  |     +--ro value?        string
        |  +--ro local-id                        string
        |  +--ro name* [value-name]
        |     +--ro value-name    string
@@ -438,19 +489,19 @@ module: tapi-equipment
           +--ro value?        string
   augment /tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification:
     +--ro equipment
-       +--ro contained-holder* [uuid]
-       |  +--ro occupying-fru
+       +--ro contained-holder* [uuid] {mandatory-where-the-equipment-has-holders}?
+       |  +--ro occupying-fru {mandatory-where-an-occupying-fru-is-to-be-stated}?
        |  |  +--ro device-uuid?      -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
        |  |  +--ro equipment-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
-       |  +--ro expected-holder
+       |  +--ro expected-holder {mandatory-where-an-expected-holder-is-to-be-stated}?
        |  |  +--ro common-holder-properties
        |  |     +--ro holder-category?   holder-category
-       |  |     +--ro is-guided?         boolean
+       |  |     +--ro is-guided?         boolean {mandatory-where-not-default}?
        |  |     +--ro holder-location?   string
-       |  +--ro actual-holder
+       |  +--ro actual-holder {mandatory-where-an-actual-holder-is-to-be-stated}?
        |  |  +--ro common-holder-properties
        |  |     +--ro holder-category?   holder-category
-       |  |     +--ro is-guided?         boolean
+       |  |     +--ro is-guided?         boolean {mandatory-where-not-default}?
        |  |     +--ro holder-location?   string
        |  +--ro uuid               uuid
        |  +--ro name* [value-name]
@@ -458,63 +509,64 @@ module: tapi-equipment
        |     +--ro value?        string
        +--ro category?                      equipment-category
        +--ro equipment-location?            string
-       +--ro geographical-location?         string
-       +--ro is-expected-actual-mismatch?   boolean
-       +--ro expected-equipment* []
-       |  +--ro common-equipment-properties
-       |  |  +--ro asset-type-identifier?        string
-       |  |  +--ro equipment-type-description?   string
+       +--ro geographical-location?         string {mandatory-where-there-is-a-relevant-geographical-location-(only-for-equipments-not-in-holders)}?
+       +--ro is-expected-actual-mismatch?   boolean {mandatory-where-there-is-potential-for-expectation-and-hence-the-property-may-sometimes-be-not-default}?
+       +--ro expected-equipment* [] {mandatory-where-there-is-expectation-to-be-stated}?
+       |  +--ro common-equipment-properties {mandatory-where-not-equipment-not-expected}?
+       |  |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+       |  |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
        |  |  +--ro equipment-type-identifier?    string
-       |  |  +--ro equipment-type-name?          string
-       |  |  +--ro equipment-type-version?       string
+       |  |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+       |  |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
        |  |  +--ro manufacturer-identifier?      string
        |  |  +--ro manufacturer-name?            string
-       |  +--ro expected-non-field-replaceable-module* [local-id]
+       |  +--ro expected-non-field-replaceable-module* [local-id] {mandatory-where-expected-equipment-has-known-non-field-replaceble-modules}?
        |  |  +--ro common-equipment-properties
-       |  |  |  +--ro asset-type-identifier?        string
-       |  |  |  +--ro equipment-type-description?   string
+       |  |  |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+       |  |  |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
        |  |  |  +--ro equipment-type-identifier?    string
-       |  |  |  +--ro equipment-type-name?          string
-       |  |  |  +--ro equipment-type-version?       string
+       |  |  |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+       |  |  |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
        |  |  |  +--ro manufacturer-identifier?      string
        |  |  |  +--ro manufacturer-name?            string
        |  |  +--ro local-id                       string
        |  |  +--ro name* [value-name]
        |  |     +--ro value-name    string
        |  |     +--ro value?        string
-       |  +--ro expected-holder* []
-       |     +--ro common-holder-properties
-       |        +--ro holder-category?   holder-category
-       |        +--ro is-guided?         boolean
-       |        +--ro holder-location?   string
-       +--ro actual-equipment
+       |  +--ro expected-holder* [] {mandatory-where-expected-equipment-has-known-holders}?
+       |  |  +--ro common-holder-properties
+       |  |     +--ro holder-category?   holder-category
+       |  |     +--ro is-guided?         boolean {mandatory-where-not-default}?
+       |  |     +--ro holder-location?   string
+       |  +--ro equipment-not-expected?                  boolean {mandatory-where-not-default}?
+       +--ro actual-equipment {mandatory-where-a-real-equipment-is-to-be-represented}?
        |  +--ro common-equipment-properties
-       |  |  +--ro asset-type-identifier?        string
-       |  |  +--ro equipment-type-description?   string
+       |  |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+       |  |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
        |  |  +--ro equipment-type-identifier?    string
-       |  |  +--ro equipment-type-name?          string
-       |  |  +--ro equipment-type-version?       string
+       |  |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+       |  |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
        |  |  +--ro manufacturer-identifier?      string
        |  |  +--ro manufacturer-name?            string
        |  +--ro common-actual-properties
-       |  |  +--ro asset-instance-identifier?   string
-       |  |  +--ro is-powered?                  boolean
-       |  |  +--ro manufacture-date?            tapi-common:date-and-time
-       |  |  +--ro serial-number?               string
-       |  |  +--ro temperature?                 decimal64
-       |  +--ro actual-non-field-replaceable-module* [local-id]
+       |  |  +--ro asset-instance-identifier?   string {mandatory-where-there-is-an-opportunity-to-allocate-an-identifier-on-an-instance-basis-and-where-an-identifier-has-been-allocated}?
+       |  |  +--ro is-powered?                  boolean {mandatory-where-not-default-and-the-power-state-of-the-hardware-is-known}?
+       |  |  +--ro manufacture-date?            tapi-common:date-and-time {mandatory-where-the-manufacture-date-is-provided-by-the-actual-hardware}?
+       |  |  +--ro serial-number?               string {mandatory-where-the-serial-number-is-provided-by-the-actual-hardware}?
+       |  |  +--ro temperature?                 decimal64 {mandatory-where-the-equipment-provides-a-temperature-measurement}?
+       |  +--ro actual-non-field-replaceable-module* [local-id] {mandatory-where-there-are-non-field-replaceable-modules}?
        |     +--ro common-actual-properties
-       |     |  +--ro asset-instance-identifier?   string
-       |     |  +--ro is-powered?                  boolean
-       |     |  +--ro manufacture-date?            tapi-common:date-and-time
-       |     |  +--ro serial-number?               string
-       |     |  +--ro temperature?                 decimal64
+       |     |  +--ro asset-instance-identifier?   string {mandatory-where-there-is-an-opportunity-to-allocate-an-identifier-on-an-instance-basis-and-where-an-identifier-has-been-allocated}?
+       |     |  +--ro is-powered?                  boolean {mandatory-where-not-default-and-the-power-state-of-the-hardware-is-known}?
+       |     |  +--ro manufacture-date?            tapi-common:date-and-time {mandatory-where-the-manufacture-date-is-provided-by-the-actual-hardware}?
+       |     |  +--ro serial-number?               string {mandatory-where-the-serial-number-is-provided-by-the-actual-hardware}?
+       |     |  +--ro temperature?                 decimal64 {mandatory-where-the-equipment-provides-a-temperature-measurement}?
        |     +--ro common-equipment-properties
-       |     |  +--ro asset-type-identifier?        string
-       |     |  +--ro equipment-type-description?   string
+       |     |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+       |     |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
        |     |  +--ro equipment-type-identifier?    string
-       |     |  +--ro equipment-type-name?          string
-       |     |  +--ro equipment-type-version?       string
+       |     |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+       |     |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
        |     |  +--ro manufacturer-identifier?      string
        |     |  +--ro manufacturer-name?            string
        |     +--ro local-id                       string
@@ -527,18 +579,18 @@ module: tapi-equipment
           +--ro value?        string
   augment /tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification:
     +--ro holder
-       +--ro occupying-fru
+       +--ro occupying-fru {mandatory-where-an-occupying-fru-is-to-be-stated}?
        |  +--ro device-uuid?      -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
        |  +--ro equipment-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
-       +--ro expected-holder
+       +--ro expected-holder {mandatory-where-an-expected-holder-is-to-be-stated}?
        |  +--ro common-holder-properties
        |     +--ro holder-category?   holder-category
-       |     +--ro is-guided?         boolean
+       |     +--ro is-guided?         boolean {mandatory-where-not-default}?
        |     +--ro holder-location?   string
-       +--ro actual-holder
+       +--ro actual-holder {mandatory-where-an-actual-holder-is-to-be-stated}?
        |  +--ro common-holder-properties
        |     +--ro holder-category?   holder-category
-       |     +--ro is-guided?         boolean
+       |     +--ro is-guided?         boolean {mandatory-where-not-default}?
        |     +--ro holder-location?   string
        +--ro uuid?              uuid
        +--ro name* [value-name]
@@ -547,147 +599,16 @@ module: tapi-equipment
   augment /tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification:
     +--ro access-port
        +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
+       |  +--ro connector-identification    string {mandatory-where-there-is-more-than-one-connector-on-the-equipment}?
+       |  +--ro pin-identification          string {mandatory-where-the-pin-and-role-is-not-being-used-but-there-is-a-need-to-simply-identify-the-relevant-pin}?
+       |  +--ro pin-and-role* [location-in-connector] {mandatory-where-there-is-more-than-one-pin-and/or-a-need-to-identify-pin-role}?
+       |  |  +--ro location-in-connector        string
+       |  |  +--ro pin-role*                    string {mandatory-where-pin-role-is-to-be-stated}?
+       |  |  +--ro pin-name?                    string {mandatory-where-pin-name-is-relevant-as-the-description-is-at-pin-grnaularity}?
+       |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation {mandatory-where-connector/pin-orientation-is-known-and-to-be-stated}?
        |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
        |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
-       |  +--ro connector-identification    string
-       |  +--ro pin-identification          string
-       |  +--ro pin-and-role* [location-in-connector]
-       |     +--ro location-in-connector    string
-       |     +--ro pin-role*                string
-       |     +--ro pin-name?                string
        +--ro uuid?            uuid
-       +--ro name* [value-name]
-          +--ro value-name    string
-          +--ro value?        string
-  augment /tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification:
-    +--ro abstract-strand
-       +--ro adjacent-strand* [physical-span-uuid abstract-strand-local-id]
-       |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
-       |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
-       +--ro spliced-strand* [physical-span-uuid abstract-strand-local-id]
-       |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
-       |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
-       +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
-       |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
-       |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
-       |  +--ro connector-identification    string
-       |  +--ro pin-identification          string
-       |  +--ro pin-and-role* [location-in-connector]
-       |     +--ro location-in-connector    string
-       |     +--ro pin-role*                string
-       |     +--ro pin-name?                string
-       +--ro strand-media-characteristics* [value-name]
-       |  +--ro value-name    string
-       |  +--ro value?        string
-       +--ro local-id?                       string
-       +--ro name* [value-name]
-          +--ro value-name    string
-          +--ro value?        string
-  augment /tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification:
-    +--ro device
-       +--ro equipment* [uuid]
-       |  +--ro contained-holder* [uuid]
-       |  |  +--ro occupying-fru
-       |  |  |  +--ro device-uuid?      -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
-       |  |  |  +--ro equipment-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
-       |  |  +--ro expected-holder
-       |  |  |  +--ro common-holder-properties
-       |  |  |     +--ro holder-category?   holder-category
-       |  |  |     +--ro is-guided?         boolean
-       |  |  |     +--ro holder-location?   string
-       |  |  +--ro actual-holder
-       |  |  |  +--ro common-holder-properties
-       |  |  |     +--ro holder-category?   holder-category
-       |  |  |     +--ro is-guided?         boolean
-       |  |  |     +--ro holder-location?   string
-       |  |  +--ro uuid               uuid
-       |  |  +--ro name* [value-name]
-       |  |     +--ro value-name    string
-       |  |     +--ro value?        string
-       |  +--ro category?                      equipment-category
-       |  +--ro equipment-location?            string
-       |  +--ro geographical-location?         string
-       |  +--ro is-expected-actual-mismatch?   boolean
-       |  +--ro expected-equipment* []
-       |  |  +--ro common-equipment-properties
-       |  |  |  +--ro asset-type-identifier?        string
-       |  |  |  +--ro equipment-type-description?   string
-       |  |  |  +--ro equipment-type-identifier?    string
-       |  |  |  +--ro equipment-type-name?          string
-       |  |  |  +--ro equipment-type-version?       string
-       |  |  |  +--ro manufacturer-identifier?      string
-       |  |  |  +--ro manufacturer-name?            string
-       |  |  +--ro expected-non-field-replaceable-module* [local-id]
-       |  |  |  +--ro common-equipment-properties
-       |  |  |  |  +--ro asset-type-identifier?        string
-       |  |  |  |  +--ro equipment-type-description?   string
-       |  |  |  |  +--ro equipment-type-identifier?    string
-       |  |  |  |  +--ro equipment-type-name?          string
-       |  |  |  |  +--ro equipment-type-version?       string
-       |  |  |  |  +--ro manufacturer-identifier?      string
-       |  |  |  |  +--ro manufacturer-name?            string
-       |  |  |  +--ro local-id                       string
-       |  |  |  +--ro name* [value-name]
-       |  |  |     +--ro value-name    string
-       |  |  |     +--ro value?        string
-       |  |  +--ro expected-holder* []
-       |  |     +--ro common-holder-properties
-       |  |        +--ro holder-category?   holder-category
-       |  |        +--ro is-guided?         boolean
-       |  |        +--ro holder-location?   string
-       |  +--ro actual-equipment
-       |  |  +--ro common-equipment-properties
-       |  |  |  +--ro asset-type-identifier?        string
-       |  |  |  +--ro equipment-type-description?   string
-       |  |  |  +--ro equipment-type-identifier?    string
-       |  |  |  +--ro equipment-type-name?          string
-       |  |  |  +--ro equipment-type-version?       string
-       |  |  |  +--ro manufacturer-identifier?      string
-       |  |  |  +--ro manufacturer-name?            string
-       |  |  +--ro common-actual-properties
-       |  |  |  +--ro asset-instance-identifier?   string
-       |  |  |  +--ro is-powered?                  boolean
-       |  |  |  +--ro manufacture-date?            tapi-common:date-and-time
-       |  |  |  +--ro serial-number?               string
-       |  |  |  +--ro temperature?                 decimal64
-       |  |  +--ro actual-non-field-replaceable-module* [local-id]
-       |  |     +--ro common-actual-properties
-       |  |     |  +--ro asset-instance-identifier?   string
-       |  |     |  +--ro is-powered?                  boolean
-       |  |     |  +--ro manufacture-date?            tapi-common:date-and-time
-       |  |     |  +--ro serial-number?               string
-       |  |     |  +--ro temperature?                 decimal64
-       |  |     +--ro common-equipment-properties
-       |  |     |  +--ro asset-type-identifier?        string
-       |  |     |  +--ro equipment-type-description?   string
-       |  |     |  +--ro equipment-type-identifier?    string
-       |  |     |  +--ro equipment-type-name?          string
-       |  |     |  +--ro equipment-type-version?       string
-       |  |     |  +--ro manufacturer-identifier?      string
-       |  |     |  +--ro manufacturer-name?            string
-       |  |     +--ro local-id                       string
-       |  |     +--ro name* [value-name]
-       |  |        +--ro value-name    string
-       |  |        +--ro value?        string
-       |  +--ro uuid                           uuid
-       |  +--ro name* [value-name]
-       |     +--ro value-name    string
-       |     +--ro value?        string
-       +--ro access-port* [uuid]
-       |  +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
-       |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
-       |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
-       |  |  +--ro connector-identification    string
-       |  |  +--ro pin-identification          string
-       |  |  +--ro pin-and-role* [location-in-connector]
-       |  |     +--ro location-in-connector    string
-       |  |     +--ro pin-role*                string
-       |  |     +--ro pin-name?                string
-       |  +--ro uuid             uuid
-       |  +--ro name* [value-name]
-       |     +--ro value-name    string
-       |     +--ro value?        string
-       +--ro uuid?          uuid
        +--ro name* [value-name]
           +--ro value-name    string
           +--ro value?        string
@@ -696,25 +617,40 @@ module: tapi-equipment
        +--ro access-port* [device-uuid access-port-uuid]
        |  +--ro device-uuid         -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
        |  +--ro access-port-uuid    -> /tapi-common:context/tapi-equipment:physical-context/device/access-port/uuid
-       +--ro abstract-strand* [local-id]
-       |  +--ro adjacent-strand* [physical-span-uuid abstract-strand-local-id]
+       +--ro abstract-strand* [local-id] {mandatory-where-abstract-strands-are-to-be-stated}?
+       |  +--ro adjacent-strand* [physical-span-uuid abstract-strand-local-id] {mandatory-where-the-sequence-of-strands-in-a-physical-span-a-is-to-be-expressed-but-when-the-specific-interconnection-is-not-relevant}?
        |  |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
        |  |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
-       |  +--ro spliced-strand* [physical-span-uuid abstract-strand-local-id]
+       |  +--ro spliced-strand* [physical-span-uuid abstract-strand-local-id] {mandatory-where-a-simple-representation-of-a-splice-between-strands-is-required}?
        |  |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
        |  |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
-       |  +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
+       |  +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification] {mandatory-where-at-least-one-connector-pin-detail-is-to-be-represented}?
+       |  |  +--ro connector-identification    string {mandatory-where-there-is-more-than-one-connector-on-the-equipment}?
+       |  |  +--ro pin-identification          string {mandatory-where-the-pin-and-role-is-not-being-used-but-there-is-a-need-to-simply-identify-the-relevant-pin}?
+       |  |  +--ro pin-and-role* [location-in-connector] {mandatory-where-there-is-more-than-one-pin-and/or-a-need-to-identify-pin-role}?
+       |  |  |  +--ro location-in-connector        string
+       |  |  |  +--ro pin-role*                    string {mandatory-where-pin-role-is-to-be-stated}?
+       |  |  |  +--ro pin-name?                    string {mandatory-where-pin-name-is-relevant-as-the-description-is-at-pin-grnaularity}?
+       |  |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation {mandatory-where-connector/pin-orientation-is-known-and-to-be-stated}?
        |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
        |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
-       |  |  +--ro connector-identification    string
-       |  |  +--ro pin-identification          string
-       |  |  +--ro pin-and-role* [location-in-connector]
-       |  |     +--ro location-in-connector    string
-       |  |     +--ro pin-role*                string
-       |  |     +--ro pin-name?                string
-       |  +--ro strand-media-characteristics* [value-name]
+       |  +--ro strand-media-characteristics* [value-name] {mandatory-where-a-simple-form-of-strand-characteristics-is-to-be-conveyed}?
        |  |  +--ro value-name    string
        |  |  +--ro value?        string
+       |  +--ro to-strand-joint* [physical-span-uuid abstract-strand-local-id strand-joint-local-id]
+       |  |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       |  |  +--ro strand-joint-local-id       -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/strand-joint/local-id
+       |  +--ro strand-joint* [local-id] {mandatory-where-details-of-properties-of-the-joint-need-to-be-expressed}?
+       |  |  +--ro to-abstract-strand {mandatory-where-strand-joint-is-not-at-far-end}?
+       |  |  |  +--ro physical-span-uuid?         -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  |  |  +--ro abstract-strand-local-id?   -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       |  |  +--ro applicable-to-flow-direction?   flow-direction {mandatory-where-not-default}?
+       |  |  +--ro reflection?                     boolean {mandatory-where-not-default}?
+       |  |  +--ro local-id                        string
+       |  |  +--ro name* [value-name]
+       |  |     +--ro value-name    string
+       |  |     +--ro value?        string
        |  +--ro local-id                        string
        |  +--ro name* [value-name]
        |     +--ro value-name    string
@@ -725,49 +661,661 @@ module: tapi-equipment
           +--ro value?        string
   augment /tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connection:
     +--ro physical-route-list
-       +--ro physical-route* [local-id]
+       +--ro physical-route* [local-id] {mandatory-where-a-physical-route-is-to-be-conveyed}?
           +--ro physical-route-element* []
-          |  +--ro access-port-in-route
+          |  +--ro access-port-in-route {mandatory-where-accessport-is-used-to-define-physical-route}?
           |  |  +--ro device-uuid?        -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
           |  |  +--ro access-port-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/access-port/uuid
-          |  +--ro connector-pin-in-route* [device-uuid equipment-uuid connector-identification pin-identification]
+          |  +--ro connector-pin-in-route* [device-uuid equipment-uuid connector-identification pin-identification] {mandatory-where-accessport-is-not-used-to-define-physicalroute-or-where-accessport-requires-clarification-as-it-includes-more-connectorpins-than-}?
+          |     +--ro connector-identification    string {mandatory-where-there-is-more-than-one-connector-on-the-equipment}?
+          |     +--ro pin-identification          string {mandatory-where-the-pin-and-role-is-not-being-used-but-there-is-a-need-to-simply-identify-the-relevant-pin}?
+          |     +--ro pin-and-role* [location-in-connector] {mandatory-where-there-is-more-than-one-pin-and/or-a-need-to-identify-pin-role}?
+          |     |  +--ro location-in-connector        string
+          |     |  +--ro pin-role*                    string {mandatory-where-pin-role-is-to-be-stated}?
+          |     |  +--ro pin-name?                    string {mandatory-where-pin-name-is-relevant-as-the-description-is-at-pin-grnaularity}?
+          |     |  +--ro connector-pin-orientation?   connector-and-pin-orientation {mandatory-where-connector/pin-orientation-is-known-and-to-be-stated}?
           |     +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
           |     +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
-          |     +--ro connector-identification    string
-          |     +--ro pin-identification          string
-          |     +--ro pin-and-role* [location-in-connector]
-          |        +--ro location-in-connector    string
-          |        +--ro pin-role*                string
-          |        +--ro pin-name?                string
-          +--ro physical-route-state?     physical-route-state
+          +--ro physical-route-state?     physical-route-state {mandatory-where-not-always-default}?
           +--ro local-id                  string
           +--ro name* [value-name]
              +--ro value-name    string
              +--ro value?        string
   augment /tapi-common:context/tapi-common:service-interface-point:
-    +--rw supporting-access-port
-       +--ro access-port
+    +--rw access-port-supports-sip
+       +--ro access-port {mandatory-where-the-sip-is-directly-supported-by-an-access-port}?
           +--ro device-uuid?        -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
           +--ro access-port-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/access-port/uuid
+  augment /tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification:
+    +--ro physical-route
+       +--ro physical-route-element* []
+       |  +--ro access-port-in-route {mandatory-where-accessport-is-used-to-define-physical-route}?
+       |  |  +--ro device-uuid?        -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  |  +--ro access-port-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/access-port/uuid
+       |  +--ro connector-pin-in-route* [device-uuid equipment-uuid connector-identification pin-identification] {mandatory-where-accessport-is-not-used-to-define-physicalroute-or-where-accessport-requires-clarification-as-it-includes-more-connectorpins-than-}?
+       |     +--ro connector-identification    string {mandatory-where-there-is-more-than-one-connector-on-the-equipment}?
+       |     +--ro pin-identification          string {mandatory-where-the-pin-and-role-is-not-being-used-but-there-is-a-need-to-simply-identify-the-relevant-pin}?
+       |     +--ro pin-and-role* [location-in-connector] {mandatory-where-there-is-more-than-one-pin-and/or-a-need-to-identify-pin-role}?
+       |     |  +--ro location-in-connector        string
+       |     |  +--ro pin-role*                    string {mandatory-where-pin-role-is-to-be-stated}?
+       |     |  +--ro pin-name?                    string {mandatory-where-pin-name-is-relevant-as-the-description-is-at-pin-grnaularity}?
+       |     |  +--ro connector-pin-orientation?   connector-and-pin-orientation {mandatory-where-connector/pin-orientation-is-known-and-to-be-stated}?
+       |     +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |     +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
+       +--ro physical-route-state?     physical-route-state {mandatory-where-not-always-default}?
+       +--ro local-id?                 string
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
+    +--ro physical-route
+       +--ro physical-route-element* []
+       |  +--ro access-port-in-route {mandatory-where-accessport-is-used-to-define-physical-route}?
+       |  |  +--ro device-uuid?        -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  |  +--ro access-port-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/access-port/uuid
+       |  +--ro connector-pin-in-route* [device-uuid equipment-uuid connector-identification pin-identification] {mandatory-where-accessport-is-not-used-to-define-physicalroute-or-where-accessport-requires-clarification-as-it-includes-more-connectorpins-than-}?
+       |     +--ro connector-identification    string {mandatory-where-there-is-more-than-one-connector-on-the-equipment}?
+       |     +--ro pin-identification          string {mandatory-where-the-pin-and-role-is-not-being-used-but-there-is-a-need-to-simply-identify-the-relevant-pin}?
+       |     +--ro pin-and-role* [location-in-connector] {mandatory-where-there-is-more-than-one-pin-and/or-a-need-to-identify-pin-role}?
+       |     |  +--ro location-in-connector        string
+       |     |  +--ro pin-role*                    string {mandatory-where-pin-role-is-to-be-stated}?
+       |     |  +--ro pin-name?                    string {mandatory-where-pin-name-is-relevant-as-the-description-is-at-pin-grnaularity}?
+       |     |  +--ro connector-pin-orientation?   connector-and-pin-orientation {mandatory-where-connector/pin-orientation-is-known-and-to-be-stated}?
+       |     +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |     +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
+       +--ro physical-route-state?     physical-route-state {mandatory-where-not-always-default}?
+       +--ro local-id?                 string
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification:
+    +--ro physical-route-element
+       +--ro access-port-in-route {mandatory-where-accessport-is-used-to-define-physical-route}?
+       |  +--ro device-uuid?        -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  +--ro access-port-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/access-port/uuid
+       +--ro connector-pin-in-route* [device-uuid equipment-uuid connector-identification pin-identification] {mandatory-where-accessport-is-not-used-to-define-physicalroute-or-where-accessport-requires-clarification-as-it-includes-more-connectorpins-than-}?
+          +--ro connector-identification    string {mandatory-where-there-is-more-than-one-connector-on-the-equipment}?
+          +--ro pin-identification          string {mandatory-where-the-pin-and-role-is-not-being-used-but-there-is-a-need-to-simply-identify-the-relevant-pin}?
+          +--ro pin-and-role* [location-in-connector] {mandatory-where-there-is-more-than-one-pin-and/or-a-need-to-identify-pin-role}?
+          |  +--ro location-in-connector        string
+          |  +--ro pin-role*                    string {mandatory-where-pin-role-is-to-be-stated}?
+          |  +--ro pin-name?                    string {mandatory-where-pin-name-is-relevant-as-the-description-is-at-pin-grnaularity}?
+          |  +--ro connector-pin-orientation?   connector-and-pin-orientation {mandatory-where-connector/pin-orientation-is-known-and-to-be-stated}?
+          +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+          +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
+  augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
+    +--ro physical-route-element
+       +--ro access-port-in-route {mandatory-where-accessport-is-used-to-define-physical-route}?
+       |  +--ro device-uuid?        -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  +--ro access-port-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/access-port/uuid
+       +--ro connector-pin-in-route* [device-uuid equipment-uuid connector-identification pin-identification] {mandatory-where-accessport-is-not-used-to-define-physicalroute-or-where-accessport-requires-clarification-as-it-includes-more-connectorpins-than-}?
+          +--ro connector-identification    string {mandatory-where-there-is-more-than-one-connector-on-the-equipment}?
+          +--ro pin-identification          string {mandatory-where-the-pin-and-role-is-not-being-used-but-there-is-a-need-to-simply-identify-the-relevant-pin}?
+          +--ro pin-and-role* [location-in-connector] {mandatory-where-there-is-more-than-one-pin-and/or-a-need-to-identify-pin-role}?
+          |  +--ro location-in-connector        string
+          |  +--ro pin-role*                    string {mandatory-where-pin-role-is-to-be-stated}?
+          |  +--ro pin-name?                    string {mandatory-where-pin-name-is-relevant-as-the-description-is-at-pin-grnaularity}?
+          |  +--ro connector-pin-orientation?   connector-and-pin-orientation {mandatory-where-connector/pin-orientation-is-known-and-to-be-stated}?
+          +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+          +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
+  augment /tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification:
+    +--ro strand-joint
+       +--ro to-abstract-strand {mandatory-where-strand-joint-is-not-at-far-end}?
+       |  +--ro physical-span-uuid?         -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  +--ro abstract-strand-local-id?   -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       +--ro applicable-to-flow-direction?   flow-direction {mandatory-where-not-default}?
+       +--ro reflection?                     boolean {mandatory-where-not-default}?
+       +--ro local-id?                       string
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
+    +--ro strand-joint
+       +--ro to-abstract-strand {mandatory-where-strand-joint-is-not-at-far-end}?
+       |  +--ro physical-span-uuid?         -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  +--ro abstract-strand-local-id?   -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       +--ro applicable-to-flow-direction?   flow-direction {mandatory-where-not-default}?
+       +--ro reflection?                     boolean {mandatory-where-not-default}?
+       +--ro local-id?                       string
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-notification:event-notification:
+    +--ro equipment
+       +--ro contained-holder* [uuid] {mandatory-where-the-equipment-has-holders}?
+       |  +--ro occupying-fru {mandatory-where-an-occupying-fru-is-to-be-stated}?
+       |  |  +--ro device-uuid?      -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  |  +--ro equipment-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
+       |  +--ro expected-holder {mandatory-where-an-expected-holder-is-to-be-stated}?
+       |  |  +--ro common-holder-properties
+       |  |     +--ro holder-category?   holder-category
+       |  |     +--ro is-guided?         boolean {mandatory-where-not-default}?
+       |  |     +--ro holder-location?   string
+       |  +--ro actual-holder {mandatory-where-an-actual-holder-is-to-be-stated}?
+       |  |  +--ro common-holder-properties
+       |  |     +--ro holder-category?   holder-category
+       |  |     +--ro is-guided?         boolean {mandatory-where-not-default}?
+       |  |     +--ro holder-location?   string
+       |  +--ro uuid               uuid
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
+       +--ro category?                      equipment-category
+       +--ro equipment-location?            string
+       +--ro geographical-location?         string {mandatory-where-there-is-a-relevant-geographical-location-(only-for-equipments-not-in-holders)}?
+       +--ro is-expected-actual-mismatch?   boolean {mandatory-where-there-is-potential-for-expectation-and-hence-the-property-may-sometimes-be-not-default}?
+       +--ro expected-equipment* [] {mandatory-where-there-is-expectation-to-be-stated}?
+       |  +--ro common-equipment-properties {mandatory-where-not-equipment-not-expected}?
+       |  |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+       |  |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
+       |  |  +--ro equipment-type-identifier?    string
+       |  |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+       |  |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
+       |  |  +--ro manufacturer-identifier?      string
+       |  |  +--ro manufacturer-name?            string
+       |  +--ro expected-non-field-replaceable-module* [local-id] {mandatory-where-expected-equipment-has-known-non-field-replaceble-modules}?
+       |  |  +--ro common-equipment-properties
+       |  |  |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+       |  |  |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
+       |  |  |  +--ro equipment-type-identifier?    string
+       |  |  |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+       |  |  |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
+       |  |  |  +--ro manufacturer-identifier?      string
+       |  |  |  +--ro manufacturer-name?            string
+       |  |  +--ro local-id                       string
+       |  |  +--ro name* [value-name]
+       |  |     +--ro value-name    string
+       |  |     +--ro value?        string
+       |  +--ro expected-holder* [] {mandatory-where-expected-equipment-has-known-holders}?
+       |  |  +--ro common-holder-properties
+       |  |     +--ro holder-category?   holder-category
+       |  |     +--ro is-guided?         boolean {mandatory-where-not-default}?
+       |  |     +--ro holder-location?   string
+       |  +--ro equipment-not-expected?                  boolean {mandatory-where-not-default}?
+       +--ro actual-equipment {mandatory-where-a-real-equipment-is-to-be-represented}?
+       |  +--ro common-equipment-properties
+       |  |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+       |  |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
+       |  |  +--ro equipment-type-identifier?    string
+       |  |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+       |  |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
+       |  |  +--ro manufacturer-identifier?      string
+       |  |  +--ro manufacturer-name?            string
+       |  +--ro common-actual-properties
+       |  |  +--ro asset-instance-identifier?   string {mandatory-where-there-is-an-opportunity-to-allocate-an-identifier-on-an-instance-basis-and-where-an-identifier-has-been-allocated}?
+       |  |  +--ro is-powered?                  boolean {mandatory-where-not-default-and-the-power-state-of-the-hardware-is-known}?
+       |  |  +--ro manufacture-date?            tapi-common:date-and-time {mandatory-where-the-manufacture-date-is-provided-by-the-actual-hardware}?
+       |  |  +--ro serial-number?               string {mandatory-where-the-serial-number-is-provided-by-the-actual-hardware}?
+       |  |  +--ro temperature?                 decimal64 {mandatory-where-the-equipment-provides-a-temperature-measurement}?
+       |  +--ro actual-non-field-replaceable-module* [local-id] {mandatory-where-there-are-non-field-replaceable-modules}?
+       |     +--ro common-actual-properties
+       |     |  +--ro asset-instance-identifier?   string {mandatory-where-there-is-an-opportunity-to-allocate-an-identifier-on-an-instance-basis-and-where-an-identifier-has-been-allocated}?
+       |     |  +--ro is-powered?                  boolean {mandatory-where-not-default-and-the-power-state-of-the-hardware-is-known}?
+       |     |  +--ro manufacture-date?            tapi-common:date-and-time {mandatory-where-the-manufacture-date-is-provided-by-the-actual-hardware}?
+       |     |  +--ro serial-number?               string {mandatory-where-the-serial-number-is-provided-by-the-actual-hardware}?
+       |     |  +--ro temperature?                 decimal64 {mandatory-where-the-equipment-provides-a-temperature-measurement}?
+       |     +--ro common-equipment-properties
+       |     |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+       |     |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
+       |     |  +--ro equipment-type-identifier?    string
+       |     |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+       |     |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
+       |     |  +--ro manufacturer-identifier?      string
+       |     |  +--ro manufacturer-name?            string
+       |     +--ro local-id                       string
+       |     +--ro name* [value-name]
+       |        +--ro value-name    string
+       |        +--ro value?        string
+       +--ro uuid?                          uuid
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-notification:event-notification:
+    +--ro holder
+       +--ro occupying-fru {mandatory-where-an-occupying-fru-is-to-be-stated}?
+       |  +--ro device-uuid?      -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  +--ro equipment-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
+       +--ro expected-holder {mandatory-where-an-expected-holder-is-to-be-stated}?
+       |  +--ro common-holder-properties
+       |     +--ro holder-category?   holder-category
+       |     +--ro is-guided?         boolean {mandatory-where-not-default}?
+       |     +--ro holder-location?   string
+       +--ro actual-holder {mandatory-where-an-actual-holder-is-to-be-stated}?
+       |  +--ro common-holder-properties
+       |     +--ro holder-category?   holder-category
+       |     +--ro is-guided?         boolean {mandatory-where-not-default}?
+       |     +--ro holder-location?   string
+       +--ro uuid?              uuid
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-notification:event-notification:
+    +--ro access-port
+       +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
+       |  +--ro connector-identification    string {mandatory-where-there-is-more-than-one-connector-on-the-equipment}?
+       |  +--ro pin-identification          string {mandatory-where-the-pin-and-role-is-not-being-used-but-there-is-a-need-to-simply-identify-the-relevant-pin}?
+       |  +--ro pin-and-role* [location-in-connector] {mandatory-where-there-is-more-than-one-pin-and/or-a-need-to-identify-pin-role}?
+       |  |  +--ro location-in-connector        string
+       |  |  +--ro pin-role*                    string {mandatory-where-pin-role-is-to-be-stated}?
+       |  |  +--ro pin-name?                    string {mandatory-where-pin-name-is-relevant-as-the-description-is-at-pin-grnaularity}?
+       |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation {mandatory-where-connector/pin-orientation-is-known-and-to-be-stated}?
+       |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
+       +--ro uuid?            uuid
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-notification:event-notification:
+    +--ro physical-span
+       +--ro access-port* [device-uuid access-port-uuid]
+       |  +--ro device-uuid         -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  +--ro access-port-uuid    -> /tapi-common:context/tapi-equipment:physical-context/device/access-port/uuid
+       +--ro abstract-strand* [local-id] {mandatory-where-abstract-strands-are-to-be-stated}?
+       |  +--ro adjacent-strand* [physical-span-uuid abstract-strand-local-id] {mandatory-where-the-sequence-of-strands-in-a-physical-span-a-is-to-be-expressed-but-when-the-specific-interconnection-is-not-relevant}?
+       |  |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       |  +--ro spliced-strand* [physical-span-uuid abstract-strand-local-id] {mandatory-where-a-simple-representation-of-a-splice-between-strands-is-required}?
+       |  |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       |  +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification] {mandatory-where-at-least-one-connector-pin-detail-is-to-be-represented}?
+       |  |  +--ro connector-identification    string {mandatory-where-there-is-more-than-one-connector-on-the-equipment}?
+       |  |  +--ro pin-identification          string {mandatory-where-the-pin-and-role-is-not-being-used-but-there-is-a-need-to-simply-identify-the-relevant-pin}?
+       |  |  +--ro pin-and-role* [location-in-connector] {mandatory-where-there-is-more-than-one-pin-and/or-a-need-to-identify-pin-role}?
+       |  |  |  +--ro location-in-connector        string
+       |  |  |  +--ro pin-role*                    string {mandatory-where-pin-role-is-to-be-stated}?
+       |  |  |  +--ro pin-name?                    string {mandatory-where-pin-name-is-relevant-as-the-description-is-at-pin-grnaularity}?
+       |  |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation {mandatory-where-connector/pin-orientation-is-known-and-to-be-stated}?
+       |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
+       |  +--ro strand-media-characteristics* [value-name] {mandatory-where-a-simple-form-of-strand-characteristics-is-to-be-conveyed}?
+       |  |  +--ro value-name    string
+       |  |  +--ro value?        string
+       |  +--ro to-strand-joint* [physical-span-uuid abstract-strand-local-id strand-joint-local-id]
+       |  |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       |  |  +--ro strand-joint-local-id       -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/strand-joint/local-id
+       |  +--ro strand-joint* [local-id] {mandatory-where-details-of-properties-of-the-joint-need-to-be-expressed}?
+       |  |  +--ro to-abstract-strand {mandatory-where-strand-joint-is-not-at-far-end}?
+       |  |  |  +--ro physical-span-uuid?         -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  |  |  +--ro abstract-strand-local-id?   -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       |  |  +--ro applicable-to-flow-direction?   flow-direction {mandatory-where-not-default}?
+       |  |  +--ro reflection?                     boolean {mandatory-where-not-default}?
+       |  |  +--ro local-id                        string
+       |  |  +--ro name* [value-name]
+       |  |     +--ro value-name    string
+       |  |     +--ro value?        string
+       |  +--ro local-id                        string
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
+       +--ro uuid?              uuid
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-notification:event-notification:
+    +--ro physical-route
+       +--ro physical-route-element* []
+       |  +--ro access-port-in-route {mandatory-where-accessport-is-used-to-define-physical-route}?
+       |  |  +--ro device-uuid?        -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  |  +--ro access-port-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/access-port/uuid
+       |  +--ro connector-pin-in-route* [device-uuid equipment-uuid connector-identification pin-identification] {mandatory-where-accessport-is-not-used-to-define-physicalroute-or-where-accessport-requires-clarification-as-it-includes-more-connectorpins-than-}?
+       |     +--ro connector-identification    string {mandatory-where-there-is-more-than-one-connector-on-the-equipment}?
+       |     +--ro pin-identification          string {mandatory-where-the-pin-and-role-is-not-being-used-but-there-is-a-need-to-simply-identify-the-relevant-pin}?
+       |     +--ro pin-and-role* [location-in-connector] {mandatory-where-there-is-more-than-one-pin-and/or-a-need-to-identify-pin-role}?
+       |     |  +--ro location-in-connector        string
+       |     |  +--ro pin-role*                    string {mandatory-where-pin-role-is-to-be-stated}?
+       |     |  +--ro pin-name?                    string {mandatory-where-pin-name-is-relevant-as-the-description-is-at-pin-grnaularity}?
+       |     |  +--ro connector-pin-orientation?   connector-and-pin-orientation {mandatory-where-connector/pin-orientation-is-known-and-to-be-stated}?
+       |     +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |     +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
+       +--ro physical-route-state?     physical-route-state {mandatory-where-not-always-default}?
+       +--ro local-id?                 string
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-notification:event-notification:
+    +--ro physical-route-element
+       +--ro access-port-in-route {mandatory-where-accessport-is-used-to-define-physical-route}?
+       |  +--ro device-uuid?        -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  +--ro access-port-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/access-port/uuid
+       +--ro connector-pin-in-route* [device-uuid equipment-uuid connector-identification pin-identification] {mandatory-where-accessport-is-not-used-to-define-physicalroute-or-where-accessport-requires-clarification-as-it-includes-more-connectorpins-than-}?
+          +--ro connector-identification    string {mandatory-where-there-is-more-than-one-connector-on-the-equipment}?
+          +--ro pin-identification          string {mandatory-where-the-pin-and-role-is-not-being-used-but-there-is-a-need-to-simply-identify-the-relevant-pin}?
+          +--ro pin-and-role* [location-in-connector] {mandatory-where-there-is-more-than-one-pin-and/or-a-need-to-identify-pin-role}?
+          |  +--ro location-in-connector        string
+          |  +--ro pin-role*                    string {mandatory-where-pin-role-is-to-be-stated}?
+          |  +--ro pin-name?                    string {mandatory-where-pin-name-is-relevant-as-the-description-is-at-pin-grnaularity}?
+          |  +--ro connector-pin-orientation?   connector-and-pin-orientation {mandatory-where-connector/pin-orientation-is-known-and-to-be-stated}?
+          +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+          +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
+  augment /tapi-notification:event-notification:
+    +--ro strand-joint
+       +--ro to-abstract-strand {mandatory-where-strand-joint-is-not-at-far-end}?
+       |  +--ro physical-span-uuid?         -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  +--ro abstract-strand-local-id?   -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       +--ro applicable-to-flow-direction?   flow-direction {mandatory-where-not-default}?
+       +--ro reflection?                     boolean {mandatory-where-not-default}?
+       +--ro local-id?                       string
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-notification:event-notification:
+    +--ro abstract-strand
+       +--ro adjacent-strand* [physical-span-uuid abstract-strand-local-id] {mandatory-where-the-sequence-of-strands-in-a-physical-span-a-is-to-be-expressed-but-when-the-specific-interconnection-is-not-relevant}?
+       |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       +--ro spliced-strand* [physical-span-uuid abstract-strand-local-id] {mandatory-where-a-simple-representation-of-a-splice-between-strands-is-required}?
+       |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification] {mandatory-where-at-least-one-connector-pin-detail-is-to-be-represented}?
+       |  +--ro connector-identification    string {mandatory-where-there-is-more-than-one-connector-on-the-equipment}?
+       |  +--ro pin-identification          string {mandatory-where-the-pin-and-role-is-not-being-used-but-there-is-a-need-to-simply-identify-the-relevant-pin}?
+       |  +--ro pin-and-role* [location-in-connector] {mandatory-where-there-is-more-than-one-pin-and/or-a-need-to-identify-pin-role}?
+       |  |  +--ro location-in-connector        string
+       |  |  +--ro pin-role*                    string {mandatory-where-pin-role-is-to-be-stated}?
+       |  |  +--ro pin-name?                    string {mandatory-where-pin-name-is-relevant-as-the-description-is-at-pin-grnaularity}?
+       |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation {mandatory-where-connector/pin-orientation-is-known-and-to-be-stated}?
+       |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
+       +--ro strand-media-characteristics* [value-name] {mandatory-where-a-simple-form-of-strand-characteristics-is-to-be-conveyed}?
+       |  +--ro value-name    string
+       |  +--ro value?        string
+       +--ro to-strand-joint* [physical-span-uuid abstract-strand-local-id strand-joint-local-id]
+       |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       |  +--ro strand-joint-local-id       -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/strand-joint/local-id
+       +--ro strand-joint* [local-id] {mandatory-where-details-of-properties-of-the-joint-need-to-be-expressed}?
+       |  +--ro to-abstract-strand {mandatory-where-strand-joint-is-not-at-far-end}?
+       |  |  +--ro physical-span-uuid?         -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  |  +--ro abstract-strand-local-id?   -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       |  +--ro applicable-to-flow-direction?   flow-direction {mandatory-where-not-default}?
+       |  +--ro reflection?                     boolean {mandatory-where-not-default}?
+       |  +--ro local-id                        string
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
+       +--ro local-id?                       string
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification:
+    +--ro abstract-strand
+       +--ro adjacent-strand* [physical-span-uuid abstract-strand-local-id] {mandatory-where-the-sequence-of-strands-in-a-physical-span-a-is-to-be-expressed-but-when-the-specific-interconnection-is-not-relevant}?
+       |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       +--ro spliced-strand* [physical-span-uuid abstract-strand-local-id] {mandatory-where-a-simple-representation-of-a-splice-between-strands-is-required}?
+       |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification] {mandatory-where-at-least-one-connector-pin-detail-is-to-be-represented}?
+       |  +--ro connector-identification    string {mandatory-where-there-is-more-than-one-connector-on-the-equipment}?
+       |  +--ro pin-identification          string {mandatory-where-the-pin-and-role-is-not-being-used-but-there-is-a-need-to-simply-identify-the-relevant-pin}?
+       |  +--ro pin-and-role* [location-in-connector] {mandatory-where-there-is-more-than-one-pin-and/or-a-need-to-identify-pin-role}?
+       |  |  +--ro location-in-connector        string
+       |  |  +--ro pin-role*                    string {mandatory-where-pin-role-is-to-be-stated}?
+       |  |  +--ro pin-name?                    string {mandatory-where-pin-name-is-relevant-as-the-description-is-at-pin-grnaularity}?
+       |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation {mandatory-where-connector/pin-orientation-is-known-and-to-be-stated}?
+       |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
+       +--ro strand-media-characteristics* [value-name] {mandatory-where-a-simple-form-of-strand-characteristics-is-to-be-conveyed}?
+       |  +--ro value-name    string
+       |  +--ro value?        string
+       +--ro to-strand-joint* [physical-span-uuid abstract-strand-local-id strand-joint-local-id]
+       |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       |  +--ro strand-joint-local-id       -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/strand-joint/local-id
+       +--ro strand-joint* [local-id] {mandatory-where-details-of-properties-of-the-joint-need-to-be-expressed}?
+       |  +--ro to-abstract-strand {mandatory-where-strand-joint-is-not-at-far-end}?
+       |  |  +--ro physical-span-uuid?         -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  |  +--ro abstract-strand-local-id?   -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       |  +--ro applicable-to-flow-direction?   flow-direction {mandatory-where-not-default}?
+       |  +--ro reflection?                     boolean {mandatory-where-not-default}?
+       |  +--ro local-id                        string
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
+       +--ro local-id?                       string
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification:
+    +--ro device
+       +--ro equipment* [uuid] {mandatory-where-the-device-has-equipment}?
+       |  +--ro contained-holder* [uuid] {mandatory-where-the-equipment-has-holders}?
+       |  |  +--ro occupying-fru {mandatory-where-an-occupying-fru-is-to-be-stated}?
+       |  |  |  +--ro device-uuid?      -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  |  |  +--ro equipment-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
+       |  |  +--ro expected-holder {mandatory-where-an-expected-holder-is-to-be-stated}?
+       |  |  |  +--ro common-holder-properties
+       |  |  |     +--ro holder-category?   holder-category
+       |  |  |     +--ro is-guided?         boolean {mandatory-where-not-default}?
+       |  |  |     +--ro holder-location?   string
+       |  |  +--ro actual-holder {mandatory-where-an-actual-holder-is-to-be-stated}?
+       |  |  |  +--ro common-holder-properties
+       |  |  |     +--ro holder-category?   holder-category
+       |  |  |     +--ro is-guided?         boolean {mandatory-where-not-default}?
+       |  |  |     +--ro holder-location?   string
+       |  |  +--ro uuid               uuid
+       |  |  +--ro name* [value-name]
+       |  |     +--ro value-name    string
+       |  |     +--ro value?        string
+       |  +--ro category?                      equipment-category
+       |  +--ro equipment-location?            string
+       |  +--ro geographical-location?         string {mandatory-where-there-is-a-relevant-geographical-location-(only-for-equipments-not-in-holders)}?
+       |  +--ro is-expected-actual-mismatch?   boolean {mandatory-where-there-is-potential-for-expectation-and-hence-the-property-may-sometimes-be-not-default}?
+       |  +--ro expected-equipment* [] {mandatory-where-there-is-expectation-to-be-stated}?
+       |  |  +--ro common-equipment-properties {mandatory-where-not-equipment-not-expected}?
+       |  |  |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+       |  |  |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
+       |  |  |  +--ro equipment-type-identifier?    string
+       |  |  |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+       |  |  |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
+       |  |  |  +--ro manufacturer-identifier?      string
+       |  |  |  +--ro manufacturer-name?            string
+       |  |  +--ro expected-non-field-replaceable-module* [local-id] {mandatory-where-expected-equipment-has-known-non-field-replaceble-modules}?
+       |  |  |  +--ro common-equipment-properties
+       |  |  |  |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+       |  |  |  |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
+       |  |  |  |  +--ro equipment-type-identifier?    string
+       |  |  |  |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+       |  |  |  |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
+       |  |  |  |  +--ro manufacturer-identifier?      string
+       |  |  |  |  +--ro manufacturer-name?            string
+       |  |  |  +--ro local-id                       string
+       |  |  |  +--ro name* [value-name]
+       |  |  |     +--ro value-name    string
+       |  |  |     +--ro value?        string
+       |  |  +--ro expected-holder* [] {mandatory-where-expected-equipment-has-known-holders}?
+       |  |  |  +--ro common-holder-properties
+       |  |  |     +--ro holder-category?   holder-category
+       |  |  |     +--ro is-guided?         boolean {mandatory-where-not-default}?
+       |  |  |     +--ro holder-location?   string
+       |  |  +--ro equipment-not-expected?                  boolean {mandatory-where-not-default}?
+       |  +--ro actual-equipment {mandatory-where-a-real-equipment-is-to-be-represented}?
+       |  |  +--ro common-equipment-properties
+       |  |  |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+       |  |  |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
+       |  |  |  +--ro equipment-type-identifier?    string
+       |  |  |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+       |  |  |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
+       |  |  |  +--ro manufacturer-identifier?      string
+       |  |  |  +--ro manufacturer-name?            string
+       |  |  +--ro common-actual-properties
+       |  |  |  +--ro asset-instance-identifier?   string {mandatory-where-there-is-an-opportunity-to-allocate-an-identifier-on-an-instance-basis-and-where-an-identifier-has-been-allocated}?
+       |  |  |  +--ro is-powered?                  boolean {mandatory-where-not-default-and-the-power-state-of-the-hardware-is-known}?
+       |  |  |  +--ro manufacture-date?            tapi-common:date-and-time {mandatory-where-the-manufacture-date-is-provided-by-the-actual-hardware}?
+       |  |  |  +--ro serial-number?               string {mandatory-where-the-serial-number-is-provided-by-the-actual-hardware}?
+       |  |  |  +--ro temperature?                 decimal64 {mandatory-where-the-equipment-provides-a-temperature-measurement}?
+       |  |  +--ro actual-non-field-replaceable-module* [local-id] {mandatory-where-there-are-non-field-replaceable-modules}?
+       |  |     +--ro common-actual-properties
+       |  |     |  +--ro asset-instance-identifier?   string {mandatory-where-there-is-an-opportunity-to-allocate-an-identifier-on-an-instance-basis-and-where-an-identifier-has-been-allocated}?
+       |  |     |  +--ro is-powered?                  boolean {mandatory-where-not-default-and-the-power-state-of-the-hardware-is-known}?
+       |  |     |  +--ro manufacture-date?            tapi-common:date-and-time {mandatory-where-the-manufacture-date-is-provided-by-the-actual-hardware}?
+       |  |     |  +--ro serial-number?               string {mandatory-where-the-serial-number-is-provided-by-the-actual-hardware}?
+       |  |     |  +--ro temperature?                 decimal64 {mandatory-where-the-equipment-provides-a-temperature-measurement}?
+       |  |     +--ro common-equipment-properties
+       |  |     |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+       |  |     |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
+       |  |     |  +--ro equipment-type-identifier?    string
+       |  |     |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+       |  |     |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
+       |  |     |  +--ro manufacturer-identifier?      string
+       |  |     |  +--ro manufacturer-name?            string
+       |  |     +--ro local-id                       string
+       |  |     +--ro name* [value-name]
+       |  |        +--ro value-name    string
+       |  |        +--ro value?        string
+       |  +--ro uuid                           uuid
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
+       +--ro access-port* [uuid] {mandatory-where-access-ports-are-present}?
+       |  +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
+       |  |  +--ro connector-identification    string {mandatory-where-there-is-more-than-one-connector-on-the-equipment}?
+       |  |  +--ro pin-identification          string {mandatory-where-the-pin-and-role-is-not-being-used-but-there-is-a-need-to-simply-identify-the-relevant-pin}?
+       |  |  +--ro pin-and-role* [location-in-connector] {mandatory-where-there-is-more-than-one-pin-and/or-a-need-to-identify-pin-role}?
+       |  |  |  +--ro location-in-connector        string
+       |  |  |  +--ro pin-role*                    string {mandatory-where-pin-role-is-to-be-stated}?
+       |  |  |  +--ro pin-name?                    string {mandatory-where-pin-name-is-relevant-as-the-description-is-at-pin-grnaularity}?
+       |  |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation {mandatory-where-connector/pin-orientation-is-known-and-to-be-stated}?
+       |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
+       |  +--ro uuid             uuid
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
+       +--ro uuid?          uuid
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-notification:event-notification:
+    +--ro device
+       +--ro equipment* [uuid] {mandatory-where-the-device-has-equipment}?
+       |  +--ro contained-holder* [uuid] {mandatory-where-the-equipment-has-holders}?
+       |  |  +--ro occupying-fru {mandatory-where-an-occupying-fru-is-to-be-stated}?
+       |  |  |  +--ro device-uuid?      -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  |  |  +--ro equipment-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
+       |  |  +--ro expected-holder {mandatory-where-an-expected-holder-is-to-be-stated}?
+       |  |  |  +--ro common-holder-properties
+       |  |  |     +--ro holder-category?   holder-category
+       |  |  |     +--ro is-guided?         boolean {mandatory-where-not-default}?
+       |  |  |     +--ro holder-location?   string
+       |  |  +--ro actual-holder {mandatory-where-an-actual-holder-is-to-be-stated}?
+       |  |  |  +--ro common-holder-properties
+       |  |  |     +--ro holder-category?   holder-category
+       |  |  |     +--ro is-guided?         boolean {mandatory-where-not-default}?
+       |  |  |     +--ro holder-location?   string
+       |  |  +--ro uuid               uuid
+       |  |  +--ro name* [value-name]
+       |  |     +--ro value-name    string
+       |  |     +--ro value?        string
+       |  +--ro category?                      equipment-category
+       |  +--ro equipment-location?            string
+       |  +--ro geographical-location?         string {mandatory-where-there-is-a-relevant-geographical-location-(only-for-equipments-not-in-holders)}?
+       |  +--ro is-expected-actual-mismatch?   boolean {mandatory-where-there-is-potential-for-expectation-and-hence-the-property-may-sometimes-be-not-default}?
+       |  +--ro expected-equipment* [] {mandatory-where-there-is-expectation-to-be-stated}?
+       |  |  +--ro common-equipment-properties {mandatory-where-not-equipment-not-expected}?
+       |  |  |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+       |  |  |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
+       |  |  |  +--ro equipment-type-identifier?    string
+       |  |  |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+       |  |  |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
+       |  |  |  +--ro manufacturer-identifier?      string
+       |  |  |  +--ro manufacturer-name?            string
+       |  |  +--ro expected-non-field-replaceable-module* [local-id] {mandatory-where-expected-equipment-has-known-non-field-replaceble-modules}?
+       |  |  |  +--ro common-equipment-properties
+       |  |  |  |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+       |  |  |  |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
+       |  |  |  |  +--ro equipment-type-identifier?    string
+       |  |  |  |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+       |  |  |  |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
+       |  |  |  |  +--ro manufacturer-identifier?      string
+       |  |  |  |  +--ro manufacturer-name?            string
+       |  |  |  +--ro local-id                       string
+       |  |  |  +--ro name* [value-name]
+       |  |  |     +--ro value-name    string
+       |  |  |     +--ro value?        string
+       |  |  +--ro expected-holder* [] {mandatory-where-expected-equipment-has-known-holders}?
+       |  |  |  +--ro common-holder-properties
+       |  |  |     +--ro holder-category?   holder-category
+       |  |  |     +--ro is-guided?         boolean {mandatory-where-not-default}?
+       |  |  |     +--ro holder-location?   string
+       |  |  +--ro equipment-not-expected?                  boolean {mandatory-where-not-default}?
+       |  +--ro actual-equipment {mandatory-where-a-real-equipment-is-to-be-represented}?
+       |  |  +--ro common-equipment-properties
+       |  |  |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+       |  |  |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
+       |  |  |  +--ro equipment-type-identifier?    string
+       |  |  |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+       |  |  |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
+       |  |  |  +--ro manufacturer-identifier?      string
+       |  |  |  +--ro manufacturer-name?            string
+       |  |  +--ro common-actual-properties
+       |  |  |  +--ro asset-instance-identifier?   string {mandatory-where-there-is-an-opportunity-to-allocate-an-identifier-on-an-instance-basis-and-where-an-identifier-has-been-allocated}?
+       |  |  |  +--ro is-powered?                  boolean {mandatory-where-not-default-and-the-power-state-of-the-hardware-is-known}?
+       |  |  |  +--ro manufacture-date?            tapi-common:date-and-time {mandatory-where-the-manufacture-date-is-provided-by-the-actual-hardware}?
+       |  |  |  +--ro serial-number?               string {mandatory-where-the-serial-number-is-provided-by-the-actual-hardware}?
+       |  |  |  +--ro temperature?                 decimal64 {mandatory-where-the-equipment-provides-a-temperature-measurement}?
+       |  |  +--ro actual-non-field-replaceable-module* [local-id] {mandatory-where-there-are-non-field-replaceable-modules}?
+       |  |     +--ro common-actual-properties
+       |  |     |  +--ro asset-instance-identifier?   string {mandatory-where-there-is-an-opportunity-to-allocate-an-identifier-on-an-instance-basis-and-where-an-identifier-has-been-allocated}?
+       |  |     |  +--ro is-powered?                  boolean {mandatory-where-not-default-and-the-power-state-of-the-hardware-is-known}?
+       |  |     |  +--ro manufacture-date?            tapi-common:date-and-time {mandatory-where-the-manufacture-date-is-provided-by-the-actual-hardware}?
+       |  |     |  +--ro serial-number?               string {mandatory-where-the-serial-number-is-provided-by-the-actual-hardware}?
+       |  |     |  +--ro temperature?                 decimal64 {mandatory-where-the-equipment-provides-a-temperature-measurement}?
+       |  |     +--ro common-equipment-properties
+       |  |     |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+       |  |     |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
+       |  |     |  +--ro equipment-type-identifier?    string
+       |  |     |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+       |  |     |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
+       |  |     |  +--ro manufacturer-identifier?      string
+       |  |     |  +--ro manufacturer-name?            string
+       |  |     +--ro local-id                       string
+       |  |     +--ro name* [value-name]
+       |  |        +--ro value-name    string
+       |  |        +--ro value?        string
+       |  +--ro uuid                           uuid
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
+       +--ro access-port* [uuid] {mandatory-where-access-ports-are-present}?
+       |  +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
+       |  |  +--ro connector-identification    string {mandatory-where-there-is-more-than-one-connector-on-the-equipment}?
+       |  |  +--ro pin-identification          string {mandatory-where-the-pin-and-role-is-not-being-used-but-there-is-a-need-to-simply-identify-the-relevant-pin}?
+       |  |  +--ro pin-and-role* [location-in-connector] {mandatory-where-there-is-more-than-one-pin-and/or-a-need-to-identify-pin-role}?
+       |  |  |  +--ro location-in-connector        string
+       |  |  |  +--ro pin-role*                    string {mandatory-where-pin-role-is-to-be-stated}?
+       |  |  |  +--ro pin-name?                    string {mandatory-where-pin-name-is-relevant-as-the-description-is-at-pin-grnaularity}?
+       |  |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation {mandatory-where-connector/pin-orientation-is-known-and-to-be-stated}?
+       |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
+       |  +--ro uuid             uuid
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
+       +--ro uuid?          uuid
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
 
   rpcs:
     +---x get-device-list
     |  +--ro output
     |     +--ro device* [uuid]
-    |        +--ro equipment* [uuid]
-    |        |  +--ro contained-holder* [uuid]
-    |        |  |  +--ro occupying-fru
+    |        +--ro equipment* [uuid] {mandatory-where-the-device-has-equipment}?
+    |        |  +--ro contained-holder* [uuid] {mandatory-where-the-equipment-has-holders}?
+    |        |  |  +--ro occupying-fru {mandatory-where-an-occupying-fru-is-to-be-stated}?
     |        |  |  |  +--ro device-uuid?      -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
     |        |  |  |  +--ro equipment-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
-    |        |  |  +--ro expected-holder
+    |        |  |  +--ro expected-holder {mandatory-where-an-expected-holder-is-to-be-stated}?
     |        |  |  |  +--ro common-holder-properties
     |        |  |  |     +--ro holder-category?   holder-category
-    |        |  |  |     +--ro is-guided?         boolean
+    |        |  |  |     +--ro is-guided?         boolean {mandatory-where-not-default}?
     |        |  |  |     +--ro holder-location?   string
-    |        |  |  +--ro actual-holder
+    |        |  |  +--ro actual-holder {mandatory-where-an-actual-holder-is-to-be-stated}?
     |        |  |  |  +--ro common-holder-properties
     |        |  |  |     +--ro holder-category?   holder-category
-    |        |  |  |     +--ro is-guided?         boolean
+    |        |  |  |     +--ro is-guided?         boolean {mandatory-where-not-default}?
     |        |  |  |     +--ro holder-location?   string
     |        |  |  +--ro uuid               uuid
     |        |  |  +--ro name* [value-name]
@@ -775,63 +1323,64 @@ module: tapi-equipment
     |        |  |     +--ro value?        string
     |        |  +--ro category?                      equipment-category
     |        |  +--ro equipment-location?            string
-    |        |  +--ro geographical-location?         string
-    |        |  +--ro is-expected-actual-mismatch?   boolean
-    |        |  +--ro expected-equipment* []
-    |        |  |  +--ro common-equipment-properties
-    |        |  |  |  +--ro asset-type-identifier?        string
-    |        |  |  |  +--ro equipment-type-description?   string
+    |        |  +--ro geographical-location?         string {mandatory-where-there-is-a-relevant-geographical-location-(only-for-equipments-not-in-holders)}?
+    |        |  +--ro is-expected-actual-mismatch?   boolean {mandatory-where-there-is-potential-for-expectation-and-hence-the-property-may-sometimes-be-not-default}?
+    |        |  +--ro expected-equipment* [] {mandatory-where-there-is-expectation-to-be-stated}?
+    |        |  |  +--ro common-equipment-properties {mandatory-where-not-equipment-not-expected}?
+    |        |  |  |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+    |        |  |  |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
     |        |  |  |  +--ro equipment-type-identifier?    string
-    |        |  |  |  +--ro equipment-type-name?          string
-    |        |  |  |  +--ro equipment-type-version?       string
+    |        |  |  |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+    |        |  |  |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
     |        |  |  |  +--ro manufacturer-identifier?      string
     |        |  |  |  +--ro manufacturer-name?            string
-    |        |  |  +--ro expected-non-field-replaceable-module* [local-id]
+    |        |  |  +--ro expected-non-field-replaceable-module* [local-id] {mandatory-where-expected-equipment-has-known-non-field-replaceble-modules}?
     |        |  |  |  +--ro common-equipment-properties
-    |        |  |  |  |  +--ro asset-type-identifier?        string
-    |        |  |  |  |  +--ro equipment-type-description?   string
+    |        |  |  |  |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+    |        |  |  |  |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
     |        |  |  |  |  +--ro equipment-type-identifier?    string
-    |        |  |  |  |  +--ro equipment-type-name?          string
-    |        |  |  |  |  +--ro equipment-type-version?       string
+    |        |  |  |  |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+    |        |  |  |  |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
     |        |  |  |  |  +--ro manufacturer-identifier?      string
     |        |  |  |  |  +--ro manufacturer-name?            string
     |        |  |  |  +--ro local-id                       string
     |        |  |  |  +--ro name* [value-name]
     |        |  |  |     +--ro value-name    string
     |        |  |  |     +--ro value?        string
-    |        |  |  +--ro expected-holder* []
-    |        |  |     +--ro common-holder-properties
-    |        |  |        +--ro holder-category?   holder-category
-    |        |  |        +--ro is-guided?         boolean
-    |        |  |        +--ro holder-location?   string
-    |        |  +--ro actual-equipment
+    |        |  |  +--ro expected-holder* [] {mandatory-where-expected-equipment-has-known-holders}?
+    |        |  |  |  +--ro common-holder-properties
+    |        |  |  |     +--ro holder-category?   holder-category
+    |        |  |  |     +--ro is-guided?         boolean {mandatory-where-not-default}?
+    |        |  |  |     +--ro holder-location?   string
+    |        |  |  +--ro equipment-not-expected?                  boolean {mandatory-where-not-default}?
+    |        |  +--ro actual-equipment {mandatory-where-a-real-equipment-is-to-be-represented}?
     |        |  |  +--ro common-equipment-properties
-    |        |  |  |  +--ro asset-type-identifier?        string
-    |        |  |  |  +--ro equipment-type-description?   string
+    |        |  |  |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+    |        |  |  |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
     |        |  |  |  +--ro equipment-type-identifier?    string
-    |        |  |  |  +--ro equipment-type-name?          string
-    |        |  |  |  +--ro equipment-type-version?       string
+    |        |  |  |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+    |        |  |  |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
     |        |  |  |  +--ro manufacturer-identifier?      string
     |        |  |  |  +--ro manufacturer-name?            string
     |        |  |  +--ro common-actual-properties
-    |        |  |  |  +--ro asset-instance-identifier?   string
-    |        |  |  |  +--ro is-powered?                  boolean
-    |        |  |  |  +--ro manufacture-date?            tapi-common:date-and-time
-    |        |  |  |  +--ro serial-number?               string
-    |        |  |  |  +--ro temperature?                 decimal64
-    |        |  |  +--ro actual-non-field-replaceable-module* [local-id]
+    |        |  |  |  +--ro asset-instance-identifier?   string {mandatory-where-there-is-an-opportunity-to-allocate-an-identifier-on-an-instance-basis-and-where-an-identifier-has-been-allocated}?
+    |        |  |  |  +--ro is-powered?                  boolean {mandatory-where-not-default-and-the-power-state-of-the-hardware-is-known}?
+    |        |  |  |  +--ro manufacture-date?            tapi-common:date-and-time {mandatory-where-the-manufacture-date-is-provided-by-the-actual-hardware}?
+    |        |  |  |  +--ro serial-number?               string {mandatory-where-the-serial-number-is-provided-by-the-actual-hardware}?
+    |        |  |  |  +--ro temperature?                 decimal64 {mandatory-where-the-equipment-provides-a-temperature-measurement}?
+    |        |  |  +--ro actual-non-field-replaceable-module* [local-id] {mandatory-where-there-are-non-field-replaceable-modules}?
     |        |  |     +--ro common-actual-properties
-    |        |  |     |  +--ro asset-instance-identifier?   string
-    |        |  |     |  +--ro is-powered?                  boolean
-    |        |  |     |  +--ro manufacture-date?            tapi-common:date-and-time
-    |        |  |     |  +--ro serial-number?               string
-    |        |  |     |  +--ro temperature?                 decimal64
+    |        |  |     |  +--ro asset-instance-identifier?   string {mandatory-where-there-is-an-opportunity-to-allocate-an-identifier-on-an-instance-basis-and-where-an-identifier-has-been-allocated}?
+    |        |  |     |  +--ro is-powered?                  boolean {mandatory-where-not-default-and-the-power-state-of-the-hardware-is-known}?
+    |        |  |     |  +--ro manufacture-date?            tapi-common:date-and-time {mandatory-where-the-manufacture-date-is-provided-by-the-actual-hardware}?
+    |        |  |     |  +--ro serial-number?               string {mandatory-where-the-serial-number-is-provided-by-the-actual-hardware}?
+    |        |  |     |  +--ro temperature?                 decimal64 {mandatory-where-the-equipment-provides-a-temperature-measurement}?
     |        |  |     +--ro common-equipment-properties
-    |        |  |     |  +--ro asset-type-identifier?        string
-    |        |  |     |  +--ro equipment-type-description?   string
+    |        |  |     |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+    |        |  |     |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
     |        |  |     |  +--ro equipment-type-identifier?    string
-    |        |  |     |  +--ro equipment-type-name?          string
-    |        |  |     |  +--ro equipment-type-version?       string
+    |        |  |     |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+    |        |  |     |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
     |        |  |     |  +--ro manufacturer-identifier?      string
     |        |  |     |  +--ro manufacturer-name?            string
     |        |  |     +--ro local-id                       string
@@ -842,16 +1391,17 @@ module: tapi-equipment
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
-    |        +--ro access-port* [uuid]
+    |        +--ro access-port* [uuid] {mandatory-where-access-ports-are-present}?
     |        |  +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
+    |        |  |  +--ro connector-identification    string {mandatory-where-there-is-more-than-one-connector-on-the-equipment}?
+    |        |  |  +--ro pin-identification          string {mandatory-where-the-pin-and-role-is-not-being-used-but-there-is-a-need-to-simply-identify-the-relevant-pin}?
+    |        |  |  +--ro pin-and-role* [location-in-connector] {mandatory-where-there-is-more-than-one-pin-and/or-a-need-to-identify-pin-role}?
+    |        |  |  |  +--ro location-in-connector        string
+    |        |  |  |  +--ro pin-role*                    string {mandatory-where-pin-role-is-to-be-stated}?
+    |        |  |  |  +--ro pin-name?                    string {mandatory-where-pin-name-is-relevant-as-the-description-is-at-pin-grnaularity}?
+    |        |  |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation {mandatory-where-connector/pin-orientation-is-known-and-to-be-stated}?
     |        |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
     |        |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
-    |        |  |  +--ro connector-identification    string
-    |        |  |  +--ro pin-identification          string
-    |        |  |  +--ro pin-and-role* [location-in-connector]
-    |        |  |     +--ro location-in-connector    string
-    |        |  |     +--ro pin-role*                string
-    |        |  |     +--ro pin-name?                string
     |        |  +--ro uuid             uuid
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
@@ -866,25 +1416,40 @@ module: tapi-equipment
     |        +--ro access-port* [device-uuid access-port-uuid]
     |        |  +--ro device-uuid         -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
     |        |  +--ro access-port-uuid    -> /tapi-common:context/tapi-equipment:physical-context/device/access-port/uuid
-    |        +--ro abstract-strand* [local-id]
-    |        |  +--ro adjacent-strand* [physical-span-uuid abstract-strand-local-id]
+    |        +--ro abstract-strand* [local-id] {mandatory-where-abstract-strands-are-to-be-stated}?
+    |        |  +--ro adjacent-strand* [physical-span-uuid abstract-strand-local-id] {mandatory-where-the-sequence-of-strands-in-a-physical-span-a-is-to-be-expressed-but-when-the-specific-interconnection-is-not-relevant}?
     |        |  |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
     |        |  |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
-    |        |  +--ro spliced-strand* [physical-span-uuid abstract-strand-local-id]
+    |        |  +--ro spliced-strand* [physical-span-uuid abstract-strand-local-id] {mandatory-where-a-simple-representation-of-a-splice-between-strands-is-required}?
     |        |  |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
     |        |  |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
-    |        |  +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
+    |        |  +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification] {mandatory-where-at-least-one-connector-pin-detail-is-to-be-represented}?
+    |        |  |  +--ro connector-identification    string {mandatory-where-there-is-more-than-one-connector-on-the-equipment}?
+    |        |  |  +--ro pin-identification          string {mandatory-where-the-pin-and-role-is-not-being-used-but-there-is-a-need-to-simply-identify-the-relevant-pin}?
+    |        |  |  +--ro pin-and-role* [location-in-connector] {mandatory-where-there-is-more-than-one-pin-and/or-a-need-to-identify-pin-role}?
+    |        |  |  |  +--ro location-in-connector        string
+    |        |  |  |  +--ro pin-role*                    string {mandatory-where-pin-role-is-to-be-stated}?
+    |        |  |  |  +--ro pin-name?                    string {mandatory-where-pin-name-is-relevant-as-the-description-is-at-pin-grnaularity}?
+    |        |  |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation {mandatory-where-connector/pin-orientation-is-known-and-to-be-stated}?
     |        |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
     |        |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
-    |        |  |  +--ro connector-identification    string
-    |        |  |  +--ro pin-identification          string
-    |        |  |  +--ro pin-and-role* [location-in-connector]
-    |        |  |     +--ro location-in-connector    string
-    |        |  |     +--ro pin-role*                string
-    |        |  |     +--ro pin-name?                string
-    |        |  +--ro strand-media-characteristics* [value-name]
+    |        |  +--ro strand-media-characteristics* [value-name] {mandatory-where-a-simple-form-of-strand-characteristics-is-to-be-conveyed}?
     |        |  |  +--ro value-name    string
     |        |  |  +--ro value?        string
+    |        |  +--ro to-strand-joint* [physical-span-uuid abstract-strand-local-id strand-joint-local-id]
+    |        |  |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+    |        |  |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+    |        |  |  +--ro strand-joint-local-id       -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/strand-joint/local-id
+    |        |  +--ro strand-joint* [local-id] {mandatory-where-details-of-properties-of-the-joint-need-to-be-expressed}?
+    |        |  |  +--ro to-abstract-strand {mandatory-where-strand-joint-is-not-at-far-end}?
+    |        |  |  |  +--ro physical-span-uuid?         -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+    |        |  |  |  +--ro abstract-strand-local-id?   -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+    |        |  |  +--ro applicable-to-flow-direction?   flow-direction {mandatory-where-not-default}?
+    |        |  |  +--ro reflection?                     boolean {mandatory-where-not-default}?
+    |        |  |  +--ro local-id                        string
+    |        |  |  +--ro name* [value-name]
+    |        |  |     +--ro value-name    string
+    |        |  |     +--ro value?        string
     |        |  +--ro local-id                        string
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
@@ -898,20 +1463,20 @@ module: tapi-equipment
     |  |  +---w uuid?   tapi-common:uuid
     |  +--ro output
     |     +--ro device
-    |        +--ro equipment* [uuid]
-    |        |  +--ro contained-holder* [uuid]
-    |        |  |  +--ro occupying-fru
+    |        +--ro equipment* [uuid] {mandatory-where-the-device-has-equipment}?
+    |        |  +--ro contained-holder* [uuid] {mandatory-where-the-equipment-has-holders}?
+    |        |  |  +--ro occupying-fru {mandatory-where-an-occupying-fru-is-to-be-stated}?
     |        |  |  |  +--ro device-uuid?      -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
     |        |  |  |  +--ro equipment-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
-    |        |  |  +--ro expected-holder
+    |        |  |  +--ro expected-holder {mandatory-where-an-expected-holder-is-to-be-stated}?
     |        |  |  |  +--ro common-holder-properties
     |        |  |  |     +--ro holder-category?   holder-category
-    |        |  |  |     +--ro is-guided?         boolean
+    |        |  |  |     +--ro is-guided?         boolean {mandatory-where-not-default}?
     |        |  |  |     +--ro holder-location?   string
-    |        |  |  +--ro actual-holder
+    |        |  |  +--ro actual-holder {mandatory-where-an-actual-holder-is-to-be-stated}?
     |        |  |  |  +--ro common-holder-properties
     |        |  |  |     +--ro holder-category?   holder-category
-    |        |  |  |     +--ro is-guided?         boolean
+    |        |  |  |     +--ro is-guided?         boolean {mandatory-where-not-default}?
     |        |  |  |     +--ro holder-location?   string
     |        |  |  +--ro uuid               uuid
     |        |  |  +--ro name* [value-name]
@@ -919,63 +1484,64 @@ module: tapi-equipment
     |        |  |     +--ro value?        string
     |        |  +--ro category?                      equipment-category
     |        |  +--ro equipment-location?            string
-    |        |  +--ro geographical-location?         string
-    |        |  +--ro is-expected-actual-mismatch?   boolean
-    |        |  +--ro expected-equipment* []
-    |        |  |  +--ro common-equipment-properties
-    |        |  |  |  +--ro asset-type-identifier?        string
-    |        |  |  |  +--ro equipment-type-description?   string
+    |        |  +--ro geographical-location?         string {mandatory-where-there-is-a-relevant-geographical-location-(only-for-equipments-not-in-holders)}?
+    |        |  +--ro is-expected-actual-mismatch?   boolean {mandatory-where-there-is-potential-for-expectation-and-hence-the-property-may-sometimes-be-not-default}?
+    |        |  +--ro expected-equipment* [] {mandatory-where-there-is-expectation-to-be-stated}?
+    |        |  |  +--ro common-equipment-properties {mandatory-where-not-equipment-not-expected}?
+    |        |  |  |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+    |        |  |  |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
     |        |  |  |  +--ro equipment-type-identifier?    string
-    |        |  |  |  +--ro equipment-type-name?          string
-    |        |  |  |  +--ro equipment-type-version?       string
+    |        |  |  |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+    |        |  |  |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
     |        |  |  |  +--ro manufacturer-identifier?      string
     |        |  |  |  +--ro manufacturer-name?            string
-    |        |  |  +--ro expected-non-field-replaceable-module* [local-id]
+    |        |  |  +--ro expected-non-field-replaceable-module* [local-id] {mandatory-where-expected-equipment-has-known-non-field-replaceble-modules}?
     |        |  |  |  +--ro common-equipment-properties
-    |        |  |  |  |  +--ro asset-type-identifier?        string
-    |        |  |  |  |  +--ro equipment-type-description?   string
+    |        |  |  |  |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+    |        |  |  |  |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
     |        |  |  |  |  +--ro equipment-type-identifier?    string
-    |        |  |  |  |  +--ro equipment-type-name?          string
-    |        |  |  |  |  +--ro equipment-type-version?       string
+    |        |  |  |  |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+    |        |  |  |  |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
     |        |  |  |  |  +--ro manufacturer-identifier?      string
     |        |  |  |  |  +--ro manufacturer-name?            string
     |        |  |  |  +--ro local-id                       string
     |        |  |  |  +--ro name* [value-name]
     |        |  |  |     +--ro value-name    string
     |        |  |  |     +--ro value?        string
-    |        |  |  +--ro expected-holder* []
-    |        |  |     +--ro common-holder-properties
-    |        |  |        +--ro holder-category?   holder-category
-    |        |  |        +--ro is-guided?         boolean
-    |        |  |        +--ro holder-location?   string
-    |        |  +--ro actual-equipment
+    |        |  |  +--ro expected-holder* [] {mandatory-where-expected-equipment-has-known-holders}?
+    |        |  |  |  +--ro common-holder-properties
+    |        |  |  |     +--ro holder-category?   holder-category
+    |        |  |  |     +--ro is-guided?         boolean {mandatory-where-not-default}?
+    |        |  |  |     +--ro holder-location?   string
+    |        |  |  +--ro equipment-not-expected?                  boolean {mandatory-where-not-default}?
+    |        |  +--ro actual-equipment {mandatory-where-a-real-equipment-is-to-be-represented}?
     |        |  |  +--ro common-equipment-properties
-    |        |  |  |  +--ro asset-type-identifier?        string
-    |        |  |  |  +--ro equipment-type-description?   string
+    |        |  |  |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+    |        |  |  |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
     |        |  |  |  +--ro equipment-type-identifier?    string
-    |        |  |  |  +--ro equipment-type-name?          string
-    |        |  |  |  +--ro equipment-type-version?       string
+    |        |  |  |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+    |        |  |  |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
     |        |  |  |  +--ro manufacturer-identifier?      string
     |        |  |  |  +--ro manufacturer-name?            string
     |        |  |  +--ro common-actual-properties
-    |        |  |  |  +--ro asset-instance-identifier?   string
-    |        |  |  |  +--ro is-powered?                  boolean
-    |        |  |  |  +--ro manufacture-date?            tapi-common:date-and-time
-    |        |  |  |  +--ro serial-number?               string
-    |        |  |  |  +--ro temperature?                 decimal64
-    |        |  |  +--ro actual-non-field-replaceable-module* [local-id]
+    |        |  |  |  +--ro asset-instance-identifier?   string {mandatory-where-there-is-an-opportunity-to-allocate-an-identifier-on-an-instance-basis-and-where-an-identifier-has-been-allocated}?
+    |        |  |  |  +--ro is-powered?                  boolean {mandatory-where-not-default-and-the-power-state-of-the-hardware-is-known}?
+    |        |  |  |  +--ro manufacture-date?            tapi-common:date-and-time {mandatory-where-the-manufacture-date-is-provided-by-the-actual-hardware}?
+    |        |  |  |  +--ro serial-number?               string {mandatory-where-the-serial-number-is-provided-by-the-actual-hardware}?
+    |        |  |  |  +--ro temperature?                 decimal64 {mandatory-where-the-equipment-provides-a-temperature-measurement}?
+    |        |  |  +--ro actual-non-field-replaceable-module* [local-id] {mandatory-where-there-are-non-field-replaceable-modules}?
     |        |  |     +--ro common-actual-properties
-    |        |  |     |  +--ro asset-instance-identifier?   string
-    |        |  |     |  +--ro is-powered?                  boolean
-    |        |  |     |  +--ro manufacture-date?            tapi-common:date-and-time
-    |        |  |     |  +--ro serial-number?               string
-    |        |  |     |  +--ro temperature?                 decimal64
+    |        |  |     |  +--ro asset-instance-identifier?   string {mandatory-where-there-is-an-opportunity-to-allocate-an-identifier-on-an-instance-basis-and-where-an-identifier-has-been-allocated}?
+    |        |  |     |  +--ro is-powered?                  boolean {mandatory-where-not-default-and-the-power-state-of-the-hardware-is-known}?
+    |        |  |     |  +--ro manufacture-date?            tapi-common:date-and-time {mandatory-where-the-manufacture-date-is-provided-by-the-actual-hardware}?
+    |        |  |     |  +--ro serial-number?               string {mandatory-where-the-serial-number-is-provided-by-the-actual-hardware}?
+    |        |  |     |  +--ro temperature?                 decimal64 {mandatory-where-the-equipment-provides-a-temperature-measurement}?
     |        |  |     +--ro common-equipment-properties
-    |        |  |     |  +--ro asset-type-identifier?        string
-    |        |  |     |  +--ro equipment-type-description?   string
+    |        |  |     |  +--ro asset-type-identifier?        string {mandatory-where-a-operator/user-asset-identifier-is-available-to-the-controller}?
+    |        |  |     |  +--ro equipment-type-description?   string {mandatory-where-a-description-is-available}?
     |        |  |     |  +--ro equipment-type-identifier?    string
-    |        |  |     |  +--ro equipment-type-name?          string
-    |        |  |     |  +--ro equipment-type-version?       string
+    |        |  |     |  +--ro equipment-type-name?          string {mandatory-where-there-is-a-name-in-addition-to-the-equipment-type-identifier}?
+    |        |  |     |  +--ro equipment-type-version?       string {mandatory-where-there-is-a-known-version-of-the-type}?
     |        |  |     |  +--ro manufacturer-identifier?      string
     |        |  |     |  +--ro manufacturer-name?            string
     |        |  |     +--ro local-id                       string
@@ -986,16 +1552,17 @@ module: tapi-equipment
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
-    |        +--ro access-port* [uuid]
+    |        +--ro access-port* [uuid] {mandatory-where-access-ports-are-present}?
     |        |  +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
+    |        |  |  +--ro connector-identification    string {mandatory-where-there-is-more-than-one-connector-on-the-equipment}?
+    |        |  |  +--ro pin-identification          string {mandatory-where-the-pin-and-role-is-not-being-used-but-there-is-a-need-to-simply-identify-the-relevant-pin}?
+    |        |  |  +--ro pin-and-role* [location-in-connector] {mandatory-where-there-is-more-than-one-pin-and/or-a-need-to-identify-pin-role}?
+    |        |  |  |  +--ro location-in-connector        string
+    |        |  |  |  +--ro pin-role*                    string {mandatory-where-pin-role-is-to-be-stated}?
+    |        |  |  |  +--ro pin-name?                    string {mandatory-where-pin-name-is-relevant-as-the-description-is-at-pin-grnaularity}?
+    |        |  |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation {mandatory-where-connector/pin-orientation-is-known-and-to-be-stated}?
     |        |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
     |        |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
-    |        |  |  +--ro connector-identification    string
-    |        |  |  +--ro pin-identification          string
-    |        |  |  +--ro pin-and-role* [location-in-connector]
-    |        |  |     +--ro location-in-connector    string
-    |        |  |     +--ro pin-role*                string
-    |        |  |     +--ro pin-name?                string
     |        |  +--ro uuid             uuid
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
@@ -1012,25 +1579,40 @@ module: tapi-equipment
              +--ro access-port* [device-uuid access-port-uuid]
              |  +--ro device-uuid         -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
              |  +--ro access-port-uuid    -> /tapi-common:context/tapi-equipment:physical-context/device/access-port/uuid
-             +--ro abstract-strand* [local-id]
-             |  +--ro adjacent-strand* [physical-span-uuid abstract-strand-local-id]
+             +--ro abstract-strand* [local-id] {mandatory-where-abstract-strands-are-to-be-stated}?
+             |  +--ro adjacent-strand* [physical-span-uuid abstract-strand-local-id] {mandatory-where-the-sequence-of-strands-in-a-physical-span-a-is-to-be-expressed-but-when-the-specific-interconnection-is-not-relevant}?
              |  |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
              |  |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
-             |  +--ro spliced-strand* [physical-span-uuid abstract-strand-local-id]
+             |  +--ro spliced-strand* [physical-span-uuid abstract-strand-local-id] {mandatory-where-a-simple-representation-of-a-splice-between-strands-is-required}?
              |  |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
              |  |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
-             |  +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
+             |  +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification] {mandatory-where-at-least-one-connector-pin-detail-is-to-be-represented}?
+             |  |  +--ro connector-identification    string {mandatory-where-there-is-more-than-one-connector-on-the-equipment}?
+             |  |  +--ro pin-identification          string {mandatory-where-the-pin-and-role-is-not-being-used-but-there-is-a-need-to-simply-identify-the-relevant-pin}?
+             |  |  +--ro pin-and-role* [location-in-connector] {mandatory-where-there-is-more-than-one-pin-and/or-a-need-to-identify-pin-role}?
+             |  |  |  +--ro location-in-connector        string
+             |  |  |  +--ro pin-role*                    string {mandatory-where-pin-role-is-to-be-stated}?
+             |  |  |  +--ro pin-name?                    string {mandatory-where-pin-name-is-relevant-as-the-description-is-at-pin-grnaularity}?
+             |  |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation {mandatory-where-connector/pin-orientation-is-known-and-to-be-stated}?
              |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
              |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
-             |  |  +--ro connector-identification    string
-             |  |  +--ro pin-identification          string
-             |  |  +--ro pin-and-role* [location-in-connector]
-             |  |     +--ro location-in-connector    string
-             |  |     +--ro pin-role*                string
-             |  |     +--ro pin-name?                string
-             |  +--ro strand-media-characteristics* [value-name]
+             |  +--ro strand-media-characteristics* [value-name] {mandatory-where-a-simple-form-of-strand-characteristics-is-to-be-conveyed}?
              |  |  +--ro value-name    string
              |  |  +--ro value?        string
+             |  +--ro to-strand-joint* [physical-span-uuid abstract-strand-local-id strand-joint-local-id]
+             |  |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+             |  |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+             |  |  +--ro strand-joint-local-id       -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/strand-joint/local-id
+             |  +--ro strand-joint* [local-id] {mandatory-where-details-of-properties-of-the-joint-need-to-be-expressed}?
+             |  |  +--ro to-abstract-strand {mandatory-where-strand-joint-is-not-at-far-end}?
+             |  |  |  +--ro physical-span-uuid?         -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+             |  |  |  +--ro abstract-strand-local-id?   -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+             |  |  +--ro applicable-to-flow-direction?   flow-direction {mandatory-where-not-default}?
+             |  |  +--ro reflection?                     boolean {mandatory-where-not-default}?
+             |  |  +--ro local-id                        string
+             |  |  +--ro name* [value-name]
+             |  |     +--ro value-name    string
+             |  |     +--ro value?        string
              |  +--ro local-id                        string
              |  +--ro name* [value-name]
              |     +--ro value-name    string
