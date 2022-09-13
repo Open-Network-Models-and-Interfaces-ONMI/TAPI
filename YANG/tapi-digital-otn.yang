@@ -140,15 +140,15 @@ module tapi-digital-otn {
         description "none";
     }
     augment "/tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:current-data" {
-        container odu-error-performance-data {
-            uses odu-error-performance-data;
+        container otn-error-performance-data {
+            uses otn-error-performance-data;
             description "none";
         }
         description "none";
     }
     augment "/tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:current-data/tapi-oam:history-data" {
-        container odu-error-performance-data {
-            uses odu-error-performance-data;
+        container otn-error-performance-data {
+            uses otn-error-performance-data;
             description "none";
         }
         description "none";
@@ -168,8 +168,8 @@ module tapi-digital-otn {
         description "none";
     }
     augment "/tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-service" {
-        container odu-tcm-oam-service {
-            uses odu-tcm-oam-service;
+        container otn-oam-service {
+            uses otn-oam-service;
             description "none";
         }
         description "none";
@@ -203,8 +203,8 @@ module tapi-digital-otn {
         description "none";
     }
     augment "/tapi-common:context/tapi-oam:oam-context/tapi-oam:meg" {
-        container odu-tcm-meg-spec {
-            uses odu-tcm-meg-spec;
+        container otn-meg-spec {
+            uses otn-meg-spec;
             description "none";
         }
         description "none";
@@ -223,7 +223,7 @@ module tapi-digital-otn {
         }
         description "none";
     }
-    augment "/tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:current-data" {
+    augment "/tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:current-data/tapi-oam:history-data" {
         container odu-delay-performance-data {
             uses odu-delay-performance-data;
             description "none";
@@ -237,9 +237,9 @@ module tapi-digital-otn {
         }
         description "none";
     }
-    augment "/tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point/tapi-connectivity:layer-protocol-constraint" {
-        container odu-cn-csep-ttp-pac {
-            uses odu-cn-csep-ttp-pac;
+    augment "/tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:current-data" {
+        container odu-delay-performance-data {
+            uses odu-delay-performance-data;
             description "none";
         }
         description "none";
@@ -251,7 +251,7 @@ module tapi-digital-otn {
         leaf opu-tributary-slot-size {
             type odu-slot-size;
             config false;
-            description "This attribute is applicable for ODU2 and ODU3 CTP only. It indicates the slot size of the ODU CTP.";
+            description "This attribute is only applicable for ODU2 and ODU3 TTP which multiplex ODU0/1 containers. It indicates the slot size of the ODU CTP.";
         }
         leaf auto-payload-type {
             type boolean;
@@ -273,7 +273,7 @@ module tapi-digital-otn {
             uses odu-payload-type;
             description "This attribute is applicable when the ODU CTP object instance represents a lower order ODU CTP Sink at the client layer of the ODUP/ODU[i]j or ODUP/ODUj-21 adaptation function. 
                 This attribute is a 2-digit Hex code that indicates the new accepted payload type.
-                Valid values are defined in Table 15-9 of ITU-T Recommendation G.709 with one additional value UN_INTERPRETABLE.";
+                Valid values are defined in Table 15-9 of ITU-T Recommendation G.709 with one additional value UNINTERPRETABLE.";
         }
         leaf number-of-odu-c {
             type uint64;
@@ -505,11 +505,6 @@ module tapi-digital-otn {
             2) OTU and ODUCn: both OtuCep and OduMep.";
     }
     grouping odu-common-pac {
-        leaf odu-type {
-            type odu-type;
-            config false;
-            description "This attribute specifies the type of the ODU termination point.";
-        }
         leaf odu-rate {
             type uint64;
             config false;
@@ -545,15 +540,19 @@ module tapi-digital-otn {
             uses odu-csep-ttp-pac;
             description "none";
         }
-        description "none";
-    }
-    grouping odu-error-performance-data {
-        container near-end-odu-counters {
-            uses odu-counters;
+        container odu-cn-csep-ttp-pac {
+            uses odu-cn-csep-ttp-pac;
             description "none";
         }
-        container far-end-odu-counters {
-            uses odu-counters;
+        description "none";
+    }
+    grouping otn-error-performance-data {
+        container near-end-otn-counters {
+            uses otn-counters;
+            description "none";
+        }
+        container far-end-otn-counters {
+            uses otn-counters;
             description "none";
         }
         leaf bidirectional-uas {
@@ -565,9 +564,9 @@ module tapi-digital-otn {
             description "This attribute specifies the directionality of the ODU MIP with respect to the monitored ODU CEP. The value of TRUE means that the MIP receives the same signal direction as the sink part of the ODU CEP. The Source part behaves similarly.
                 This attribute applies only in case of embedded provisioning, i.e. the MIPs are data structures of ODU CEP.";
         }
-        list odu-cn-error-performance-data {
-            key 'odu-cn-oh-index';
-            uses odu-cn-error-performance-data;
+        list otn-cn-error-performance-data {
+            key 'otn-cn-oh-index';
+            uses otn-cn-error-performance-data;
             description "none";
         }
         description "ODU/OTU PM Metrics.";
@@ -715,9 +714,9 @@ module tapi-digital-otn {
         }
         description "none";
     }
-    grouping odu-tcm-oam-service {
-        leaf tcm-level {
-            type uint64;
+    grouping otn-oam-service {
+        container odu-tcm-oam-service {
+            uses odu-tcm-oam-service;
             description "none";
         }
         description "OduOamService class is used for TCM provisioning.";
@@ -952,20 +951,20 @@ module tapi-digital-otn {
         }
         description "none";
     }
-    grouping odu-cn-error-performance-data {
-        container near-end-odu-counters {
-            uses odu-counters;
+    grouping otn-cn-error-performance-data {
+        container near-end-otn-counters {
+            uses otn-counters;
             description "none";
         }
-        container far-end-odu-counters {
-            uses odu-counters;
+        container far-end-otn-counters {
+            uses otn-counters;
             description "none";
         }
         leaf bidirectional-uas {
             type uint64;
             description "none";
         }
-        leaf odu-cn-oh-index {
+        leaf otn-cn-oh-index {
             type uint64;
             description "The ODUCn contains n instances of the ODU PM/TCM overhead, numbered 1 to n (PM #1 to PM #n)/(TCMi #1 to TCMi #n)..
                 This index specify the 2..n instance of the ODUCn PM/TCM overhead.";
@@ -981,7 +980,21 @@ module tapi-digital-otn {
             - bit interleaved parity 8 (BIP-8);
             - backward error indication and backward incoming alignment error (BEI/BIAE)";
     }
-    grouping odu-tcm-meg-spec {
+    grouping otn-meg-spec {
+        container odu-tcm-meg {
+            uses odu-tcm-meg;
+            description "none";
+        }
+        description "none";
+    }
+    grouping odu-tcm-oam-service {
+        leaf tcm-level {
+            type uint64;
+            description "none";
+        }
+        description "none";
+    }
+    grouping odu-tcm-meg {
         leaf tcm-level {
             type uint64;
             description "none";
@@ -993,7 +1006,7 @@ module tapi-digital-otn {
     * package type-definitions
     **************************/ 
     identity OTN_ALARM_CONDITION_NAME {
-        base tapi-common:ALARM_CONDITION_NAME;
+/*        base tapi-common:ALARM_CONDITION_NAME; to be removed because centralized in TapiCommon */
         description "none";
     }
     identity OTN_ALARM_CONDITION_NAME_LOS_P {
@@ -1222,30 +1235,6 @@ module tapi-digital-otn {
         base ODU_OAM_JOB_TYPE;
         description "none";
     }
-    identity OTN_PM_PARAMETER_NAME {
-        base tapi-common:PM_PARAMETER_NAME;
-        description "none";
-    }
-    identity OTN_PM_PARAMETER_NAME_BBE {
-        base OTN_PM_PARAMETER_NAME;
-        description "none";
-    }
-    identity OTN_PM_PARAMETER_NAME_SES {
-        base OTN_PM_PARAMETER_NAME;
-        description "none";
-    }
-    identity OTN_PM_PARAMETER_NAME_UAS {
-        base OTN_PM_PARAMETER_NAME;
-        description "none";
-    }
-    identity OTN_PM_PARAMETER_NAME_DELAY {
-        base OTN_PM_PARAMETER_NAME;
-        description "none";
-    }
-    identity OTN_PM_PARAMETER_NAME_FEC_CORRECTED_ERROR {
-        base OTN_PM_PARAMETER_NAME;
-        description "none";
-    }
     identity OTU_TYPE {
         base tapi-common:LAYER_PROTOCOL_QUALIFIER;
         description "none";
@@ -1346,10 +1335,11 @@ module tapi-digital-otn {
             description "none";
         }
         leaf hex-payload-type {
-            type uint64;
+            type string;
             description "none";
         }
-        description "none";
+        description "This type includes is a 2-digit Hex code that indicates the new accepted payload type.
+            Valid values are defined in Table 15-9 of ITU-T Recommendation G.709 with one additional value UNINTERPRETABLE.";
     }
     typedef odu-named-payload-type {
         type enumeration {
@@ -1510,7 +1500,7 @@ module tapi-digital-otn {
         }
         description "none";
     }
-    grouping odu-counters {
+    grouping otn-counters {
         leaf bbe {
             type uint64;
             description "none";
@@ -1522,12 +1512,6 @@ module tapi-digital-otn {
         leaf uas {
             type uint64;
             description "none";
-        }
-        description "none";
-    }
-    typedef otn-pm-parameter-name {
-        type identityref {
-            base OTN_PM_PARAMETER_NAME;
         }
         description "none";
     }

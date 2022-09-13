@@ -49,10 +49,11 @@ module: tapi-equipment
        |  |  |  |     +--ro value-name    string
        |  |  |  |     +--ro value?        string
        |  |  |  +--ro expected-holder* []
-       |  |  |     +--ro common-holder-properties
-       |  |  |        +--ro holder-category?   holder-category
-       |  |  |        +--ro is-guided?         boolean
-       |  |  |        +--ro holder-location?   string
+       |  |  |  |  +--ro common-holder-properties
+       |  |  |  |     +--ro holder-category?   holder-category
+       |  |  |  |     +--ro is-guided?         boolean
+       |  |  |  |     +--ro holder-location?   string
+       |  |  |  +--ro equipment-not-expected?                  boolean
        |  |  +--ro actual-equipment
        |  |  |  +--ro common-equipment-properties
        |  |  |  |  +--ro asset-type-identifier?        string
@@ -93,14 +94,15 @@ module: tapi-equipment
        |  |     +--ro value?        string
        |  +--ro access-port* [uuid]
        |  |  +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
-       |  |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
-       |  |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
        |  |  |  +--ro connector-identification    string
        |  |  |  +--ro pin-identification          string
        |  |  |  +--ro pin-and-role* [location-in-connector]
-       |  |  |     +--ro location-in-connector    string
-       |  |  |     +--ro pin-role*                string
-       |  |  |     +--ro pin-name?                string
+       |  |  |  |  +--ro location-in-connector        string
+       |  |  |  |  +--ro pin-role*                    string
+       |  |  |  |  +--ro pin-name?                    string
+       |  |  |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation
+       |  |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
        |  |  +--ro uuid             uuid
        |  |  +--ro name* [value-name]
        |  |     +--ro value-name    string
@@ -121,17 +123,32 @@ module: tapi-equipment
           |  |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
           |  |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
           |  +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
-          |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
-          |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
           |  |  +--ro connector-identification    string
           |  |  +--ro pin-identification          string
           |  |  +--ro pin-and-role* [location-in-connector]
-          |  |     +--ro location-in-connector    string
-          |  |     +--ro pin-role*                string
-          |  |     +--ro pin-name?                string
+          |  |  |  +--ro location-in-connector        string
+          |  |  |  +--ro pin-role*                    string
+          |  |  |  +--ro pin-name?                    string
+          |  |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation
+          |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+          |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
           |  +--ro strand-media-characteristics* [value-name]
           |  |  +--ro value-name    string
           |  |  +--ro value?        string
+          |  +--ro to-strand-joint* [physical-span-uuid abstract-strand-local-id strand-joint-local-id]
+          |  |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+          |  |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+          |  |  +--ro strand-joint-local-id       -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/strand-joint/local-id
+          |  +--ro strand-joint* [local-id]
+          |  |  +--ro to-abstract-strand
+          |  |  |  +--ro physical-span-uuid?         -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+          |  |  |  +--ro abstract-strand-local-id?   -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+          |  |  +--ro applicable-to-flow-direction?   flow-direction
+          |  |  +--ro reflection?                     boolean
+          |  |  +--ro local-id                        string
+          |  |  +--ro name* [value-name]
+          |  |     +--ro value-name    string
+          |  |     +--ro value?        string
           |  +--ro local-id                        string
           |  +--ro name* [value-name]
           |     +--ro value-name    string
@@ -145,7 +162,7 @@ module: tapi-equipment
        +--ro physical-span
           +--ro physical-span-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
   augment /tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point:
-    +--ro supporting-access-port
+    +--ro access-port-supports-nep
        +--ro access-port
           +--ro device-uuid?        -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
           +--ro access-port-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/access-port/uuid
@@ -196,10 +213,11 @@ module: tapi-equipment
        |  |     +--ro value-name    string
        |  |     +--ro value?        string
        |  +--ro expected-holder* []
-       |     +--ro common-holder-properties
-       |        +--ro holder-category?   holder-category
-       |        +--ro is-guided?         boolean
-       |        +--ro holder-location?   string
+       |  |  +--ro common-holder-properties
+       |  |     +--ro holder-category?   holder-category
+       |  |     +--ro is-guided?         boolean
+       |  |     +--ro holder-location?   string
+       |  +--ro equipment-not-expected?                  boolean
        +--ro actual-equipment
        |  +--ro common-equipment-properties
        |  |  +--ro asset-type-identifier?        string
@@ -260,14 +278,15 @@ module: tapi-equipment
   augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
     +--ro access-port
        +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
-       |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
-       |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
        |  +--ro connector-identification    string
        |  +--ro pin-identification          string
        |  +--ro pin-and-role* [location-in-connector]
-       |     +--ro location-in-connector    string
-       |     +--ro pin-role*                string
-       |     +--ro pin-name?                string
+       |  |  +--ro location-in-connector        string
+       |  |  +--ro pin-role*                    string
+       |  |  +--ro pin-name?                    string
+       |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation
+       |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
        +--ro uuid?            uuid
        +--ro name* [value-name]
           +--ro value-name    string
@@ -281,17 +300,32 @@ module: tapi-equipment
        |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
        |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
        +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
-       |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
-       |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
        |  +--ro connector-identification    string
        |  +--ro pin-identification          string
        |  +--ro pin-and-role* [location-in-connector]
-       |     +--ro location-in-connector    string
-       |     +--ro pin-role*                string
-       |     +--ro pin-name?                string
+       |  |  +--ro location-in-connector        string
+       |  |  +--ro pin-role*                    string
+       |  |  +--ro pin-name?                    string
+       |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation
+       |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
        +--ro strand-media-characteristics* [value-name]
        |  +--ro value-name    string
        |  +--ro value?        string
+       +--ro to-strand-joint* [physical-span-uuid abstract-strand-local-id strand-joint-local-id]
+       |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       |  +--ro strand-joint-local-id       -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/strand-joint/local-id
+       +--ro strand-joint* [local-id]
+       |  +--ro to-abstract-strand
+       |  |  +--ro physical-span-uuid?         -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  |  +--ro abstract-strand-local-id?   -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       |  +--ro applicable-to-flow-direction?   flow-direction
+       |  +--ro reflection?                     boolean
+       |  +--ro local-id                        string
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
        +--ro local-id?                       string
        +--ro name* [value-name]
           +--ro value-name    string
@@ -344,10 +378,11 @@ module: tapi-equipment
        |  |  |     +--ro value-name    string
        |  |  |     +--ro value?        string
        |  |  +--ro expected-holder* []
-       |  |     +--ro common-holder-properties
-       |  |        +--ro holder-category?   holder-category
-       |  |        +--ro is-guided?         boolean
-       |  |        +--ro holder-location?   string
+       |  |  |  +--ro common-holder-properties
+       |  |  |     +--ro holder-category?   holder-category
+       |  |  |     +--ro is-guided?         boolean
+       |  |  |     +--ro holder-location?   string
+       |  |  +--ro equipment-not-expected?                  boolean
        |  +--ro actual-equipment
        |  |  +--ro common-equipment-properties
        |  |  |  +--ro asset-type-identifier?        string
@@ -388,14 +423,15 @@ module: tapi-equipment
        |     +--ro value?        string
        +--ro access-port* [uuid]
        |  +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
-       |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
-       |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
        |  |  +--ro connector-identification    string
        |  |  +--ro pin-identification          string
        |  |  +--ro pin-and-role* [location-in-connector]
-       |  |     +--ro location-in-connector    string
-       |  |     +--ro pin-role*                string
-       |  |     +--ro pin-name?                string
+       |  |  |  +--ro location-in-connector        string
+       |  |  |  +--ro pin-role*                    string
+       |  |  |  +--ro pin-name?                    string
+       |  |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation
+       |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
        |  +--ro uuid             uuid
        |  +--ro name* [value-name]
        |     +--ro value-name    string
@@ -417,17 +453,32 @@ module: tapi-equipment
        |  |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
        |  |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
        |  +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
-       |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
-       |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
        |  |  +--ro connector-identification    string
        |  |  +--ro pin-identification          string
        |  |  +--ro pin-and-role* [location-in-connector]
-       |  |     +--ro location-in-connector    string
-       |  |     +--ro pin-role*                string
-       |  |     +--ro pin-name?                string
+       |  |  |  +--ro location-in-connector        string
+       |  |  |  +--ro pin-role*                    string
+       |  |  |  +--ro pin-name?                    string
+       |  |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation
+       |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
        |  +--ro strand-media-characteristics* [value-name]
        |  |  +--ro value-name    string
        |  |  +--ro value?        string
+       |  +--ro to-strand-joint* [physical-span-uuid abstract-strand-local-id strand-joint-local-id]
+       |  |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       |  |  +--ro strand-joint-local-id       -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/strand-joint/local-id
+       |  +--ro strand-joint* [local-id]
+       |  |  +--ro to-abstract-strand
+       |  |  |  +--ro physical-span-uuid?         -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  |  |  +--ro abstract-strand-local-id?   -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       |  |  +--ro applicable-to-flow-direction?   flow-direction
+       |  |  +--ro reflection?                     boolean
+       |  |  +--ro local-id                        string
+       |  |  +--ro name* [value-name]
+       |  |     +--ro value-name    string
+       |  |     +--ro value?        string
        |  +--ro local-id                        string
        |  +--ro name* [value-name]
        |     +--ro value-name    string
@@ -483,10 +534,11 @@ module: tapi-equipment
        |  |     +--ro value-name    string
        |  |     +--ro value?        string
        |  +--ro expected-holder* []
-       |     +--ro common-holder-properties
-       |        +--ro holder-category?   holder-category
-       |        +--ro is-guided?         boolean
-       |        +--ro holder-location?   string
+       |  |  +--ro common-holder-properties
+       |  |     +--ro holder-category?   holder-category
+       |  |     +--ro is-guided?         boolean
+       |  |     +--ro holder-location?   string
+       |  +--ro equipment-not-expected?                  boolean
        +--ro actual-equipment
        |  +--ro common-equipment-properties
        |  |  +--ro asset-type-identifier?        string
@@ -547,147 +599,16 @@ module: tapi-equipment
   augment /tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification:
     +--ro access-port
        +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
-       |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
-       |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
        |  +--ro connector-identification    string
        |  +--ro pin-identification          string
        |  +--ro pin-and-role* [location-in-connector]
-       |     +--ro location-in-connector    string
-       |     +--ro pin-role*                string
-       |     +--ro pin-name?                string
+       |  |  +--ro location-in-connector        string
+       |  |  +--ro pin-role*                    string
+       |  |  +--ro pin-name?                    string
+       |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation
+       |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
        +--ro uuid?            uuid
-       +--ro name* [value-name]
-          +--ro value-name    string
-          +--ro value?        string
-  augment /tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification:
-    +--ro abstract-strand
-       +--ro adjacent-strand* [physical-span-uuid abstract-strand-local-id]
-       |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
-       |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
-       +--ro spliced-strand* [physical-span-uuid abstract-strand-local-id]
-       |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
-       |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
-       +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
-       |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
-       |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
-       |  +--ro connector-identification    string
-       |  +--ro pin-identification          string
-       |  +--ro pin-and-role* [location-in-connector]
-       |     +--ro location-in-connector    string
-       |     +--ro pin-role*                string
-       |     +--ro pin-name?                string
-       +--ro strand-media-characteristics* [value-name]
-       |  +--ro value-name    string
-       |  +--ro value?        string
-       +--ro local-id?                       string
-       +--ro name* [value-name]
-          +--ro value-name    string
-          +--ro value?        string
-  augment /tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification:
-    +--ro device
-       +--ro equipment* [uuid]
-       |  +--ro contained-holder* [uuid]
-       |  |  +--ro occupying-fru
-       |  |  |  +--ro device-uuid?      -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
-       |  |  |  +--ro equipment-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
-       |  |  +--ro expected-holder
-       |  |  |  +--ro common-holder-properties
-       |  |  |     +--ro holder-category?   holder-category
-       |  |  |     +--ro is-guided?         boolean
-       |  |  |     +--ro holder-location?   string
-       |  |  +--ro actual-holder
-       |  |  |  +--ro common-holder-properties
-       |  |  |     +--ro holder-category?   holder-category
-       |  |  |     +--ro is-guided?         boolean
-       |  |  |     +--ro holder-location?   string
-       |  |  +--ro uuid               uuid
-       |  |  +--ro name* [value-name]
-       |  |     +--ro value-name    string
-       |  |     +--ro value?        string
-       |  +--ro category?                      equipment-category
-       |  +--ro equipment-location?            string
-       |  +--ro geographical-location?         string
-       |  +--ro is-expected-actual-mismatch?   boolean
-       |  +--ro expected-equipment* []
-       |  |  +--ro common-equipment-properties
-       |  |  |  +--ro asset-type-identifier?        string
-       |  |  |  +--ro equipment-type-description?   string
-       |  |  |  +--ro equipment-type-identifier?    string
-       |  |  |  +--ro equipment-type-name?          string
-       |  |  |  +--ro equipment-type-version?       string
-       |  |  |  +--ro manufacturer-identifier?      string
-       |  |  |  +--ro manufacturer-name?            string
-       |  |  +--ro expected-non-field-replaceable-module* [local-id]
-       |  |  |  +--ro common-equipment-properties
-       |  |  |  |  +--ro asset-type-identifier?        string
-       |  |  |  |  +--ro equipment-type-description?   string
-       |  |  |  |  +--ro equipment-type-identifier?    string
-       |  |  |  |  +--ro equipment-type-name?          string
-       |  |  |  |  +--ro equipment-type-version?       string
-       |  |  |  |  +--ro manufacturer-identifier?      string
-       |  |  |  |  +--ro manufacturer-name?            string
-       |  |  |  +--ro local-id                       string
-       |  |  |  +--ro name* [value-name]
-       |  |  |     +--ro value-name    string
-       |  |  |     +--ro value?        string
-       |  |  +--ro expected-holder* []
-       |  |     +--ro common-holder-properties
-       |  |        +--ro holder-category?   holder-category
-       |  |        +--ro is-guided?         boolean
-       |  |        +--ro holder-location?   string
-       |  +--ro actual-equipment
-       |  |  +--ro common-equipment-properties
-       |  |  |  +--ro asset-type-identifier?        string
-       |  |  |  +--ro equipment-type-description?   string
-       |  |  |  +--ro equipment-type-identifier?    string
-       |  |  |  +--ro equipment-type-name?          string
-       |  |  |  +--ro equipment-type-version?       string
-       |  |  |  +--ro manufacturer-identifier?      string
-       |  |  |  +--ro manufacturer-name?            string
-       |  |  +--ro common-actual-properties
-       |  |  |  +--ro asset-instance-identifier?   string
-       |  |  |  +--ro is-powered?                  boolean
-       |  |  |  +--ro manufacture-date?            tapi-common:date-and-time
-       |  |  |  +--ro serial-number?               string
-       |  |  |  +--ro temperature?                 decimal64
-       |  |  +--ro actual-non-field-replaceable-module* [local-id]
-       |  |     +--ro common-actual-properties
-       |  |     |  +--ro asset-instance-identifier?   string
-       |  |     |  +--ro is-powered?                  boolean
-       |  |     |  +--ro manufacture-date?            tapi-common:date-and-time
-       |  |     |  +--ro serial-number?               string
-       |  |     |  +--ro temperature?                 decimal64
-       |  |     +--ro common-equipment-properties
-       |  |     |  +--ro asset-type-identifier?        string
-       |  |     |  +--ro equipment-type-description?   string
-       |  |     |  +--ro equipment-type-identifier?    string
-       |  |     |  +--ro equipment-type-name?          string
-       |  |     |  +--ro equipment-type-version?       string
-       |  |     |  +--ro manufacturer-identifier?      string
-       |  |     |  +--ro manufacturer-name?            string
-       |  |     +--ro local-id                       string
-       |  |     +--ro name* [value-name]
-       |  |        +--ro value-name    string
-       |  |        +--ro value?        string
-       |  +--ro uuid                           uuid
-       |  +--ro name* [value-name]
-       |     +--ro value-name    string
-       |     +--ro value?        string
-       +--ro access-port* [uuid]
-       |  +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
-       |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
-       |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
-       |  |  +--ro connector-identification    string
-       |  |  +--ro pin-identification          string
-       |  |  +--ro pin-and-role* [location-in-connector]
-       |  |     +--ro location-in-connector    string
-       |  |     +--ro pin-role*                string
-       |  |     +--ro pin-name?                string
-       |  +--ro uuid             uuid
-       |  +--ro name* [value-name]
-       |     +--ro value-name    string
-       |     +--ro value?        string
-       +--ro uuid?          uuid
        +--ro name* [value-name]
           +--ro value-name    string
           +--ro value?        string
@@ -704,17 +625,32 @@ module: tapi-equipment
        |  |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
        |  |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
        |  +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
-       |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
-       |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
        |  |  +--ro connector-identification    string
        |  |  +--ro pin-identification          string
        |  |  +--ro pin-and-role* [location-in-connector]
-       |  |     +--ro location-in-connector    string
-       |  |     +--ro pin-role*                string
-       |  |     +--ro pin-name?                string
+       |  |  |  +--ro location-in-connector        string
+       |  |  |  +--ro pin-role*                    string
+       |  |  |  +--ro pin-name?                    string
+       |  |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation
+       |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
        |  +--ro strand-media-characteristics* [value-name]
        |  |  +--ro value-name    string
        |  |  +--ro value?        string
+       |  +--ro to-strand-joint* [physical-span-uuid abstract-strand-local-id strand-joint-local-id]
+       |  |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       |  |  +--ro strand-joint-local-id       -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/strand-joint/local-id
+       |  +--ro strand-joint* [local-id]
+       |  |  +--ro to-abstract-strand
+       |  |  |  +--ro physical-span-uuid?         -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  |  |  +--ro abstract-strand-local-id?   -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       |  |  +--ro applicable-to-flow-direction?   flow-direction
+       |  |  +--ro reflection?                     boolean
+       |  |  +--ro local-id                        string
+       |  |  +--ro name* [value-name]
+       |  |     +--ro value-name    string
+       |  |     +--ro value?        string
        |  +--ro local-id                        string
        |  +--ro name* [value-name]
        |     +--ro value-name    string
@@ -731,24 +667,636 @@ module: tapi-equipment
           |  |  +--ro device-uuid?        -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
           |  |  +--ro access-port-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/access-port/uuid
           |  +--ro connector-pin-in-route* [device-uuid equipment-uuid connector-identification pin-identification]
-          |     +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
-          |     +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
           |     +--ro connector-identification    string
           |     +--ro pin-identification          string
           |     +--ro pin-and-role* [location-in-connector]
-          |        +--ro location-in-connector    string
-          |        +--ro pin-role*                string
-          |        +--ro pin-name?                string
+          |     |  +--ro location-in-connector        string
+          |     |  +--ro pin-role*                    string
+          |     |  +--ro pin-name?                    string
+          |     |  +--ro connector-pin-orientation?   connector-and-pin-orientation
+          |     +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+          |     +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
           +--ro physical-route-state?     physical-route-state
           +--ro local-id                  string
           +--ro name* [value-name]
              +--ro value-name    string
              +--ro value?        string
   augment /tapi-common:context/tapi-common:service-interface-point:
-    +--rw supporting-access-port
+    +--rw access-port-supports-sip
        +--ro access-port
           +--ro device-uuid?        -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
           +--ro access-port-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/access-port/uuid
+  augment /tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification:
+    +--ro physical-route
+       +--ro physical-route-element* []
+       |  +--ro access-port-in-route
+       |  |  +--ro device-uuid?        -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  |  +--ro access-port-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/access-port/uuid
+       |  +--ro connector-pin-in-route* [device-uuid equipment-uuid connector-identification pin-identification]
+       |     +--ro connector-identification    string
+       |     +--ro pin-identification          string
+       |     +--ro pin-and-role* [location-in-connector]
+       |     |  +--ro location-in-connector        string
+       |     |  +--ro pin-role*                    string
+       |     |  +--ro pin-name?                    string
+       |     |  +--ro connector-pin-orientation?   connector-and-pin-orientation
+       |     +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |     +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
+       +--ro physical-route-state?     physical-route-state
+       +--ro local-id?                 string
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
+    +--ro physical-route
+       +--ro physical-route-element* []
+       |  +--ro access-port-in-route
+       |  |  +--ro device-uuid?        -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  |  +--ro access-port-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/access-port/uuid
+       |  +--ro connector-pin-in-route* [device-uuid equipment-uuid connector-identification pin-identification]
+       |     +--ro connector-identification    string
+       |     +--ro pin-identification          string
+       |     +--ro pin-and-role* [location-in-connector]
+       |     |  +--ro location-in-connector        string
+       |     |  +--ro pin-role*                    string
+       |     |  +--ro pin-name?                    string
+       |     |  +--ro connector-pin-orientation?   connector-and-pin-orientation
+       |     +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |     +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
+       +--ro physical-route-state?     physical-route-state
+       +--ro local-id?                 string
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification:
+    +--ro physical-route-element
+       +--ro access-port-in-route
+       |  +--ro device-uuid?        -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  +--ro access-port-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/access-port/uuid
+       +--ro connector-pin-in-route* [device-uuid equipment-uuid connector-identification pin-identification]
+          +--ro connector-identification    string
+          +--ro pin-identification          string
+          +--ro pin-and-role* [location-in-connector]
+          |  +--ro location-in-connector        string
+          |  +--ro pin-role*                    string
+          |  +--ro pin-name?                    string
+          |  +--ro connector-pin-orientation?   connector-and-pin-orientation
+          +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+          +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
+  augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
+    +--ro physical-route-element
+       +--ro access-port-in-route
+       |  +--ro device-uuid?        -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  +--ro access-port-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/access-port/uuid
+       +--ro connector-pin-in-route* [device-uuid equipment-uuid connector-identification pin-identification]
+          +--ro connector-identification    string
+          +--ro pin-identification          string
+          +--ro pin-and-role* [location-in-connector]
+          |  +--ro location-in-connector        string
+          |  +--ro pin-role*                    string
+          |  +--ro pin-name?                    string
+          |  +--ro connector-pin-orientation?   connector-and-pin-orientation
+          +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+          +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
+  augment /tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification:
+    +--ro strand-joint
+       +--ro to-abstract-strand
+       |  +--ro physical-span-uuid?         -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  +--ro abstract-strand-local-id?   -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       +--ro applicable-to-flow-direction?   flow-direction
+       +--ro reflection?                     boolean
+       +--ro local-id?                       string
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
+    +--ro strand-joint
+       +--ro to-abstract-strand
+       |  +--ro physical-span-uuid?         -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  +--ro abstract-strand-local-id?   -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       +--ro applicable-to-flow-direction?   flow-direction
+       +--ro reflection?                     boolean
+       +--ro local-id?                       string
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-notification:event-notification:
+    +--ro equipment
+       +--ro contained-holder* [uuid]
+       |  +--ro occupying-fru
+       |  |  +--ro device-uuid?      -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  |  +--ro equipment-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
+       |  +--ro expected-holder
+       |  |  +--ro common-holder-properties
+       |  |     +--ro holder-category?   holder-category
+       |  |     +--ro is-guided?         boolean
+       |  |     +--ro holder-location?   string
+       |  +--ro actual-holder
+       |  |  +--ro common-holder-properties
+       |  |     +--ro holder-category?   holder-category
+       |  |     +--ro is-guided?         boolean
+       |  |     +--ro holder-location?   string
+       |  +--ro uuid               uuid
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
+       +--ro category?                      equipment-category
+       +--ro equipment-location?            string
+       +--ro geographical-location?         string
+       +--ro is-expected-actual-mismatch?   boolean
+       +--ro expected-equipment* []
+       |  +--ro common-equipment-properties
+       |  |  +--ro asset-type-identifier?        string
+       |  |  +--ro equipment-type-description?   string
+       |  |  +--ro equipment-type-identifier?    string
+       |  |  +--ro equipment-type-name?          string
+       |  |  +--ro equipment-type-version?       string
+       |  |  +--ro manufacturer-identifier?      string
+       |  |  +--ro manufacturer-name?            string
+       |  +--ro expected-non-field-replaceable-module* [local-id]
+       |  |  +--ro common-equipment-properties
+       |  |  |  +--ro asset-type-identifier?        string
+       |  |  |  +--ro equipment-type-description?   string
+       |  |  |  +--ro equipment-type-identifier?    string
+       |  |  |  +--ro equipment-type-name?          string
+       |  |  |  +--ro equipment-type-version?       string
+       |  |  |  +--ro manufacturer-identifier?      string
+       |  |  |  +--ro manufacturer-name?            string
+       |  |  +--ro local-id                       string
+       |  |  +--ro name* [value-name]
+       |  |     +--ro value-name    string
+       |  |     +--ro value?        string
+       |  +--ro expected-holder* []
+       |  |  +--ro common-holder-properties
+       |  |     +--ro holder-category?   holder-category
+       |  |     +--ro is-guided?         boolean
+       |  |     +--ro holder-location?   string
+       |  +--ro equipment-not-expected?                  boolean
+       +--ro actual-equipment
+       |  +--ro common-equipment-properties
+       |  |  +--ro asset-type-identifier?        string
+       |  |  +--ro equipment-type-description?   string
+       |  |  +--ro equipment-type-identifier?    string
+       |  |  +--ro equipment-type-name?          string
+       |  |  +--ro equipment-type-version?       string
+       |  |  +--ro manufacturer-identifier?      string
+       |  |  +--ro manufacturer-name?            string
+       |  +--ro common-actual-properties
+       |  |  +--ro asset-instance-identifier?   string
+       |  |  +--ro is-powered?                  boolean
+       |  |  +--ro manufacture-date?            tapi-common:date-and-time
+       |  |  +--ro serial-number?               string
+       |  |  +--ro temperature?                 decimal64
+       |  +--ro actual-non-field-replaceable-module* [local-id]
+       |     +--ro common-actual-properties
+       |     |  +--ro asset-instance-identifier?   string
+       |     |  +--ro is-powered?                  boolean
+       |     |  +--ro manufacture-date?            tapi-common:date-and-time
+       |     |  +--ro serial-number?               string
+       |     |  +--ro temperature?                 decimal64
+       |     +--ro common-equipment-properties
+       |     |  +--ro asset-type-identifier?        string
+       |     |  +--ro equipment-type-description?   string
+       |     |  +--ro equipment-type-identifier?    string
+       |     |  +--ro equipment-type-name?          string
+       |     |  +--ro equipment-type-version?       string
+       |     |  +--ro manufacturer-identifier?      string
+       |     |  +--ro manufacturer-name?            string
+       |     +--ro local-id                       string
+       |     +--ro name* [value-name]
+       |        +--ro value-name    string
+       |        +--ro value?        string
+       +--ro uuid?                          uuid
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-notification:event-notification:
+    +--ro holder
+       +--ro occupying-fru
+       |  +--ro device-uuid?      -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  +--ro equipment-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
+       +--ro expected-holder
+       |  +--ro common-holder-properties
+       |     +--ro holder-category?   holder-category
+       |     +--ro is-guided?         boolean
+       |     +--ro holder-location?   string
+       +--ro actual-holder
+       |  +--ro common-holder-properties
+       |     +--ro holder-category?   holder-category
+       |     +--ro is-guided?         boolean
+       |     +--ro holder-location?   string
+       +--ro uuid?              uuid
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-notification:event-notification:
+    +--ro access-port
+       +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
+       |  +--ro connector-identification    string
+       |  +--ro pin-identification          string
+       |  +--ro pin-and-role* [location-in-connector]
+       |  |  +--ro location-in-connector        string
+       |  |  +--ro pin-role*                    string
+       |  |  +--ro pin-name?                    string
+       |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation
+       |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
+       +--ro uuid?            uuid
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-notification:event-notification:
+    +--ro physical-span
+       +--ro access-port* [device-uuid access-port-uuid]
+       |  +--ro device-uuid         -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  +--ro access-port-uuid    -> /tapi-common:context/tapi-equipment:physical-context/device/access-port/uuid
+       +--ro abstract-strand* [local-id]
+       |  +--ro adjacent-strand* [physical-span-uuid abstract-strand-local-id]
+       |  |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       |  +--ro spliced-strand* [physical-span-uuid abstract-strand-local-id]
+       |  |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       |  +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
+       |  |  +--ro connector-identification    string
+       |  |  +--ro pin-identification          string
+       |  |  +--ro pin-and-role* [location-in-connector]
+       |  |  |  +--ro location-in-connector        string
+       |  |  |  +--ro pin-role*                    string
+       |  |  |  +--ro pin-name?                    string
+       |  |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation
+       |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
+       |  +--ro strand-media-characteristics* [value-name]
+       |  |  +--ro value-name    string
+       |  |  +--ro value?        string
+       |  +--ro to-strand-joint* [physical-span-uuid abstract-strand-local-id strand-joint-local-id]
+       |  |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       |  |  +--ro strand-joint-local-id       -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/strand-joint/local-id
+       |  +--ro strand-joint* [local-id]
+       |  |  +--ro to-abstract-strand
+       |  |  |  +--ro physical-span-uuid?         -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  |  |  +--ro abstract-strand-local-id?   -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       |  |  +--ro applicable-to-flow-direction?   flow-direction
+       |  |  +--ro reflection?                     boolean
+       |  |  +--ro local-id                        string
+       |  |  +--ro name* [value-name]
+       |  |     +--ro value-name    string
+       |  |     +--ro value?        string
+       |  +--ro local-id                        string
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
+       +--ro uuid?              uuid
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-notification:event-notification:
+    +--ro physical-route
+       +--ro physical-route-element* []
+       |  +--ro access-port-in-route
+       |  |  +--ro device-uuid?        -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  |  +--ro access-port-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/access-port/uuid
+       |  +--ro connector-pin-in-route* [device-uuid equipment-uuid connector-identification pin-identification]
+       |     +--ro connector-identification    string
+       |     +--ro pin-identification          string
+       |     +--ro pin-and-role* [location-in-connector]
+       |     |  +--ro location-in-connector        string
+       |     |  +--ro pin-role*                    string
+       |     |  +--ro pin-name?                    string
+       |     |  +--ro connector-pin-orientation?   connector-and-pin-orientation
+       |     +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |     +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
+       +--ro physical-route-state?     physical-route-state
+       +--ro local-id?                 string
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-notification:event-notification:
+    +--ro physical-route-element
+       +--ro access-port-in-route
+       |  +--ro device-uuid?        -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  +--ro access-port-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/access-port/uuid
+       +--ro connector-pin-in-route* [device-uuid equipment-uuid connector-identification pin-identification]
+          +--ro connector-identification    string
+          +--ro pin-identification          string
+          +--ro pin-and-role* [location-in-connector]
+          |  +--ro location-in-connector        string
+          |  +--ro pin-role*                    string
+          |  +--ro pin-name?                    string
+          |  +--ro connector-pin-orientation?   connector-and-pin-orientation
+          +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+          +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
+  augment /tapi-notification:event-notification:
+    +--ro strand-joint
+       +--ro to-abstract-strand
+       |  +--ro physical-span-uuid?         -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  +--ro abstract-strand-local-id?   -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       +--ro applicable-to-flow-direction?   flow-direction
+       +--ro reflection?                     boolean
+       +--ro local-id?                       string
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-notification:event-notification:
+    +--ro abstract-strand
+       +--ro adjacent-strand* [physical-span-uuid abstract-strand-local-id]
+       |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       +--ro spliced-strand* [physical-span-uuid abstract-strand-local-id]
+       |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
+       |  +--ro connector-identification    string
+       |  +--ro pin-identification          string
+       |  +--ro pin-and-role* [location-in-connector]
+       |  |  +--ro location-in-connector        string
+       |  |  +--ro pin-role*                    string
+       |  |  +--ro pin-name?                    string
+       |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation
+       |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
+       +--ro strand-media-characteristics* [value-name]
+       |  +--ro value-name    string
+       |  +--ro value?        string
+       +--ro to-strand-joint* [physical-span-uuid abstract-strand-local-id strand-joint-local-id]
+       |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       |  +--ro strand-joint-local-id       -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/strand-joint/local-id
+       +--ro strand-joint* [local-id]
+       |  +--ro to-abstract-strand
+       |  |  +--ro physical-span-uuid?         -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  |  +--ro abstract-strand-local-id?   -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       |  +--ro applicable-to-flow-direction?   flow-direction
+       |  +--ro reflection?                     boolean
+       |  +--ro local-id                        string
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
+       +--ro local-id?                       string
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification:
+    +--ro abstract-strand
+       +--ro adjacent-strand* [physical-span-uuid abstract-strand-local-id]
+       |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       +--ro spliced-strand* [physical-span-uuid abstract-strand-local-id]
+       |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
+       |  +--ro connector-identification    string
+       |  +--ro pin-identification          string
+       |  +--ro pin-and-role* [location-in-connector]
+       |  |  +--ro location-in-connector        string
+       |  |  +--ro pin-role*                    string
+       |  |  +--ro pin-name?                    string
+       |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation
+       |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
+       +--ro strand-media-characteristics* [value-name]
+       |  +--ro value-name    string
+       |  +--ro value?        string
+       +--ro to-strand-joint* [physical-span-uuid abstract-strand-local-id strand-joint-local-id]
+       |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       |  +--ro strand-joint-local-id       -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/strand-joint/local-id
+       +--ro strand-joint* [local-id]
+       |  +--ro to-abstract-strand
+       |  |  +--ro physical-span-uuid?         -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+       |  |  +--ro abstract-strand-local-id?   -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+       |  +--ro applicable-to-flow-direction?   flow-direction
+       |  +--ro reflection?                     boolean
+       |  +--ro local-id                        string
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
+       +--ro local-id?                       string
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification:
+    +--ro device
+       +--ro equipment* [uuid]
+       |  +--ro contained-holder* [uuid]
+       |  |  +--ro occupying-fru
+       |  |  |  +--ro device-uuid?      -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  |  |  +--ro equipment-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
+       |  |  +--ro expected-holder
+       |  |  |  +--ro common-holder-properties
+       |  |  |     +--ro holder-category?   holder-category
+       |  |  |     +--ro is-guided?         boolean
+       |  |  |     +--ro holder-location?   string
+       |  |  +--ro actual-holder
+       |  |  |  +--ro common-holder-properties
+       |  |  |     +--ro holder-category?   holder-category
+       |  |  |     +--ro is-guided?         boolean
+       |  |  |     +--ro holder-location?   string
+       |  |  +--ro uuid               uuid
+       |  |  +--ro name* [value-name]
+       |  |     +--ro value-name    string
+       |  |     +--ro value?        string
+       |  +--ro category?                      equipment-category
+       |  +--ro equipment-location?            string
+       |  +--ro geographical-location?         string
+       |  +--ro is-expected-actual-mismatch?   boolean
+       |  +--ro expected-equipment* []
+       |  |  +--ro common-equipment-properties
+       |  |  |  +--ro asset-type-identifier?        string
+       |  |  |  +--ro equipment-type-description?   string
+       |  |  |  +--ro equipment-type-identifier?    string
+       |  |  |  +--ro equipment-type-name?          string
+       |  |  |  +--ro equipment-type-version?       string
+       |  |  |  +--ro manufacturer-identifier?      string
+       |  |  |  +--ro manufacturer-name?            string
+       |  |  +--ro expected-non-field-replaceable-module* [local-id]
+       |  |  |  +--ro common-equipment-properties
+       |  |  |  |  +--ro asset-type-identifier?        string
+       |  |  |  |  +--ro equipment-type-description?   string
+       |  |  |  |  +--ro equipment-type-identifier?    string
+       |  |  |  |  +--ro equipment-type-name?          string
+       |  |  |  |  +--ro equipment-type-version?       string
+       |  |  |  |  +--ro manufacturer-identifier?      string
+       |  |  |  |  +--ro manufacturer-name?            string
+       |  |  |  +--ro local-id                       string
+       |  |  |  +--ro name* [value-name]
+       |  |  |     +--ro value-name    string
+       |  |  |     +--ro value?        string
+       |  |  +--ro expected-holder* []
+       |  |  |  +--ro common-holder-properties
+       |  |  |     +--ro holder-category?   holder-category
+       |  |  |     +--ro is-guided?         boolean
+       |  |  |     +--ro holder-location?   string
+       |  |  +--ro equipment-not-expected?                  boolean
+       |  +--ro actual-equipment
+       |  |  +--ro common-equipment-properties
+       |  |  |  +--ro asset-type-identifier?        string
+       |  |  |  +--ro equipment-type-description?   string
+       |  |  |  +--ro equipment-type-identifier?    string
+       |  |  |  +--ro equipment-type-name?          string
+       |  |  |  +--ro equipment-type-version?       string
+       |  |  |  +--ro manufacturer-identifier?      string
+       |  |  |  +--ro manufacturer-name?            string
+       |  |  +--ro common-actual-properties
+       |  |  |  +--ro asset-instance-identifier?   string
+       |  |  |  +--ro is-powered?                  boolean
+       |  |  |  +--ro manufacture-date?            tapi-common:date-and-time
+       |  |  |  +--ro serial-number?               string
+       |  |  |  +--ro temperature?                 decimal64
+       |  |  +--ro actual-non-field-replaceable-module* [local-id]
+       |  |     +--ro common-actual-properties
+       |  |     |  +--ro asset-instance-identifier?   string
+       |  |     |  +--ro is-powered?                  boolean
+       |  |     |  +--ro manufacture-date?            tapi-common:date-and-time
+       |  |     |  +--ro serial-number?               string
+       |  |     |  +--ro temperature?                 decimal64
+       |  |     +--ro common-equipment-properties
+       |  |     |  +--ro asset-type-identifier?        string
+       |  |     |  +--ro equipment-type-description?   string
+       |  |     |  +--ro equipment-type-identifier?    string
+       |  |     |  +--ro equipment-type-name?          string
+       |  |     |  +--ro equipment-type-version?       string
+       |  |     |  +--ro manufacturer-identifier?      string
+       |  |     |  +--ro manufacturer-name?            string
+       |  |     +--ro local-id                       string
+       |  |     +--ro name* [value-name]
+       |  |        +--ro value-name    string
+       |  |        +--ro value?        string
+       |  +--ro uuid                           uuid
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
+       +--ro access-port* [uuid]
+       |  +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
+       |  |  +--ro connector-identification    string
+       |  |  +--ro pin-identification          string
+       |  |  +--ro pin-and-role* [location-in-connector]
+       |  |  |  +--ro location-in-connector        string
+       |  |  |  +--ro pin-role*                    string
+       |  |  |  +--ro pin-name?                    string
+       |  |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation
+       |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
+       |  +--ro uuid             uuid
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
+       +--ro uuid?          uuid
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
+  augment /tapi-notification:event-notification:
+    +--ro device
+       +--ro equipment* [uuid]
+       |  +--ro contained-holder* [uuid]
+       |  |  +--ro occupying-fru
+       |  |  |  +--ro device-uuid?      -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  |  |  +--ro equipment-uuid?   -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
+       |  |  +--ro expected-holder
+       |  |  |  +--ro common-holder-properties
+       |  |  |     +--ro holder-category?   holder-category
+       |  |  |     +--ro is-guided?         boolean
+       |  |  |     +--ro holder-location?   string
+       |  |  +--ro actual-holder
+       |  |  |  +--ro common-holder-properties
+       |  |  |     +--ro holder-category?   holder-category
+       |  |  |     +--ro is-guided?         boolean
+       |  |  |     +--ro holder-location?   string
+       |  |  +--ro uuid               uuid
+       |  |  +--ro name* [value-name]
+       |  |     +--ro value-name    string
+       |  |     +--ro value?        string
+       |  +--ro category?                      equipment-category
+       |  +--ro equipment-location?            string
+       |  +--ro geographical-location?         string
+       |  +--ro is-expected-actual-mismatch?   boolean
+       |  +--ro expected-equipment* []
+       |  |  +--ro common-equipment-properties
+       |  |  |  +--ro asset-type-identifier?        string
+       |  |  |  +--ro equipment-type-description?   string
+       |  |  |  +--ro equipment-type-identifier?    string
+       |  |  |  +--ro equipment-type-name?          string
+       |  |  |  +--ro equipment-type-version?       string
+       |  |  |  +--ro manufacturer-identifier?      string
+       |  |  |  +--ro manufacturer-name?            string
+       |  |  +--ro expected-non-field-replaceable-module* [local-id]
+       |  |  |  +--ro common-equipment-properties
+       |  |  |  |  +--ro asset-type-identifier?        string
+       |  |  |  |  +--ro equipment-type-description?   string
+       |  |  |  |  +--ro equipment-type-identifier?    string
+       |  |  |  |  +--ro equipment-type-name?          string
+       |  |  |  |  +--ro equipment-type-version?       string
+       |  |  |  |  +--ro manufacturer-identifier?      string
+       |  |  |  |  +--ro manufacturer-name?            string
+       |  |  |  +--ro local-id                       string
+       |  |  |  +--ro name* [value-name]
+       |  |  |     +--ro value-name    string
+       |  |  |     +--ro value?        string
+       |  |  +--ro expected-holder* []
+       |  |  |  +--ro common-holder-properties
+       |  |  |     +--ro holder-category?   holder-category
+       |  |  |     +--ro is-guided?         boolean
+       |  |  |     +--ro holder-location?   string
+       |  |  +--ro equipment-not-expected?                  boolean
+       |  +--ro actual-equipment
+       |  |  +--ro common-equipment-properties
+       |  |  |  +--ro asset-type-identifier?        string
+       |  |  |  +--ro equipment-type-description?   string
+       |  |  |  +--ro equipment-type-identifier?    string
+       |  |  |  +--ro equipment-type-name?          string
+       |  |  |  +--ro equipment-type-version?       string
+       |  |  |  +--ro manufacturer-identifier?      string
+       |  |  |  +--ro manufacturer-name?            string
+       |  |  +--ro common-actual-properties
+       |  |  |  +--ro asset-instance-identifier?   string
+       |  |  |  +--ro is-powered?                  boolean
+       |  |  |  +--ro manufacture-date?            tapi-common:date-and-time
+       |  |  |  +--ro serial-number?               string
+       |  |  |  +--ro temperature?                 decimal64
+       |  |  +--ro actual-non-field-replaceable-module* [local-id]
+       |  |     +--ro common-actual-properties
+       |  |     |  +--ro asset-instance-identifier?   string
+       |  |     |  +--ro is-powered?                  boolean
+       |  |     |  +--ro manufacture-date?            tapi-common:date-and-time
+       |  |     |  +--ro serial-number?               string
+       |  |     |  +--ro temperature?                 decimal64
+       |  |     +--ro common-equipment-properties
+       |  |     |  +--ro asset-type-identifier?        string
+       |  |     |  +--ro equipment-type-description?   string
+       |  |     |  +--ro equipment-type-identifier?    string
+       |  |     |  +--ro equipment-type-name?          string
+       |  |     |  +--ro equipment-type-version?       string
+       |  |     |  +--ro manufacturer-identifier?      string
+       |  |     |  +--ro manufacturer-name?            string
+       |  |     +--ro local-id                       string
+       |  |     +--ro name* [value-name]
+       |  |        +--ro value-name    string
+       |  |        +--ro value?        string
+       |  +--ro uuid                           uuid
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
+       +--ro access-port* [uuid]
+       |  +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
+       |  |  +--ro connector-identification    string
+       |  |  +--ro pin-identification          string
+       |  |  +--ro pin-and-role* [location-in-connector]
+       |  |  |  +--ro location-in-connector        string
+       |  |  |  +--ro pin-role*                    string
+       |  |  |  +--ro pin-name?                    string
+       |  |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation
+       |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+       |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
+       |  +--ro uuid             uuid
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
+       +--ro uuid?          uuid
+       +--ro name* [value-name]
+          +--ro value-name    string
+          +--ro value?        string
 
   rpcs:
     +---x get-device-list
@@ -800,10 +1348,11 @@ module: tapi-equipment
     |        |  |  |     +--ro value-name    string
     |        |  |  |     +--ro value?        string
     |        |  |  +--ro expected-holder* []
-    |        |  |     +--ro common-holder-properties
-    |        |  |        +--ro holder-category?   holder-category
-    |        |  |        +--ro is-guided?         boolean
-    |        |  |        +--ro holder-location?   string
+    |        |  |  |  +--ro common-holder-properties
+    |        |  |  |     +--ro holder-category?   holder-category
+    |        |  |  |     +--ro is-guided?         boolean
+    |        |  |  |     +--ro holder-location?   string
+    |        |  |  +--ro equipment-not-expected?                  boolean
     |        |  +--ro actual-equipment
     |        |  |  +--ro common-equipment-properties
     |        |  |  |  +--ro asset-type-identifier?        string
@@ -844,14 +1393,15 @@ module: tapi-equipment
     |        |     +--ro value?        string
     |        +--ro access-port* [uuid]
     |        |  +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
-    |        |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
-    |        |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
     |        |  |  +--ro connector-identification    string
     |        |  |  +--ro pin-identification          string
     |        |  |  +--ro pin-and-role* [location-in-connector]
-    |        |  |     +--ro location-in-connector    string
-    |        |  |     +--ro pin-role*                string
-    |        |  |     +--ro pin-name?                string
+    |        |  |  |  +--ro location-in-connector        string
+    |        |  |  |  +--ro pin-role*                    string
+    |        |  |  |  +--ro pin-name?                    string
+    |        |  |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation
+    |        |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+    |        |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
     |        |  +--ro uuid             uuid
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
@@ -874,17 +1424,32 @@ module: tapi-equipment
     |        |  |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
     |        |  |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
     |        |  +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
-    |        |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
-    |        |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
     |        |  |  +--ro connector-identification    string
     |        |  |  +--ro pin-identification          string
     |        |  |  +--ro pin-and-role* [location-in-connector]
-    |        |  |     +--ro location-in-connector    string
-    |        |  |     +--ro pin-role*                string
-    |        |  |     +--ro pin-name?                string
+    |        |  |  |  +--ro location-in-connector        string
+    |        |  |  |  +--ro pin-role*                    string
+    |        |  |  |  +--ro pin-name?                    string
+    |        |  |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation
+    |        |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+    |        |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
     |        |  +--ro strand-media-characteristics* [value-name]
     |        |  |  +--ro value-name    string
     |        |  |  +--ro value?        string
+    |        |  +--ro to-strand-joint* [physical-span-uuid abstract-strand-local-id strand-joint-local-id]
+    |        |  |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+    |        |  |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+    |        |  |  +--ro strand-joint-local-id       -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/strand-joint/local-id
+    |        |  +--ro strand-joint* [local-id]
+    |        |  |  +--ro to-abstract-strand
+    |        |  |  |  +--ro physical-span-uuid?         -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+    |        |  |  |  +--ro abstract-strand-local-id?   -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+    |        |  |  +--ro applicable-to-flow-direction?   flow-direction
+    |        |  |  +--ro reflection?                     boolean
+    |        |  |  +--ro local-id                        string
+    |        |  |  +--ro name* [value-name]
+    |        |  |     +--ro value-name    string
+    |        |  |     +--ro value?        string
     |        |  +--ro local-id                        string
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
@@ -944,10 +1509,11 @@ module: tapi-equipment
     |        |  |  |     +--ro value-name    string
     |        |  |  |     +--ro value?        string
     |        |  |  +--ro expected-holder* []
-    |        |  |     +--ro common-holder-properties
-    |        |  |        +--ro holder-category?   holder-category
-    |        |  |        +--ro is-guided?         boolean
-    |        |  |        +--ro holder-location?   string
+    |        |  |  |  +--ro common-holder-properties
+    |        |  |  |     +--ro holder-category?   holder-category
+    |        |  |  |     +--ro is-guided?         boolean
+    |        |  |  |     +--ro holder-location?   string
+    |        |  |  +--ro equipment-not-expected?                  boolean
     |        |  +--ro actual-equipment
     |        |  |  +--ro common-equipment-properties
     |        |  |  |  +--ro asset-type-identifier?        string
@@ -988,14 +1554,15 @@ module: tapi-equipment
     |        |     +--ro value?        string
     |        +--ro access-port* [uuid]
     |        |  +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
-    |        |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
-    |        |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
     |        |  |  +--ro connector-identification    string
     |        |  |  +--ro pin-identification          string
     |        |  |  +--ro pin-and-role* [location-in-connector]
-    |        |  |     +--ro location-in-connector    string
-    |        |  |     +--ro pin-role*                string
-    |        |  |     +--ro pin-name?                string
+    |        |  |  |  +--ro location-in-connector        string
+    |        |  |  |  +--ro pin-role*                    string
+    |        |  |  |  +--ro pin-name?                    string
+    |        |  |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation
+    |        |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+    |        |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
     |        |  +--ro uuid             uuid
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
@@ -1020,17 +1587,32 @@ module: tapi-equipment
              |  |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
              |  |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
              |  +--ro connector-pin* [device-uuid equipment-uuid connector-identification pin-identification]
-             |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
-             |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
              |  |  +--ro connector-identification    string
              |  |  +--ro pin-identification          string
              |  |  +--ro pin-and-role* [location-in-connector]
-             |  |     +--ro location-in-connector    string
-             |  |     +--ro pin-role*                string
-             |  |     +--ro pin-name?                string
+             |  |  |  +--ro location-in-connector        string
+             |  |  |  +--ro pin-role*                    string
+             |  |  |  +--ro pin-name?                    string
+             |  |  |  +--ro connector-pin-orientation?   connector-and-pin-orientation
+             |  |  +--ro device-uuid                 -> /tapi-common:context/tapi-equipment:physical-context/device/uuid
+             |  |  +--ro equipment-uuid              -> /tapi-common:context/tapi-equipment:physical-context/device/equipment/uuid
              |  +--ro strand-media-characteristics* [value-name]
              |  |  +--ro value-name    string
              |  |  +--ro value?        string
+             |  +--ro to-strand-joint* [physical-span-uuid abstract-strand-local-id strand-joint-local-id]
+             |  |  +--ro physical-span-uuid          -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+             |  |  +--ro abstract-strand-local-id    -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+             |  |  +--ro strand-joint-local-id       -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/strand-joint/local-id
+             |  +--ro strand-joint* [local-id]
+             |  |  +--ro to-abstract-strand
+             |  |  |  +--ro physical-span-uuid?         -> /tapi-common:context/tapi-equipment:physical-context/physical-span/uuid
+             |  |  |  +--ro abstract-strand-local-id?   -> /tapi-common:context/tapi-equipment:physical-context/physical-span/abstract-strand/local-id
+             |  |  +--ro applicable-to-flow-direction?   flow-direction
+             |  |  +--ro reflection?                     boolean
+             |  |  +--ro local-id                        string
+             |  |  +--ro name* [value-name]
+             |  |     +--ro value-name    string
+             |  |     +--ro value?        string
              |  +--ro local-id                        string
              |  +--ro name* [value-name]
              |     +--ro value-name    string

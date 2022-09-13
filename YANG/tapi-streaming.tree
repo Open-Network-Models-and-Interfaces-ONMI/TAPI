@@ -3,14 +3,15 @@ module: tapi-streaming
   augment /tapi-common:context:
     +--rw stream-admin-context {tapi-streaming-admin}?
        +--ro stream-monitor* [uuid]
-       |  +--ro id-of-last-record-read-from-log?    string
-       |  +--ro id-of-last-record-written-to-log?   string
        |  +--ro available-stream
        |  |  +--ro available-stream-uuid?   -> /tapi-common:context/tapi-streaming:stream-context/available-stream/uuid
-       |  +--ro client-id?                          string
-       |  +--ro last-updated?                       tapi-common:date-and-time
-       |  +--ro client-address?                     string
-       |  +--ro uuid                                uuid
+       |  +--ro client-id?             string
+       |  +--ro client-address?        string
+       |  +--ro dynamic-stream-data
+       |  |  +--ro id-of-last-record-written-to-log?   string
+       |  |  +--ro id-of-last-record-read-from-log?    string
+       |  |  +--ro last-updated?                       tapi-common:date-and-time
+       |  +--ro uuid                   uuid
        |  +--ro name* [value-name]
        |     +--ro value-name    string
        |     +--ro value?        string
@@ -21,12 +22,12 @@ module: tapi-streaming
   augment /tapi-common:context:
     +--rw stream-context {tapi-streaming}?
        +--ro available-stream* [uuid]
-       |  +--ro connection-address?      string
+       |  +--ro connection-address*      string
        |  +--ro stream-state?            stream-state
        |  +--ro supported-stream-type
        |  |  +--ro supported-stream-type-uuid?   -> /tapi-common:context/tapi-streaming:stream-context/supported-stream-type/uuid
        |  +--ro stream-id?               string
-       |  +--ro connection-protocol?     string
+       |  +--ro connection-protocol?     connection-protocol
        |  +--ro uuid                     uuid
        |  +--ro name* [value-name]
        |     +--ro value-name    string
@@ -38,47 +39,23 @@ module: tapi-streaming
           +--ro stream-type-content*           tapi-common:object-type
           +--ro log-storage-strategy?          log-storage-strategy
           +--ro log-record-strategy?           log-record-strategy
+          +--ro record-trigger?                record-trigger
           +--ro uuid                           uuid
           +--ro name* [value-name]
           |  +--ro value-name    string
           |  +--ro value?        string
           +--rw compacted-log-details {tapi-streaming}?
-          |  +--ro tombstone-retention?   string
-          |  +--ro compaction-delay?      string
+          |  +--ro tombstone-retention?              string
+          |  +--ro compaction-delay?                 string
+          |  +--ro max-allowed-segment-roll-delay?   string
+          |  +--ro max-compaction-lag?               string
           +--ro connection-protocol-details {tapi-streaming}?
-             +--ro allowed-connection-protocols*   string
-
-  rpcs:
-    +---x connect-to-stream
-    |  +---w input
-    |     +---w start-from-token?     string
-    |     +---w connection-address?   string
-    +---x get-available-stream-connection-details
-    |  +--ro output
-    |     +--ro active-connections* []
-    |        +--ro connection-address?      string
-    |        +--ro stream-state?            stream-state
-    |        +--ro supported-stream-type
-    |        |  +--ro supported-stream-type-uuid?   -> /tapi-common:context/tapi-streaming:stream-context/supported-stream-type/uuid
-    |        +--ro stream-id?               string
-    |        +--ro connection-protocol?     string
-    |        +--ro uuid?                    uuid
-    |        +--ro name* [value-name]
-    |           +--ro value-name    string
-    |           +--ro value?        string
-    +---x get-supported-stream-connection-types
-       +--ro output
-          +--ro supported-stream-types* []
-             +--ro stream-type-name?       string
-             +--ro record-retention?       string
-             +--ro segment-size?           string
-             +--ro stream-type-content*    tapi-common:object-type
-             +--ro log-storage-strategy?   log-storage-strategy
-             +--ro log-record-strategy?    log-record-strategy
-             +--ro uuid?                   uuid
-             +--ro name* [value-name]
-                +--ro value-name    string
-                +--ro value?        string
+          |  +--ro allowed-connection-protocols*   connection-protocol
+          |  +--ro encoding-format?                encoding-format
+          +--ro information-record-strategy {tapi-streaming}?
+             +--ro record-suppression?                      record-suppression
+             +--ro value-expectation?                       value-expectation
+             +--ro allowed-dither-from-value-expectation?   value-expectation-dither
 
   notifications:
     +---n stream-record
@@ -105,7 +82,12 @@ module: tapi-streaming
              |  +--ro value?        string
              +--ro parent-address*            string
              +--ro record-content?            tapi-common:object-type
-             +--rw condition-detector {tapi-streaming}?
+             +--ro profile
+             |  +--ro uuid?   uuid
+             |  +--ro name* [value-name]
+             |     +--ro value-name    string
+             |     +--ro value?        string
+             +--ro condition-detector {tapi-streaming}?
              |  +--ro condition-native-name?             string
              |  +--ro measured-entity-uuid?              tapi-common:uuid
              |  +--ro measured-entity-native-id?         string
@@ -124,14 +106,15 @@ module: tapi-streaming
              |        +--ro additional-alarm-info*   string
              +--ro any-class {tapi-streaming}?
              +--ro stream-monitor {tapi-streaming-admin}?
-             |  +--ro id-of-last-record-read-from-log?    string
-             |  +--ro id-of-last-record-written-to-log?   string
              |  +--ro available-stream
              |  |  +--ro available-stream-uuid?   -> /tapi-common:context/tapi-streaming:stream-context/available-stream/uuid
-             |  +--ro client-id?                          string
-             |  +--ro last-updated?                       tapi-common:date-and-time
-             |  +--ro client-address?                     string
-             |  +--ro uuid?                               uuid
+             |  +--ro client-id?             string
+             |  +--ro client-address?        string
+             |  +--ro dynamic-stream-data
+             |  |  +--ro id-of-last-record-written-to-log?   string
+             |  |  +--ro id-of-last-record-read-from-log?    string
+             |  |  +--ro last-updated?                       tapi-common:date-and-time
+             |  +--ro uuid?                  uuid
              |  +--ro name* [value-name]
              |     +--ro value-name    string
              |     +--ro value?        string
@@ -142,17 +125,18 @@ module: tapi-streaming
              |  +--ro stream-type-content*    tapi-common:object-type
              |  +--ro log-storage-strategy?   log-storage-strategy
              |  +--ro log-record-strategy?    log-record-strategy
+             |  +--ro record-trigger?         record-trigger
              |  +--ro uuid?                   uuid
              |  +--ro name* [value-name]
              |     +--ro value-name    string
              |     +--ro value?        string
              +--ro available-stream {tapi-streaming}?
-             |  +--ro connection-address?      string
+             |  +--ro connection-address*      string
              |  +--ro stream-state?            stream-state
              |  +--ro supported-stream-type
              |  |  +--ro supported-stream-type-uuid?   -> /tapi-common:context/tapi-streaming:stream-context/supported-stream-type/uuid
              |  +--ro stream-id?               string
-             |  +--ro connection-protocol?     string
+             |  +--ro connection-protocol?     connection-protocol
              |  +--ro uuid?                    uuid
              |  +--ro name* [value-name]
              |     +--ro value-name    string
