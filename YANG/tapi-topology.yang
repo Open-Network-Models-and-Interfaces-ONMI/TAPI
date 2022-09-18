@@ -401,6 +401,12 @@ module tapi-topology {
         description "A Link is a topological entity which is an abstract representation of the effective adjacency between two or more Node instances (specifically NodeEdgePoint instances) in a Topology.";
     }
     grouping node {
+        leaf-list layer-protocol-name {
+            type tapi-common:layer-protocol-name;
+            config false;
+            min-elements 1;
+            description "The layer protocol(s) of the (multi-layer) Node.";
+        }
         list owned-node-edge-point {
             key 'uuid';
             config false;
@@ -419,19 +425,26 @@ module tapi-topology {
         }
         list node-rule-group {
             key 'uuid';
+            config false;
             uses node-rule-group;
             description "The Node rules applicable to this Node.";
+        }
+        list inter-rule-group {
+            key 'uuid';
+            config false;
+            uses inter-rule-group;
+            description "none";
         }
         container encap-topology {
             uses topology-ref;
             config false;
             description "A Node may encapsulate one Topology instance, which in turn encompasses Nodes at lower partitioning level.";
         }
-        leaf-list layer-protocol-name {
-            type tapi-common:layer-protocol-name;
+        list profile {
+            uses tapi-common:profile-ref;
+            key 'profile-uuid';
             config false;
-            min-elements 1;
-            description "The layer protocol(s) of the (multi-layer) Node.";
+            description "none";
         }
         uses tapi-common:global-class;
         uses tapi-common:admin-state-pac;
@@ -503,7 +516,7 @@ module tapi-topology {
             uses tapi-common:supported-layer-protocol-qualifier;
             description "none";
         }
-        list supported-layer-protocol-qualifier {
+        list supported-payload-structure {
             uses tapi-common:payload-structure;
             description "none";
         }
@@ -724,7 +737,7 @@ module tapi-topology {
             uses node-edge-point-ref;
             key 'topology-uuid node-uuid node-edge-point-uuid';
             config false;
-            description "NEPs and their client CEPs that the rules apply to.";
+            description "NEPs and their client CEPs that the rules apply to. This reference is optional, while the reverse reference is mandatory (NEP refers to NRGs).";
         }
         list node-rule-group {
             uses node-rule-group-ref;
@@ -732,13 +745,6 @@ module tapi-topology {
             config false;
             description "NodeRuleGroups may be nested such that finer grained rules may be applied.
                 A nested rule group should have a subset of the NEPs of the superior rule group.";
-        }
-        list inter-rule-group {
-            key 'uuid';
-            config false;
-            uses inter-rule-group;
-            description "Nested NodeRuleGroups may have InterRuleGroups. The Superior NodeRuleGroup contains the nested NodeRuleGroups and their associated InterRuleGroups.
-                This is equivalent to the Node-Topology hierarchy.";
         }
         uses tapi-common:global-class;
         uses tapi-common:capacity-pac;
@@ -748,7 +754,7 @@ module tapi-topology {
         description "Rules that apply to a group of NodeEdgePoint (NEP) instances.";
     }
     grouping rule {
-        leaf rule-type {
+        leaf-list rule-type {
             type rule-type;
             config false;
             description "The focus of the rule.";
@@ -1068,6 +1074,9 @@ module tapi-topology {
             }
             enum GROUPING {
                 description "The rule is simply for grouping related to other rules.";
+            }
+            enum IMPAIRMENT {
+                description "none";
             }
         }
         description "The focus of the rule.";
