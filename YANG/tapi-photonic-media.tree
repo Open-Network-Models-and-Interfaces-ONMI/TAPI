@@ -96,29 +96,16 @@ module: tapi-photonic-media
           +--ro total-power-lower-warn-threshold-min?       decimal64
   augment /tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point:
     +--ro otsi-mc-connection-end-point-spec
-       +--ro otsi-mc-properties-pac
-       |  +--ro central-frequency?   uint64
-       |  +--ro local-id?            string
-       |  +--ro name* [value-name]
-       |     +--ro value-name    string
-       |     +--ro value?        string
        +--ro otsi-termination-pac
        |  +--ro selected-central-frequency?   uint64
        |  +--ro selected-spectrum
        |  |  +--ro upper-frequency?   uint64
        |  |  +--ro lower-frequency?   uint64
        |  +--ro laser-properties
-       |  |  +--ro laser-status?             laser-control-status-type
-       |  |  +--ro laser-application-type?   laser-type
-       |  |  +--ro laser-bias-current?       decimal64
-       |  |  +--ro laser-temperature?        decimal64
-       |  +--ro transmitted-power
-       |  |  +--ro total-power?              decimal64
-       |  |  +--ro power-spectral-density?   decimal64
-       |  +--ro received-power
-       |  |  +--ro total-power?              decimal64
-       |  |  +--ro power-spectral-density?   decimal64
-       |  +--ro rx-total-power?               decimal64
+       |     +--ro laser-status?             laser-control-status-type
+       |     +--ro laser-application-type?   laser-type
+       |     +--ro laser-bias-current?       decimal64
+       |     +--ro laser-temperature?        decimal64
        +--ro spectrum-pac
        |  +--ro occupied-spectrum
        |  |  +--ro upper-frequency?   uint64
@@ -136,7 +123,7 @@ module: tapi-photonic-media
              +--ro power-spectral-density?   decimal64
   augment /tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point/tapi-connectivity:layer-protocol-constraint:
     +--rw mcg-connectivity-service-end-point-spec
-       +--rw number-of-mc?             uint64
+       +--rw number-of-mc?              uint64
        +--rw mc-spectrum-config-pac* [local-id]
        |  +--rw spectrum
        |  |  +--rw upper-frequency?   uint64
@@ -161,14 +148,11 @@ module: tapi-photonic-media
        |  +--rw name* [value-name]
        |     +--rw value-name    string
        |     +--rw value?        string
-       +--rw mc-capacity-config-pac* [local-id]
-          +--rw capacity
-          |  +--rw value?   decimal64
-          |  +--rw unit?    capacity-unit
+       +--rw mc-bandwidth-config-pac* [local-id]
+          +--rw spectrum-bandwidth?            uint64
           +--rw edge-frequency-constraint
           |  +--rw adjustment-granularity?   adjustment-granularity
           |  +--rw grid-type?                grid-type
-          +--rw spectrum-bandwidth?            uint64
           +--rw power-management-config-pac
           |  +--rw intended-maximum-output-power
           |  |  +--rw total-power?              decimal64
@@ -216,9 +200,9 @@ module: tapi-photonic-media
        +--rw transceiver-standard-profile
        |  +--ro application-code?   standard-application-mode
        +--rw transceiver-organizational-profile
-       |  +--ro operational-mode?          string
-       |  +--ro organization-identifier?   string
-       |  +--ro common-organiz-explicit
+       |  +--ro operational-mode?                 string
+       |  +--ro organization-identifier?          string
+       |  +--ro common-organizational-explicit
        |     +--ro frequency-range
        |     |  +--ro upper-frequency?   uint64
        |     |  +--ro lower-frequency?   uint64
@@ -229,7 +213,7 @@ module: tapi-photonic-media
        |     +--ro rx-channel-power-max?     decimal64
        |     +--ro rx-total-power-max?       decimal64
        +--rw transceiver-explicit-profile
-          +--ro common-organiz-explicit
+          +--ro common-organizational-explicit
           |  +--ro frequency-range
           |  |  +--ro upper-frequency?   uint64
           |  |  +--ro lower-frequency?   uint64
@@ -256,53 +240,29 @@ module: tapi-photonic-media
           |  +--ro min-qfactor?                                     decimal64
           |  +--ro baud-rate?                                       uint64
           |  +--ro roll-off?                                        decimal64
-          |  +--ro min-carrier-spacing?                             decimal64
+          |  +--ro min-carrier-spacing?                             uint64
           |  +--ro fec-type?                                        fec-type
           |  +--ro fec-code-rate?                                   decimal64
           |  +--ro fec-threshold?                                   decimal64
           |  +--ro other-properties* [value-name]
           |     +--ro value-name    string
           |     +--ro value?        string
-          +--ro supported-standard-application-codes
+          +--ro supported-standard-application-code
           |  +--ro profile-uuid?   -> /tapi-common:context/profile/uuid
-          +--ro supported-organizational-modes
+          +--ro supported-organizational-mode
              +--ro profile-uuid?   -> /tapi-common:context/profile/uuid
-  augment /tapi-common:context/tapi-common:profile:
-    +--rw amplification-profile
-       +--ro fixed-gain-amplification-profile
-       |  +--ro frequency-range
-       |  |  +--ro upper-frequency?   uint64
-       |  |  +--ro lower-frequency?   uint64
-       |  +--ro gain-range
-       |  |  +--ro min-gain?   decimal64
-       |  |  +--ro max-gain?   decimal64
-       |  +--ro noise-figure?      decimal64
-       |  +--ro p-max?             decimal64
-       +--ro variable-gain-amplification-profile
-          +--ro frequency-range
-          |  +--ro upper-frequency?   uint64
-          |  +--ro lower-frequency?   uint64
-          +--ro gain-range
-          |  +--ro min-gain?   decimal64
-          |  +--ro max-gain?   decimal64
-          +--ro noise-figure-min?   decimal64
-          +--ro noise-figure-max?   decimal64
-          +--ro p-max?              decimal64
   augment /tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point/tapi-connectivity:layer-protocol-constraint:
     +--rw otsi-mcg-connectivity-service-end-point-spec
-       +--rw otsi-mc-capacity-config-pac* [local-id]
-       |  +--rw capacity
-       |  |  +--rw value?   decimal64
-       |  |  +--rw unit?    capacity-unit
+       +--rw otsi-mc-bandwidth-config-pac* [local-id]
+       |  +--rw spectrum-bandwidth?            uint64
+       |  +--rw center-frequency-offset?       uint64
        |  +--rw center-frequency-constraint
        |  |  +--rw adjustment-granularity?   adjustment-granularity
        |  |  +--rw grid-type?                grid-type
-       |  +--rw non-adjacent-spectrum?         uint64
        |  +--rw edge-frequency-constraint
        |  |  +--rw adjustment-granularity?   adjustment-granularity
        |  |  +--rw grid-type?                grid-type
-       |  +--rw spectrum-bandwidth?            uint64
-       |  +--rw center-frequency-offset?       uint64
+       |  +--rw non-adjacent-spectrum?         uint64
        |  +--rw power-management-config-pac
        |  |  +--rw intended-maximum-output-power
        |  |  |  +--rw total-power?              decimal64
@@ -324,13 +284,13 @@ module: tapi-photonic-media
        |  +--rw spectrum
        |  |  +--rw upper-frequency?   uint64
        |  |  +--rw lower-frequency?   uint64
+       |  +--rw center-frequency-offset?       uint64
        |  +--rw center-frequency-constraint
        |  |  +--rw adjustment-granularity?   adjustment-granularity
        |  |  +--rw grid-type?                grid-type
        |  +--rw edge-frequency-constraint
        |  |  +--rw adjustment-granularity?   adjustment-granularity
        |  |  +--rw grid-type?                grid-type
-       |  +--rw center-frequency-offset?       uint64
        |  +--rw power-management-config-pac
        |  |  +--rw intended-maximum-output-power
        |  |  |  +--rw total-power?              decimal64
@@ -354,6 +314,7 @@ module: tapi-photonic-media
        |  |  |  +--rw adjustment-granularity?   adjustment-granularity
        |  |  |  +--rw grid-type?                grid-type
        |  |  +--rw central-frequency?      uint64
+       |  +--rw center-frequency-offset?       uint64
        |  +--rw spectrum-bandwidth?            uint64
        |  +--rw center-frequency-constraint
        |  |  +--rw adjustment-granularity?   adjustment-granularity
@@ -361,7 +322,6 @@ module: tapi-photonic-media
        |  +--rw edge-frequency-constraint
        |  |  +--rw adjustment-granularity?   adjustment-granularity
        |  |  +--rw grid-type?                grid-type
-       |  +--rw center-frequency-offset?       uint64
        |  +--rw power-management-config-pac
        |  |  +--rw intended-maximum-output-power
        |  |  |  +--rw total-power?              decimal64
@@ -380,45 +340,6 @@ module: tapi-photonic-media
        |     +--rw value-name    string
        |     +--rw value?        string
        +--rw number-of-otsi-mc?              uint64
-  augment /tapi-common:context/tapi-common:profile:
-    +--rw roadm-path-profile
-       +--rw roadm-add-path-profile
-       |  +--ro frequency-range
-       |  |  +--ro upper-frequency?   uint64
-       |  |  +--ro lower-frequency?   uint64
-       |  +--ro roadm-pmd?                decimal64
-       |  +--ro roadm-cd?                 decimal64
-       |  +--ro roadm-pdl?                decimal64
-       |  +--ro roadm-inband-crosstalk?   decimal64
-       |  +--ro roadm-maxloss?            decimal64
-       |  +--ro roadm-pmax?               decimal64
-       |  +--ro roadm-osnr?               decimal64
-       |  +--ro roadm-noise-figure?       decimal64
-       +--rw roadm-drop-path-profile
-       |  +--ro frequency-range
-       |  |  +--ro upper-frequency?   uint64
-       |  |  +--ro lower-frequency?   uint64
-       |  +--ro roadm-pmd?                decimal64
-       |  +--ro roadm-cd?                 decimal64
-       |  +--ro roadm-pdl?                decimal64
-       |  +--ro roadm-inband-crosstalk?   decimal64
-       |  +--ro roadm-maxloss?            decimal64
-       |  +--ro roadm-minloss?            decimal64
-       |  +--ro roadm-typloss?            decimal64
-       |  +--ro roadm-pmin?               decimal64
-       |  +--ro roadm-pmax?               decimal64
-       |  +--ro roadm-ptyp?               decimal64
-       |  +--ro roadm-osnr?               decimal64
-       |  +--ro roadm-noise-figure?       decimal64
-       +--rw roadm-express-path-profile
-          +--ro frequency-range
-          |  +--ro upper-frequency?   uint64
-          |  +--ro lower-frequency?   uint64
-          +--ro roadm-pmd?                decimal64
-          +--ro roadm-cd?                 decimal64
-          +--ro roadm-pdl?                decimal64
-          +--ro roadm-inband-crosstalk?   decimal64
-          +--ro roadm-maxloss?            decimal64
   augment /tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point:
     +--ro ots-media-connection-end-point-spec
        +--ro power-measurement-pac
@@ -515,15 +436,41 @@ module: tapi-photonic-media
        |     +--ro value-name    string
        |     +--ro value?        string
        +--ro power-measurement-pac
-       |  +--ro measured-input-power
-       |  |  +--ro total-power?              decimal64
-       |  |  +--ro power-spectral-density?   decimal64
-       |  +--ro measured-output-power
-       |     +--ro total-power?              decimal64
-       |     +--ro power-spectral-density?   decimal64
-       +--ro otsi-mc-properties-pac* [local-id]
-          +--ro central-frequency?   uint64
-          +--ro local-id             string
-          +--ro name* [value-name]
-             +--ro value-name    string
-             +--ro value?        string
+          +--ro measured-input-power
+          |  +--ro total-power?              decimal64
+          |  +--ro power-spectral-density?   decimal64
+          +--ro measured-output-power
+             +--ro total-power?              decimal64
+             +--ro power-spectral-density?   decimal64
+  augment /tapi-common:context/tapi-common:profile:
+    +--rw connectivity-impairment-profile
+       +--ro frequency-range
+       |  +--ro upper-frequency?   uint64
+       |  +--ro lower-frequency?   uint64
+       +--ro roadm-pmd?                decimal64
+       +--ro roadm-cd?                 decimal64
+       +--ro roadm-pdl?                decimal64
+       +--ro roadm-inband-crosstalk?   decimal64
+       +--ro roadm-maxloss?            decimal64
+       +--ro roadm-minloss?            decimal64
+       +--ro roadm-typloss?            decimal64
+       +--ro roadm-pmin?               decimal64
+       +--ro roadm-pmax?               decimal64
+       +--ro roadm-ptyp?               decimal64
+       +--ro roadm-osnr?               decimal64
+       +--ro roadm-noise-figure?       decimal64
+  augment /tapi-common:context/tapi-common:profile:
+    +--rw amplification-profile
+       +--ro frequency-range
+       |  +--ro upper-frequency?   uint64
+       |  +--ro lower-frequency?   uint64
+       +--ro gain-range
+       |  +--ro min-gain?   decimal64
+       |  +--ro max-gain?   decimal64
+       +--ro noise-figure-range
+       |  +--ro min-noise-figure?   decimal64
+       |  +--ro max-noise-figure?   decimal64
+       +--ro max-power?             decimal64
+       +--rw extended-gain-range
+          +--rw min-gain?   decimal64
+          +--rw max-gain?   decimal64

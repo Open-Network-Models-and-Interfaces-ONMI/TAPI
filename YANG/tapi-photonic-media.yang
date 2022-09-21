@@ -161,23 +161,9 @@ module tapi-photonic-media {
         }
         description "none";
     }
-    augment "/tapi-common:context/tapi-common:profile" {
-        container amplification-profile {
-            uses amplification-profile;
-            description "none";
-        }
-        description "none";
-    }
     augment "/tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point/tapi-connectivity:layer-protocol-constraint" {
         container otsi-mcg-connectivity-service-end-point-spec {
             uses otsi-mcg-connectivity-service-end-point-spec;
-            description "none";
-        }
-        description "none";
-    }
-    augment "/tapi-common:context/tapi-common:profile" {
-        container roadm-path-profile {
-            uses roadm-path-profile;
             description "none";
         }
         description "none";
@@ -203,6 +189,20 @@ module tapi-photonic-media {
         }
         description "none";
     }
+    augment "/tapi-common:context/tapi-common:profile" {
+        container connectivity-impairment-profile {
+            uses connectivity-impairment-profile;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-common:profile" {
+        container amplification-profile {
+            uses amplification-profile;
+            description "none";
+        }
+        description "none";
+    }
     /**************************
     * definitions of references
     **************************/    
@@ -224,7 +224,7 @@ module tapi-photonic-media {
             type uint64;
             config false;
             description "The central frequency of the laser. It is the oscillation frequency of the corresponding electromagnetic wave.
-                Measured in MHz.";
+                Measured in Hz.";
         }
         container selected-spectrum {
             config false;
@@ -236,25 +236,7 @@ module tapi-photonic-media {
             uses laser-properties;
             description "Laser properties.";
         }
-        container transmitted-power {
-            config false;
-            uses power-properties;
-            description "Measured power at the Transmitter.";
-        }
-        container received-power {
-            config false;
-            uses power-properties;
-            description "none";
-        }
-        leaf rx-total-power {
-            type decimal64 {
-                fraction-digits 7;
-            }
-            config false;
-            description "Rx optical power for all the channels received at the interface.
-                Measured in dBm.";
-        }
-        description "Provides status information only.";
+        description "Present in case of terminated OTSiMC CEP, i.e. including O/E/O function.";
     }
     grouping spectrum-capability-pac {
         list supportable-spectrum {
@@ -347,7 +329,7 @@ module tapi-photonic-media {
             description "none";
         }
         uses tapi-common:local-class;
-        description "MediaChannelConfigPac and MediaChannelBwConfigPac are mutually exclusive.";
+        description "MC configuration based on spectrum specification.";
     }
     grouping total-power-threshold-pac {
         container spectrum {
@@ -447,12 +429,17 @@ module tapi-photonic-media {
             description "This parameter conveys the attached transceiver min launch (TX) power (expected from the transceiver).
                 This specifies constraints related to power tolerance at the input.";
         }
-        description "This pac includes power management constrains which can be included as part of the characterization of the CSEPs associated to CEPs at the PHOTONIC_MEDIA layer.";
+        description "This pac includes power management constraints.";
     }
     grouping otsi-mc-spectrum-config-pac {
         container spectrum {
             uses frequency-range;
             description "none";
+        }
+        leaf center-frequency-offset {
+            type uint64;
+            description "Offset where it is expected to find the signal in the MC.
+                (unidimensional in Hz).";
         }
         container center-frequency-constraint {
             uses frequency-constraint;
@@ -462,24 +449,28 @@ module tapi-photonic-media {
             uses frequency-constraint;
             description "none";
         }
-        leaf center-frequency-offset {
-            type uint64;
-            description "Offset where it is expected to find the signal in the MC.
-                (unidimensional in MHz).";
-        }
         container power-management-config-pac {
             uses power-management-config-pac;
             description "none";
         }
         uses tapi-common:local-class;
-        description "OtsiMcBwConfigPac, OtsiMcConfigPac and OtsiMcFreqConfigPac are mutually exclusive.";
+        description "OTSiMC configuration based on spectrum specification.";
     }
-    grouping otsi-mc-capacity-config-pac {
-        container capacity {
-            uses tapi-common:capacity-value;
-            description "none";
+    grouping otsi-mc-bandwidth-config-pac {
+        leaf spectrum-bandwidth {
+            type uint64;
+            description "Unidimensional in Hz.";
+        }
+        leaf center-frequency-offset {
+            type uint64;
+            description "Offset where it is expected to find the signal in the MC.
+                (unidimensional in Hz).";
         }
         container center-frequency-constraint {
+            uses frequency-constraint;
+            description "none";
+        }
+        container edge-frequency-constraint {
             uses frequency-constraint;
             description "none";
         }
@@ -487,30 +478,17 @@ module tapi-photonic-media {
             type uint64;
             description "none";
         }
-        container edge-frequency-constraint {
-            uses frequency-constraint;
-            description "none";
-        }
-        leaf spectrum-bandwidth {
-            type uint64;
-            description "Unidimensional in MHz.";
-        }
-        leaf center-frequency-offset {
-            type uint64;
-            description "Offset where it is expected to find the signal in the MC.
-                (unidimensional in MHz).";
-        }
         container power-management-config-pac {
             uses power-management-config-pac;
             description "none";
         }
         uses tapi-common:local-class;
-        description "OtsiMcBwConfigPac, OtsiMcConfigPac and OtsiMcFreqConfigPac are mutually exclusive.";
+        description "OTSiMC configuration based on bandwidth, with the actual position in the spectrum is delegated to the server controller.";
     }
     grouping otsi-mcg-connectivity-service-end-point-spec {
-        list otsi-mc-capacity-config-pac {
+        list otsi-mc-bandwidth-config-pac {
             key 'local-id';
-            uses otsi-mc-capacity-config-pac;
+            uses otsi-mc-bandwidth-config-pac;
             description "none";
         }
         list otsi-mc-spectrum-config-pac {
@@ -529,27 +507,24 @@ module tapi-photonic-media {
             description "none";
         }
         description "OTSiMCG CSEP is provisioned also in case OTSiMC layer is not explicitly represented on Resource side, i.e. no OTSiMC Connections and CEPs are instantiated.
-            OTSiMCG provisioning scenarios: analogous to McgConnectivityServiceEndPointSpec provisioning scenarios.";
+            OTSiMCG provisioning scenarios: are analogous to MCG provisioning scenarios.
+            OtsiMcBandwidthConfigPac, OtsiMcSpectrumConfigPac and OtsiMcFrequencyConfigPac are mutually exclusive.";
     }
-    grouping mc-capacity-config-pac {
-        container capacity {
-            uses tapi-common:capacity-value;
-            description "none";
+    grouping mc-bandwidth-config-pac {
+        leaf spectrum-bandwidth {
+            type uint64;
+            description "Unidimensional in Hz.";
         }
         container edge-frequency-constraint {
             uses frequency-constraint;
             description "none";
-        }
-        leaf spectrum-bandwidth {
-            type uint64;
-            description "Unidimensional in MHz.";
         }
         container power-management-config-pac {
             uses power-management-config-pac;
             description "none";
         }
         uses tapi-common:local-class;
-        description "MediaChannelConfigPac and MediaChannelBwConfigPac are mutually exclusive.";
+        description "MC configuration based on bandwidth, with the actual position in the spectrum is delegated to the server controller.";
     }
     grouping mcg-connectivity-service-end-point-spec {
         leaf number-of-mc {
@@ -562,17 +537,17 @@ module tapi-photonic-media {
             uses mc-spectrum-config-pac;
             description "none";
         }
-        list mc-capacity-config-pac {
+        list mc-bandwidth-config-pac {
             key 'local-id';
-            uses mc-capacity-config-pac;
+            uses mc-bandwidth-config-pac;
             description "none";
         }
         description "MCG provisioning scenarios:
             1) In case of MCG provisioning based on multiple SIPs (e.g. more add/drop ports each one potentially supporting a single OTSi), to maintain the rule that a CSEP is supported by an unique SIP,
-            then the McgConnectivityServiceEndPointSpec CSEP instance does not include any package, but refers to the MediaChannelConnectivityServiceEndPointSpec CSEP instances (one per each OMS Link) through the CSEPHasAssembledCSEPs  association.
-            The MediaChannelConnectivityServiceEndPointSpec CSEP instance(s) include its(their) Media Channel Config Pacs.
-            2) In case of MCG provisioning based on single SIP, then the model is compacted into only one CSEP instance, augmented by McgConnectivityServiceEndPointSpec, which directly composes one or more Media Channel Config Pacs.
-            MediaChannelConfigPac and MediaChannelBwConfigPac are mutually exclusive.";
+            then the unique/top CSEP instance (with a MC LPC including McgConnectivityServiceEndPointSpec with specified only the number of MCs) refers to
+            the CSEP instances (one per each MEDIA Link, each one with a MC LPC including McgConnectivityServiceEndPointSpec composing only one MC config pac), through the CSEPHasAssembledCSEPs association.
+            2) In case of MCG provisioning based on single SIP, then the model is compacted into only one CSEP instance, with a MC LPC including McgConnectivityServiceEndPointSpec, which composes one or more MC config pacs).
+            McSpectrumConfigPac and McBandwidthConfigPac are mutually exclusive.";
     }
     grouping otsia-csep-ttp-spec {
         list otsi-config {
@@ -598,23 +573,12 @@ module tapi-photonic-media {
             description "Allows to configure the lower power threshold on whole Assembly scope.";
         }
         description "OTU/OTSiG provisioning scenarios:
-            1) In case of OTU/OTSiG provisioning based on multiple SIPs (e.g. more line ports each one supporting a single OTSi), to maintain the rule that a CSEP is supported by an unique SIP, then the Assembly model is moved up to TapiOdu OTU+OTSiA CSEP instance.
-            This OTU+OTSiA CSEP instance (CSEP augmented by OtuConnectivityServiceEndPointSpec + OtuOtsiaCsepTtpPac) will refer to the OTSi CSEP instances (CSEPs augmented by OtsiConnectivityServiceEndPointSpec) through CSEPHasAssembledCSEPs association.
-            1.1) Alternative model is based on ServerConstraint package of CSEP. In this case, the OTU+OTSiA CSEP instance
-            a) is augmented by the OtuConnectivityServiceEndPointSpec,
-            b) includes / composes the ServerConstraint package, which is augmented by the OtsiaCsepTtpPac.
-            1.2) Alternative model based on OTU+OTSiA CSEP instance being directly augmented by both OtuConnectivityServiceEndPointSpec and OtsiaCsepTtpPac.
-            2) In case of OTU/OTSiG provisioning based on a single SIP, then the Assembly model is moved down to the 'server' CSEP instance.
-            In other words, the OTU CSEP instance (augmented by OtuConnectivityServiceEndPointSpec), refers to a 'server' CSEP instance (through CSEPHasServerCSEP association) augmented by OtsiaCsepTtpPac, which directly composes one or more OtsiCommonConfigPac.
-            2.1) Alternative model is based on ServerConstraint package of CSEP, see case 1.1) above, with OtsiaCsepTtpPac which directly composes one or more OtsiCommonConfigPac.
-            2.2) See case 1.2) above, with OtsiaCsepTtpPac which directly composes one or more OtsiCommonConfigPac.";
+            1) In case of ODU/OTU/OTSiG provisioning based on multiple SIPs (e.g. more line ports each one potentially supporting a single OTSi), to maintain the rule that a CSEP is supported by an unique SIP,
+            then the unique/top CSEP instance (with an OTSiMC LPC including OtsiaCsepTtpSpec with specified only the number of OTSis) refers to
+            the CSEP instances (one per each MEDIA Link, each one with an OTSiMC LPC including OtsiaCsepTtpSpec composing only one OTSi config pac), through the CSEPHasAssembledCSEPs association.
+            2) In case of ODU/OTU/OTSiG provisioning based on single SIP, then the model is compacted into only one CSEP instance, with an OTSiMC LPC including OtsiaCsepTtpSpec which composes one or more OTSi config pacs).";
     }
     grouping otsi-mc-connection-end-point-spec {
-        container otsi-mc-properties-pac {
-            config false;
-            uses otsi-mc-properties-pac;
-            description "none";
-        }
         container otsi-termination-pac {
             config false;
             uses otsi-termination-pac;
@@ -630,16 +594,6 @@ module tapi-photonic-media {
             uses power-measurement-pac;
             description "none";
         }
-        description "none";
-    }
-    grouping otsi-mc-properties-pac {
-        leaf central-frequency {
-            type uint64;
-            config false;
-            description "The central frequency of the OTSi. It is the oscillation frequency of the corresponding electromagnetic wave.
-                Measured in MHz.";
-        }
-        uses tapi-common:local-class;
         description "none";
     }
     grouping ots-media-connection-end-point-spec {
@@ -693,9 +647,14 @@ module tapi-photonic-media {
             uses central-frequency;
             description "The central frequency of the laser. It is the oscillation frequency of the corresponding electromagnetic wave";
         }
+        leaf center-frequency-offset {
+            type uint64;
+            description "Offset where it is expected to find the signal in the MC.
+                (unidimensional in Hz).";
+        }
         leaf spectrum-bandwidth {
             type uint64;
-            description "Unidimensional in MHz";
+            description "Unidimensional in Hz";
         }
         container center-frequency-constraint {
             uses frequency-constraint;
@@ -705,17 +664,12 @@ module tapi-photonic-media {
             uses frequency-constraint;
             description "none";
         }
-        leaf center-frequency-offset {
-            type uint64;
-            description "Offset where it is expected to find the signal in the MC.
-                (unidimensional in MHz).";
-        }
         container power-management-config-pac {
             uses power-management-config-pac;
             description "none";
         }
         uses tapi-common:local-class;
-        description "OtsiMcBwConfigPac, OtsiMcConfigPac and OtsiMcFreqConfigPac are mutually exclusive.";
+        description "OTSiMC configuration based on central frequency specification.";
     }
     grouping otsi-config {
         leaf central-frequency {
@@ -732,7 +686,7 @@ module tapi-photonic-media {
             description "none";
         }
         uses tapi-common:local-class;
-        description "none";
+        description "Configuration parameters regarding the single O/E/O transmission function.";
     }
     grouping mc-connection-end-point-spec {
         container spectrum-pac {
@@ -743,12 +697,6 @@ module tapi-photonic-media {
         container power-measurement-pac {
             config false;
             uses power-measurement-pac;
-            description "none";
-        }
-        list otsi-mc-properties-pac {
-            key 'local-id';
-            config false;
-            uses otsi-mc-properties-pac;
             description "none";
         }
         description "none";
@@ -769,7 +717,7 @@ module tapi-photonic-media {
         }
         description "Describes whether the transponder can be used in an Optical Tunnel termination configuration or in a 3R configuration (or both).";
     }
-    grouping transceiver-standard-profile {
+    grouping transceiver-standard {
         leaf application-code {
             type standard-application-mode;
             config false;
@@ -780,7 +728,7 @@ module tapi-photonic-media {
         }
         description "none";
     }
-    grouping transceiver-organizational-profile {
+    grouping transceiver-organizational {
         leaf operational-mode {
             type string;
             config false;
@@ -793,17 +741,17 @@ module tapi-photonic-media {
             description "ietf-layer0-types-ext.yang:
                 Vendor/organization identifier that uses a private mode out of already defined in G.698.2 ITU-T application-code (RFC 7581).";
         }
-        container common-organiz-explicit {
+        container common-organizational-explicit {
             config false;
-            uses common-organiz-explicit;
+            uses common-organizational-explicit;
             description "none";
         }
         description "none";
     }
-    grouping transceiver-explicit-profile {
-        container common-organiz-explicit {
+    grouping transceiver-explicit {
+        container common-organizational-explicit {
             config false;
-            uses common-organiz-explicit;
+            uses common-organizational-explicit;
             description "none";
         }
         container common-explicit {
@@ -811,19 +759,19 @@ module tapi-photonic-media {
             uses common-explicit;
             description "none";
         }
-        container supported-standard-application-codes {
+        container supported-standard-application-code {
             uses tapi-common:profile-ref;
             config false;
             description "none";
         }
-        container supported-organizational-modes {
+        container supported-organizational-mode {
             uses tapi-common:profile-ref;
             config false;
             description "none";
         }
         description "none";
     }
-    grouping common-organiz-explicit {
+    grouping common-organizational-explicit {
         container frequency-range {
             config false;
             uses frequency-range;
@@ -833,7 +781,7 @@ module tapi-photonic-media {
             type uint64;
             config false;
             description "This parameter indicates the transmitter tunability grid as the distance between two adjacent carrier frequencies of the transmitter tuning range.
-                Measured in MHz.";
+                Measured in Hz.";
         }
         leaf tx-channel-power-min {
             type decimal64 {
@@ -959,13 +907,11 @@ module tapi-photonic-media {
                 If=1 the signal exceeds the 50% of the baud rate at each side.";
         }
         leaf min-carrier-spacing {
-            type decimal64 {
-                fraction-digits 7;
-            }
+            type uint64;
             config false;
             description "This attribute specifies the minimum nominal difference between the carrier frequencies of two homogeneous OTSis (which have the same optical characteristics but the central frequencies) such that if they are placed next to each other the interference due to spectrum overlap between them can be considered negligible. 
                 In case of heterogeneous OTSi it is up to path computation engine to determine the minimum distance between the carrier frequency of the two adjacent OTSi.
-                Measured in GHz.";
+                Measured in Hz.";
         }
         leaf fec-type {
             type fec-type;
@@ -1084,129 +1030,7 @@ module tapi-photonic-media {
         }
         description "none";
     }
-    grouping roadm-express-path-profile {
-        container frequency-range {
-            config false;
-            uses frequency-range;
-            description "none";
-        }
-        leaf roadm-pmd {
-            type decimal64 {
-                fraction-digits 7;
-            }
-            config false;
-            description "Polarization Mode Dispersion, in picoseconds per square root kilometer.";
-        }
-        leaf roadm-cd {
-            type decimal64 {
-                fraction-digits 7;
-            }
-            config false;
-            description "Chromatic Dispersion in ps/nm (picoseconds per nanometer).";
-        }
-        leaf roadm-pdl {
-            type decimal64 {
-                fraction-digits 7;
-            }
-            config false;
-            description "Polarization Dependent Loss, in dB.";
-        }
-        leaf roadm-inband-crosstalk {
-            type decimal64 {
-                fraction-digits 7;
-            }
-            config false;
-            description "In-band crosstalk, or coherent crosstalk, can occur in components that can have multiple same wavelength inputs with the inputs either routed to different output ports, or all but 1 blocked.
-                Measured in dB.";
-        }
-        leaf roadm-maxloss {
-            type decimal64 {
-                fraction-digits 7;
-            }
-            config false;
-            description "This is the maximum expected add path loss from the ROADM ingress to the ROADM egress assuming no additional add path loss is added.
-                Measured in dB.";
-        }
-        description "none";
-    }
-    grouping roadm-add-path-profile {
-        container frequency-range {
-            config false;
-            uses frequency-range;
-            description "none";
-        }
-        leaf roadm-pmd {
-            type decimal64 {
-                fraction-digits 7;
-            }
-            config false;
-            description "Polarization Mode Dispersion, in picoseconds per square root kilometer.";
-        }
-        leaf roadm-cd {
-            type decimal64 {
-                fraction-digits 7;
-            }
-            config false;
-            description "Chromatic Dispersion in ps/nm (picoseconds per nanometer).";
-        }
-        leaf roadm-pdl {
-            type decimal64 {
-                fraction-digits 7;
-            }
-            config false;
-            description "Polarization Dependent Loss, in dB.";
-        }
-        leaf roadm-inband-crosstalk {
-            type decimal64 {
-                fraction-digits 7;
-            }
-            config false;
-            description "In-band crosstalk, or coherent crosstalk, can occur in components that can have multiple same wavelength inputs, with the inputs either routed to different output ports, or all but 1 blocked.
-                In the case of add path it is the total of the add block + egress WSS crosstalk contributions.
-                Measured in dB.";
-        }
-        leaf roadm-maxloss {
-            type decimal64 {
-                fraction-digits 7;
-            }
-            config false;
-            description "This is the maximum expected add path loss from the add/drop port input to the ROADM egress, assuming no additional add path loss is added.
-                This is used to establish the minimum required transponder output power required to hit the ROADM egress target power levels and preventing to hit the WSS attenuation limits.
-                If the add path contains an internal amplifier this loss value should be based on worst case expected amplifier gain due to ripple or gain uncertainty.
-                Measured in dB.";
-        }
-        leaf roadm-pmax {
-            type decimal64 {
-                fraction-digits 7;
-            }
-            config false;
-            description "This is the maximum (per carrier) power level permitted at the add block input ports, that can be handled by the ROADM node.
-                This may reflect either add amplifier power contraints or WSS adjustment limits.
-                Higher power transponders would need to have their launch power reduced to this value or lower.
-                Measured in dBm.";
-        }
-        leaf roadm-osnr {
-            type decimal64 {
-                fraction-digits 7;
-            }
-            config false;
-            description "Optical Signal-to-Noise Ratio (OSNR).
-                If the add path contains the ability to adjust the carrier power levels into an add path amplifier (if present) to a target value, this reflects the OSNR contribution of the add amplifier assuming this target value is obtained.
-                The worst case OSNR based on the input power and NF calculation method, and this value, should be used (if both are defined).
-                Measured in dB@0.1nm (over 0.1 nm resolution bandwidth).";
-        }
-        leaf roadm-noise-figure {
-            type decimal64 {
-                fraction-digits 7;
-            }
-            config false;
-            description "Noise Figure. If the add path contains an amplifier, this is the noise figure of that amplifier inferred to the add port. 
-                This permits add path OSNR calculation based on the input power levels to the add block without knowing the ROADM path losses to the add amplifier. 
-                Measured in dB.";
-        }
-        description "none";
-    }
-    grouping roadm-drop-path-profile {
+    grouping connectivity-impairment-profile {
         container frequency-range {
             config false;
             uses frequency-range;
@@ -1247,7 +1071,12 @@ module tapi-photonic-media {
                 fraction-digits 7;
             }
             config false;
-            description "The net loss from the ROADM input,to the output of the drop block. 
+            description "Add path / Sink direction:
+                This is the maximum expected add path loss from the add/drop port input to the ROADM egress, assuming no additional add path loss is added.
+                This is used to establish the minimum required transponder output power required to hit the ROADM egress target power levels and preventing to hit the WSS attenuation limits.
+                If the add path contains an internal amplifier this loss value should be based on worst case expected amplifier gain due to ripple or gain uncertainty.
+                Drop path / Source direction:
+                The net loss from the ROADM input,to the output of the drop block. 
                 If ROADM ingress to drop path includes an amplifier, the amplifier gain reduces the net loss. 
                 This is before any additional drop path attenuation that may be required due to drop amplifier power contraints. 
                 The max value correspond to worst case expected loss, including amplifier gain ripple or uncertainty. 
@@ -1290,7 +1119,12 @@ module tapi-photonic-media {
                 fraction-digits 7;
             }
             config false;
-            description "If the drop path has additional loss that is added, for example, to hit target power levels into a drop path amplifier, or simply, to reduce the power of a strong carrier (due to ripple,for example), then the use of the ROADM input power levels and the above drop losses is not appropriate. 
+            description "Add path / Sink direction:
+                This is the maximum (per carrier) power level permitted at the add block input ports, that can be handled by the ROADM node.
+                This may reflect either add amplifier power contraints or WSS adjustment limits.
+                Higher power transponders would need to have their launch power reduced to this value or lower.
+                Drop pah / Source direction:
+                If the drop path has additional loss that is added, for example, to hit target power levels into a drop path amplifier, or simply, to reduce the power of a strong carrier (due to ripple,for example), then the use of the ROADM input power levels and the above drop losses is not appropriate. 
                 This parameter corresponds to the best case per carrier power levels expected at the output of the drop block.
                 Measured in dBm.";
         }
@@ -1308,7 +1142,11 @@ module tapi-photonic-media {
                 fraction-digits 7;
             }
             config false;
-            description "Optical Signal-to-Noise Ratio (OSNR). 
+            description "Optical Signal-to-Noise Ratio (OSNR).
+                Add path / Sink direction:
+                If the add path contains the ability to adjust the carrier power levels into an add path amplifier (if present) to a target value, this reflects the OSNR contribution of the add amplifier assuming this target value is obtained.
+                The worst case OSNR based on the input power and NF calculation method, and this value, should be used (if both are defined).
+                Drop path / Source direction:
                 Expected OSNR contribution of the drop path amplifier (if present) for the case of additional drop path loss (before this amplifier) in order to hit a target power level (per carrier). 
                 If both,
                 - the OSNR based on the ROADM input power level (Pcarrier = Pref+10Log(carrier-baudrate/ref-baud) + delta-power) and the input inferred NF(NF.drop), and 
@@ -1321,13 +1159,16 @@ module tapi-photonic-media {
                 fraction-digits 7;
             }
             config false;
-            description "Drop path Noise Figure. 
+            description "Add path / Sink direction:
+                If the add path contains an amplifier, this is the noise figure of that amplifier inferred to the add port. 
+                This permits add path OSNR calculation based on the input power levels to the add block without knowing the ROADM path losses to the add amplifier. 
+                Drop path / Source direction:
                 If the drop path contains an amplifier, this is the noise figure of that amplifier, inferred to the ROADM ingress port. 
                 This permits to determine amplifier OSNR contribution without having to specify the ROADM node’s losses to that amplifier. 
                 This applies for the case of no additional drop path loss, before the amplifier, in order to reduce the power of the carriers to a target value.
                 Measured in dB.";
         }
-        description "none";
+        description "This profile centralizes all the parameters of CCAMP ROADM add/drop/express path impairment profiles.";
     }
     grouping geolocation {
         leaf altitude {
@@ -1355,35 +1196,6 @@ module tapi-photonic-media {
                 Range: '-180..180'";
         }
         description "GPS location.";
-    }
-    grouping fixed-gain-amplification-profile {
-        container frequency-range {
-            config false;
-            uses frequency-range;
-            description "none";
-        }
-        container gain-range {
-            config false;
-            uses gain-range;
-            description "none";
-        }
-        leaf noise-figure {
-            type decimal64 {
-                fraction-digits 7;
-            }
-            config false;
-            description "Noise figure of the amplifier.
-                Measured in dB.";
-        }
-        leaf p-max {
-            type decimal64 {
-                fraction-digits 7;
-            }
-            config false;
-            description "Maximum output power.
-                Measured in dBm.";
-        }
-        description "none";
     }
     grouping amplification {
         container frequency-range {
@@ -1483,7 +1295,7 @@ module tapi-photonic-media {
             description "Maximum rx optical power for all the channels received at the interface.
                 Measured in dBm.";
         }
-        description "none";
+        description "This pac includes power management constraints.";
     }
     grouping ots-fiber-span-impairments {
         leaf fiber-type-variety {
@@ -1618,9 +1430,9 @@ module tapi-photonic-media {
             uses ots-fiber-span-impairments;
             description "none";
         }
-        description "none";
+        description "An ImpairmentRouteEntry can be exclusively either an OtsConcentratedLoss or an OtsFiberSpanImpairments.";
     }
-    grouping variable-gain-amplification-profile {
+    grouping amplification-profile {
         container frequency-range {
             config false;
             uses frequency-range;
@@ -1631,23 +1443,13 @@ module tapi-photonic-media {
             uses gain-range;
             description "none";
         }
-        leaf noise-figure-min {
-            type decimal64 {
-                fraction-digits 7;
-            }
+        container noise-figure-range {
             config false;
-            description "Min noise figure of the amplifier.
+            uses noise-figure-range;
+            description "Noise figure range of the amplifier.
                 Measured in dB.";
         }
-        leaf noise-figure-max {
-            type decimal64 {
-                fraction-digits 7;
-            }
-            config false;
-            description "Max noise figure of the amplifier.
-                Measured in dB.";
-        }
-        leaf p-max {
+        leaf max-power {
             type decimal64 {
                 fraction-digits 7;
             }
@@ -1655,50 +1457,26 @@ module tapi-photonic-media {
             description "Maximum output power.
                 Measured in dBm.";
         }
+        container extended-gain-range {
+            uses gain-range;
+            description "none";
+        }
         description "none";
     }
     grouping transceiver-profile {
         container transceiver-standard-profile {
-            uses transceiver-standard-profile;
+            uses transceiver-standard;
             description "none";
         }
         container transceiver-organizational-profile {
-            uses transceiver-organizational-profile;
+            uses transceiver-organizational;
             description "none";
         }
         container transceiver-explicit-profile {
-            uses transceiver-explicit-profile;
+            uses transceiver-explicit;
             description "none";
         }
-        description "none";
-    }
-    grouping roadm-path-profile {
-        container roadm-add-path-profile {
-            uses roadm-add-path-profile;
-            description "none";
-        }
-        container roadm-drop-path-profile {
-            uses roadm-drop-path-profile;
-            description "none";
-        }
-        container roadm-express-path-profile {
-            uses roadm-express-path-profile;
-            description "none";
-        }
-        description "none";
-    }
-    grouping amplification-profile {
-        container fixed-gain-amplification-profile {
-            config false;
-            uses fixed-gain-amplification-profile;
-            description "none";
-        }
-        container variable-gain-amplification-profile {
-            config false;
-            uses variable-gain-amplification-profile;
-            description "none";
-        }
-        description "none";
+        description "The referenced specific profiles are mutually exclusive.";
     }
 
     /**************************
@@ -1839,17 +1617,6 @@ module tapi-photonic-media {
         base TRANSCEIVER_TERMINATION_TYPE;
         description "The transponder can be configure to be used either in an Optical Tunnel termination configuration or in a 3R configuration, bidirectional.";
     }
-    identity AMPLIFICATION_TYPE_VARIETY {
-        description "none";
-    }
-    identity AMPLIFICATION_TYPE_VARIETY_FIXED_GAIN {
-        base AMPLIFICATION_TYPE_VARIETY;
-        description "none";
-    }
-    identity AMPLIFICATION_TYPE_VARIETY_VARIABLE_GAIN {
-        base AMPLIFICATION_TYPE_VARIETY;
-        description "none";
-    }
     identity LINE_CODING {
         description "none";
     }
@@ -1892,72 +1659,6 @@ module tapi-photonic-media {
         base FEC_TYPE;
         description "Golay error correction.";
     }
-    identity ROADM_FORWARDING_RULE {
-        description "none";
-    }
-    identity ROADM_FORWARDING_RULE_ADD_DROP_IMPAIRMENT {
-        base ROADM_FORWARDING_RULE;
-        description "none";
-    }
-    identity ROADM_FORWARDING_RULE_DEGREE_IMPAIRMENT {
-        base ROADM_FORWARDING_RULE;
-        description "none";
-    }
-    identity PHO_ALARM_CONDITION_NAME {
-        description "none";
-    }
-    identity PHO_ALARM_CONDITION_NAME_BDI {
-        base PHO_ALARM_CONDITION_NAME;
-        description "none";
-    }
-    identity PHO_ALARM_CONDITION_NAME_DEG {
-        base PHO_ALARM_CONDITION_NAME;
-        description "none";
-    }
-    identity PHO_ALARM_CONDITION_NAME_RAI {
-        base PHO_ALARM_CONDITION_NAME;
-        description "none";
-    }
-    identity PHO_ALARM_CONDITION_NAME_LOS_O {
-        base PHO_ALARM_CONDITION_NAME;
-        description "none";
-    }
-    identity PHO_ALARM_CONDITION_NAME_GAIN_LOW {
-        base PHO_ALARM_CONDITION_NAME;
-        description "none";
-    }
-    identity PHO_ALARM_CONDITION_NAME_GAIN_HIGH {
-        base PHO_ALARM_CONDITION_NAME;
-        description "none";
-    }
-    identity PHO_ALARM_CONDITION_NAME_IN_PWR_HIGH {
-        base PHO_ALARM_CONDITION_NAME;
-        description "none";
-    }
-    identity PHO_ALARM_CONDITION_NAME_IN_PWR_LOW {
-        base PHO_ALARM_CONDITION_NAME;
-        description "none";
-    }
-    identity PHO_ALARM_CONDITION_NAME_OUT_PWR_HIGH {
-        base PHO_ALARM_CONDITION_NAME;
-        description "none";
-    }
-    identity PHO_ALARM_CONDITION_NAME_OUT_PWR_LOW {
-        base PHO_ALARM_CONDITION_NAME;
-        description "none";
-    }
-    identity PHO_ALARM_CONDITION_NAME_LASER_SHUT_DOWN {
-        base PHO_ALARM_CONDITION_NAME;
-        description "none";
-    }
-    identity PHO_ALARM_CONDITION_NAME_BDI_P {
-        base PHO_ALARM_CONDITION_NAME;
-        description "none";
-    }
-    identity PHO_ALARM_CONDITION_NAME_BDI_O {
-        base PHO_ALARM_CONDITION_NAME;
-        description "none";
-    }
     grouping application-identifier {
         leaf application-identifier-type {
             type standard-application-mode;
@@ -1982,7 +1683,7 @@ module tapi-photonic-media {
         }
         leaf central-frequency {
             type uint64;
-            description "The central frequency of the laser specified in MHz. It is the oscillation frequency of the corresponding electromagnetic wave. ";
+            description "The central frequency of the laser specified in Hz. It is the oscillation frequency of the corresponding electromagnetic wave. ";
         }
         description "This data-type holds the central frequency information as well frequency constraints in terms of GridType ( FIXED grid (DWDM or CWDM) or FLEX grid) and AdjustmentGranularity.";
     }
@@ -2053,17 +1754,19 @@ module tapi-photonic-media {
     grouping spectrum-band {
         leaf upper-frequency {
             type uint64;
-            description "The upper frequency bound of the media channel spectrum specified in MHz.";
+            description "The upper frequency bound of the spectrum specified in Hz.";
         }
         leaf lower-frequency {
             type uint64;
-            description "The lower frequency bound of the media channel spectrum specified in MHz.";
+            description "The lower frequency bound of the spectrum specified in Hz.";
         }
         container frequency-constraint {
             uses frequency-constraint;
-            description "none";
+            description "The combination of adjustment granularity and grid type informs about either ITU-T fixed or flexible grid capability.
+                E.g. if grid type = DWDM then the adjustment granularity informs about the fixed slot width.
+                E.g. if grid type = FLEX then the adjustment granularity informs about the minimum slot width (two times the adjustment granularity value).";
         }
-        description "This data-type holds the spectrum information in termsof upper/lower frequency directly or optionally the information to determin this in terms of the nominal central frequency and spectral width for a FIXED grid (DWDM or CWDM) and FLEX grid type systems.";
+        description "This data-type holds the spectrum information in terms of upper/lower frequency and optionally the information of frequency constraints.";
     }
     typedef standard-modulation-technique {
         type enumeration {
@@ -2204,24 +1907,6 @@ module tapi-photonic-media {
         }
         description "none";
     }
-    grouping central-frequency-band {
-        leaf lower-central-frequency {
-            type uint64;
-            description "The lower central frequency that can be tuned in the laser specified in MHz.
-                It is the oscillation frequency of the corresponding electromagnetic wave. ";
-        }
-        leaf upper-central-frequency {
-            type uint64;
-            description "The upper central frequency that can be tuned in the laser specified in MHz.
-                It is the oscillation frequency of the corresponding electromagnetic wave. ";
-        }
-        container frequency-constraint {
-            uses frequency-constraint;
-            description "none";
-        }
-        description "This data-type represents a range of central frequency spectrum band specified as lower and upper bounds, inclusive of the bound values.
-            It also holds frequency constraints in terms of GridType ( FIXED grid (DWDM or CWDM) or FLEX grid) and AdjustmentGranularity.";
-    }
     grouping modulation-technique {
         leaf standard-modulation-technique {
             type standard-modulation-technique;
@@ -2257,17 +1942,11 @@ module tapi-photonic-media {
     grouping frequency-range {
         leaf upper-frequency {
             type uint64;
-            description "The upper frequency bound of the frequency range specified in MHz.";
+            description "The upper frequency bound of the frequency range specified in Hz.";
         }
         leaf lower-frequency {
             type uint64;
-            description "The lower frequency bound of the frequency range specified in MHz.";
-        }
-        description "none";
-    }
-    typedef amplification-type-variety {
-        type identityref {
-            base AMPLIFICATION_TYPE_VARIETY;
+            description "The lower frequency bound of the frequency range specified in Hz.";
         }
         description "none";
     }
@@ -2324,15 +2003,18 @@ module tapi-photonic-media {
         }
         description "none";
     }
-    typedef roadm-forwarding-rule {
-        type identityref {
-            base ROADM_FORWARDING_RULE;
+    grouping noise-figure-range {
+        leaf min-noise-figure {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            description "none";
         }
-        description "none";
-    }
-    typedef pho-alarm-condition-name {
-        type identityref {
-            base PHO_ALARM_CONDITION_NAME;
+        leaf max-noise-figure {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            description "none";
         }
         description "none";
     }
