@@ -609,6 +609,11 @@ module tapi-photonic-media {
             uses spectrum-pac;
             description "Mandatory if the CEP is not terminated, optional if terminated.";
         }
+        container grid-pac {
+            config false;
+            uses grid-pac;
+            description "none";
+        }
         container power-measurement-pac {
             config false;
             uses power-measurement-pac;
@@ -617,21 +622,27 @@ module tapi-photonic-media {
         description "none";
     }
     grouping ots-media-connection-end-point-spec {
-        container power-measurement-pac {
-            config false;
-            uses power-measurement-pac;
-            description "none";
-        }
         list spectrum-pac {
             key 'local-id';
             config false;
             uses spectrum-pac;
             description "none";
         }
+        list grid-pac {
+            key 'local-id';
+            config false;
+            uses grid-pac;
+            description "none";
+        }
         list ots-impairments {
             config false;
             max-elements 2;
             uses ots-impairments;
+            description "none";
+        }
+        container power-measurement-pac {
+            config false;
+            uses power-measurement-pac;
             description "none";
         }
         description "none";
@@ -643,9 +654,10 @@ module tapi-photonic-media {
             uses spectrum-pac;
             description "none";
         }
-        container power-measurement-pac {
+        list grid-pac {
+            key 'local-id';
             config false;
-            uses power-measurement-pac;
+            uses grid-pac;
             description "none";
         }
         list amplification {
@@ -658,6 +670,11 @@ module tapi-photonic-media {
             config false;
             max-elements 2;
             uses oms-general-optical-params;
+            description "none";
+        }
+        container power-measurement-pac {
+            config false;
+            uses power-measurement-pac;
             description "none";
         }
         description "none";
@@ -716,6 +733,12 @@ module tapi-photonic-media {
         container spectrum-pac {
             config false;
             uses spectrum-pac;
+            description "none";
+        }
+        list grid-pac {
+            key 'local-id';
+            config false;
+            uses grid-pac;
             description "none";
         }
         container power-measurement-pac {
@@ -1509,12 +1532,12 @@ module tapi-photonic-media {
             The flexi-grid-frequency-slot (RFC 9093) defines the nominal central frequency and its slot width in terms of N, M.";
     }
     grouping otsi-mc-grid-config-pac {
-        container power-management-config-pac {
-            uses power-management-config-pac;
-            description "none";
-        }
         container grid-config-pac {
             uses grid-config-pac;
+            description "none";
+        }
+        container power-management-config-pac {
+            uses power-management-config-pac;
             description "none";
         }
         uses tapi-common:local-class;
@@ -1548,6 +1571,40 @@ module tapi-photonic-media {
             type flexi-spacing;
             description "none";
         }
+        description "none";
+    }
+    grouping grid-pac {
+        leaf n {
+            type uint64;
+            config false;
+            description "RFC 9093:
+                The given value 'N' is used to determine the nominal central frequency.
+                The nominal central frequency, 'f', is defined by:
+                - f = 193100.000 GHz + N x channel spacing (measured in GHz),
+                where 193100.000 GHz (193.100000 THz) is the ITU-T 'anchor frequency' for transmission over the DWDM grid,
+                and where 'channel spacing' is defined by the flexi-ch-spc-type.
+                Note that the term 'channel spacing' can be substituted by the term 'nominal central frequency granularity' defined in clause 8 of ITU-T G.694.1.";
+        }
+        leaf m {
+            type uint64;
+            config false;
+            description "RFC 9093:
+                The given value 'M' is used to determine the slot width.
+                A slot width is defined by:
+                - slot width = M x SWG (measured in GHz),
+                where SWG (Slot Width Granularity) is defined by the flexi-slot-width-granularity.";
+        }
+        leaf flexi-ch-spc-type {
+            type flexi-spacing;
+            config false;
+            description "none";
+        }
+        leaf flexi-slot-width-granularity {
+            type flexi-spacing;
+            config false;
+            description "none";
+        }
+        uses tapi-common:local-class;
         description "none";
     }
 

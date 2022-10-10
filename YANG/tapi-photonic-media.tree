@@ -114,6 +114,15 @@ module: tapi-photonic-media
        |  +--ro name* [value-name]
        |     +--ro value-name    string
        |     +--ro value?        string
+       +--ro grid-pac
+       |  +--ro n?                              uint64
+       |  +--ro m?                              uint64
+       |  +--ro flexi-ch-spc-type?              flexi-spacing
+       |  +--ro flexi-slot-width-granularity?   flexi-spacing
+       |  +--ro local-id?                       string
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
        +--ro power-measurement-pac
           +--ro measured-input-power
           |  +--ro total-power?              decimal64
@@ -373,6 +382,11 @@ module: tapi-photonic-media
        |     +--rw value?        string
        +--rw number-of-otsi-mc?              uint64
        +--rw otsi-mc-grid-config-pac* [local-id]
+          +--rw grid-config-pac
+          |  +--rw n?                              uint64
+          |  +--rw m?                              uint64
+          |  +--rw flexi-ch-spc-type?              flexi-spacing
+          |  +--rw flexi-slot-width-granularity?   flexi-spacing
           +--rw power-management-config-pac
           |  +--rw max-output-power
           |  |  +--rw total-power?              decimal64
@@ -386,24 +400,12 @@ module: tapi-photonic-media
           |  +--rw min-input-power
           |     +--rw total-power?              decimal64
           |     +--rw power-spectral-density?   decimal64
-          +--rw grid-config-pac
-          |  +--rw n?                              uint64
-          |  +--rw m?                              uint64
-          |  +--rw flexi-ch-spc-type?              flexi-spacing
-          |  +--rw flexi-slot-width-granularity?   flexi-spacing
           +--rw local-id                       string
           +--rw name* [value-name]
              +--rw value-name    string
              +--rw value?        string
   augment /tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point:
     +--ro ots-media-connection-end-point-spec
-       +--ro power-measurement-pac
-       |  +--ro measured-input-power
-       |  |  +--ro total-power?              decimal64
-       |  |  +--ro power-spectral-density?   decimal64
-       |  +--ro measured-output-power
-       |     +--ro total-power?              decimal64
-       |     +--ro power-spectral-density?   decimal64
        +--ro spectrum-pac* [local-id]
        |  +--ro occupied-spectrum
        |  |  +--ro upper-frequency?   uint64
@@ -412,19 +414,35 @@ module: tapi-photonic-media
        |  +--ro name* [value-name]
        |     +--ro value-name    string
        |     +--ro value?        string
+       +--ro grid-pac* [local-id]
+       |  +--ro n?                              uint64
+       |  +--ro m?                              uint64
+       |  +--ro flexi-ch-spc-type?              flexi-spacing
+       |  +--ro flexi-slot-width-granularity?   flexi-spacing
+       |  +--ro local-id                        string
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
        +--ro ots-impairments* []
-          +--ro impairment-route-entry* []
-          |  +--ro ots-concentrated-loss
-          |  |  +--ro concentrated-loss?   decimal64
-          |  +--ro ots-fiber-span-impairments
-          |     +--ro fiber-type-variety?   string
-          |     +--ro pmd?                  decimal64
-          |     +--ro length?               uint64
-          |     +--ro loss-coef?            decimal64
-          |     +--ro total-loss?           decimal64
-          |     +--ro connector-in?         decimal64
-          |     +--ro connector-out?        decimal64
-          +--ro ingress-direction?        boolean
+       |  +--ro impairment-route-entry* []
+       |  |  +--ro ots-concentrated-loss
+       |  |  |  +--ro concentrated-loss?   decimal64
+       |  |  +--ro ots-fiber-span-impairments
+       |  |     +--ro fiber-type-variety?   string
+       |  |     +--ro pmd?                  decimal64
+       |  |     +--ro length?               uint64
+       |  |     +--ro loss-coef?            decimal64
+       |  |     +--ro total-loss?           decimal64
+       |  |     +--ro connector-in?         decimal64
+       |  |     +--ro connector-out?        decimal64
+       |  +--ro ingress-direction?        boolean
+       +--ro power-measurement-pac
+          +--ro measured-input-power
+          |  +--ro total-power?              decimal64
+          |  +--ro power-spectral-density?   decimal64
+          +--ro measured-output-power
+             +--ro total-power?              decimal64
+             +--ro power-spectral-density?   decimal64
   augment /tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point:
     +--ro oms-connection-end-point-spec
        +--ro spectrum-pac* [local-id]
@@ -435,13 +453,15 @@ module: tapi-photonic-media
        |  +--ro name* [value-name]
        |     +--ro value-name    string
        |     +--ro value?        string
-       +--ro power-measurement-pac
-       |  +--ro measured-input-power
-       |  |  +--ro total-power?              decimal64
-       |  |  +--ro power-spectral-density?   decimal64
-       |  +--ro measured-output-power
-       |     +--ro total-power?              decimal64
-       |     +--ro power-spectral-density?   decimal64
+       +--ro grid-pac* [local-id]
+       |  +--ro n?                              uint64
+       |  +--ro m?                              uint64
+       |  +--ro flexi-ch-spc-type?              flexi-spacing
+       |  +--ro flexi-slot-width-granularity?   flexi-spacing
+       |  +--ro local-id                        string
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
        +--ro amplification* [local-id]
        |  +--ro frequency-range
        |  |  +--ro upper-frequency?   uint64
@@ -471,16 +491,23 @@ module: tapi-photonic-media
        |     +--ro value-name    string
        |     +--ro value?        string
        +--ro oms-general-optical-params* []
-          +--ro frequency-range
-          |  +--ro upper-frequency?   uint64
-          |  +--ro lower-frequency?   uint64
-          +--ro ingress-direction?   boolean
-          +--ro generalized-snr?     decimal64
-          +--ro power-params
-             +--ro power-spectral-density
-             |  +--ro nominal-power-spectral-density?   decimal64
-             +--ro channel-power
-                +--ro nominal-carrier-power?   decimal64
+       |  +--ro frequency-range
+       |  |  +--ro upper-frequency?   uint64
+       |  |  +--ro lower-frequency?   uint64
+       |  +--ro ingress-direction?   boolean
+       |  +--ro generalized-snr?     decimal64
+       |  +--ro power-params
+       |     +--ro power-spectral-density
+       |     |  +--ro nominal-power-spectral-density?   decimal64
+       |     +--ro channel-power
+       |        +--ro nominal-carrier-power?   decimal64
+       +--ro power-measurement-pac
+          +--ro measured-input-power
+          |  +--ro total-power?              decimal64
+          |  +--ro power-spectral-density?   decimal64
+          +--ro measured-output-power
+             +--ro total-power?              decimal64
+             +--ro power-spectral-density?   decimal64
   augment /tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point:
     +--ro mc-connection-end-point-spec
        +--ro spectrum-pac
@@ -488,6 +515,15 @@ module: tapi-photonic-media
        |  |  +--ro upper-frequency?   uint64
        |  |  +--ro lower-frequency?   uint64
        |  +--ro local-id?            string
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
+       +--ro grid-pac* [local-id]
+       |  +--ro n?                              uint64
+       |  +--ro m?                              uint64
+       |  +--ro flexi-ch-spc-type?              flexi-spacing
+       |  +--ro flexi-slot-width-granularity?   flexi-spacing
+       |  +--ro local-id                        string
        |  +--ro name* [value-name]
        |     +--ro value-name    string
        |     +--ro value?        string
