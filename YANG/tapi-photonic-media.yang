@@ -517,9 +517,9 @@ module tapi-photonic-media {
             default "1";
             description "none";
         }
-        list otsi-mc-grid-config-pac {
+        list otsi-mc-flexi-grid-config-pac {
             key 'local-id';
-            uses otsi-mc-grid-config-pac;
+            uses otsi-mc-flexi-grid-config-pac;
             description "none";
         }
         description "OTSiMCG CSEP is provisioned also in case OTSiMC layer is not explicitly represented on Resource side, i.e. no OTSiMC Connections and CEPs are instantiated.
@@ -558,9 +558,9 @@ module tapi-photonic-media {
             uses mc-bandwidth-config-pac;
             description "none";
         }
-        list mc-grid-config-pac {
+        list mc-flexi-grid-config-pac {
             key 'local-id';
-            uses mc-grid-config-pac;
+            uses mc-flexi-grid-config-pac;
             description "none";
         }
         description "MCG provisioning scenarios:
@@ -609,9 +609,9 @@ module tapi-photonic-media {
             uses spectrum-pac;
             description "Mandatory if the CEP is not terminated, optional if terminated.";
         }
-        container grid-pac {
+        container flexi-grid-pac {
             config false;
-            uses grid-pac;
+            uses flexi-grid-pac;
             description "none";
         }
         container power-measurement-pac {
@@ -628,10 +628,10 @@ module tapi-photonic-media {
             uses spectrum-pac;
             description "none";
         }
-        list grid-pac {
+        list flexi-grid-pac {
             key 'local-id';
             config false;
-            uses grid-pac;
+            uses flexi-grid-pac;
             description "none";
         }
         list ots-impairments {
@@ -654,10 +654,10 @@ module tapi-photonic-media {
             uses spectrum-pac;
             description "none";
         }
-        list grid-pac {
+        list flexi-grid-pac {
             key 'local-id';
             config false;
-            uses grid-pac;
+            uses flexi-grid-pac;
             description "none";
         }
         list amplification {
@@ -680,14 +680,15 @@ module tapi-photonic-media {
         description "none";
     }
     grouping otsi-mc-frequency-config-pac {
-        container central-frequency {
-            uses central-frequency;
-            description "The central frequency of the laser. It is the oscillation frequency of the corresponding electromagnetic wave";
+        leaf central-frequency {
+            type uint64;
+            description "The central frequency of the laser. It is the oscillation frequency of the corresponding electromagnetic wave.
+                Measured in Hz.";
         }
         leaf center-frequency-offset {
-            type uint64;
+            type int64;
             description "Offset where it is expected to find the signal in the MC.
-                (unidimensional in Hz).";
+                (unidimensional in Hz, signed).";
         }
         leaf spectrum-bandwidth {
             type uint64;
@@ -735,10 +736,9 @@ module tapi-photonic-media {
             uses spectrum-pac;
             description "none";
         }
-        list grid-pac {
-            key 'local-id';
+        container flexi-grid-pac {
             config false;
-            uses grid-pac;
+            uses flexi-grid-pac;
             description "none";
         }
         container power-measurement-pac {
@@ -1518,22 +1518,9 @@ module tapi-photonic-media {
         }
         description "The referenced specific profiles are mutually exclusive.";
     }
-    grouping mc-grid-config-pac {
-        container power-management-config-pac {
-            uses power-management-config-pac;
-            description "none";
-        }
-        container grid-config-pac {
-            uses grid-config-pac;
-            description "none";
-        }
-        uses tapi-common:local-class;
-        description "ITU-T G.694.1 Spectral grids for WDM applications: DWDM frequency grid.
-            The flexi-grid-frequency-slot (RFC 9093) defines the nominal central frequency and its slot width in terms of N, M.";
-    }
-    grouping otsi-mc-grid-config-pac {
-        container grid-config-pac {
-            uses grid-config-pac;
+    grouping mc-flexi-grid-config-pac {
+        container flexi-grid-config-pac {
+            uses flexi-grid-config-pac;
             description "none";
         }
         container power-management-config-pac {
@@ -1544,16 +1531,30 @@ module tapi-photonic-media {
         description "ITU-T G.694.1 Spectral grids for WDM applications: DWDM frequency grid.
             The flexi-grid-frequency-slot (RFC 9093) defines the nominal central frequency and its slot width in terms of N, M.";
     }
-    grouping grid-config-pac {
+    grouping otsi-mc-flexi-grid-config-pac {
+        container flexi-grid-config-pac {
+            uses flexi-grid-config-pac;
+            description "none";
+        }
+        container power-management-config-pac {
+            uses power-management-config-pac;
+            description "none";
+        }
+        uses tapi-common:local-class;
+        description "ITU-T G.694.1 Spectral grids for WDM applications: DWDM frequency grid.
+            The flexi-grid-frequency-slot (RFC 9093) defines the nominal central frequency and its slot width in terms of N, M.";
+    }
+    grouping flexi-grid-config-pac {
         leaf n {
-            type uint64;
+            type int64;
             description "RFC 9093:
                 The given value 'N' is used to determine the nominal central frequency.
                 The nominal central frequency, 'f', is defined by:
                 - f = 193100.000 GHz + N x channel spacing (measured in GHz),
                 where 193100.000 GHz (193.100000 THz) is the ITU-T 'anchor frequency' for transmission over the DWDM grid,
                 and where 'channel spacing' is defined by the flexi-ch-spc-type.
-                Note that the term 'channel spacing' can be substituted by the term 'nominal central frequency granularity' defined in clause 8 of ITU-T G.694.1.";
+                Note that the term 'channel spacing' can be substituted by the term 'nominal central frequency granularity' defined in clause 8 of ITU-T G.694.1.
+                Signed.";
         }
         leaf m {
             type uint64;
@@ -1564,18 +1565,18 @@ module tapi-photonic-media {
                 where SWG (Slot Width Granularity) is defined by the flexi-slot-width-granularity.";
         }
         leaf flexi-ch-spc-type {
-            type flexi-spacing;
+            type flexi-channel-spacing;
             description "none";
         }
         leaf flexi-slot-width-granularity {
-            type flexi-spacing;
+            type flexi-slot-width-granularity;
             description "none";
         }
         description "none";
     }
-    grouping grid-pac {
+    grouping flexi-grid-pac {
         leaf n {
-            type uint64;
+            type int64;
             config false;
             description "RFC 9093:
                 The given value 'N' is used to determine the nominal central frequency.
@@ -1583,7 +1584,8 @@ module tapi-photonic-media {
                 - f = 193100.000 GHz + N x channel spacing (measured in GHz),
                 where 193100.000 GHz (193.100000 THz) is the ITU-T 'anchor frequency' for transmission over the DWDM grid,
                 and where 'channel spacing' is defined by the flexi-ch-spc-type.
-                Note that the term 'channel spacing' can be substituted by the term 'nominal central frequency granularity' defined in clause 8 of ITU-T G.694.1.";
+                Note that the term 'channel spacing' can be substituted by the term 'nominal central frequency granularity' defined in clause 8 of ITU-T G.694.1.
+                Signed.";
         }
         leaf m {
             type uint64;
@@ -1595,12 +1597,12 @@ module tapi-photonic-media {
                 where SWG (Slot Width Granularity) is defined by the flexi-slot-width-granularity.";
         }
         leaf flexi-ch-spc-type {
-            type flexi-spacing;
+            type flexi-channel-spacing;
             config false;
             description "none";
         }
         leaf flexi-slot-width-granularity {
-            type flexi-spacing;
+            type flexi-slot-width-granularity;
             config false;
             description "none";
         }
@@ -1792,27 +1794,11 @@ module tapi-photonic-media {
         base FEC_TYPE;
         description "Golay error correction.";
     }
-    identity FLEXI_SPACING {
+    identity FLEXI_SLOT_WIDTH_GRANULARITY {
         description "none";
     }
-    identity FLEXI_SPACING_100GHz {
-        base FLEXI_SPACING;
-        description "none";
-    }
-    identity FLEXI_SPACING_50GHz {
-        base FLEXI_SPACING;
-        description "none";
-    }
-    identity FLEXI_SPACING_25GHz {
-        base FLEXI_SPACING;
-        description "none";
-    }
-    identity FLEXI_SPACING_12_5GHz {
-        base FLEXI_SPACING;
-        description "none";
-    }
-    identity FLEXI_SPACING_6_25GHz {
-        base FLEXI_SPACING;
+    identity FLEXI_SLOT_WIDTH_GRANULARITY_12_5GHz {
+        base FLEXI_SLOT_WIDTH_GRANULARITY;
         description "none";
     }
     identity STANDARD_MODULATION_TECHNIQUE_9093 {
@@ -1870,6 +1856,13 @@ module tapi-photonic-media {
         base STANDARD_MODULATION_TECHNIQUE_9093;
         description "DP-QAM64 (64 symbols Dual Polarization Quadrature Amplitude Modulation).";
     }
+    identity FLEXI_CHANNEL_SPACING {
+        description "none";
+    }
+    identity FLEXI_CHANNEL_SPACING_6_25GHz {
+        base FLEXI_CHANNEL_SPACING;
+        description "none";
+    }
     grouping application-identifier {
         leaf application-identifier-type {
             type standard-application-mode;
@@ -1886,17 +1879,6 @@ module tapi-photonic-media {
             If the ApplicationIdentifierType is PROPRIETARY, the first six characters of the PrintableString must contain the Hexadecimal representation of an OUI assigned to the vendor whose implementation generated the Application Identifier; the remaining octets of the PrintableString are unspecified.
             The value of this attribute of an object instance has to be one of the values identified in the attribute SupportableApplicationIdentifierList of the same object instance.
             The values and value ranges of the optical interface parameters of a standard application code must be consistent with those values specified in the ITU-T Recommendation for that application code.";
-    }
-    grouping central-frequency {
-        container frequency-constraint {
-            uses frequency-constraint;
-            description "none";
-        }
-        leaf central-frequency {
-            type uint64;
-            description "The central frequency of the laser specified in Hz. It is the oscillation frequency of the corresponding electromagnetic wave. ";
-        }
-        description "This data-type holds the central frequency information as well frequency constraints in terms of GridType ( FIXED grid (DWDM or CWDM) or FLEX grid) and AdjustmentGranularity.";
     }
     typedef optical-routing-strategy {
         type enumeration {
@@ -2229,15 +2211,21 @@ module tapi-photonic-media {
         }
         description "none";
     }
-    typedef flexi-spacing {
+    typedef flexi-slot-width-granularity {
         type identityref {
-            base FLEXI_SPACING;
+            base FLEXI_SLOT_WIDTH_GRANULARITY;
         }
         description "none";
     }
     typedef standard-modulation-technique-9093 {
         type identityref {
             base STANDARD_MODULATION_TECHNIQUE_9093;
+        }
+        description "none";
+    }
+    typedef flexi-channel-spacing {
+        type identityref {
+            base FLEXI_CHANNEL_SPACING;
         }
         description "none";
     }
