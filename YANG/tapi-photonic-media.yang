@@ -141,8 +141,8 @@ module tapi-photonic-media {
         description "none";
     }
     augment "/tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point/tapi-connectivity:layer-protocol-constraint" {
-        container otsia-csep-ttp-spec {
-            uses otsia-csep-ttp-spec;
+        container otsia-connectivity-service-end-point-spec {
+            uses otsia-connectivity-service-end-point-spec;
             description "none";
         }
         description "none";
@@ -385,48 +385,59 @@ module tapi-photonic-media {
             uses frequency-range;
             description "none";
         }
-        container supportable-maximum-output-power {
+        container supportable-max-output-power {
             config false;
             uses power-properties;
             description "This parameter exposes the maximum output power supported.";
         }
-        container supportable-minimum-output-power {
+        container supportable-min-output-power {
             config false;
             uses power-properties;
             description "This parameter exposes the minimum output power supported.";
         }
-        container tolerable-maximum-input-power {
+        container tolerable-max-input-power {
             config false;
             uses power-properties;
             description "This parameter exposes the maximum input power tolerated.";
         }
-        container tolerable-minimum-input-power {
+        container tolerable-min-input-power {
             config false;
             uses power-properties;
             description "This parameter exposes the minimum input power tolerated.";
         }
-        description "This pac includes power management capabilities which can be exposed as part of the characterization of the SIP.";
+        description "This pac includes power management capabilities.";
     }
     grouping power-management-config-pac {
-        container intended-maximum-output-power {
+        container max-output-power {
             uses power-properties;
-            description "This parameter shall be used to specify the maximum intended power to be delivered to the local transceiver i.e., after the signal has crossed the amplification/attenuation of the optical line system.
+            description "Add/drop ROADM port: This parameter shall be used to specify the maximum power to be delivered to the local transceiver i.e., after the signal has crossed the amplification/attenuation of the optical line system.
                 This specifies constraints related to power that the OLS should guarantee.
-                ";
+                Transceiver: the transceiver max launch (TX) power.
+                This specifies constraints related to power that the transceiver should guarantee.";
         }
-        container intended-minimum-output-power {
+        container min-output-power {
             uses power-properties;
-            description "This parameter shall be used to specify the minimum intended power to be delivered to the local transceiver i.e., after the signal has crossed the amplification/attenuation of the optical line system.
-                This specifies constraints related to power that the OLS should guarantee.";
+            description "Add/drop ROADM port: This parameter shall be used to specify the minimum power to be delivered to the local transceiver i.e., after the signal has crossed the amplification/attenuation of the optical line system.
+                This specifies constraints related to power that the OLS should guarantee.
+                Transceiver: the transceiver min launch (TX) power.
+                This specifies constraints related to power that the transceiver should guarantee.";
         }
-        container expected-maximum-input-power {
+        container max-input-power {
             uses power-properties;
-            description "This parameter conveys the attached transceiver max launch (TX) power (expected from the transceiver).
+            description "Add/drop ROADM port: This parameter shall be used to specify the maximum power to be delivered to the local transceiver i.e., after the signal has crossed the amplification/attenuation of the optical line system.
+                This specifies constraints related to power that the OLS should guarantee.
+                Transceiver: the transceiver max launch (TX) power.
+                This specifies constraints related to power that the transceiver should guarantee.
+                This parameter conveys the attached transceiver max launch (TX) power (expected from the transceiver).
                 This specifies constraints related to power tolerance at the input.";
         }
-        container expected-minimum-input-power {
+        container min-input-power {
             uses power-properties;
-            description "This parameter conveys the attached transceiver min launch (TX) power (expected from the transceiver).
+            description "Add/drop ROADM port: This parameter shall be used to specify the minimum power to be delivered to the local transceiver i.e., after the signal has crossed the amplification/attenuation of the optical line system.
+                This specifies constraints related to power that the OLS should guarantee.
+                Transceiver: the transceiver min launch (TX) power.
+                This specifies constraints related to power that the transceiver should guarantee.
+                This parameter conveys the attached transceiver min launch (TX) power (expected from the transceiver).
                 This specifies constraints related to power tolerance at the input.";
         }
         description "This pac includes power management constraints.";
@@ -506,6 +517,11 @@ module tapi-photonic-media {
             default "1";
             description "none";
         }
+        list otsi-mc-flexi-grid-config-pac {
+            key 'local-id';
+            uses otsi-mc-flexi-grid-config-pac;
+            description "none";
+        }
         description "OTSiMCG CSEP is provisioned also in case OTSiMC layer is not explicitly represented on Resource side, i.e. no OTSiMC Connections and CEPs are instantiated.
             OTSiMCG provisioning scenarios: are analogous to MCG provisioning scenarios.
             OtsiMcBandwidthConfigPac, OtsiMcSpectrumConfigPac and OtsiMcFrequencyConfigPac are mutually exclusive.";
@@ -542,17 +558,21 @@ module tapi-photonic-media {
             uses mc-bandwidth-config-pac;
             description "none";
         }
+        list mc-flexi-grid-config-pac {
+            key 'local-id';
+            uses mc-flexi-grid-config-pac;
+            description "none";
+        }
         description "MCG provisioning scenarios:
-            1) In case of MCG provisioning based on multiple SIPs (e.g. more add/drop ports each one potentially supporting a single OTSi), to maintain the rule that a CSEP is supported by an unique SIP,
-            then the unique/top CSEP instance (with a MC LPC including McgConnectivityServiceEndPointSpec with specified only the number of MCs) refers to
-            the CSEP instances (one per each MEDIA Link, each one with a MC LPC including McgConnectivityServiceEndPointSpec composing only one MC config pac), through the CSEPHasAssembledCSEPs association.
-            2) In case of MCG provisioning based on single SIP, then the model is compacted into only one CSEP instance, with a MC LPC including McgConnectivityServiceEndPointSpec, which composes one or more MC config pacs).
-            McSpectrumConfigPac and McBandwidthConfigPac are mutually exclusive.";
+            1) In case of MCG provisioning based on multiple SIPs (e.g. more add/drop ports each one potentially supporting a single OTSi),
+            then a unique/top CSEP instance (not referring to any SIP, with a MC LPC including McgConnectivityServiceEndPointSpec with specified only the number of MCs) refers to
+            the CSEP instances (one per each MEDIA Link, each one referring to one SIP, each one with a MC LPC including McgConnectivityServiceEndPointSpec composing only one MC config pac), through the CSEPHasAssembledCSEPs association.
+            2) In case of MCG provisioning based on single SIP, then the model is compacted into only one CSEP instance, with a MC LPC including McgConnectivityServiceEndPointSpec, which composes one or more MC config pacs).";
     }
-    grouping otsia-csep-ttp-spec {
+    grouping otsia-connectivity-service-end-point-spec {
         list otsi-config {
             key 'local-id';
-            uses otsi-config;
+            uses otsi-config-pac;
             description "none";
         }
         leaf number-of-otsi {
@@ -573,9 +593,9 @@ module tapi-photonic-media {
             description "Allows to configure the lower power threshold on whole Assembly scope.";
         }
         description "OTU/OTSiG provisioning scenarios:
-            1) In case of ODU/OTU/OTSiG provisioning based on multiple SIPs (e.g. more line ports each one potentially supporting a single OTSi), to maintain the rule that a CSEP is supported by an unique SIP,
-            then the unique/top CSEP instance (with an OTSiMC LPC including OtsiaCsepTtpSpec with specified only the number of OTSis) refers to
-            the CSEP instances (one per each MEDIA Link, each one with an OTSiMC LPC including OtsiaCsepTtpSpec composing only one OTSi config pac), through the CSEPHasAssembledCSEPs association.
+            1) In case of ODU/OTU/OTSiG provisioning based on multiple SIPs (e.g. more line ports each one potentially supporting a single OTSi),
+            then the unique/top CSEP instance (not referring to any SIP, with an OTSiMC LPC including OtsiaCsepTtpSpec with specified only the number of OTSis) refers to
+            the CSEP instances (one per each MEDIA Link, each one referring to one SIP, each one with an OTSiMC LPC including OtsiaCsepTtpSpec composing only one OTSi config pac), through the CSEPHasAssembledCSEPs association.
             2) In case of ODU/OTU/OTSiG provisioning based on single SIP, then the model is compacted into only one CSEP instance, with an OTSiMC LPC including OtsiaCsepTtpSpec which composes one or more OTSi config pacs).";
     }
     grouping otsi-mc-connection-end-point-spec {
@@ -587,6 +607,11 @@ module tapi-photonic-media {
         container spectrum-pac {
             config false;
             uses spectrum-pac;
+            description "Mandatory if the CEP is not terminated, optional if terminated.";
+        }
+        container flexi-grid-pac {
+            config false;
+            uses flexi-grid-pac;
             description "none";
         }
         container power-measurement-pac {
@@ -597,21 +622,27 @@ module tapi-photonic-media {
         description "none";
     }
     grouping ots-media-connection-end-point-spec {
-        container power-measurement-pac {
-            config false;
-            uses power-measurement-pac;
-            description "none";
-        }
         list spectrum-pac {
             key 'local-id';
             config false;
             uses spectrum-pac;
             description "none";
         }
+        list flexi-grid-pac {
+            key 'local-id';
+            config false;
+            uses flexi-grid-pac;
+            description "none";
+        }
         list ots-impairments {
             config false;
             max-elements 2;
             uses ots-impairments;
+            description "none";
+        }
+        container power-measurement-pac {
+            config false;
+            uses power-measurement-pac;
             description "none";
         }
         description "none";
@@ -623,9 +654,10 @@ module tapi-photonic-media {
             uses spectrum-pac;
             description "none";
         }
-        container power-measurement-pac {
+        list flexi-grid-pac {
+            key 'local-id';
             config false;
-            uses power-measurement-pac;
+            uses flexi-grid-pac;
             description "none";
         }
         list amplification {
@@ -640,17 +672,23 @@ module tapi-photonic-media {
             uses oms-general-optical-params;
             description "none";
         }
+        container power-measurement-pac {
+            config false;
+            uses power-measurement-pac;
+            description "none";
+        }
         description "none";
     }
     grouping otsi-mc-frequency-config-pac {
-        container central-frequency {
-            uses central-frequency;
-            description "The central frequency of the laser. It is the oscillation frequency of the corresponding electromagnetic wave";
+        leaf central-frequency {
+            type uint64;
+            description "The central frequency of the laser. It is the oscillation frequency of the corresponding electromagnetic wave.
+                Measured in Hz.";
         }
         leaf center-frequency-offset {
-            type uint64;
+            type int64;
             description "Offset where it is expected to find the signal in the MC.
-                (unidimensional in Hz).";
+                (unidimensional in Hz, signed).";
         }
         leaf spectrum-bandwidth {
             type uint64;
@@ -671,7 +709,7 @@ module tapi-photonic-media {
         uses tapi-common:local-class;
         description "OTSiMC configuration based on central frequency specification.";
     }
-    grouping otsi-config {
+    grouping otsi-config-pac {
         leaf central-frequency {
             type uint64;
             description "The central frequency of the laser. It is the oscillation frequency of the corresponding electromagnetic wave.
@@ -681,8 +719,12 @@ module tapi-photonic-media {
             type laser-control-type;
             description "none";
         }
-        container otsi-power-config {
-            uses otsi-power-config;
+        container otsi-threshold-power-config {
+            uses otsi-threshold-power-config;
+            description "none";
+        }
+        container power-management-config-pac {
+            uses power-management-config-pac;
             description "none";
         }
         uses tapi-common:local-class;
@@ -692,6 +734,11 @@ module tapi-photonic-media {
         container spectrum-pac {
             config false;
             uses spectrum-pac;
+            description "none";
+        }
+        container flexi-grid-pac {
+            config false;
+            uses flexi-grid-pac;
             description "none";
         }
         container power-measurement-pac {
@@ -1210,6 +1257,10 @@ module tapi-photonic-media {
                 - The same bidir CEP better approximates the output of two amplification functions (in the two directions)
                 - The Amplification parameters are related to a Preamplifier (amplification function from line to internal) ";
         }
+        leaf first-of-chain {
+            type boolean;
+            description "none";
+        }
         leaf actual-gain {
             type decimal64 {
                 fraction-digits 7;
@@ -1271,11 +1322,7 @@ module tapi-photonic-media {
         uses tapi-common:local-class;
         description "The CEP which includes the Amplification impairments is the CEP which better approximates the output of the amplification function.";
     }
-    grouping otsi-power-config {
-        container transmit-power {
-            uses power-properties;
-            description "none";
-        }
+    grouping otsi-threshold-power-config {
         leaf total-power-warn-threshold-upper {
             type decimal64 {
                 fraction-digits 7;
@@ -1287,13 +1334,6 @@ module tapi-photonic-media {
                 fraction-digits 7;
             }
             description "Allows to configure the lower power threshold which is expected to be different from Default, but within the Min and Max values specified as capability.";
-        }
-        leaf rx-total-power {
-            type decimal64 {
-                fraction-digits 7;
-            }
-            description "Maximum rx optical power for all the channels received at the interface.
-                Measured in dBm.";
         }
         description "This pac includes power management constraints.";
     }
@@ -1478,6 +1518,97 @@ module tapi-photonic-media {
         }
         description "The referenced specific profiles are mutually exclusive.";
     }
+    grouping mc-flexi-grid-config-pac {
+        container flexi-grid-config-pac {
+            uses flexi-grid-config-pac;
+            description "none";
+        }
+        container power-management-config-pac {
+            uses power-management-config-pac;
+            description "none";
+        }
+        uses tapi-common:local-class;
+        description "ITU-T G.694.1 Spectral grids for WDM applications: DWDM frequency grid.
+            The flexi-grid-frequency-slot (RFC 9093) defines the nominal central frequency and its slot width in terms of N, M.";
+    }
+    grouping otsi-mc-flexi-grid-config-pac {
+        container flexi-grid-config-pac {
+            uses flexi-grid-config-pac;
+            description "none";
+        }
+        container power-management-config-pac {
+            uses power-management-config-pac;
+            description "none";
+        }
+        uses tapi-common:local-class;
+        description "ITU-T G.694.1 Spectral grids for WDM applications: DWDM frequency grid.
+            The flexi-grid-frequency-slot (RFC 9093) defines the nominal central frequency and its slot width in terms of N, M.";
+    }
+    grouping flexi-grid-config-pac {
+        leaf n {
+            type int64;
+            description "RFC 9093:
+                The given value 'N' is used to determine the nominal central frequency.
+                The nominal central frequency, 'f', is defined by:
+                - f = 193100.000 GHz + N x channel spacing (measured in GHz),
+                where 193100.000 GHz (193.100000 THz) is the ITU-T 'anchor frequency' for transmission over the DWDM grid,
+                and where 'channel spacing' is defined by the flexi-ch-spc-type.
+                Note that the term 'channel spacing' can be substituted by the term 'nominal central frequency granularity' defined in clause 8 of ITU-T G.694.1.
+                Signed.";
+        }
+        leaf m {
+            type uint64;
+            description "RFC 9093:
+                The given value 'M' is used to determine the slot width.
+                A slot width is defined by:
+                - slot width = M x SWG (measured in GHz),
+                where SWG (Slot Width Granularity) is defined by the flexi-slot-width-granularity.";
+        }
+        leaf flexi-ch-spc-type {
+            type flexi-channel-spacing;
+            description "none";
+        }
+        leaf flexi-slot-width-granularity {
+            type flexi-slot-width-granularity;
+            description "none";
+        }
+        description "none";
+    }
+    grouping flexi-grid-pac {
+        leaf n {
+            type int64;
+            config false;
+            description "RFC 9093:
+                The given value 'N' is used to determine the nominal central frequency.
+                The nominal central frequency, 'f', is defined by:
+                - f = 193100.000 GHz + N x channel spacing (measured in GHz),
+                where 193100.000 GHz (193.100000 THz) is the ITU-T 'anchor frequency' for transmission over the DWDM grid,
+                and where 'channel spacing' is defined by the flexi-ch-spc-type.
+                Note that the term 'channel spacing' can be substituted by the term 'nominal central frequency granularity' defined in clause 8 of ITU-T G.694.1.
+                Signed.";
+        }
+        leaf m {
+            type uint64;
+            config false;
+            description "RFC 9093:
+                The given value 'M' is used to determine the slot width.
+                A slot width is defined by:
+                - slot width = M x SWG (measured in GHz),
+                where SWG (Slot Width Granularity) is defined by the flexi-slot-width-granularity.";
+        }
+        leaf flexi-ch-spc-type {
+            type flexi-channel-spacing;
+            config false;
+            description "none";
+        }
+        leaf flexi-slot-width-granularity {
+            type flexi-slot-width-granularity;
+            config false;
+            description "none";
+        }
+        uses tapi-common:local-class;
+        description "none";
+    }
 
     /**************************
     * package type-definitions
@@ -1594,6 +1725,10 @@ module tapi-photonic-media {
         base PHOTONIC_LAYER_QUALIFIER;
         description "none";
     }
+    identity PHOTONIC_LAYER_QUALIFIER_OS_MEDIA {
+        base PHOTONIC_LAYER_QUALIFIER;
+        description "none";
+    }
     identity TRANSCEIVER_TERMINATION_TYPE {
         description "none";
     }
@@ -1622,19 +1757,19 @@ module tapi-photonic-media {
     }
     identity LINE_CODING_NRZ-2P5G {
         base LINE_CODING;
-        description "none";
+        description "ITU-T G.698.2-201811 section 7 table 8-1";
     }
     identity LINE_CODING_NRZ-OTU1 {
         base LINE_CODING;
-        description "none";
+        description "ITU-T G.698.2-201811 section 7 table 8-2";
     }
     identity LINE_CODING_NRZ-10G {
         base LINE_CODING;
-        description "none";
+        description "ITU-T G.698.2-201811 section 7 table 8-3/8-5";
     }
     identity LINE_CODING_NRZ-OTU2 {
         base LINE_CODING;
-        description "none";
+        description "ITU-T G.698.2-201811 section 7 table 8-4/8-6";
     }
     identity FEC_TYPE {
         description "none";
@@ -1659,6 +1794,75 @@ module tapi-photonic-media {
         base FEC_TYPE;
         description "Golay error correction.";
     }
+    identity FLEXI_SLOT_WIDTH_GRANULARITY {
+        description "none";
+    }
+    identity FLEXI_SLOT_WIDTH_GRANULARITY_12_5GHz {
+        base FLEXI_SLOT_WIDTH_GRANULARITY;
+        description "none";
+    }
+    identity STANDARD_MODULATION_TECHNIQUE_9093 {
+        description "none";
+    }
+    identity STANDARD_MODULATION_TECHNIQUE_9093_DPSK {
+        base STANDARD_MODULATION_TECHNIQUE_9093;
+        description "DPSK (Differential Phase Shift Keying) modulation.";
+    }
+    identity STANDARD_MODULATION_TECHNIQUE_9093_QPSK {
+        base STANDARD_MODULATION_TECHNIQUE_9093;
+        description "QPSK (Quadrature Phase Shift Keying) modulation.";
+    }
+    identity STANDARD_MODULATION_TECHNIQUE_9093_DP-QPSK {
+        base STANDARD_MODULATION_TECHNIQUE_9093;
+        description "DP-QPSK (Dual Polarization Quadrature Phase Shift Keying) modulation.";
+    }
+    identity STANDARD_MODULATION_TECHNIQUE_9093_QAM8 {
+        base STANDARD_MODULATION_TECHNIQUE_9093;
+        description "QAM8 (8-State Quadrature Amplitude Modulation).";
+    }
+    identity STANDARD_MODULATION_TECHNIQUE_9093_DP-QAM8 {
+        base STANDARD_MODULATION_TECHNIQUE_9093;
+        description "DP-QAM8 (8 symbols Dual Polarization Quadrature Amplitude Modulation).";
+    }
+    identity STANDARD_MODULATION_TECHNIQUE_9093_DC-DP-QAM8 {
+        base STANDARD_MODULATION_TECHNIQUE_9093;
+        description "DC-DP-QAM8 (8 symbols Dual Carrier Dual Polarization Quadrature Amplitude Modulation).";
+    }
+    identity STANDARD_MODULATION_TECHNIQUE_9093_QAM16 {
+        base STANDARD_MODULATION_TECHNIQUE_9093;
+        description "QAM16 (16 symbols Quadrature Amplitude Modulation).";
+    }
+    identity STANDARD_MODULATION_TECHNIQUE_9093_DP-QAM16 {
+        base STANDARD_MODULATION_TECHNIQUE_9093;
+        description "DP-QAM16 (16 symbols Dual Polarization Quadrature Amplitude Modulation).";
+    }
+    identity STANDARD_MODULATION_TECHNIQUE_9093_DC-DP-QAM16 {
+        base STANDARD_MODULATION_TECHNIQUE_9093;
+        description "DC-DP-QAM16 (16 symbols Dual Carrier Dual Polarization Quadrature Amplitude Modulation).";
+    }
+    identity STANDARD_MODULATION_TECHNIQUE_9093_QAM32 {
+        base STANDARD_MODULATION_TECHNIQUE_9093;
+        description "QAM32 (32 symbols Quadrature Amplitude Modulation).";
+    }
+    identity STANDARD_MODULATION_TECHNIQUE_9093_DP-QAM32 {
+        base STANDARD_MODULATION_TECHNIQUE_9093;
+        description "DP-QAM32 (32 symbols Dual Polarization Quadrature Amplitude Modulation).";
+    }
+    identity STANDARD_MODULATION_TECHNIQUE_9093_QAM64 {
+        base STANDARD_MODULATION_TECHNIQUE_9093;
+        description "QAM64 (64 symbols Quadrature Amplitude Modulation).";
+    }
+    identity STANDARD_MODULATION_TECHNIQUE_9093_DP-QAM64 {
+        base STANDARD_MODULATION_TECHNIQUE_9093;
+        description "DP-QAM64 (64 symbols Dual Polarization Quadrature Amplitude Modulation).";
+    }
+    identity FLEXI_CHANNEL_SPACING {
+        description "none";
+    }
+    identity FLEXI_CHANNEL_SPACING_6_25GHz {
+        base FLEXI_CHANNEL_SPACING;
+        description "none";
+    }
     grouping application-identifier {
         leaf application-identifier-type {
             type standard-application-mode;
@@ -1675,17 +1879,6 @@ module tapi-photonic-media {
             If the ApplicationIdentifierType is PROPRIETARY, the first six characters of the PrintableString must contain the Hexadecimal representation of an OUI assigned to the vendor whose implementation generated the Application Identifier; the remaining octets of the PrintableString are unspecified.
             The value of this attribute of an object instance has to be one of the values identified in the attribute SupportableApplicationIdentifierList of the same object instance.
             The values and value ranges of the optical interface parameters of a standard application code must be consistent with those values specified in the ITU-T Recommendation for that application code.";
-    }
-    grouping central-frequency {
-        container frequency-constraint {
-            uses frequency-constraint;
-            description "none";
-        }
-        leaf central-frequency {
-            type uint64;
-            description "The central frequency of the laser specified in Hz. It is the oscillation frequency of the corresponding electromagnetic wave. ";
-        }
-        description "This data-type holds the central frequency information as well frequency constraints in terms of GridType ( FIXED grid (DWDM or CWDM) or FLEX grid) and AdjustmentGranularity.";
     }
     typedef optical-routing-strategy {
         type enumeration {
@@ -2015,6 +2208,24 @@ module tapi-photonic-media {
                 fraction-digits 7;
             }
             description "none";
+        }
+        description "none";
+    }
+    typedef flexi-slot-width-granularity {
+        type identityref {
+            base FLEXI_SLOT_WIDTH_GRANULARITY;
+        }
+        description "none";
+    }
+    typedef standard-modulation-technique-9093 {
+        type identityref {
+            base STANDARD_MODULATION_TECHNIQUE_9093;
+        }
+        description "none";
+    }
+    typedef flexi-channel-spacing {
+        type identityref {
+            base FLEXI_CHANNEL_SPACING;
         }
         description "none";
     }

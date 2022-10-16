@@ -66,16 +66,16 @@ module: tapi-common
      |  |  |  +--ro tapi-photonic-media:spectrum
      |  |  |  |  +--ro tapi-photonic-media:upper-frequency?   uint64
      |  |  |  |  +--ro tapi-photonic-media:lower-frequency?   uint64
-     |  |  |  +--ro tapi-photonic-media:supportable-maximum-output-power
+     |  |  |  +--ro tapi-photonic-media:supportable-max-output-power
      |  |  |  |  +--ro tapi-photonic-media:total-power?              decimal64
      |  |  |  |  +--ro tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  +--ro tapi-photonic-media:supportable-minimum-output-power
+     |  |  |  +--ro tapi-photonic-media:supportable-min-output-power
      |  |  |  |  +--ro tapi-photonic-media:total-power?              decimal64
      |  |  |  |  +--ro tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  +--ro tapi-photonic-media:tolerable-maximum-input-power
+     |  |  |  +--ro tapi-photonic-media:tolerable-max-input-power
      |  |  |  |  +--ro tapi-photonic-media:total-power?              decimal64
      |  |  |  |  +--ro tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  +--ro tapi-photonic-media:tolerable-minimum-input-power
+     |  |  |  +--ro tapi-photonic-media:tolerable-min-input-power
      |  |  |     +--ro tapi-photonic-media:total-power?              decimal64
      |  |  |     +--ro tapi-photonic-media:power-spectral-density?   decimal64
      |  |  +--ro tapi-photonic-media:total-power-threshold-pac* []
@@ -207,7 +207,7 @@ module: tapi-common
      |        +--rw tapi-oam:is-transient?                boolean
      |        +--rw tapi-oam:codirectional?               boolean
      |        +--rw tapi-oam:pm-parameter* [pm-parameter-name]
-     |        |  +--rw tapi-oam:pm-parameter-name    tapi-common:pm-param-name
+     |        |  +--rw tapi-oam:pm-parameter-name    tapi-common:pm
      |        |  +--rw tapi-oam:threshold-config* [threshold-location threshold-type clear-threshold]
      |        |     +--rw tapi-oam:threshold-location    threshold-crossing-qualifier
      |        |     +--rw tapi-oam:threshold-type        threshold-type
@@ -318,7 +318,7 @@ module: tapi-common
      |  |  |  +--ro tapi-notification:value-name    string
      |  |  |  +--ro tapi-notification:value?        string
      |  |  +--ro tapi-fm:alarm-info
-     |  |  |  +--ro tapi-fm:alarm-name?           tapi-common:alarm-name
+     |  |  |  +--ro tapi-fm:alarm-name?           tapi-common:alr
      |  |  |  +--ro tapi-fm:native-alarm-name?    string
      |  |  |  +--ro tapi-fm:native-alarm-info?    string
      |  |  |  +--ro tapi-fm:is-transient?         boolean
@@ -327,7 +327,7 @@ module: tapi-common
      |  |  |  +--ro tapi-fm:alarm-category?       alarm-category
      |  |  |  +--ro tapi-fm:alarm-qualifier?      string
      |  |  +--ro tapi-fm:tca-info
-     |  |     +--ro tapi-fm:threshold-indicator-name?          tapi-common:pm-param-name
+     |  |     +--ro tapi-fm:threshold-indicator-name?          tapi-common:pm
      |  |     +--ro tapi-fm:native-threshold-indicator-name?   string
      |  |     +--ro tapi-fm:native-tca-info?                   string
      |  |     +--ro tapi-fm:is-transient?                      boolean
@@ -601,6 +601,10 @@ module: tapi-common
      |     |  |  +--ro tapi-topology:topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
      |     |  +--ro tapi-topology:profile* [profile-uuid]
      |     |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
+     |     |  +--ro tapi-topology:risk-parameter-pac
+     |     |  |  +--ro tapi-topology:risk-characteristic* [risk-characteristic-name]
+     |     |  |     +--ro tapi-topology:risk-characteristic-name    string
+     |     |  |     +--ro tapi-topology:risk-identifier-list*       string
      |     |  +--ro tapi-topology:uuid?                                      uuid
      |     |  +--ro tapi-topology:name* [value-name]
      |     |  |  +--ro tapi-topology:value-name    string
@@ -819,6 +823,10 @@ module: tapi-common
      |     |  |  |  +--ro tapi-topology:topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
      |     |  |  +--ro tapi-topology:profile* [profile-uuid]
      |     |  |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
+     |     |  |  +--ro tapi-topology:risk-parameter-pac
+     |     |  |  |  +--ro tapi-topology:risk-characteristic* [risk-characteristic-name]
+     |     |  |  |     +--ro tapi-topology:risk-characteristic-name    string
+     |     |  |  |     +--ro tapi-topology:risk-identifier-list*       string
      |     |  |  +--ro tapi-topology:uuid                                       uuid
      |     |  |  +--ro tapi-topology:name* [value-name]
      |     |  |  |  +--ro tapi-topology:value-name    string
@@ -1487,7 +1495,9 @@ module: tapi-common
      |     |  |  +--ro tapi-connectivity:restore-priority?                     uint64
      |     |  |  +--ro tapi-connectivity:set-up-priority?                      uint64
      |     |  |  +--ro tapi-connectivity:reversion-mode?                       reversion-mode
-     |     |  |  +--ro tapi-connectivity:wait-to-revert-time?                  uint64
+     |     |  |  +--ro tapi-connectivity:wait-to-revert-time
+     |     |  |  |  +--ro tapi-connectivity:value?   uint64
+     |     |  |  |  +--ro tapi-connectivity:unit?    time-unit
      |     |  |  +--ro tapi-connectivity:hold-off-time?                        uint64
      |     |  |  +--ro tapi-connectivity:is-lock-out?                          boolean
      |     |  |  +--ro tapi-connectivity:is-frozen?                            boolean
@@ -1705,7 +1715,9 @@ module: tapi-common
      |     |  |  |  +--ro tapi-connectivity:restore-priority?                     uint64
      |     |  |  |  +--ro tapi-connectivity:set-up-priority?                      uint64
      |     |  |  |  +--ro tapi-connectivity:reversion-mode?                       reversion-mode
-     |     |  |  |  +--ro tapi-connectivity:wait-to-revert-time?                  uint64
+     |     |  |  |  +--ro tapi-connectivity:wait-to-revert-time
+     |     |  |  |  |  +--ro tapi-connectivity:value?   uint64
+     |     |  |  |  |  +--ro tapi-connectivity:unit?    time-unit
      |     |  |  |  +--ro tapi-connectivity:hold-off-time?                        uint64
      |     |  |  |  +--ro tapi-connectivity:is-lock-out?                          boolean
      |     |  |  |  +--ro tapi-connectivity:is-frozen?                            boolean
@@ -1888,7 +1900,9 @@ module: tapi-common
      |     |  |  +--ro tapi-connectivity:restore-priority?                     uint64
      |     |  |  +--ro tapi-connectivity:set-up-priority?                      uint64
      |     |  |  +--ro tapi-connectivity:reversion-mode?                       reversion-mode
-     |     |  |  +--ro tapi-connectivity:wait-to-revert-time?                  uint64
+     |     |  |  +--ro tapi-connectivity:wait-to-revert-time
+     |     |  |  |  +--ro tapi-connectivity:value?   uint64
+     |     |  |  |  +--ro tapi-connectivity:unit?    time-unit
      |     |  |  +--ro tapi-connectivity:hold-off-time?                        uint64
      |     |  |  +--ro tapi-connectivity:is-lock-out?                          boolean
      |     |  |  +--ro tapi-connectivity:is-frozen?                            boolean
@@ -1999,7 +2013,7 @@ module: tapi-common
      |     |  |  +--ro tapi-oam:is-transient?                boolean
      |     |  |  +--ro tapi-oam:codirectional?               boolean
      |     |  |  +--ro tapi-oam:pm-parameter* [pm-parameter-name]
-     |     |  |  |  +--ro tapi-oam:pm-parameter-name    tapi-common:pm-param-name
+     |     |  |  |  +--ro tapi-oam:pm-parameter-name    tapi-common:pm
      |     |  |  |  +--ro tapi-oam:threshold-config* [threshold-location threshold-type clear-threshold]
      |     |  |  |     +--ro tapi-oam:threshold-location    threshold-crossing-qualifier
      |     |  |  |     +--ro tapi-oam:threshold-type        threshold-type
@@ -2218,7 +2232,7 @@ module: tapi-common
      |     |  +--ro tapi-oam:is-transient?                boolean
      |     |  +--ro tapi-oam:codirectional?               boolean
      |     |  +--ro tapi-oam:pm-parameter* [pm-parameter-name]
-     |     |  |  +--ro tapi-oam:pm-parameter-name    tapi-common:pm-param-name
+     |     |  |  +--ro tapi-oam:pm-parameter-name    tapi-common:pm
      |     |  |  +--ro tapi-oam:threshold-config* [threshold-location threshold-type clear-threshold]
      |     |  |     +--ro tapi-oam:threshold-location    threshold-crossing-qualifier
      |     |  |     +--ro tapi-oam:threshold-type        threshold-type
@@ -2599,7 +2613,7 @@ module: tapi-common
      |     |     +--ro tapi-equipment:value-name    string
      |     |     +--ro tapi-equipment:value?        string
      |     +--ro tapi-fm:detected-condition
-     |     |  +--ro tapi-fm:detected-condition-name?          tapi-common:detected
+     |     |  +--ro tapi-fm:detected-condition-name?          tapi-common:dc
      |     |  +--ro tapi-fm:detected-condition-native-name?   string
      |     |  +--ro tapi-fm:detected-condition-native-info?   string
      |     |  +--ro tapi-fm:detected-condition-qualifier?     string
@@ -2888,6 +2902,15 @@ module: tapi-common
      |     |  |  |     |  |  +--ro tapi-photonic-media:name* [value-name]
      |     |  |  |     |  |     +--ro tapi-photonic-media:value-name    string
      |     |  |  |     |  |     +--ro tapi-photonic-media:value?        string
+     |     |  |  |     |  +--ro tapi-photonic-media:flexi-grid-pac
+     |     |  |  |     |  |  +--ro tapi-photonic-media:n?                              int64
+     |     |  |  |     |  |  +--ro tapi-photonic-media:m?                              uint64
+     |     |  |  |     |  |  +--ro tapi-photonic-media:flexi-ch-spc-type?              flexi-channel-spacing
+     |     |  |  |     |  |  +--ro tapi-photonic-media:flexi-slot-width-granularity?   flexi-slot-width-granularity
+     |     |  |  |     |  |  +--ro tapi-photonic-media:local-id?                       string
+     |     |  |  |     |  |  +--ro tapi-photonic-media:name* [value-name]
+     |     |  |  |     |  |     +--ro tapi-photonic-media:value-name    string
+     |     |  |  |     |  |     +--ro tapi-photonic-media:value?        string
      |     |  |  |     |  +--ro tapi-photonic-media:power-measurement-pac
      |     |  |  |     |     +--ro tapi-photonic-media:measured-input-power
      |     |  |  |     |     |  +--ro tapi-photonic-media:total-power?              decimal64
@@ -2896,13 +2919,6 @@ module: tapi-common
      |     |  |  |     |        +--ro tapi-photonic-media:total-power?              decimal64
      |     |  |  |     |        +--ro tapi-photonic-media:power-spectral-density?   decimal64
      |     |  |  |     +--ro tapi-photonic-media:ots-media-connection-end-point-spec
-     |     |  |  |     |  +--ro tapi-photonic-media:power-measurement-pac
-     |     |  |  |     |  |  +--ro tapi-photonic-media:measured-input-power
-     |     |  |  |     |  |  |  +--ro tapi-photonic-media:total-power?              decimal64
-     |     |  |  |     |  |  |  +--ro tapi-photonic-media:power-spectral-density?   decimal64
-     |     |  |  |     |  |  +--ro tapi-photonic-media:measured-output-power
-     |     |  |  |     |  |     +--ro tapi-photonic-media:total-power?              decimal64
-     |     |  |  |     |  |     +--ro tapi-photonic-media:power-spectral-density?   decimal64
      |     |  |  |     |  +--ro tapi-photonic-media:spectrum-pac* [local-id]
      |     |  |  |     |  |  +--ro tapi-photonic-media:occupied-spectrum
      |     |  |  |     |  |  |  +--ro tapi-photonic-media:upper-frequency?   uint64
@@ -2911,19 +2927,35 @@ module: tapi-common
      |     |  |  |     |  |  +--ro tapi-photonic-media:name* [value-name]
      |     |  |  |     |  |     +--ro tapi-photonic-media:value-name    string
      |     |  |  |     |  |     +--ro tapi-photonic-media:value?        string
+     |     |  |  |     |  +--ro tapi-photonic-media:flexi-grid-pac* [local-id]
+     |     |  |  |     |  |  +--ro tapi-photonic-media:n?                              int64
+     |     |  |  |     |  |  +--ro tapi-photonic-media:m?                              uint64
+     |     |  |  |     |  |  +--ro tapi-photonic-media:flexi-ch-spc-type?              flexi-channel-spacing
+     |     |  |  |     |  |  +--ro tapi-photonic-media:flexi-slot-width-granularity?   flexi-slot-width-granularity
+     |     |  |  |     |  |  +--ro tapi-photonic-media:local-id                        string
+     |     |  |  |     |  |  +--ro tapi-photonic-media:name* [value-name]
+     |     |  |  |     |  |     +--ro tapi-photonic-media:value-name    string
+     |     |  |  |     |  |     +--ro tapi-photonic-media:value?        string
      |     |  |  |     |  +--ro tapi-photonic-media:ots-impairments* []
-     |     |  |  |     |     +--ro tapi-photonic-media:impairment-route-entry* []
-     |     |  |  |     |     |  +--ro tapi-photonic-media:ots-concentrated-loss
-     |     |  |  |     |     |  |  +--ro tapi-photonic-media:concentrated-loss?   decimal64
-     |     |  |  |     |     |  +--ro tapi-photonic-media:ots-fiber-span-impairments
-     |     |  |  |     |     |     +--ro tapi-photonic-media:fiber-type-variety?   string
-     |     |  |  |     |     |     +--ro tapi-photonic-media:pmd?                  decimal64
-     |     |  |  |     |     |     +--ro tapi-photonic-media:length?               uint64
-     |     |  |  |     |     |     +--ro tapi-photonic-media:loss-coef?            decimal64
-     |     |  |  |     |     |     +--ro tapi-photonic-media:total-loss?           decimal64
-     |     |  |  |     |     |     +--ro tapi-photonic-media:connector-in?         decimal64
-     |     |  |  |     |     |     +--ro tapi-photonic-media:connector-out?        decimal64
-     |     |  |  |     |     +--ro tapi-photonic-media:ingress-direction?        boolean
+     |     |  |  |     |  |  +--ro tapi-photonic-media:impairment-route-entry* []
+     |     |  |  |     |  |  |  +--ro tapi-photonic-media:ots-concentrated-loss
+     |     |  |  |     |  |  |  |  +--ro tapi-photonic-media:concentrated-loss?   decimal64
+     |     |  |  |     |  |  |  +--ro tapi-photonic-media:ots-fiber-span-impairments
+     |     |  |  |     |  |  |     +--ro tapi-photonic-media:fiber-type-variety?   string
+     |     |  |  |     |  |  |     +--ro tapi-photonic-media:pmd?                  decimal64
+     |     |  |  |     |  |  |     +--ro tapi-photonic-media:length?               uint64
+     |     |  |  |     |  |  |     +--ro tapi-photonic-media:loss-coef?            decimal64
+     |     |  |  |     |  |  |     +--ro tapi-photonic-media:total-loss?           decimal64
+     |     |  |  |     |  |  |     +--ro tapi-photonic-media:connector-in?         decimal64
+     |     |  |  |     |  |  |     +--ro tapi-photonic-media:connector-out?        decimal64
+     |     |  |  |     |  |  +--ro tapi-photonic-media:ingress-direction?        boolean
+     |     |  |  |     |  +--ro tapi-photonic-media:power-measurement-pac
+     |     |  |  |     |     +--ro tapi-photonic-media:measured-input-power
+     |     |  |  |     |     |  +--ro tapi-photonic-media:total-power?              decimal64
+     |     |  |  |     |     |  +--ro tapi-photonic-media:power-spectral-density?   decimal64
+     |     |  |  |     |     +--ro tapi-photonic-media:measured-output-power
+     |     |  |  |     |        +--ro tapi-photonic-media:total-power?              decimal64
+     |     |  |  |     |        +--ro tapi-photonic-media:power-spectral-density?   decimal64
      |     |  |  |     +--ro tapi-photonic-media:oms-connection-end-point-spec
      |     |  |  |     |  +--ro tapi-photonic-media:spectrum-pac* [local-id]
      |     |  |  |     |  |  +--ro tapi-photonic-media:occupied-spectrum
@@ -2933,18 +2965,21 @@ module: tapi-common
      |     |  |  |     |  |  +--ro tapi-photonic-media:name* [value-name]
      |     |  |  |     |  |     +--ro tapi-photonic-media:value-name    string
      |     |  |  |     |  |     +--ro tapi-photonic-media:value?        string
-     |     |  |  |     |  +--ro tapi-photonic-media:power-measurement-pac
-     |     |  |  |     |  |  +--ro tapi-photonic-media:measured-input-power
-     |     |  |  |     |  |  |  +--ro tapi-photonic-media:total-power?              decimal64
-     |     |  |  |     |  |  |  +--ro tapi-photonic-media:power-spectral-density?   decimal64
-     |     |  |  |     |  |  +--ro tapi-photonic-media:measured-output-power
-     |     |  |  |     |  |     +--ro tapi-photonic-media:total-power?              decimal64
-     |     |  |  |     |  |     +--ro tapi-photonic-media:power-spectral-density?   decimal64
+     |     |  |  |     |  +--ro tapi-photonic-media:flexi-grid-pac* [local-id]
+     |     |  |  |     |  |  +--ro tapi-photonic-media:n?                              int64
+     |     |  |  |     |  |  +--ro tapi-photonic-media:m?                              uint64
+     |     |  |  |     |  |  +--ro tapi-photonic-media:flexi-ch-spc-type?              flexi-channel-spacing
+     |     |  |  |     |  |  +--ro tapi-photonic-media:flexi-slot-width-granularity?   flexi-slot-width-granularity
+     |     |  |  |     |  |  +--ro tapi-photonic-media:local-id                        string
+     |     |  |  |     |  |  +--ro tapi-photonic-media:name* [value-name]
+     |     |  |  |     |  |     +--ro tapi-photonic-media:value-name    string
+     |     |  |  |     |  |     +--ro tapi-photonic-media:value?        string
      |     |  |  |     |  +--ro tapi-photonic-media:amplification* [local-id]
      |     |  |  |     |  |  +--ro tapi-photonic-media:frequency-range
      |     |  |  |     |  |  |  +--ro tapi-photonic-media:upper-frequency?   uint64
      |     |  |  |     |  |  |  +--ro tapi-photonic-media:lower-frequency?   uint64
      |     |  |  |     |  |  +--ro tapi-photonic-media:ingress-direction?      boolean
+     |     |  |  |     |  |  +--ro tapi-photonic-media:first-of-chain?         boolean
      |     |  |  |     |  |  +--ro tapi-photonic-media:actual-gain?            decimal64
      |     |  |  |     |  |  +--ro tapi-photonic-media:actual-tilt?            decimal64
      |     |  |  |     |  |  +--ro tapi-photonic-media:out-voa?                decimal64
@@ -2968,22 +3003,38 @@ module: tapi-common
      |     |  |  |     |  |     +--ro tapi-photonic-media:value-name    string
      |     |  |  |     |  |     +--ro tapi-photonic-media:value?        string
      |     |  |  |     |  +--ro tapi-photonic-media:oms-general-optical-params* []
-     |     |  |  |     |     +--ro tapi-photonic-media:frequency-range
-     |     |  |  |     |     |  +--ro tapi-photonic-media:upper-frequency?   uint64
-     |     |  |  |     |     |  +--ro tapi-photonic-media:lower-frequency?   uint64
-     |     |  |  |     |     +--ro tapi-photonic-media:ingress-direction?   boolean
-     |     |  |  |     |     +--ro tapi-photonic-media:generalized-snr?     decimal64
-     |     |  |  |     |     +--ro tapi-photonic-media:power-params
-     |     |  |  |     |        +--ro tapi-photonic-media:power-spectral-density
-     |     |  |  |     |        |  +--ro tapi-photonic-media:nominal-power-spectral-density?   decimal64
-     |     |  |  |     |        +--ro tapi-photonic-media:channel-power
-     |     |  |  |     |           +--ro tapi-photonic-media:nominal-carrier-power?   decimal64
+     |     |  |  |     |  |  +--ro tapi-photonic-media:frequency-range
+     |     |  |  |     |  |  |  +--ro tapi-photonic-media:upper-frequency?   uint64
+     |     |  |  |     |  |  |  +--ro tapi-photonic-media:lower-frequency?   uint64
+     |     |  |  |     |  |  +--ro tapi-photonic-media:ingress-direction?   boolean
+     |     |  |  |     |  |  +--ro tapi-photonic-media:generalized-snr?     decimal64
+     |     |  |  |     |  |  +--ro tapi-photonic-media:power-params
+     |     |  |  |     |  |     +--ro tapi-photonic-media:power-spectral-density
+     |     |  |  |     |  |     |  +--ro tapi-photonic-media:nominal-power-spectral-density?   decimal64
+     |     |  |  |     |  |     +--ro tapi-photonic-media:channel-power
+     |     |  |  |     |  |        +--ro tapi-photonic-media:nominal-carrier-power?   decimal64
+     |     |  |  |     |  +--ro tapi-photonic-media:power-measurement-pac
+     |     |  |  |     |     +--ro tapi-photonic-media:measured-input-power
+     |     |  |  |     |     |  +--ro tapi-photonic-media:total-power?              decimal64
+     |     |  |  |     |     |  +--ro tapi-photonic-media:power-spectral-density?   decimal64
+     |     |  |  |     |     +--ro tapi-photonic-media:measured-output-power
+     |     |  |  |     |        +--ro tapi-photonic-media:total-power?              decimal64
+     |     |  |  |     |        +--ro tapi-photonic-media:power-spectral-density?   decimal64
      |     |  |  |     +--ro tapi-photonic-media:mc-connection-end-point-spec
      |     |  |  |     |  +--ro tapi-photonic-media:spectrum-pac
      |     |  |  |     |  |  +--ro tapi-photonic-media:occupied-spectrum
      |     |  |  |     |  |  |  +--ro tapi-photonic-media:upper-frequency?   uint64
      |     |  |  |     |  |  |  +--ro tapi-photonic-media:lower-frequency?   uint64
      |     |  |  |     |  |  +--ro tapi-photonic-media:local-id?            string
+     |     |  |  |     |  |  +--ro tapi-photonic-media:name* [value-name]
+     |     |  |  |     |  |     +--ro tapi-photonic-media:value-name    string
+     |     |  |  |     |  |     +--ro tapi-photonic-media:value?        string
+     |     |  |  |     |  +--ro tapi-photonic-media:flexi-grid-pac
+     |     |  |  |     |  |  +--ro tapi-photonic-media:n?                              int64
+     |     |  |  |     |  |  +--ro tapi-photonic-media:m?                              uint64
+     |     |  |  |     |  |  +--ro tapi-photonic-media:flexi-ch-spc-type?              flexi-channel-spacing
+     |     |  |  |     |  |  +--ro tapi-photonic-media:flexi-slot-width-granularity?   flexi-slot-width-granularity
+     |     |  |  |     |  |  +--ro tapi-photonic-media:local-id?                       string
      |     |  |  |     |  |  +--ro tapi-photonic-media:name* [value-name]
      |     |  |  |     |  |     +--ro tapi-photonic-media:value-name    string
      |     |  |  |     |  |     +--ro tapi-photonic-media:value?        string
@@ -3034,7 +3085,7 @@ module: tapi-common
      |     |  |  |     |  |  +--ro tapi-digital-otn:tributary-slot-list*     uint64
      |     |  |  |     |  |  +--ro tapi-digital-otn:tributary-port-number?   uint64
      |     |  |  |     |  |  +--ro tapi-digital-otn:accepted-msi?            string
-     |     |  |  |     |  |  +--ro tapi-digital-otn:odu-mip* [codirectional]
+     |     |  |  |     |  |  +--ro tapi-digital-otn:odu-mip* []
      |     |  |  |     |  |     +--ro tapi-digital-otn:otn-oam-common
      |     |  |  |     |  |     |  +--ro tapi-digital-otn:ex-dapi?            string
      |     |  |  |     |  |     |  +--ro tapi-digital-otn:ex-sapi?            string
@@ -3045,7 +3096,7 @@ module: tapi-common
      |     |  |  |     |  |     |  +--ro tapi-digital-otn:tim-det-mode?       tim-det-mo
      |     |  |  |     |  |     |  +--ro tapi-digital-otn:tim-act-disabled?   boolean
      |     |  |  |     |  |     |  +--ro tapi-digital-otn:deg-m?              uint64
-     |     |  |  |     |  |     +--ro tapi-digital-otn:codirectional     boolean
+     |     |  |  |     |  |     +--ro tapi-digital-otn:codirectional?    boolean
      |     |  |  |     |  |     +--ro tapi-digital-otn:odu-mip-status
      |     |  |  |     |  |        +--ro tapi-digital-otn:acti?                                    string
      |     |  |  |     |  |        +--ro tapi-digital-otn:tcm-fields-in-use*                       uint64
@@ -3201,16 +3252,16 @@ module: tapi-common
      |     |  |  |  |  +--ro tapi-photonic-media:spectrum
      |     |  |  |  |  |  +--ro tapi-photonic-media:upper-frequency?   uint64
      |     |  |  |  |  |  +--ro tapi-photonic-media:lower-frequency?   uint64
-     |     |  |  |  |  +--ro tapi-photonic-media:supportable-maximum-output-power
+     |     |  |  |  |  +--ro tapi-photonic-media:supportable-max-output-power
      |     |  |  |  |  |  +--ro tapi-photonic-media:total-power?              decimal64
      |     |  |  |  |  |  +--ro tapi-photonic-media:power-spectral-density?   decimal64
-     |     |  |  |  |  +--ro tapi-photonic-media:supportable-minimum-output-power
+     |     |  |  |  |  +--ro tapi-photonic-media:supportable-min-output-power
      |     |  |  |  |  |  +--ro tapi-photonic-media:total-power?              decimal64
      |     |  |  |  |  |  +--ro tapi-photonic-media:power-spectral-density?   decimal64
-     |     |  |  |  |  +--ro tapi-photonic-media:tolerable-maximum-input-power
+     |     |  |  |  |  +--ro tapi-photonic-media:tolerable-max-input-power
      |     |  |  |  |  |  +--ro tapi-photonic-media:total-power?              decimal64
      |     |  |  |  |  |  +--ro tapi-photonic-media:power-spectral-density?   decimal64
-     |     |  |  |  |  +--ro tapi-photonic-media:tolerable-minimum-input-power
+     |     |  |  |  |  +--ro tapi-photonic-media:tolerable-min-input-power
      |     |  |  |  |     +--ro tapi-photonic-media:total-power?              decimal64
      |     |  |  |  |     +--ro tapi-photonic-media:power-spectral-density?   decimal64
      |     |  |  |  +--ro tapi-photonic-media:total-power-threshold-pac* []
@@ -3362,6 +3413,10 @@ module: tapi-common
      |     |  |  +--ro tapi-topology:topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
      |     |  +--ro tapi-topology:profile* [profile-uuid]
      |     |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
+     |     |  +--ro tapi-topology:risk-parameter-pac
+     |     |  |  +--ro tapi-topology:risk-characteristic* [risk-characteristic-name]
+     |     |  |     +--ro tapi-topology:risk-characteristic-name    string
+     |     |  |     +--ro tapi-topology:risk-identifier-list*       string
      |     |  +--ro tapi-topology:uuid                                       uuid
      |     |  +--ro tapi-topology:name* [value-name]
      |     |  |  +--ro tapi-topology:value-name    string
@@ -3642,7 +3697,7 @@ module: tapi-common
      |  |  |  |  |  +--rw tapi-connectivity:value-name    string
      |  |  |  |  |  +--rw tapi-connectivity:value?        string
      |  |  |  |  +--rw tapi-photonic-media:mcg-connectivity-service-end-point-spec
-     |  |  |  |  |  +--rw tapi-photonic-media:number-of-mc?              uint64
+     |  |  |  |  |  +--rw tapi-photonic-media:number-of-mc?               uint64
      |  |  |  |  |  +--rw tapi-photonic-media:mc-spectrum-config-pac* [local-id]
      |  |  |  |  |  |  +--rw tapi-photonic-media:spectrum
      |  |  |  |  |  |  |  +--rw tapi-photonic-media:upper-frequency?   uint64
@@ -3651,16 +3706,16 @@ module: tapi-common
      |  |  |  |  |  |  |  +--rw tapi-photonic-media:adjustment-granularity?   adjustment-granularity
      |  |  |  |  |  |  |  +--rw tapi-photonic-media:grid-type?                grid-type
      |  |  |  |  |  |  +--rw tapi-photonic-media:power-management-config-pac
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:intended-maximum-output-power
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:max-output-power
      |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:total-power?              decimal64
      |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:intended-minimum-output-power
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:min-output-power
      |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:total-power?              decimal64
      |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:expected-maximum-input-power
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:max-input-power
      |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:total-power?              decimal64
      |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:expected-minimum-input-power
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:min-input-power
      |  |  |  |  |  |  |     +--rw tapi-photonic-media:total-power?              decimal64
      |  |  |  |  |  |  |     +--rw tapi-photonic-media:power-spectral-density?   decimal64
      |  |  |  |  |  |  +--rw tapi-photonic-media:local-id                       string
@@ -3668,39 +3723,71 @@ module: tapi-common
      |  |  |  |  |  |     +--rw tapi-photonic-media:value-name    string
      |  |  |  |  |  |     +--rw tapi-photonic-media:value?        string
      |  |  |  |  |  +--rw tapi-photonic-media:mc-bandwidth-config-pac* [local-id]
-     |  |  |  |  |     +--rw tapi-photonic-media:spectrum-bandwidth?            uint64
-     |  |  |  |  |     +--rw tapi-photonic-media:edge-frequency-constraint
-     |  |  |  |  |     |  +--rw tapi-photonic-media:adjustment-granularity?   adjustment-granularity
-     |  |  |  |  |     |  +--rw tapi-photonic-media:grid-type?                grid-type
+     |  |  |  |  |  |  +--rw tapi-photonic-media:spectrum-bandwidth?            uint64
+     |  |  |  |  |  |  +--rw tapi-photonic-media:edge-frequency-constraint
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:adjustment-granularity?   adjustment-granularity
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:grid-type?                grid-type
+     |  |  |  |  |  |  +--rw tapi-photonic-media:power-management-config-pac
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:max-output-power
+     |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:total-power?              decimal64
+     |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:min-output-power
+     |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:total-power?              decimal64
+     |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:max-input-power
+     |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:total-power?              decimal64
+     |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:min-input-power
+     |  |  |  |  |  |  |     +--rw tapi-photonic-media:total-power?              decimal64
+     |  |  |  |  |  |  |     +--rw tapi-photonic-media:power-spectral-density?   decimal64
+     |  |  |  |  |  |  +--rw tapi-photonic-media:local-id                       string
+     |  |  |  |  |  |  +--rw tapi-photonic-media:name* [value-name]
+     |  |  |  |  |  |     +--rw tapi-photonic-media:value-name    string
+     |  |  |  |  |  |     +--rw tapi-photonic-media:value?        string
+     |  |  |  |  |  +--rw tapi-photonic-media:mc-flexi-grid-config-pac* [local-id]
+     |  |  |  |  |     +--rw tapi-photonic-media:flexi-grid-config-pac
+     |  |  |  |  |     |  +--rw tapi-photonic-media:n?                              int64
+     |  |  |  |  |     |  +--rw tapi-photonic-media:m?                              uint64
+     |  |  |  |  |     |  +--rw tapi-photonic-media:flexi-ch-spc-type?              flexi-channel-spacing
+     |  |  |  |  |     |  +--rw tapi-photonic-media:flexi-slot-width-granularity?   flexi-slot-width-granularity
      |  |  |  |  |     +--rw tapi-photonic-media:power-management-config-pac
-     |  |  |  |  |     |  +--rw tapi-photonic-media:intended-maximum-output-power
+     |  |  |  |  |     |  +--rw tapi-photonic-media:max-output-power
      |  |  |  |  |     |  |  +--rw tapi-photonic-media:total-power?              decimal64
      |  |  |  |  |     |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  |  |     |  +--rw tapi-photonic-media:intended-minimum-output-power
+     |  |  |  |  |     |  +--rw tapi-photonic-media:min-output-power
      |  |  |  |  |     |  |  +--rw tapi-photonic-media:total-power?              decimal64
      |  |  |  |  |     |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  |  |     |  +--rw tapi-photonic-media:expected-maximum-input-power
+     |  |  |  |  |     |  +--rw tapi-photonic-media:max-input-power
      |  |  |  |  |     |  |  +--rw tapi-photonic-media:total-power?              decimal64
      |  |  |  |  |     |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  |  |     |  +--rw tapi-photonic-media:expected-minimum-input-power
+     |  |  |  |  |     |  +--rw tapi-photonic-media:min-input-power
      |  |  |  |  |     |     +--rw tapi-photonic-media:total-power?              decimal64
      |  |  |  |  |     |     +--rw tapi-photonic-media:power-spectral-density?   decimal64
      |  |  |  |  |     +--rw tapi-photonic-media:local-id                       string
      |  |  |  |  |     +--rw tapi-photonic-media:name* [value-name]
      |  |  |  |  |        +--rw tapi-photonic-media:value-name    string
      |  |  |  |  |        +--rw tapi-photonic-media:value?        string
-     |  |  |  |  +--rw tapi-photonic-media:otsia-csep-ttp-spec
+     |  |  |  |  +--rw tapi-photonic-media:otsia-connectivity-service-end-point-spec
      |  |  |  |  |  +--rw tapi-photonic-media:otsi-config* [local-id]
-     |  |  |  |  |  |  +--rw tapi-photonic-media:central-frequency?   uint64
-     |  |  |  |  |  |  +--rw tapi-photonic-media:laser-control?       laser-control-type
-     |  |  |  |  |  |  +--rw tapi-photonic-media:otsi-power-config
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:transmit-power
-     |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:total-power?              decimal64
-     |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
+     |  |  |  |  |  |  +--rw tapi-photonic-media:central-frequency?             uint64
+     |  |  |  |  |  |  +--rw tapi-photonic-media:laser-control?                 laser-control-type
+     |  |  |  |  |  |  +--rw tapi-photonic-media:otsi-threshold-power-config
      |  |  |  |  |  |  |  +--rw tapi-photonic-media:total-power-warn-threshold-upper?   decimal64
      |  |  |  |  |  |  |  +--rw tapi-photonic-media:total-power-warn-threshold-lower?   decimal64
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:rx-total-power?                     decimal64
-     |  |  |  |  |  |  +--rw tapi-photonic-media:local-id             string
+     |  |  |  |  |  |  +--rw tapi-photonic-media:power-management-config-pac
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:max-output-power
+     |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:total-power?              decimal64
+     |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:min-output-power
+     |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:total-power?              decimal64
+     |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:max-input-power
+     |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:total-power?              decimal64
+     |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:min-input-power
+     |  |  |  |  |  |  |     +--rw tapi-photonic-media:total-power?              decimal64
+     |  |  |  |  |  |  |     +--rw tapi-photonic-media:power-spectral-density?   decimal64
+     |  |  |  |  |  |  +--rw tapi-photonic-media:local-id                       string
      |  |  |  |  |  |  +--rw tapi-photonic-media:name* [value-name]
      |  |  |  |  |  |     +--rw tapi-photonic-media:value-name    string
      |  |  |  |  |  |     +--rw tapi-photonic-media:value?        string
@@ -3719,16 +3806,16 @@ module: tapi-common
      |  |  |  |  |  |  |  +--rw tapi-photonic-media:grid-type?                grid-type
      |  |  |  |  |  |  +--rw tapi-photonic-media:non-adjacent-spectrum?         uint64
      |  |  |  |  |  |  +--rw tapi-photonic-media:power-management-config-pac
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:intended-maximum-output-power
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:max-output-power
      |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:total-power?              decimal64
      |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:intended-minimum-output-power
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:min-output-power
      |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:total-power?              decimal64
      |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:expected-maximum-input-power
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:max-input-power
      |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:total-power?              decimal64
      |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:expected-minimum-input-power
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:min-input-power
      |  |  |  |  |  |  |     +--rw tapi-photonic-media:total-power?              decimal64
      |  |  |  |  |  |  |     +--rw tapi-photonic-media:power-spectral-density?   decimal64
      |  |  |  |  |  |  +--rw tapi-photonic-media:local-id                       string
@@ -3747,16 +3834,16 @@ module: tapi-common
      |  |  |  |  |  |  |  +--rw tapi-photonic-media:adjustment-granularity?   adjustment-granularity
      |  |  |  |  |  |  |  +--rw tapi-photonic-media:grid-type?                grid-type
      |  |  |  |  |  |  +--rw tapi-photonic-media:power-management-config-pac
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:intended-maximum-output-power
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:max-output-power
      |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:total-power?              decimal64
      |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:intended-minimum-output-power
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:min-output-power
      |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:total-power?              decimal64
      |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:expected-maximum-input-power
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:max-input-power
      |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:total-power?              decimal64
      |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:expected-minimum-input-power
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:min-input-power
      |  |  |  |  |  |  |     +--rw tapi-photonic-media:total-power?              decimal64
      |  |  |  |  |  |  |     +--rw tapi-photonic-media:power-spectral-density?   decimal64
      |  |  |  |  |  |  +--rw tapi-photonic-media:local-id                       string
@@ -3764,12 +3851,8 @@ module: tapi-common
      |  |  |  |  |  |     +--rw tapi-photonic-media:value-name    string
      |  |  |  |  |  |     +--rw tapi-photonic-media:value?        string
      |  |  |  |  |  +--rw tapi-photonic-media:otsi-mc-frequency-config-pac* [local-id]
-     |  |  |  |  |  |  +--rw tapi-photonic-media:central-frequency
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:frequency-constraint
-     |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:adjustment-granularity?   adjustment-granularity
-     |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:grid-type?                grid-type
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:central-frequency?      uint64
-     |  |  |  |  |  |  +--rw tapi-photonic-media:center-frequency-offset?       uint64
+     |  |  |  |  |  |  +--rw tapi-photonic-media:central-frequency?             uint64
+     |  |  |  |  |  |  +--rw tapi-photonic-media:center-frequency-offset?       int64
      |  |  |  |  |  |  +--rw tapi-photonic-media:spectrum-bandwidth?            uint64
      |  |  |  |  |  |  +--rw tapi-photonic-media:center-frequency-constraint
      |  |  |  |  |  |  |  +--rw tapi-photonic-media:adjustment-granularity?   adjustment-granularity
@@ -3778,23 +3861,46 @@ module: tapi-common
      |  |  |  |  |  |  |  +--rw tapi-photonic-media:adjustment-granularity?   adjustment-granularity
      |  |  |  |  |  |  |  +--rw tapi-photonic-media:grid-type?                grid-type
      |  |  |  |  |  |  +--rw tapi-photonic-media:power-management-config-pac
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:intended-maximum-output-power
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:max-output-power
      |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:total-power?              decimal64
      |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:intended-minimum-output-power
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:min-output-power
      |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:total-power?              decimal64
      |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:expected-maximum-input-power
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:max-input-power
      |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:total-power?              decimal64
      |  |  |  |  |  |  |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
-     |  |  |  |  |  |  |  +--rw tapi-photonic-media:expected-minimum-input-power
+     |  |  |  |  |  |  |  +--rw tapi-photonic-media:min-input-power
      |  |  |  |  |  |  |     +--rw tapi-photonic-media:total-power?              decimal64
      |  |  |  |  |  |  |     +--rw tapi-photonic-media:power-spectral-density?   decimal64
      |  |  |  |  |  |  +--rw tapi-photonic-media:local-id                       string
      |  |  |  |  |  |  +--rw tapi-photonic-media:name* [value-name]
      |  |  |  |  |  |     +--rw tapi-photonic-media:value-name    string
      |  |  |  |  |  |     +--rw tapi-photonic-media:value?        string
-     |  |  |  |  |  +--rw tapi-photonic-media:number-of-otsi-mc?              uint64
+     |  |  |  |  |  +--rw tapi-photonic-media:number-of-otsi-mc?               uint64
+     |  |  |  |  |  +--rw tapi-photonic-media:otsi-mc-flexi-grid-config-pac* [local-id]
+     |  |  |  |  |     +--rw tapi-photonic-media:flexi-grid-config-pac
+     |  |  |  |  |     |  +--rw tapi-photonic-media:n?                              int64
+     |  |  |  |  |     |  +--rw tapi-photonic-media:m?                              uint64
+     |  |  |  |  |     |  +--rw tapi-photonic-media:flexi-ch-spc-type?              flexi-channel-spacing
+     |  |  |  |  |     |  +--rw tapi-photonic-media:flexi-slot-width-granularity?   flexi-slot-width-granularity
+     |  |  |  |  |     +--rw tapi-photonic-media:power-management-config-pac
+     |  |  |  |  |     |  +--rw tapi-photonic-media:max-output-power
+     |  |  |  |  |     |  |  +--rw tapi-photonic-media:total-power?              decimal64
+     |  |  |  |  |     |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
+     |  |  |  |  |     |  +--rw tapi-photonic-media:min-output-power
+     |  |  |  |  |     |  |  +--rw tapi-photonic-media:total-power?              decimal64
+     |  |  |  |  |     |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
+     |  |  |  |  |     |  +--rw tapi-photonic-media:max-input-power
+     |  |  |  |  |     |  |  +--rw tapi-photonic-media:total-power?              decimal64
+     |  |  |  |  |     |  |  +--rw tapi-photonic-media:power-spectral-density?   decimal64
+     |  |  |  |  |     |  +--rw tapi-photonic-media:min-input-power
+     |  |  |  |  |     |     +--rw tapi-photonic-media:total-power?              decimal64
+     |  |  |  |  |     |     +--rw tapi-photonic-media:power-spectral-density?   decimal64
+     |  |  |  |  |     +--rw tapi-photonic-media:local-id                       string
+     |  |  |  |  |     +--rw tapi-photonic-media:name* [value-name]
+     |  |  |  |  |        +--rw tapi-photonic-media:value-name    string
+     |  |  |  |  |        +--rw tapi-photonic-media:value?        string
      |  |  |  |  +--rw tapi-digital-otn:odu-connectivity-service-end-point-spec
      |  |  |  |  |  +--rw tapi-digital-otn:odu-csep-common-pac
      |  |  |  |  |  |  +--rw tapi-digital-otn:odu-rate?                  uint64
@@ -3842,7 +3948,7 @@ module: tapi-common
      |  |  |  |     +--rw tapi-oam:is-transient?                boolean
      |  |  |  |     +--rw tapi-oam:codirectional?               boolean
      |  |  |  |     +--rw tapi-oam:pm-parameter* [pm-parameter-name]
-     |  |  |  |     |  +--rw tapi-oam:pm-parameter-name    tapi-common:pm-param-name
+     |  |  |  |     |  +--rw tapi-oam:pm-parameter-name    tapi-common:pm
      |  |  |  |     |  +--rw tapi-oam:threshold-config* [threshold-location threshold-type clear-threshold]
      |  |  |  |     |     +--rw tapi-oam:threshold-location    threshold-crossing-qualifier
      |  |  |  |     |     +--rw tapi-oam:threshold-type        threshold-type
@@ -4138,7 +4244,9 @@ module: tapi-common
      |  |  |  +--rw tapi-connectivity:restore-priority?                     uint64
      |  |  |  +--rw tapi-connectivity:set-up-priority?                      uint64
      |  |  |  +--rw tapi-connectivity:reversion-mode?                       reversion-mode
-     |  |  |  +--rw tapi-connectivity:wait-to-revert-time?                  uint64
+     |  |  |  +--rw tapi-connectivity:wait-to-revert-time
+     |  |  |  |  +--rw tapi-connectivity:value?   uint64
+     |  |  |  |  +--rw tapi-connectivity:unit?    time-unit
      |  |  |  +--rw tapi-connectivity:hold-off-time?                        uint64
      |  |  |  +--rw tapi-connectivity:is-lock-out?                          boolean
      |  |  |  +--rw tapi-connectivity:is-frozen?                            boolean
@@ -4303,7 +4411,9 @@ module: tapi-common
      |     |  |  +--ro tapi-connectivity:restore-priority?                     uint64
      |     |  |  +--ro tapi-connectivity:set-up-priority?                      uint64
      |     |  |  +--ro tapi-connectivity:reversion-mode?                       reversion-mode
-     |     |  |  +--ro tapi-connectivity:wait-to-revert-time?                  uint64
+     |     |  |  +--ro tapi-connectivity:wait-to-revert-time
+     |     |  |  |  +--ro tapi-connectivity:value?   uint64
+     |     |  |  |  +--ro tapi-connectivity:unit?    time-unit
      |     |  |  +--ro tapi-connectivity:hold-off-time?                        uint64
      |     |  |  +--ro tapi-connectivity:is-lock-out?                          boolean
      |     |  |  +--ro tapi-connectivity:is-frozen?                            boolean
@@ -4630,7 +4740,7 @@ module: tapi-common
      |  |  |  +--rw tapi-oam:is-transient?                boolean
      |  |  |  +--rw tapi-oam:codirectional?               boolean
      |  |  |  +--rw tapi-oam:pm-parameter* [pm-parameter-name]
-     |  |  |  |  +--rw tapi-oam:pm-parameter-name    tapi-common:pm-param-name
+     |  |  |  |  +--rw tapi-oam:pm-parameter-name    tapi-common:pm
      |  |  |  |  +--rw tapi-oam:threshold-config* [threshold-location threshold-type clear-threshold]
      |  |  |  |     +--rw tapi-oam:threshold-location    threshold-crossing-qualifier
      |  |  |  |     +--rw tapi-oam:threshold-type        threshold-type
@@ -5808,7 +5918,9 @@ module: tapi-connectivity
     |        |  |  +--ro restore-priority?                     uint64
     |        |  |  +--ro set-up-priority?                      uint64
     |        |  |  +--ro reversion-mode?                       reversion-mode
-    |        |  |  +--ro wait-to-revert-time?                  uint64
+    |        |  |  +--ro wait-to-revert-time
+    |        |  |  |  +--ro value?   uint64
+    |        |  |  |  +--ro unit?    time-unit
     |        |  |  +--ro hold-off-time?                        uint64
     |        |  |  +--ro is-lock-out?                          boolean
     |        |  |  +--ro is-frozen?                            boolean
@@ -6135,7 +6247,9 @@ module: tapi-connectivity
     |        |  +--ro restore-priority?                     uint64
     |        |  +--ro set-up-priority?                      uint64
     |        |  +--ro reversion-mode?                       reversion-mode
-    |        |  +--ro wait-to-revert-time?                  uint64
+    |        |  +--ro wait-to-revert-time
+    |        |  |  +--ro value?   uint64
+    |        |  |  +--ro unit?    time-unit
     |        |  +--ro hold-off-time?                        uint64
     |        |  +--ro is-lock-out?                          boolean
     |        |  +--ro is-frozen?                            boolean
@@ -6479,7 +6593,9 @@ module: tapi-connectivity
     |        |  +--ro restore-priority?                     uint64
     |        |  +--ro set-up-priority?                      uint64
     |        |  +--ro reversion-mode?                       reversion-mode
-    |        |  +--ro wait-to-revert-time?                  uint64
+    |        |  +--ro wait-to-revert-time
+    |        |  |  +--ro value?   uint64
+    |        |  |  +--ro unit?    time-unit
     |        |  +--ro hold-off-time?                        uint64
     |        |  +--ro is-lock-out?                          boolean
     |        |  +--ro is-frozen?                            boolean
@@ -6822,7 +6938,9 @@ module: tapi-connectivity
     |  |  |  +---w restore-priority?                     uint64
     |  |  |  +---w set-up-priority?                      uint64
     |  |  |  +---w reversion-mode?                       reversion-mode
-    |  |  |  +---w wait-to-revert-time?                  uint64
+    |  |  |  +---w wait-to-revert-time
+    |  |  |  |  +---w value?   uint64
+    |  |  |  |  +---w unit?    time-unit
     |  |  |  +---w hold-off-time?                        uint64
     |  |  |  +---w is-lock-out?                          boolean
     |  |  |  +---w is-frozen?                            boolean
@@ -7136,7 +7254,9 @@ module: tapi-connectivity
     |        |  +--ro restore-priority?                     uint64
     |        |  +--ro set-up-priority?                      uint64
     |        |  +--ro reversion-mode?                       reversion-mode
-    |        |  +--ro wait-to-revert-time?                  uint64
+    |        |  +--ro wait-to-revert-time
+    |        |  |  +--ro value?   uint64
+    |        |  |  +--ro unit?    time-unit
     |        |  +--ro hold-off-time?                        uint64
     |        |  +--ro is-lock-out?                          boolean
     |        |  +--ro is-frozen?                            boolean
@@ -7478,7 +7598,9 @@ module: tapi-connectivity
     |  |  |  +---w restore-priority?                     uint64
     |  |  |  +---w set-up-priority?                      uint64
     |  |  |  +---w reversion-mode?                       reversion-mode
-    |  |  |  +---w wait-to-revert-time?                  uint64
+    |  |  |  +---w wait-to-revert-time
+    |  |  |  |  +---w value?   uint64
+    |  |  |  |  +---w unit?    time-unit
     |  |  |  +---w hold-off-time?                        uint64
     |  |  |  +---w is-lock-out?                          boolean
     |  |  |  +---w is-frozen?                            boolean
@@ -7792,7 +7914,9 @@ module: tapi-connectivity
     |        |  +--ro restore-priority?                     uint64
     |        |  +--ro set-up-priority?                      uint64
     |        |  +--ro reversion-mode?                       reversion-mode
-    |        |  +--ro wait-to-revert-time?                  uint64
+    |        |  +--ro wait-to-revert-time
+    |        |  |  +--ro value?   uint64
+    |        |  |  +--ro unit?    time-unit
     |        |  +--ro hold-off-time?                        uint64
     |        |  +--ro is-lock-out?                          boolean
     |        |  +--ro is-frozen?                            boolean
@@ -8652,7 +8776,7 @@ module: tapi-notification
     |  |  +--ro value-name    string
     |  |  +--ro value?        string
     |  +--ro tapi-fm:alarm-info
-    |  |  +--ro tapi-fm:alarm-name?           tapi-common:alarm-name
+    |  |  +--ro tapi-fm:alarm-name?           tapi-common:alr
     |  |  +--ro tapi-fm:native-alarm-name?    string
     |  |  +--ro tapi-fm:native-alarm-info?    string
     |  |  +--ro tapi-fm:is-transient?         boolean
@@ -8661,7 +8785,7 @@ module: tapi-notification
     |  |  +--ro tapi-fm:alarm-category?       alarm-category
     |  |  +--ro tapi-fm:alarm-qualifier?      string
     |  +--ro tapi-fm:tca-info
-    |     +--ro tapi-fm:threshold-indicator-name?          tapi-common:pm-param-name
+    |     +--ro tapi-fm:threshold-indicator-name?          tapi-common:pm
     |     +--ro tapi-fm:native-threshold-indicator-name?   string
     |     +--ro tapi-fm:native-tca-info?                   string
     |     +--ro tapi-fm:is-transient?                      boolean
@@ -8935,6 +9059,10 @@ module: tapi-notification
        |  |  +--ro tapi-topology:topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
        |  +--ro tapi-topology:profile* [profile-uuid]
        |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
+       |  +--ro tapi-topology:risk-parameter-pac
+       |  |  +--ro tapi-topology:risk-characteristic* [risk-characteristic-name]
+       |  |     +--ro tapi-topology:risk-characteristic-name    string
+       |  |     +--ro tapi-topology:risk-identifier-list*       string
        |  +--ro tapi-topology:uuid?                                      uuid
        |  +--ro tapi-topology:name* [value-name]
        |  |  +--ro tapi-topology:value-name    string
@@ -9153,6 +9281,10 @@ module: tapi-notification
        |  |  |  +--ro tapi-topology:topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
        |  |  +--ro tapi-topology:profile* [profile-uuid]
        |  |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
+       |  |  +--ro tapi-topology:risk-parameter-pac
+       |  |  |  +--ro tapi-topology:risk-characteristic* [risk-characteristic-name]
+       |  |  |     +--ro tapi-topology:risk-characteristic-name    string
+       |  |  |     +--ro tapi-topology:risk-identifier-list*       string
        |  |  +--ro tapi-topology:uuid                                       uuid
        |  |  +--ro tapi-topology:name* [value-name]
        |  |  |  +--ro tapi-topology:value-name    string
@@ -9821,7 +9953,9 @@ module: tapi-notification
        |  |  +--ro tapi-connectivity:restore-priority?                     uint64
        |  |  +--ro tapi-connectivity:set-up-priority?                      uint64
        |  |  +--ro tapi-connectivity:reversion-mode?                       reversion-mode
-       |  |  +--ro tapi-connectivity:wait-to-revert-time?                  uint64
+       |  |  +--ro tapi-connectivity:wait-to-revert-time
+       |  |  |  +--ro tapi-connectivity:value?   uint64
+       |  |  |  +--ro tapi-connectivity:unit?    time-unit
        |  |  +--ro tapi-connectivity:hold-off-time?                        uint64
        |  |  +--ro tapi-connectivity:is-lock-out?                          boolean
        |  |  +--ro tapi-connectivity:is-frozen?                            boolean
@@ -10039,7 +10173,9 @@ module: tapi-notification
        |  |  |  +--ro tapi-connectivity:restore-priority?                     uint64
        |  |  |  +--ro tapi-connectivity:set-up-priority?                      uint64
        |  |  |  +--ro tapi-connectivity:reversion-mode?                       reversion-mode
-       |  |  |  +--ro tapi-connectivity:wait-to-revert-time?                  uint64
+       |  |  |  +--ro tapi-connectivity:wait-to-revert-time
+       |  |  |  |  +--ro tapi-connectivity:value?   uint64
+       |  |  |  |  +--ro tapi-connectivity:unit?    time-unit
        |  |  |  +--ro tapi-connectivity:hold-off-time?                        uint64
        |  |  |  +--ro tapi-connectivity:is-lock-out?                          boolean
        |  |  |  +--ro tapi-connectivity:is-frozen?                            boolean
@@ -10185,7 +10321,9 @@ module: tapi-notification
        |  |  +--ro tapi-connectivity:restore-priority?                     uint64
        |  |  +--ro tapi-connectivity:set-up-priority?                      uint64
        |  |  +--ro tapi-connectivity:reversion-mode?                       reversion-mode
-       |  |  +--ro tapi-connectivity:wait-to-revert-time?                  uint64
+       |  |  +--ro tapi-connectivity:wait-to-revert-time
+       |  |  |  +--ro tapi-connectivity:value?   uint64
+       |  |  |  +--ro tapi-connectivity:unit?    time-unit
        |  |  +--ro tapi-connectivity:hold-off-time?                        uint64
        |  |  +--ro tapi-connectivity:is-lock-out?                          boolean
        |  |  +--ro tapi-connectivity:is-frozen?                            boolean
@@ -10342,7 +10480,7 @@ module: tapi-notification
        |  |  +--ro tapi-oam:is-transient?                boolean
        |  |  +--ro tapi-oam:codirectional?               boolean
        |  |  +--ro tapi-oam:pm-parameter* [pm-parameter-name]
-       |  |  |  +--ro tapi-oam:pm-parameter-name    tapi-common:pm-param-name
+       |  |  |  +--ro tapi-oam:pm-parameter-name    tapi-common:pm
        |  |  |  +--ro tapi-oam:threshold-config* [threshold-location threshold-type clear-threshold]
        |  |  |     +--ro tapi-oam:threshold-location    threshold-crossing-qualifier
        |  |  |     +--ro tapi-oam:threshold-type        threshold-type
@@ -10561,7 +10699,7 @@ module: tapi-notification
        |  +--ro tapi-oam:is-transient?                boolean
        |  +--ro tapi-oam:codirectional?               boolean
        |  +--ro tapi-oam:pm-parameter* [pm-parameter-name]
-       |  |  +--ro tapi-oam:pm-parameter-name    tapi-common:pm-param-name
+       |  |  +--ro tapi-oam:pm-parameter-name    tapi-common:pm
        |  |  +--ro tapi-oam:threshold-config* [threshold-location threshold-type clear-threshold]
        |  |     +--ro tapi-oam:threshold-location    threshold-crossing-qualifier
        |  |     +--ro tapi-oam:threshold-type        threshold-type
@@ -10933,7 +11071,7 @@ module: tapi-notification
        |     +--ro tapi-equipment:value-name    string
        |     +--ro tapi-equipment:value?        string
        +--ro tapi-fm:detected-condition
-       |  +--ro tapi-fm:detected-condition-name?          tapi-common:detected
+       |  +--ro tapi-fm:detected-condition-name?          tapi-common:dc
        |  +--ro tapi-fm:detected-condition-native-name?   string
        |  +--ro tapi-fm:detected-condition-native-info?   string
        |  +--ro tapi-fm:detected-condition-qualifier?     string
@@ -12019,7 +12157,7 @@ module: tapi-oam
     |        |  +--ro is-transient?                boolean
     |        |  +--ro codirectional?               boolean
     |        |  +--ro pm-parameter* [pm-parameter-name]
-    |        |  |  +--ro pm-parameter-name    tapi-common:pm-param-name
+    |        |  |  +--ro pm-parameter-name    tapi-common:pm
     |        |  |  +--ro threshold-config* [threshold-location threshold-type clear-threshold]
     |        |  |     +--ro threshold-location    threshold-crossing-qualifier
     |        |  |     +--ro threshold-type        threshold-type
@@ -12354,7 +12492,7 @@ module: tapi-oam
     |        |  +--ro is-transient?                boolean
     |        |  +--ro codirectional?               boolean
     |        |  +--ro pm-parameter* [pm-parameter-name]
-    |        |  |  +--ro pm-parameter-name    tapi-common:pm-param-name
+    |        |  |  +--ro pm-parameter-name    tapi-common:pm
     |        |  |  +--ro threshold-config* [threshold-location threshold-type clear-threshold]
     |        |  |     +--ro threshold-location    threshold-crossing-qualifier
     |        |  |     +--ro threshold-type        threshold-type
@@ -12567,7 +12705,7 @@ module: tapi-oam
     |        |  +--ro is-transient?                boolean
     |        |  +--ro codirectional?               boolean
     |        |  +--ro pm-parameter* [pm-parameter-name]
-    |        |  |  +--ro pm-parameter-name    tapi-common:pm-param-name
+    |        |  |  +--ro pm-parameter-name    tapi-common:pm
     |        |  |  +--ro threshold-config* [threshold-location threshold-type clear-threshold]
     |        |  |     +--ro threshold-location    threshold-crossing-qualifier
     |        |  |     +--ro threshold-type        threshold-type
@@ -12775,7 +12913,7 @@ module: tapi-oam
     |        |  +--ro is-transient?                boolean
     |        |  +--ro codirectional?               boolean
     |        |  +--ro pm-parameter* [pm-parameter-name]
-    |        |  |  +--ro pm-parameter-name    tapi-common:pm-param-name
+    |        |  |  +--ro pm-parameter-name    tapi-common:pm
     |        |  |  +--ro threshold-config* [threshold-location threshold-type clear-threshold]
     |        |  |     +--ro threshold-location    threshold-crossing-qualifier
     |        |  |     +--ro threshold-type        threshold-type
@@ -12966,7 +13104,7 @@ module: tapi-oam
     |  |     +---w is-transient?                boolean
     |  |     +---w codirectional?               boolean
     |  |     +---w pm-parameter* [pm-parameter-name]
-    |  |     |  +---w pm-parameter-name    tapi-common:pm-param-name
+    |  |     |  +---w pm-parameter-name    tapi-common:pm
     |  |     |  +---w threshold-config* [threshold-location threshold-type clear-threshold]
     |  |     |     +---w threshold-location    threshold-crossing-qualifier
     |  |     |     +---w threshold-type        threshold-type
@@ -12989,7 +13127,7 @@ module: tapi-oam
     |           +--ro is-transient?                boolean
     |           +--ro codirectional?               boolean
     |           +--ro pm-parameter* [pm-parameter-name]
-    |           |  +--ro pm-parameter-name    tapi-common:pm-param-name
+    |           |  +--ro pm-parameter-name    tapi-common:pm
     |           |  +--ro threshold-config* [threshold-location threshold-type clear-threshold]
     |           |     +--ro threshold-location    threshold-crossing-qualifier
     |           |     +--ro threshold-type        threshold-type
@@ -13016,7 +13154,7 @@ module: tapi-oam
     |  |     +---w is-transient?                boolean
     |  |     +---w codirectional?               boolean
     |  |     +---w pm-parameter* [pm-parameter-name]
-    |  |     |  +---w pm-parameter-name    tapi-common:pm-param-name
+    |  |     |  +---w pm-parameter-name    tapi-common:pm
     |  |     |  +---w threshold-config* [threshold-location threshold-type clear-threshold]
     |  |     |     +---w threshold-location    threshold-crossing-qualifier
     |  |     |     +---w threshold-type        threshold-type
@@ -13039,7 +13177,7 @@ module: tapi-oam
     |           +--ro is-transient?                boolean
     |           +--ro codirectional?               boolean
     |           +--ro pm-parameter* [pm-parameter-name]
-    |           |  +--ro pm-parameter-name    tapi-common:pm-param-name
+    |           |  +--ro pm-parameter-name    tapi-common:pm
     |           |  +--ro threshold-config* [threshold-location threshold-type clear-threshold]
     |           |     +--ro threshold-location    threshold-crossing-qualifier
     |           |     +--ro threshold-type        threshold-type
@@ -13068,7 +13206,7 @@ module: tapi-oam
                 +--ro is-transient?                boolean
                 +--ro codirectional?               boolean
                 +--ro pm-parameter* [pm-parameter-name]
-                |  +--ro pm-parameter-name    tapi-common:pm-param-name
+                |  +--ro pm-parameter-name    tapi-common:pm
                 |  +--ro threshold-config* [threshold-location threshold-type clear-threshold]
                 |     +--ro threshold-location    threshold-crossing-qualifier
                 |     +--ro threshold-type        threshold-type
@@ -13591,7 +13729,7 @@ module: tapi-streaming
              |  |     +--ro is-acknowledged?         boolean
              |  |     +--ro additional-alarm-info*   string
              |  +--ro tapi-fm:detected-condition
-             |     +--ro tapi-fm:detected-condition-name?          tapi-common:detected
+             |     +--ro tapi-fm:detected-condition-name?          tapi-common:dc
              |     +--ro tapi-fm:detected-condition-native-name?   string
              |     +--ro tapi-fm:detected-condition-native-info?   string
              |     +--ro tapi-fm:detected-condition-qualifier?     string
@@ -13878,6 +14016,10 @@ module: tapi-streaming
              |  |  +--ro tapi-topology:topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
              |  +--ro tapi-topology:profile* [profile-uuid]
              |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
+             |  +--ro tapi-topology:risk-parameter-pac
+             |  |  +--ro tapi-topology:risk-characteristic* [risk-characteristic-name]
+             |  |     +--ro tapi-topology:risk-characteristic-name    string
+             |  |     +--ro tapi-topology:risk-identifier-list*       string
              |  +--ro tapi-topology:uuid?                                      uuid
              |  +--ro tapi-topology:name* [value-name]
              |  |  +--ro tapi-topology:value-name    string
@@ -14096,6 +14238,10 @@ module: tapi-streaming
              |  |  |  +--ro tapi-topology:topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
              |  |  +--ro tapi-topology:profile* [profile-uuid]
              |  |  |  +--ro tapi-topology:profile-uuid    -> /tapi-common:context/profile/uuid
+             |  |  +--ro tapi-topology:risk-parameter-pac
+             |  |  |  +--ro tapi-topology:risk-characteristic* [risk-characteristic-name]
+             |  |  |     +--ro tapi-topology:risk-characteristic-name    string
+             |  |  |     +--ro tapi-topology:risk-identifier-list*       string
              |  |  +--ro tapi-topology:uuid                                       uuid
              |  |  +--ro tapi-topology:name* [value-name]
              |  |  |  +--ro tapi-topology:value-name    string
@@ -14676,7 +14822,9 @@ module: tapi-streaming
              |  |  |  +--ro tapi-connectivity:restore-priority?                     uint64
              |  |  |  +--ro tapi-connectivity:set-up-priority?                      uint64
              |  |  |  +--ro tapi-connectivity:reversion-mode?                       reversion-mode
-             |  |  |  +--ro tapi-connectivity:wait-to-revert-time?                  uint64
+             |  |  |  +--ro tapi-connectivity:wait-to-revert-time
+             |  |  |  |  +--ro tapi-connectivity:value?   uint64
+             |  |  |  |  +--ro tapi-connectivity:unit?    time-unit
              |  |  |  +--ro tapi-connectivity:hold-off-time?                        uint64
              |  |  |  +--ro tapi-connectivity:is-lock-out?                          boolean
              |  |  |  +--ro tapi-connectivity:is-frozen?                            boolean
@@ -14951,7 +15099,9 @@ module: tapi-streaming
              |  |  +--ro tapi-connectivity:restore-priority?                     uint64
              |  |  +--ro tapi-connectivity:set-up-priority?                      uint64
              |  |  +--ro tapi-connectivity:reversion-mode?                       reversion-mode
-             |  |  +--ro tapi-connectivity:wait-to-revert-time?                  uint64
+             |  |  +--ro tapi-connectivity:wait-to-revert-time
+             |  |  |  +--ro tapi-connectivity:value?   uint64
+             |  |  |  +--ro tapi-connectivity:unit?    time-unit
              |  |  +--ro tapi-connectivity:hold-off-time?                        uint64
              |  |  +--ro tapi-connectivity:is-lock-out?                          boolean
              |  |  +--ro tapi-connectivity:is-frozen?                            boolean
@@ -15165,7 +15315,9 @@ module: tapi-streaming
              |  |  +--ro tapi-connectivity:restore-priority?                     uint64
              |  |  +--ro tapi-connectivity:set-up-priority?                      uint64
              |  |  +--ro tapi-connectivity:reversion-mode?                       reversion-mode
-             |  |  +--ro tapi-connectivity:wait-to-revert-time?                  uint64
+             |  |  +--ro tapi-connectivity:wait-to-revert-time
+             |  |  |  +--ro tapi-connectivity:value?   uint64
+             |  |  |  +--ro tapi-connectivity:unit?    time-unit
              |  |  +--ro tapi-connectivity:hold-off-time?                        uint64
              |  |  +--ro tapi-connectivity:is-lock-out?                          boolean
              |  |  +--ro tapi-connectivity:is-frozen?                            boolean
@@ -15285,7 +15437,7 @@ module: tapi-streaming
              |  |  +--ro tapi-oam:is-transient?                boolean
              |  |  +--ro tapi-oam:codirectional?               boolean
              |  |  +--ro tapi-oam:pm-parameter* [pm-parameter-name]
-             |  |  |  +--ro tapi-oam:pm-parameter-name    tapi-common:pm-param-name
+             |  |  |  +--ro tapi-oam:pm-parameter-name    tapi-common:pm
              |  |  |  +--ro tapi-oam:threshold-config* [threshold-location threshold-type clear-threshold]
              |  |  |     +--ro tapi-oam:threshold-location    threshold-crossing-qualifier
              |  |  |     +--ro tapi-oam:threshold-type        threshold-type
@@ -15504,7 +15656,7 @@ module: tapi-streaming
              |  +--ro tapi-oam:is-transient?                boolean
              |  +--ro tapi-oam:codirectional?               boolean
              |  +--ro tapi-oam:pm-parameter* [pm-parameter-name]
-             |  |  +--ro tapi-oam:pm-parameter-name    tapi-common:pm-param-name
+             |  |  +--ro tapi-oam:pm-parameter-name    tapi-common:pm
              |  |  +--ro tapi-oam:threshold-config* [threshold-location threshold-type clear-threshold]
              |  |     +--ro tapi-oam:threshold-location    threshold-crossing-qualifier
              |  |     +--ro tapi-oam:threshold-type        threshold-type
@@ -16158,6 +16310,10 @@ module: tapi-topology
     |        |  |  +--ro topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
     |        |  +--ro profile* [profile-uuid]
     |        |  |  +--ro profile-uuid    -> /tapi-common:context/profile/uuid
+    |        |  +--ro risk-parameter-pac
+    |        |  |  +--ro risk-characteristic* [risk-characteristic-name]
+    |        |  |     +--ro risk-characteristic-name    string
+    |        |  |     +--ro risk-identifier-list*       string
     |        |  +--ro uuid                                       uuid
     |        |  +--ro name* [value-name]
     |        |  |  +--ro value-name    string
@@ -16438,6 +16594,10 @@ module: tapi-topology
     |        |  +--ro topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
     |        +--ro profile* [profile-uuid]
     |        |  +--ro profile-uuid    -> /tapi-common:context/profile/uuid
+    |        +--ro risk-parameter-pac
+    |        |  +--ro risk-characteristic* [risk-characteristic-name]
+    |        |     +--ro risk-characteristic-name    string
+    |        |     +--ro risk-identifier-list*       string
     |        +--ro uuid?                                      uuid
     |        +--ro name* [value-name]
     |        |  +--ro value-name    string
@@ -16774,6 +16934,10 @@ module: tapi-topology
              |  |  +--ro topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
              |  +--ro profile* [profile-uuid]
              |  |  +--ro profile-uuid    -> /tapi-common:context/profile/uuid
+             |  +--ro risk-parameter-pac
+             |  |  +--ro risk-characteristic* [risk-characteristic-name]
+             |  |     +--ro risk-characteristic-name    string
+             |  |     +--ro risk-identifier-list*       string
              |  +--ro uuid                                       uuid
              |  +--ro name* [value-name]
              |  |  +--ro value-name    string
