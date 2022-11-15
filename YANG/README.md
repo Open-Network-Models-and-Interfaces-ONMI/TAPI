@@ -7,14 +7,18 @@ The following TAPI YANG models are generated from the TAPI [UML models](https://
 - [tapi-common.yang](tapi-common.yang)
 - [tapi-topology.yang](tapi-topology.yang)
 - [tapi-connectivity.yang](tapi-connectivity.yang)
+- [tapi-equipment.yang](tapi-equipment.yang)
 - [tapi-path-computation.yang](tapi-path-computation.yang)
 - [tapi-oam.yang](tapi-oam.yang)
+- [tapi-fm.yang](tapi-fm.yang)
 - [tapi-virtual-network.yang](tapi-virtual-network.yang)
 - [tapi-notification.yang](tapi-notification.yang)
+- [tapi-streaming.yang](tapi-streaming.yang)
 
 ## T-API extensions
-- [tapi-odu.yang](tapi-odu.yang)
-- [tapi-otsi.yang](tapi-otsi.yang)
+- [tapi-digital-otn.yang](tapi-digital-otn.yang)
+- [tapi-photonic-media.yang](tapi-photonic-media.yang)
+- [tapi-dsr.yang](tapi-dsr.yang)
 - [tapi-eth.yang](tapi-eth.yang)
 
 ## TREE files (tree)
