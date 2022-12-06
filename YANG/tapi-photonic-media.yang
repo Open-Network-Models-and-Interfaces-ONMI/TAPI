@@ -289,7 +289,7 @@ module tapi-photonic-media {
             type optical-routing-strategy;
             description "none";
         }
-        description "none";
+        description "This structure is for further development and is NOT used in this version.";
     }
     grouping power-measurement-pac {
         container measured-input-power {
@@ -1003,8 +1003,11 @@ module tapi-photonic-media {
             type boolean;
             default "true";
             config false;
-            description "This attribute applies only in case of bidirectional NEP, where parameters related to ingressing and egressing direction can be separately specified. 
-                ingressDirection is true when the object instance describes the parameters of the ingressing direction, false for the parameters of the egressing direction.";
+            description "For unidirectional CEPs there may be at most one oms general optical params. 
+                The ingress direction is true for a SINK CEP and false for a SOURCE CEP.
+                For bidirectional CEPs there may be at most two oms general optical parms.
+                If there are two one must have the ingress direction set to true and the other must have the ingress direction set to false.
+                If the ingress direction is true the params correspond to the SINK function of the CEP and if it is false they correspond to the SOURCE function of the CEP.";
         }
         leaf generalized-snr {
             type decimal64 {
@@ -1224,33 +1227,6 @@ module tapi-photonic-media {
         }
         description "This profile centralizes all the parameters of CCAMP ROADM add/drop/express path impairment profiles.";
     }
-    grouping geolocation {
-        leaf altitude {
-            type decimal64 {
-                fraction-digits 7;
-            }
-            config false;
-            description "Distance above sea level.
-                Measured in millimeters.";
-        }
-        leaf latitude {
-            type decimal64 {
-                fraction-digits 7;
-            }
-            config false;
-            description "Relative position north or south on the Earth's surface, in decimal degree (DD) used to express latitude and longitude geographic coordinates. 
-                Range: '-90..90'";
-        }
-        leaf longitude {
-            type decimal64 {
-                fraction-digits 7;
-            }
-            config false;
-            description "Angular distance east or west on the Earth's surface in decimal degree (DD) used to express latitude and longitude geographic coordinates. 
-                Range: '-180..180'";
-        }
-        description "GPS location.";
-    }
     grouping amplification {
         container frequency-range {
             config false;
@@ -1266,6 +1242,7 @@ module tapi-photonic-media {
         }
         leaf first-of-chain {
             type boolean;
+            config false;
             description "none";
         }
         leaf actual-gain {
@@ -1319,11 +1296,6 @@ module tapi-photonic-media {
             uses amplification-ref;
             key 'topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid amplification-local-id';
             config false;
-            description "none";
-        }
-        container geolocation {
-            config false;
-            uses geolocation;
             description "none";
         }
         uses tapi-common:local-class;
@@ -1433,7 +1405,7 @@ module tapi-photonic-media {
             uses power-params;
             description "none";
         }
-        description "none";
+        description "This structure is for further development and is NOT used in this version.";
     }
     grouping power-params {
         container power-spectral-density {
@@ -1458,11 +1430,11 @@ module tapi-photonic-media {
             type boolean;
             default "true";
             config false;
-            description "For bidirectional NEPs, 
-                If one  instance of ots-impairments parameters is present, it is related to the NEP sink/ingress direction. In such case, ingress-direction MUST be true.
-                If  two instances of ots-impairments parameters are present, the instance with ingress-direction true applies to the NEP sink/ingress direction. The other instance MUST have ingress-direction false, since applies to the NEP source/egress direction. 
-                For unidirectional NEPs,
-                At most one instance MUST be present (it is expected that the linked NEP contains the instance if this NEP does not). This attribute MUST match the direction of the NEP (true for NEPS with SINK  direction and false with SOURCE direction).";
+            description "For unidirectional CEPs there may be at most one ots impairments. 
+                The ingress direction is true for a SINK CEP and false for a SOURCE CEP.
+                For bidirectional CEPs there may be at most two ots impairments.
+                If there are two one must have the ingress direction set to true and the other must have the ingress direction set to false.
+                If the ingress direction is true the params correspond to the SINK function of the CEP and if it is false they correspond to the SOURCE function of the CEP.";
         }
         description "none";
     }
