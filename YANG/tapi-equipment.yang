@@ -925,7 +925,8 @@ module tapi-equipment {
             type string;
             config false;
             description "The location of the equipment in a georgraphical context (e.g., lat long).
-                CONDITION: Mandatory where there is a relevant geographical location (only for equipments not in holders).";
+                This property is deprecated.
+                CONDITION: Mandatory where there is a relevant geographical location and formal geolocation is not being used (only for equipments not in holders).";
         }
         leaf is-expected-actual-mismatch {
             type boolean;
@@ -945,6 +946,12 @@ module tapi-equipment {
             uses actual-equipment;
             description "Provides details of a real equipment present at the stated location and/or within the containing holder within the device.
                 CONDITION: Mandatory where a real equipment is to be represented.";
+        }
+        container geolocation {
+            config false;
+            uses geolocation;
+            description "The location of the equipment in a georgraphical context using formal coordinates.
+                CONDITION: Mandatory where there is a relevant geographical location using formal coordiantes (only for equipments not in holders).";
         }
         uses tapi-common:global-class;
         description "Represents any relevant physical thing. May be only expectation, only actual or both expectation and actual.
@@ -1225,6 +1232,35 @@ module tapi-equipment {
             An access port may include connectorPins of more Equipments, e.g., in case of bidirectional access port shared by two 'unidirectional'; Equipments.
             Connector pin details may be provided alone without an access port where there are no access ports modelled.";
     }
+    grouping geolocation {
+        leaf altitude {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Distance above sea level.
+                Measured in millimeters.
+                CONDITION: Mandatory where altitude information is relevant and available.";
+        }
+        leaf latitude {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Relative position north or south on the Earth's surface, in decimal degree (DD) used to express latitude and longitude geographic coordinates. 
+                Range: '-90..90'";
+        }
+        leaf longitude {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Angular distance east or west on the Earth's surface in decimal degree (DD) used to express latitude and longitude geographic coordinates. 
+                Range: '-180..180'";
+        }
+        description "GPS location.";
+    }
+
 
     /**************************
     * package interfaces

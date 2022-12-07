@@ -289,7 +289,7 @@ module tapi-photonic-media {
             type optical-routing-strategy;
             description "none";
         }
-        description "none";
+        description "This structure is for further development and is NOT used in this version.";
     }
     grouping power-measurement-pac {
         container measured-input-power {
@@ -772,28 +772,28 @@ module tapi-photonic-media {
         description "Describes whether the transponder can be used in an Optical Tunnel termination configuration or in a 3R configuration (or both).";
     }
     grouping transceiver-standard {
-        leaf application-code {
-            type standard-application-mode;
+        leaf application-code-rec {
+            type standard-application-code-rec;
             config false;
-            description "ietf-layer0-types-ext.yang:
-                ITU-T G.698.2 standard mode that guarantees interoperability.
-                It must be an string with the following format:
-                B-DScW-ytz(v) where all these attributes are conformant to the ITU-T recomendation.";
+            description "The ITU-T recommendation which defines the application code format.";
         }
-        description "none";
+        leaf application-code {
+            type string;
+            config false;
+            description "The standard application code as defined in the ITU-T Recommendation referenced in application code rec.";
+        }
+        description "The standard application identifier.";
     }
     grouping transceiver-organizational {
         leaf operational-mode {
             type string;
             config false;
-            description "ietf-layer0-types-ext.yang:
-                Organization/vendor specific mode that guarantees interoperability, reference ITU-T G.698.2 (11/2018).";
+            description "Organization/vendor specific mode that guarantees interoperability, reference ITU-T G.698.2 (11/2018).";
         }
         leaf organization-identifier {
             type string;
             config false;
-            description "ietf-layer0-types-ext.yang:
-                Vendor/organization identifier that uses a private mode out of already defined in G.698.2 ITU-T application-code (RFC 7581).";
+            description "Vendor/organization identifier that uses a private mode out of already defined in G.698.2 ITU-T application-code (RFC 7581).";
         }
         container common-organizational-explicit {
             config false;
@@ -1003,8 +1003,11 @@ module tapi-photonic-media {
             type boolean;
             default "true";
             config false;
-            description "This attribute applies only in case of bidirectional NEP, where parameters related to ingressing and egressing direction can be separately specified. 
-                ingressDirection is true when the object instance describes the parameters of the ingressing direction, false for the parameters of the egressing direction.";
+            description "For unidirectional CEPs there may be at most one oms general optical params. 
+                The ingress direction is true for a SINK CEP and false for a SOURCE CEP.
+                For bidirectional CEPs there may be at most two oms general optical parms.
+                If there are two one must have the ingress direction set to true and the other must have the ingress direction set to false.
+                If the ingress direction is true the params correspond to the SINK function of the CEP and if it is false they correspond to the SOURCE function of the CEP.";
         }
         leaf generalized-snr {
             type decimal64 {
@@ -1224,33 +1227,6 @@ module tapi-photonic-media {
         }
         description "This profile centralizes all the parameters of CCAMP ROADM add/drop/express path impairment profiles.";
     }
-    grouping geolocation {
-        leaf altitude {
-            type decimal64 {
-                fraction-digits 7;
-            }
-            config false;
-            description "Distance above sea level.
-                Measured in millimeters.";
-        }
-        leaf latitude {
-            type decimal64 {
-                fraction-digits 7;
-            }
-            config false;
-            description "Relative position north or south on the Earth's surface, in decimal degree (DD) used to express latitude and longitude geographic coordinates. 
-                Range: '-90..90'";
-        }
-        leaf longitude {
-            type decimal64 {
-                fraction-digits 7;
-            }
-            config false;
-            description "Angular distance east or west on the Earth's surface in decimal degree (DD) used to express latitude and longitude geographic coordinates. 
-                Range: '-180..180'";
-        }
-        description "GPS location.";
-    }
     grouping amplification {
         container frequency-range {
             config false;
@@ -1266,6 +1242,7 @@ module tapi-photonic-media {
         }
         leaf first-of-chain {
             type boolean;
+            config false;
             description "none";
         }
         leaf actual-gain {
@@ -1319,11 +1296,6 @@ module tapi-photonic-media {
             uses amplification-ref;
             key 'topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid amplification-local-id';
             config false;
-            description "none";
-        }
-        container geolocation {
-            config false;
-            uses geolocation;
             description "none";
         }
         uses tapi-common:local-class;
@@ -1433,7 +1405,7 @@ module tapi-photonic-media {
             uses power-params;
             description "none";
         }
-        description "none";
+        description "This structure is for further development and is NOT used in this version.";
     }
     grouping power-params {
         container power-spectral-density {
@@ -1458,11 +1430,11 @@ module tapi-photonic-media {
             type boolean;
             default "true";
             config false;
-            description "For bidirectional NEPs, 
-                If one  instance of ots-impairments parameters is present, it is related to the NEP sink/ingress direction. In such case, ingress-direction MUST be true.
-                If  two instances of ots-impairments parameters are present, the instance with ingress-direction true applies to the NEP sink/ingress direction. The other instance MUST have ingress-direction false, since applies to the NEP source/egress direction. 
-                For unidirectional NEPs,
-                At most one instance MUST be present (it is expected that the linked NEP contains the instance if this NEP does not). This attribute MUST match the direction of the NEP (true for NEPS with SINK  direction and false with SOURCE direction).";
+            description "For unidirectional CEPs there may be at most one ots impairments. 
+                The ingress direction is true for a SINK CEP and false for a SOURCE CEP.
+                For bidirectional CEPs there may be at most two ots impairments.
+                If there are two one must have the ingress direction set to true and the other must have the ingress direction set to false.
+                If the ingress direction is true the params correspond to the SINK function of the CEP and if it is false they correspond to the SOURCE function of the CEP.";
         }
         description "none";
     }
@@ -1870,23 +1842,6 @@ module tapi-photonic-media {
         base FLEXI_CHANNEL_SPACING;
         description "none";
     }
-    grouping application-identifier {
-        leaf application-identifier-type {
-            type standard-application-mode;
-            description "The ITU-T recommendation which defines the application code format.";
-        }
-        leaf application-code {
-            type string;
-            description "none";
-        }
-        description "The syntax of ApplicationIdentifier is a pair {ApplicationIdentifierType, PrintableString}.
-            The value of ApplicationIdentifierType is either STANDARD or PROPRIETARY.
-            The value of PrintableString represents the standard application code as defined in the ITU-T Recommendations or a vendor-specific proprietary code.
-            If the ApplicationIdentifierType is STANDARD the value of PrintableString represents a standard application code as defined in the ITU-T Recommendations.
-            If the ApplicationIdentifierType is PROPRIETARY, the first six characters of the PrintableString must contain the Hexadecimal representation of an OUI assigned to the vendor whose implementation generated the Application Identifier; the remaining octets of the PrintableString are unspecified.
-            The value of this attribute of an object instance has to be one of the values identified in the attribute SupportableApplicationIdentifierList of the same object instance.
-            The values and value ranges of the optical interface parameters of a standard application code must be consistent with those values specified in the ITU-T Recommendation for that application code.";
-    }
     typedef optical-routing-strategy {
         type enumeration {
             enum OPTIMAL_OSNR {
@@ -1907,7 +1862,7 @@ module tapi-photonic-media {
         }
         description "none";
     }
-    typedef standard-application-mode {
+    typedef standard-application-code-rec {
         type enumeration {
             enum ITUT_G959_1 {
                 description "G959.1 Optical transport network physical layer interfaces
@@ -1923,6 +1878,7 @@ module tapi-photonic-media {
             enum ITUT_G698_2 {
                 description "G698.2 Amplified multichannel DWDM applications with single channel optical interfaces
                     Application code notation [DScW-ytz(v)]
+                  This Recommendation defines and provides values for single-channel optical interface parameters of physical point-to-point and ring DWDM applications on single-mode optical fibres through the use of the 'black link' approach.
                     The black links covered by this Recommendation may contain optical amplifiers.";
             }
             enum ITUT_G696_1 {
@@ -1937,7 +1893,7 @@ module tapi-photonic-media {
                     This Recommendation applies to optical interfaces for coarse wavelength division multiplexing (CWDM) optical line systems for network applications using single-mode optical fibres.";
             }
         }
-        description "none";
+        description "The list of ITU-T Recommendations etc. that define application code format.";
     }
     typedef grid-type {
         type identityref {
