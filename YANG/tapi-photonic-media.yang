@@ -11,6 +11,9 @@ module tapi-photonic-media {
     import tapi-topology {
         prefix tapi-topology;
     }
+    import tapi-oam {
+        prefix tapi-oam;
+    }
     organization "ONF OTCC (Open Transport Configuration & Control) Project";
     contact "
          Project Web: <https://wiki.opennetworking.org/display/OTCC/TAPI>
@@ -33,33 +36,47 @@ module tapi-photonic-media {
         - The ONF TAPI release process does not guarantee backward compatibility of YANG models across major versions of TAPI releases.
         The YANG model backward compatibility criteria are outlined in section 11 of <https://tools.ietf.org/html/rfc7950>.
         YANG models included in this release may not be backward compatible with previous TAPI releases.
-        Copyright (c) 2022 Open Networking Foundation (ONF). All rights reserved.
+        Copyright (c) 2023 Open Networking Foundation (ONF). All rights reserved.
         License: This module is distributed under the Apache License 2.0.";
+    revision 2023-02-28 {
+        description "ONF Transport API version 2.4.1.
+                   Changes included in this TAPI release (v2.4.1) are listed in
+                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2023>";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
+                  <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.4.1/UML>";
+    }
+    revision 2022-12-22 {
+        description "ONF Transport API version 2.4.0.
+                   Changes included in this TAPI release (v2.4.0) are listed in
+                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2023>";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
+                  <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.4.0/UML>";
+    }
     revision 2022-11-21 {
         description "ONF Transport API version 2.4.0 RC1.
                    Changes included in this TAPI release (v2.4.0) are listed in
-                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2022-2023>";
+                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2023>";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
                   <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.4.0-RC1/UML>";
     }
     revision 2021-09-24 {
         description "ONF Transport API version 2.3.1.
                    Changes included in this TAPI release (v2.3.1) are listed in
-                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2021>";
+                   <https://wiki.opennetworking.org/display/OTCC/Archived+Deliveries>";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
                   <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.3.1/UML>";
     }
     revision 2021-08-04 {
         description "ONF Transport API version 2.3.
                    Changes included in this TAPI release (v2.3) are listed in
-                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2021>";
+                   <https://wiki.opennetworking.org/display/OTCC/Archived+Deliveries>";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
                   <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.3/UML>";
     }
     revision 2021-05-24 {
         description "ONF Transport API version 2.3 RC1.
                    Changes included in this TAPI release (v2.3) are listed in
-                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2021>";
+                   <https://wiki.opennetworking.org/display/OTCC/Archived+Deliveries>";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
                   <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.3/UML>";
     }
@@ -210,6 +227,20 @@ module tapi-photonic-media {
         }
         description "none";
     }
+    augment "/tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:current-data" {
+        container photonic-performance-data {
+            uses photonic-performance-data;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:current-data/tapi-oam:history-data" {
+        container photonic-performance-data {
+            uses photonic-performance-data;
+            description "none";
+        }
+        description "none";
+    }
     /**************************
     * definitions of references
     **************************/    
@@ -242,6 +273,11 @@ module tapi-photonic-media {
             config false;
             uses laser-properties;
             description "Laser properties.";
+        }
+        container otsi-monitoring-pac {
+            config false;
+            uses otsi-monitoring-pac;
+            description "none";
         }
         description "Present in case of terminated OTSiMC CEP, i.e. including O/E/O function.";
     }
@@ -340,6 +376,7 @@ module tapi-photonic-media {
     }
     grouping total-power-threshold-pac {
         container spectrum {
+            config false;
             uses frequency-range;
             description "none";
         }
@@ -371,13 +408,6 @@ module tapi-photonic-media {
             config false;
             description "Can read the value of the default  threshold that was set";
         }
-        leaf total-power-lower-warn-threshold-max {
-            type decimal64 {
-                fraction-digits 7;
-            }
-            config false;
-            description "Can  read the value of the upper threshold that was set";
-        }
         leaf total-power-lower-warn-threshold-min {
             type decimal64 {
                 fraction-digits 7;
@@ -385,10 +415,18 @@ module tapi-photonic-media {
             config false;
             description "Can read the value of the lower threshold that was set";
         }
+        leaf total-power-lower-warn-threshold-max {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Can  read the value of the upper threshold that was set";
+        }
         description "Indication with severity warning raised when a total power value measured is above the threshold.";
     }
     grouping power-management-capability-pac {
         container spectrum {
+            config false;
             uses frequency-range;
             description "none";
         }
@@ -504,6 +542,11 @@ module tapi-photonic-media {
         description "OTSiMC configuration based on bandwidth, with the actual position in the spectrum is delegated to the server controller.";
     }
     grouping otsi-mcg-connectivity-service-end-point-spec {
+        leaf number-of-otsi-mc {
+            type uint64;
+            default "1";
+            description "none";
+        }
         list otsi-mc-bandwidth-config-pac {
             key 'local-id';
             uses otsi-mc-bandwidth-config-pac;
@@ -517,11 +560,6 @@ module tapi-photonic-media {
         list otsi-mc-frequency-config-pac {
             key 'local-id';
             uses otsi-mc-frequency-config-pac;
-            description "none";
-        }
-        leaf number-of-otsi-mc {
-            type uint64;
-            default "1";
             description "none";
         }
         list otsi-mc-flexi-grid-config-pac {
@@ -652,6 +690,11 @@ module tapi-photonic-media {
             uses power-measurement-pac;
             description "none";
         }
+        container osc-params {
+            config false;
+            uses osc-params;
+            description "none";
+        }
         description "none";
     }
     grouping oms-connection-end-point-spec {
@@ -732,6 +775,14 @@ module tapi-photonic-media {
         }
         container power-management-config-pac {
             uses power-management-config-pac;
+            description "none";
+        }
+        container common-explicit {
+            uses common-explicit;
+            description "none";
+        }
+        container common-organizational-explicit {
+            uses common-organizational-explicit;
             description "none";
         }
         uses tapi-common:local-class;
@@ -827,13 +878,11 @@ module tapi-photonic-media {
     }
     grouping common-organizational-explicit {
         container frequency-range {
-            config false;
             uses frequency-range;
             description "This parameter indicates the minimum and maximum frequency for the transmitter tuning range.";
         }
         leaf central-frequency-step {
             type uint64;
-            config false;
             description "This parameter indicates the transmitter tunability grid as the distance between two adjacent carrier frequencies of the transmitter tuning range.
                 Measured in Hz.";
         }
@@ -841,7 +890,6 @@ module tapi-photonic-media {
             type decimal64 {
                 fraction-digits 7;
             }
-            config false;
             description "The minimum output power.
                 Measured in dBm.";
         }
@@ -849,7 +897,6 @@ module tapi-photonic-media {
             type decimal64 {
                 fraction-digits 7;
             }
-            config false;
             description "The maximum output power.
                 Measured in dBm.";
         }
@@ -857,7 +904,6 @@ module tapi-photonic-media {
             type decimal64 {
                 fraction-digits 7;
             }
-            config false;
             description "The minimum input power.
                 Measured in dBm.";
         }
@@ -865,7 +911,6 @@ module tapi-photonic-media {
             type decimal64 {
                 fraction-digits 7;
             }
-            config false;
             description "The maximum input power.
                 Measured in dBm.";
         }
@@ -873,7 +918,6 @@ module tapi-photonic-media {
             type decimal64 {
                 fraction-digits 7;
             }
-            config false;
             description "Maximum rx optical power for all the channels received at the interface.
                 Measured in dBm.";
         }
@@ -882,14 +926,12 @@ module tapi-photonic-media {
     grouping common-explicit {
         leaf line-coding-bitrate {
             type line-coding;
-            config false;
             description "Bit rate/line coding of optical tributary signal.";
         }
         leaf max-polarization-mode-dispersion {
             type decimal64 {
                 fraction-digits 7;
             }
-            config false;
             description "Maximum acceptable accumulated polarization mode dispersion on the receiver. 
                 Measured in picoseconds per square root kilometer.
                 ";
@@ -898,12 +940,11 @@ module tapi-photonic-media {
             type decimal64 {
                 fraction-digits 7;
             }
-            config false;
             description "Maximum acceptable accumulated chromatic dispersion on the receiver. 
                 Measured in ps/nm (picoseconds per nanometer).";
         }
         list chromatic-and-polarization-dispersion-penalty {
-            config false;
+            key 'index';
             uses cd-pmd-penalty;
             description "Optional penalty associated with a given accumulated CD and PMD. 
                 This list of triplet cd, pmd, penalty can be used to sample the function penalty = f(CD, PMD).";
@@ -912,26 +953,23 @@ module tapi-photonic-media {
             type decimal64 {
                 fraction-digits 7;
             }
-            config false;
             description "Maximum Differential group delay of this mode for this lane.
                 Measured in picoseconds.";
         }
         list max-polarization-dependent-loss-penalty {
-            config false;
+            key 'index';
             uses pdl-penalty;
             description "Optional penalty associated with the maximum acceptable accumulated polarization dependent loss. 
                 This list of pair pdl and penalty can be used to sample the function pdl = f(penalty).";
         }
         leaf standard-modulation-type {
             type standard-modulation-technique;
-            config false;
             description "Modulation type this transceiver profile can support.";
         }
         leaf min-osnr {
             type decimal64 {
                 fraction-digits 7;
             }
-            config false;
             description "Min OSNR: if received OSNR at minimum Rx-power is lower than MIN-OSNR, an increased level of bit-errors post-FEC needs to be expected.
                 Measured in dB@0.1nm (over 0.1 nm resolution bandwidth).";
         }
@@ -939,13 +977,11 @@ module tapi-photonic-media {
             type decimal64 {
                 fraction-digits 7;
             }
-            config false;
             description "Min Qfactor at FEC threshold.
                 Measured in dB.";
         }
         leaf baud-rate {
             type uint64;
-            config false;
             description "Baud-rate the specific transceiver in the list can support. 
                 Baud-rate is the unit for symbol rate or modulation rate in symbols per second or pulses per second. 
                 It is the number of distinct symbol changes (signal events) made to the transmission medium per second in a digitally modulated signal or a line code.
@@ -955,35 +991,30 @@ module tapi-photonic-media {
             type decimal64 {
                 fraction-digits 7;
             }
-            config false;
             description "The roll-off factor (beta with values from 0 to 1) identifies how the real signal shape exceed the baud rate. 
                 If=0 it is exactly matching the baud rate. 
                 If=1 the signal exceeds the 50% of the baud rate at each side.";
         }
         leaf min-carrier-spacing {
             type uint64;
-            config false;
             description "This attribute specifies the minimum nominal difference between the carrier frequencies of two homogeneous OTSis (which have the same optical characteristics but the central frequencies) such that if they are placed next to each other the interference due to spectrum overlap between them can be considered negligible. 
                 In case of heterogeneous OTSi it is up to path computation engine to determine the minimum distance between the carrier frequency of the two adjacent OTSi.
                 Measured in Hz.";
         }
         leaf fec-type {
             type fec-type;
-            config false;
             description "Available FEC.";
         }
         leaf fec-code-rate {
             type decimal64 {
                 fraction-digits 7;
             }
-            config false;
             description "FEC code rate.";
         }
         leaf fec-threshold {
             type decimal64 {
                 fraction-digits 7;
             }
-            config false;
             description "Threshold on the BER, for which FEC is able to correct errors.";
         }
         list other-properties {
@@ -1422,11 +1453,6 @@ module tapi-photonic-media {
         description "Optical power or PSD after the ROADM or after the out-voa.";
     }
     grouping ots-impairments {
-        list impairment-route-entry {
-            config false;
-            uses impairment-route-entry;
-            description "none";
-        }
         leaf ingress-direction {
             type boolean;
             default "true";
@@ -1436,6 +1462,11 @@ module tapi-photonic-media {
                 For bidirectional CEPs there may be at most two ots impairments.
                 If there are two one must have the ingress direction set to true and the other must have the ingress direction set to false.
                 If the ingress direction is true the params correspond to the SINK function of the CEP and if it is false they correspond to the SOURCE function of the CEP.";
+        }
+        list impairment-route-entry {
+            config false;
+            uses impairment-route-entry;
+            description "none";
         }
         description "none";
     }
@@ -1478,6 +1509,7 @@ module tapi-photonic-media {
                 Measured in dBm.";
         }
         container extended-gain-range {
+            config false;
             uses gain-range;
             description "none";
         }
@@ -1485,14 +1517,17 @@ module tapi-photonic-media {
     }
     grouping transceiver-profile {
         container transceiver-standard-profile {
+            config false;
             uses transceiver-standard;
             description "none";
         }
         container transceiver-organizational-profile {
+            config false;
             uses transceiver-organizational;
             description "none";
         }
         container transceiver-explicit-profile {
+            config false;
             uses transceiver-explicit;
             description "none";
         }
@@ -1587,6 +1622,169 @@ module tapi-photonic-media {
             description "none";
         }
         uses tapi-common:local-class;
+        description "none";
+    }
+    grouping regen-metric {
+        leaf regen-metric {
+            type uint64;
+            description "none";
+        }
+        description "This structure is for further development and is NOT used in this version.";
+    }
+    grouping photonic-performance-data {
+        container optical-input-power {
+            config false;
+            uses power-properties;
+            description "none";
+        }
+        container optical-output-power {
+            config false;
+            uses power-properties;
+            description "none";
+        }
+        leaf input-voa {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "none";
+        }
+        leaf output-voa {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "none";
+        }
+        leaf optical-gain {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "none";
+        }
+        leaf optical-tilt {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "none";
+        }
+        list amplification-performance-data {
+            key 'local-id';
+            config false;
+            uses amplification-performance-data;
+            description "none";
+        }
+        container otsi-monitoring-pac {
+            config false;
+            uses otsi-monitoring-pac;
+            description "none";
+        }
+        container osc-monitoring-pac {
+            uses osc-monitoring-pac;
+            description "none";
+        }
+        description "none";
+    }
+    grouping amplification-performance-data {
+        leaf optical-input-power {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "none";
+        }
+        leaf optical-output-power {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "none";
+        }
+        leaf input-voa {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "none";
+        }
+        leaf output-voa {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "none";
+        }
+        leaf optical-gain {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "none";
+        }
+        leaf optical-tilt {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "none";
+        }
+        uses tapi-common:local-class;
+        description "none";
+    }
+    grouping otsi-monitoring-pac {
+        leaf polarization-mode-dispersion {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Polarization mode dispersion on the receiver. 
+                Measured in picoseconds per square root kilometer.
+                ";
+        }
+        leaf chromatic-dispersion {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Chromatic dispersion on the receiver. 
+                Measured in ps/nm (picoseconds per nanometer).";
+        }
+        leaf diff-group-delay {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "Differential group delay of this mode for this lane.
+                Measured in picoseconds.";
+        }
+        leaf frequency-offset {
+            type uint64;
+            config false;
+            description "Frequency offset measured in Hz.";
+        }
+        description "none";
+    }
+    grouping osc-params {
+        container power-measurement-pac {
+            config false;
+            uses power-measurement-pac;
+            description "none";
+        }
+        description "none";
+    }
+    grouping osc-monitoring-pac {
+        container optical-input-power {
+            config false;
+            uses power-properties;
+            description "none";
+        }
+        container optical-output-power {
+            config false;
+            uses power-properties;
+            description "none";
+        }
         description "none";
     }
 
@@ -1843,6 +2041,44 @@ module tapi-photonic-media {
         base FLEXI_CHANNEL_SPACING;
         description "none";
     }
+    identity PHOTONIC_OAM_JOB_TYPE {
+        base tapi-oam:OAM_JOB_TYPE;
+        description "none";
+    }
+    identity PHOTONIC_OAM_JOB_TYPE_OPTICAL_POWER {
+        base PHOTONIC_OAM_JOB_TYPE;
+        description "none";
+    }
+    identity PHOT_THRS_ADD_QUALIF {
+        description "none";
+    }
+    identity PHOT_THRS_ADD_QUALIF_AMPLIFICATION {
+        base PHOT_THRS_ADD_QUALIF;
+        description "none";
+    }
+    identity PHOT_THRS_ADD_QUALIF_OSC {
+        base PHOT_THRS_ADD_QUALIF;
+        description "none";
+    }
+    identity PHOT_PROFILE_TYPE {
+        description "none";
+    }
+    identity PHOT_PROFILE_TYPE_AMPLIFICATION {
+        base PHOT_PROFILE_TYPE;
+        description "none";
+    }
+    identity PHOT_PROFILE_TYPE_CONNECTIVITY_IMPAIRMENT {
+        base PHOT_PROFILE_TYPE;
+        description "none";
+    }
+    identity PHOT_PROFILE_TYPE_FIBER {
+        base PHOT_PROFILE_TYPE;
+        description "none";
+    }
+    identity PHOT_PROFILE_TYPE_TRANSCEIVER {
+        base PHOT_PROFILE_TYPE;
+        description "none";
+    }
     typedef optical-routing-strategy {
         type enumeration {
             enum OPTIMAL_OSNR {
@@ -1879,7 +2115,7 @@ module tapi-photonic-media {
             enum ITUT_G698_2 {
                 description "G698.2 Amplified multichannel DWDM applications with single channel optical interfaces
                     Application code notation [DScW-ytz(v)]
-                  This Recommendation defines and provides values for single-channel optical interface parameters of physical point-to-point and ring DWDM applications on single-mode optical fibres through the use of the 'black link' approach.
+                    This Recommendation defines and provides values for single-channel optical interface parameters of physical point-to-point and ring DWDM applications on single-mode optical fibres through the use of the 'black link' approach.
                     The black links covered by this Recommendation may contain optical amplifiers.";
             }
             enum ITUT_G696_1 {
@@ -2116,6 +2352,10 @@ module tapi-photonic-media {
         description "ITU-T G.698.2-201811 section 7.";
     }
     grouping cd-pmd-penalty {
+        leaf index {
+            type uint64;
+            description "none";
+        }
         leaf chromatic-dispersion {
             type decimal64 {
                 fraction-digits 7;
@@ -2140,6 +2380,10 @@ module tapi-photonic-media {
         description "Entries of table; triplet chromatic dispersion, polarization mode dispersion and associated penalty.";
     }
     grouping pdl-penalty {
+        leaf index {
+            type uint64;
+            description "none";
+        }
         leaf max-polarization-dependent-loss {
             type decimal64 {
                 fraction-digits 7;
@@ -2192,6 +2436,24 @@ module tapi-photonic-media {
     typedef flexi-channel-spacing {
         type identityref {
             base FLEXI_CHANNEL_SPACING;
+        }
+        description "none";
+    }
+    typedef photonic-oam-job-type {
+        type identityref {
+            base PHOTONIC_OAM_JOB_TYPE;
+        }
+        description "none";
+    }
+    typedef phot-thrs-add-qualif {
+        type identityref {
+            base PHOT_THRS_ADD_QUALIF;
+        }
+        description "none";
+    }
+    typedef phot-profile-type {
+        type identityref {
+            base PHOT_PROFILE_TYPE;
         }
         description "none";
     }

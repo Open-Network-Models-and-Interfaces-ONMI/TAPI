@@ -39,33 +39,47 @@ module tapi-oam {
         - The ONF TAPI release process does not guarantee backward compatibility of YANG models across major versions of TAPI releases.
         The YANG model backward compatibility criteria are outlined in section 11 of <https://tools.ietf.org/html/rfc7950>.
         YANG models included in this release may not be backward compatible with previous TAPI releases.
-        Copyright (c) 2022 Open Networking Foundation (ONF). All rights reserved.
+        Copyright (c) 2023 Open Networking Foundation (ONF). All rights reserved.
         License: This module is distributed under the Apache License 2.0.";
+    revision 2023-02-28 {
+        description "ONF Transport API version 2.4.1.
+                   Changes included in this TAPI release (v2.4.1) are listed in
+                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2023>";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
+                  <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.4.1/UML>";
+    }
+    revision 2022-12-22 {
+        description "ONF Transport API version 2.4.0.
+                   Changes included in this TAPI release (v2.4.0) are listed in
+                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2023>";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
+                  <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.4.0/UML>";
+    }
     revision 2022-11-21 {
         description "ONF Transport API version 2.4.0 RC1.
                    Changes included in this TAPI release (v2.4.0) are listed in
-                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2022-2023>";
+                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2023>";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
                   <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.4.0-RC1/UML>";
     }
     revision 2021-09-24 {
         description "ONF Transport API version 2.3.1.
                    Changes included in this TAPI release (v2.3.1) are listed in
-                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2021>";
+                   <https://wiki.opennetworking.org/display/OTCC/Archived+Deliveries>";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
                   <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.3.1/UML>";
     }
     revision 2021-08-04 {
         description "ONF Transport API version 2.3.
                    Changes included in this TAPI release (v2.3) are listed in
-                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2021>";
+                   <https://wiki.opennetworking.org/display/OTCC/Archived+Deliveries>";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
                   <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.3/UML>";
     }
     revision 2021-05-24 {
         description "ONF Transport API version 2.3 RC1.
                    Changes included in this TAPI release (v2.3) are listed in
-                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2021>";
+                   <https://wiki.opennetworking.org/display/OTCC/Archived+Deliveries>";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
                   <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.3/UML>";
     }
@@ -282,8 +296,9 @@ module tapi-oam {
         description "none";
     }
     augment "/tapi-common:context/tapi-common:profile" {
+        when 'derived-from-or-self(tapi-common:profile-type, "OAM_PROFILE_TYPE")';
         container oam-profile {
-            presence "if oam profile";
+/*            presence "if oam profile";*/
             uses oam-profile;
             description "none";
         }
@@ -494,6 +509,7 @@ module tapi-oam {
         }
         leaf layer-protocol-qualifier {
             type tapi-common:layer-protocol-qualifier;
+            config false;
             description "none";
         }
         uses tapi-common:local-class;
@@ -593,6 +609,7 @@ module tapi-oam {
         }
         leaf layer-protocol-qualifier {
             type tapi-common:layer-protocol-qualifier;
+            config false;
             description "none";
         }
         uses tapi-common:local-class;
@@ -637,6 +654,19 @@ module tapi-oam {
             An instance of this class includes its OamService, OamProfile, OamJob and Meg object instances.";
     }
     grouping oam-service-point {
+        leaf is-mip {
+            type boolean;
+            description "If true, the object is related to a MIP.
+                If false, the object is related to a MEP.";
+        }
+        leaf layer-protocol-name {
+            type tapi-common:layer-protocol-name;
+            description "The OamServicePoint (OSP) layer protocol.";
+        }
+        leaf layer-protocol-qualifier {
+            type tapi-common:layer-protocol-qualifier;
+            description "none";
+        }
         container service-interface-point {
             uses tapi-common:service-interface-point-ref;
             description "The supporting ServiceInterfacePoint (SIP) instance.
@@ -652,14 +682,6 @@ module tapi-oam {
             description "The ConnectionEndPoint (CEP) instance monitored by the OamServicePoint (OSP).
                 If not specified (and neither CSEP is specified), the OamServicePoint (OSP) is intended for SIP monitoring.";
         }
-        leaf layer-protocol-name {
-            type tapi-common:layer-protocol-name;
-            description "The OamServicePoint (OSP) layer protocol.";
-        }
-        leaf layer-protocol-qualifier {
-            type tapi-common:layer-protocol-qualifier;
-            description "none";
-        }
         container mep {
             uses mep-ref;
             config false;
@@ -669,11 +691,6 @@ module tapi-oam {
             uses mip-ref;
             config false;
             description "The associated Mip instance, mutually exclusive wrt Mep instance.";
-        }
-        leaf is-mip {
-            type boolean;
-            description "If true, the object is related to a MIP.
-                If false, the object is related to a MEP.";
         }
         uses tapi-common:local-class;
         uses tapi-common:admin-state-pac;
@@ -700,10 +717,12 @@ module tapi-oam {
                 The value is bound to the quarter of an hour in case of a 15 minute interval and bound to the hour in case of a 24 hour interval.";
         }
         container elapsed-time {
+            config false;
             uses tapi-common:time-interval;
             description "Q822: This attribute represents the difference between the current time and the start of the present interval.";
         }
         container pm-data-pac {
+            config false;
             uses pm-data-pac;
             description "Parameters specific to Performance Monitoring functions.";
         }
@@ -741,15 +760,18 @@ module tapi-oam {
     grouping history-data {
         leaf period-start-time {
             type tapi-common:date-and-time;
+            config false;
             description "This attribute indicates the start time of the monitoring interval / granularity period.
                 The value is bound to the quarter of an hour in case of a 15 minute interval and bound to the hour in case of a 24 hour interval.";
         }
         leaf period-end-time {
             type tapi-common:date-and-time;
+            config false;
             description "This attribute indicates the end time of the monitoring interval / granularity period.
                 The value is bound to the quarter of an hour in case of a 15 minute interval and bound to the hour in case of a 24 hour interval.";
         }
         container pm-data-pac {
+            config false;
             uses pm-data-pac;
             description "Parameters specific to Performance Monitoring functions.";
         }
@@ -808,12 +830,14 @@ module tapi-oam {
     }
     grouping pm-data-pac {
         container granularity-period {
+            config false;
             uses tapi-common:time-interval;
             description "The granularity period or measurement interval time.";
         }
         leaf suspect-interval-flag {
             type boolean;
 			default "false";
+            config false;
             description "This attribute is used to indicate that the performance data for the current period may not be reliable. Some reasons for this to occur are:
                 - Suspect data were detected by the actual resource doing data collection.
                 - Transition of the administrativeState attribute to/from the 'lock' state.
@@ -871,8 +895,26 @@ module tapi-oam {
     }
 
     /**************************
+    * package diagrams
+    **************************/ 
+    typedef OamProfileType {
+        type identityref {
+            base OAM_PROFILE_TYPE;
+        }
+        description "none";
+    }
+
+    /**************************
     * package type-definitions
     **************************/ 
+    identity OAM_PROFILE_TYPE {
+    	base tapi-common:PROFILE_TYPE;
+        description "none";
+    }
+    identity OAM_PROFILE_TYPE_OAM {
+        base OAM_PROFILE_TYPE;
+        description "none";
+    }
     identity OAM_JOB_TYPE {
         description "none";
     }
@@ -966,6 +1008,9 @@ module tapi-oam {
         base OAM_JOB_STATE;
         description "none";
     }
+    identity THRS_ADD_QUALIF {
+        description "none";
+    }
     typedef oam-job-type {
         type identityref {
             base OAM_JOB_TYPE;
@@ -1036,6 +1081,10 @@ module tapi-oam {
             type boolean;
             description "none";
         }
+        leaf thrs-additional-qualifier {
+            type thrs-add-qualif;
+            description "none";
+        }
         description "none";
     }
     typedef threshold-type {
@@ -1049,6 +1098,12 @@ module tapi-oam {
             base OAM_JOB_STATE;
         }
         description "none";
+    }
+    typedef thrs-add-qualif {
+        type identityref {
+            base THRS_ADD_QUALIF;
+        }
+        description "Useful in case the monitored entity incapsulates more monitoring functions (e.g. OMS and Amplification).";
     }
 
     /**************************
