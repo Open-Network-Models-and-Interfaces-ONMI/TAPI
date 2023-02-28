@@ -4,6 +4,9 @@ module: tapi-oam
     +--rw oam-context
        +--rw oam-service* [uuid]
        |  +--rw oam-service-point* [local-id]
+       |  |  +--rw is-mip?                           boolean
+       |  |  +--rw layer-protocol-name?              tapi-common:layer-protocol-name
+       |  |  +--rw layer-protocol-qualifier?         tapi-common:layer-protocol-qualifier
        |  |  +--rw service-interface-point
        |  |  |  +--rw service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
        |  |  +--rw connectivity-service-end-point
@@ -14,15 +17,12 @@ module: tapi-oam
        |  |  |  +--rw node-uuid?                   -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
        |  |  |  +--rw node-edge-point-uuid?        -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
        |  |  |  +--rw connection-end-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
-       |  |  +--rw layer-protocol-name?              tapi-common:layer-protocol-name
-       |  |  +--rw layer-protocol-qualifier?         tapi-common:layer-protocol-qualifier
        |  |  +--ro mep
        |  |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
        |  |  |  +--ro mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
        |  |  +--ro mip
        |  |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
        |  |  |  +--ro mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
-       |  |  +--rw is-mip?                           boolean
        |  |  +--rw local-id                          string
        |  |  +--rw name* [value-name]
        |  |  |  +--rw value-name    string
@@ -71,12 +71,13 @@ module: tapi-oam
        |  |  +--rw pm-parameter* [pm-parameter-name]
        |  |  |  +--rw pm-parameter-name    tapi-common:pm
        |  |  |  +--rw threshold-config* [threshold-location threshold-type clear-threshold]
-       |  |  |     +--rw threshold-location    threshold-crossing-qualifier
-       |  |  |     +--rw threshold-type        threshold-type
+       |  |  |     +--rw threshold-location           threshold-crossing-qualifier
+       |  |  |     +--rw threshold-type               threshold-type
        |  |  |     +--rw pm-parameter-value
        |  |  |     |  +--rw pm-parameter-value?   decimal64
        |  |  |     |  +--rw pm-parameter-unit?    string
-       |  |  |     +--rw clear-threshold       boolean
+       |  |  |     +--rw clear-threshold              boolean
+       |  |  |     +--rw thrs-additional-qualifier?   thrs-add-qualif
        |  |  +--rw local-id                     string
        |  |  +--rw name* [value-name]
        |  |     +--rw value-name    string
@@ -204,12 +205,13 @@ module: tapi-oam
        |  +--ro pm-parameter* [pm-parameter-name]
        |  |  +--ro pm-parameter-name    tapi-common:pm
        |  |  +--ro threshold-config* [threshold-location threshold-type clear-threshold]
-       |  |     +--ro threshold-location    threshold-crossing-qualifier
-       |  |     +--ro threshold-type        threshold-type
+       |  |     +--ro threshold-location           threshold-crossing-qualifier
+       |  |     +--ro threshold-type               threshold-type
        |  |     +--ro pm-parameter-value
        |  |     |  +--ro pm-parameter-value?   decimal64
        |  |     |  +--ro pm-parameter-unit?    string
-       |  |     +--ro clear-threshold       boolean
+       |  |     +--ro clear-threshold              boolean
+       |  |     +--ro thrs-additional-qualifier?   thrs-add-qualif
        |  +--ro local-id                     string
        |  +--ro name* [value-name]
        |     +--ro value-name    string
@@ -300,6 +302,9 @@ module: tapi-oam
   augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
     +--ro oam-service
        +--ro oam-service-point* [local-id]
+       |  +--ro is-mip?                           boolean
+       |  +--ro layer-protocol-name?              tapi-common:layer-protocol-name
+       |  +--ro layer-protocol-qualifier?         tapi-common:layer-protocol-qualifier
        |  +--ro service-interface-point
        |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
        |  +--ro connectivity-service-end-point
@@ -310,15 +315,12 @@ module: tapi-oam
        |  |  +--ro node-uuid?                   -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
        |  |  +--ro node-edge-point-uuid?        -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
        |  |  +--ro connection-end-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
-       |  +--ro layer-protocol-name?              tapi-common:layer-protocol-name
-       |  +--ro layer-protocol-qualifier?         tapi-common:layer-protocol-qualifier
        |  +--ro mep
        |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
        |  |  +--ro mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
        |  +--ro mip
        |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
        |  |  +--ro mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
-       |  +--ro is-mip?                           boolean
        |  +--ro local-id                          string
        |  +--ro name* [value-name]
        |  |  +--ro value-name    string
@@ -337,6 +339,9 @@ module: tapi-oam
        +--ro lifecycle-state?        lifecycle-state
   augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
     +--ro oam-service-point
+       +--ro is-mip?                           boolean
+       +--ro layer-protocol-name?              tapi-common:layer-protocol-name
+       +--ro layer-protocol-qualifier?         tapi-common:layer-protocol-qualifier
        +--ro service-interface-point
        |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
        +--ro connectivity-service-end-point
@@ -347,15 +352,12 @@ module: tapi-oam
        |  +--ro node-uuid?                   -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
        |  +--ro node-edge-point-uuid?        -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
        |  +--ro connection-end-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
-       +--ro layer-protocol-name?              tapi-common:layer-protocol-name
-       +--ro layer-protocol-qualifier?         tapi-common:layer-protocol-qualifier
        +--ro mep
        |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
        |  +--ro mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
        +--ro mip
        |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
        |  +--ro mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
-       +--ro is-mip?                           boolean
        +--ro local-id?                         string
        +--ro name* [value-name]
        |  +--ro value-name    string
@@ -430,12 +432,13 @@ module: tapi-oam
        +--ro pm-parameter* [pm-parameter-name]
        |  +--ro pm-parameter-name    tapi-common:pm
        |  +--ro threshold-config* [threshold-location threshold-type clear-threshold]
-       |     +--ro threshold-location    threshold-crossing-qualifier
-       |     +--ro threshold-type        threshold-type
+       |     +--ro threshold-location           threshold-crossing-qualifier
+       |     +--ro threshold-type               threshold-type
        |     +--ro pm-parameter-value
        |     |  +--ro pm-parameter-value?   decimal64
        |     |  +--ro pm-parameter-unit?    string
-       |     +--ro clear-threshold       boolean
+       |     +--ro clear-threshold              boolean
+       |     +--ro thrs-additional-qualifier?   thrs-add-qualif
        +--ro local-id?                    string
        +--ro name* [value-name]
           +--ro value-name    string
@@ -481,12 +484,13 @@ module: tapi-oam
        |  +--ro pm-parameter* [pm-parameter-name]
        |  |  +--ro pm-parameter-name    tapi-common:pm
        |  |  +--ro threshold-config* [threshold-location threshold-type clear-threshold]
-       |  |     +--ro threshold-location    threshold-crossing-qualifier
-       |  |     +--ro threshold-type        threshold-type
+       |  |     +--ro threshold-location           threshold-crossing-qualifier
+       |  |     +--ro threshold-type               threshold-type
        |  |     +--ro pm-parameter-value
        |  |     |  +--ro pm-parameter-value?   decimal64
        |  |     |  +--ro pm-parameter-unit?    string
-       |  |     +--ro clear-threshold       boolean
+       |  |     +--ro clear-threshold              boolean
+       |  |     +--ro thrs-additional-qualifier?   thrs-add-qualif
        |  +--ro local-id                     string
        |  +--ro name* [value-name]
        |     +--ro value-name    string
@@ -577,6 +581,9 @@ module: tapi-oam
   augment /tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification:
     +--ro oam-service
        +--ro oam-service-point* [local-id]
+       |  +--ro is-mip?                           boolean
+       |  +--ro layer-protocol-name?              tapi-common:layer-protocol-name
+       |  +--ro layer-protocol-qualifier?         tapi-common:layer-protocol-qualifier
        |  +--ro service-interface-point
        |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
        |  +--ro connectivity-service-end-point
@@ -587,15 +594,12 @@ module: tapi-oam
        |  |  +--ro node-uuid?                   -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
        |  |  +--ro node-edge-point-uuid?        -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
        |  |  +--ro connection-end-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
-       |  +--ro layer-protocol-name?              tapi-common:layer-protocol-name
-       |  +--ro layer-protocol-qualifier?         tapi-common:layer-protocol-qualifier
        |  +--ro mep
        |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
        |  |  +--ro mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
        |  +--ro mip
        |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
        |  |  +--ro mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
-       |  +--ro is-mip?                           boolean
        |  +--ro local-id                          string
        |  +--ro name* [value-name]
        |  |  +--ro value-name    string
@@ -614,6 +618,9 @@ module: tapi-oam
        +--ro lifecycle-state?        lifecycle-state
   augment /tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification:
     +--ro oam-service-point
+       +--ro is-mip?                           boolean
+       +--ro layer-protocol-name?              tapi-common:layer-protocol-name
+       +--ro layer-protocol-qualifier?         tapi-common:layer-protocol-qualifier
        +--ro service-interface-point
        |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
        +--ro connectivity-service-end-point
@@ -624,15 +631,12 @@ module: tapi-oam
        |  +--ro node-uuid?                   -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
        |  +--ro node-edge-point-uuid?        -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
        |  +--ro connection-end-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
-       +--ro layer-protocol-name?              tapi-common:layer-protocol-name
-       +--ro layer-protocol-qualifier?         tapi-common:layer-protocol-qualifier
        +--ro mep
        |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
        |  +--ro mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
        +--ro mip
        |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
        |  +--ro mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
-       +--ro is-mip?                           boolean
        +--ro local-id?                         string
        +--ro name* [value-name]
        |  +--ro value-name    string
@@ -714,39 +718,41 @@ module: tapi-oam
           +--rw pm-parameter* [pm-parameter-name]
           |  +--rw pm-parameter-name    tapi-common:pm
           |  +--rw threshold-config* [threshold-location threshold-type clear-threshold]
-          |     +--rw threshold-location    threshold-crossing-qualifier
-          |     +--rw threshold-type        threshold-type
+          |     +--rw threshold-location           threshold-crossing-qualifier
+          |     +--rw threshold-type               threshold-type
           |     +--rw pm-parameter-value
           |     |  +--rw pm-parameter-value?   decimal64
           |     |  +--rw pm-parameter-unit?    string
-          |     +--rw clear-threshold       boolean
+          |     +--rw clear-threshold              boolean
+          |     +--rw thrs-additional-qualifier?   thrs-add-qualif
           +--rw local-id                     string
           +--rw name* [value-name]
              +--rw value-name    string
              +--rw value?        string
   augment /tapi-common:context/tapi-common:profile:
-    +--rw oam-profile!
-       +--rw pm-data* [local-id]
-          +--rw applicable-job-type*         oam-job-type
-          +--rw granularity-period
-          |  +--rw value?   uint64
-          |  +--rw unit?    time-unit
-          +--rw time-of-the-day-alignment?   boolean
-          +--rw is-transient?                boolean
-          +--rw codirectional?               boolean
-          +--rw pm-parameter* [pm-parameter-name]
-          |  +--rw pm-parameter-name    tapi-common:pm
-          |  +--rw threshold-config* [threshold-location threshold-type clear-threshold]
-          |     +--rw threshold-location    threshold-crossing-qualifier
-          |     +--rw threshold-type        threshold-type
-          |     +--rw pm-parameter-value
-          |     |  +--rw pm-parameter-value?   decimal64
-          |     |  +--rw pm-parameter-unit?    string
-          |     +--rw clear-threshold       boolean
-          +--rw local-id                     string
-          +--rw name* [value-name]
-             +--rw value-name    string
-             +--rw value?        string
+    +--ro oam-profile
+       +--ro pm-data* [local-id]
+          +--ro applicable-job-type*         oam-job-type
+          +--ro granularity-period
+          |  +--ro value?   uint64
+          |  +--ro unit?    time-unit
+          +--ro time-of-the-day-alignment?   boolean
+          +--ro is-transient?                boolean
+          +--ro codirectional?               boolean
+          +--ro pm-parameter* [pm-parameter-name]
+          |  +--ro pm-parameter-name    tapi-common:pm
+          |  +--ro threshold-config* [threshold-location threshold-type clear-threshold]
+          |     +--ro threshold-location           threshold-crossing-qualifier
+          |     +--ro threshold-type               threshold-type
+          |     +--ro pm-parameter-value
+          |     |  +--ro pm-parameter-value?   decimal64
+          |     |  +--ro pm-parameter-unit?    string
+          |     +--ro clear-threshold              boolean
+          |     +--ro thrs-additional-qualifier?   thrs-add-qualif
+          +--ro local-id                     string
+          +--ro name* [value-name]
+             +--ro value-name    string
+             +--ro value?        string
   augment /tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point:
     +--rw connectivity-oam-service
        +--rw connectivity-oam-service-point* [local-id]
@@ -803,12 +809,13 @@ module: tapi-oam
        |  +--ro pm-parameter* [pm-parameter-name]
        |  |  +--ro pm-parameter-name    tapi-common:pm
        |  |  +--ro threshold-config* [threshold-location threshold-type clear-threshold]
-       |  |     +--ro threshold-location    threshold-crossing-qualifier
-       |  |     +--ro threshold-type        threshold-type
+       |  |     +--ro threshold-location           threshold-crossing-qualifier
+       |  |     +--ro threshold-type               threshold-type
        |  |     +--ro pm-parameter-value
        |  |     |  +--ro pm-parameter-value?   decimal64
        |  |     |  +--ro pm-parameter-unit?    string
-       |  |     +--ro clear-threshold       boolean
+       |  |     +--ro clear-threshold              boolean
+       |  |     +--ro thrs-additional-qualifier?   thrs-add-qualif
        |  +--ro local-id                     string
        |  +--ro name* [value-name]
        |     +--ro value-name    string
@@ -899,6 +906,9 @@ module: tapi-oam
   augment /tapi-notification:event-notification:
     +--ro oam-service
        +--ro oam-service-point* [local-id]
+       |  +--ro is-mip?                           boolean
+       |  +--ro layer-protocol-name?              tapi-common:layer-protocol-name
+       |  +--ro layer-protocol-qualifier?         tapi-common:layer-protocol-qualifier
        |  +--ro service-interface-point
        |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
        |  +--ro connectivity-service-end-point
@@ -909,15 +919,12 @@ module: tapi-oam
        |  |  +--ro node-uuid?                   -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
        |  |  +--ro node-edge-point-uuid?        -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
        |  |  +--ro connection-end-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
-       |  +--ro layer-protocol-name?              tapi-common:layer-protocol-name
-       |  +--ro layer-protocol-qualifier?         tapi-common:layer-protocol-qualifier
        |  +--ro mep
        |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
        |  |  +--ro mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
        |  +--ro mip
        |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
        |  |  +--ro mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
-       |  +--ro is-mip?                           boolean
        |  +--ro local-id                          string
        |  +--ro name* [value-name]
        |  |  +--ro value-name    string
@@ -936,6 +943,9 @@ module: tapi-oam
        +--ro lifecycle-state?        lifecycle-state
   augment /tapi-notification:event-notification:
     +--ro oam-service-point
+       +--ro is-mip?                           boolean
+       +--ro layer-protocol-name?              tapi-common:layer-protocol-name
+       +--ro layer-protocol-qualifier?         tapi-common:layer-protocol-qualifier
        +--ro service-interface-point
        |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
        +--ro connectivity-service-end-point
@@ -946,15 +956,12 @@ module: tapi-oam
        |  +--ro node-uuid?                   -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
        |  +--ro node-edge-point-uuid?        -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
        |  +--ro connection-end-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
-       +--ro layer-protocol-name?              tapi-common:layer-protocol-name
-       +--ro layer-protocol-qualifier?         tapi-common:layer-protocol-qualifier
        +--ro mep
        |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
        |  +--ro mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
        +--ro mip
        |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
        |  +--ro mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
-       +--ro is-mip?                           boolean
        +--ro local-id?                         string
        +--ro name* [value-name]
        |  +--ro value-name    string
@@ -1029,12 +1036,13 @@ module: tapi-oam
        +--ro pm-parameter* [pm-parameter-name]
        |  +--ro pm-parameter-name    tapi-common:pm
        |  +--ro threshold-config* [threshold-location threshold-type clear-threshold]
-       |     +--ro threshold-location    threshold-crossing-qualifier
-       |     +--ro threshold-type        threshold-type
+       |     +--ro threshold-location           threshold-crossing-qualifier
+       |     +--ro threshold-type               threshold-type
        |     +--ro pm-parameter-value
        |     |  +--ro pm-parameter-value?   decimal64
        |     |  +--ro pm-parameter-unit?    string
-       |     +--ro clear-threshold       boolean
+       |     +--ro clear-threshold              boolean
+       |     +--ro thrs-additional-qualifier?   thrs-add-qualif
        +--ro local-id?                    string
        +--ro name* [value-name]
           +--ro value-name    string
@@ -1051,12 +1059,13 @@ module: tapi-oam
        +--ro pm-parameter* [pm-parameter-name]
        |  +--ro pm-parameter-name    tapi-common:pm
        |  +--ro threshold-config* [threshold-location threshold-type clear-threshold]
-       |     +--ro threshold-location    threshold-crossing-qualifier
-       |     +--ro threshold-type        threshold-type
+       |     +--ro threshold-location           threshold-crossing-qualifier
+       |     +--ro threshold-type               threshold-type
        |     +--ro pm-parameter-value
        |     |  +--ro pm-parameter-value?   decimal64
        |     |  +--ro pm-parameter-unit?    string
-       |     +--ro clear-threshold       boolean
+       |     +--ro clear-threshold              boolean
+       |     +--ro thrs-additional-qualifier?   thrs-add-qualif
        +--ro local-id?                    string
        +--ro name* [value-name]
           +--ro value-name    string
@@ -1082,6 +1091,9 @@ module: tapi-oam
     |  |  +---w layer-protocol-name?   tapi-common:layer-protocol-name
     |  |  +---w state?                 tapi-common:administrative-state
     |  |  +---w oam-service-point* [local-id]
+    |  |     +---w is-mip?                           boolean
+    |  |     +---w layer-protocol-name?              tapi-common:layer-protocol-name
+    |  |     +---w layer-protocol-qualifier?         tapi-common:layer-protocol-qualifier
     |  |     +---w service-interface-point
     |  |     |  +---w service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
     |  |     +---w connectivity-service-end-point
@@ -1092,15 +1104,12 @@ module: tapi-oam
     |  |     |  +---w node-uuid?                   -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
     |  |     |  +---w node-edge-point-uuid?        -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
     |  |     |  +---w connection-end-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
-    |  |     +---w layer-protocol-name?              tapi-common:layer-protocol-name
-    |  |     +---w layer-protocol-qualifier?         tapi-common:layer-protocol-qualifier
     |  |     +---w mep
     |  |     |  +---w meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
     |  |     |  +---w mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
     |  |     +---w mip
     |  |     |  +---w meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
     |  |     |  +---w mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
-    |  |     +---w is-mip?                           boolean
     |  |     +---w local-id                          string
     |  |     +---w name* [value-name]
     |  |     |  +---w value-name    string
@@ -1111,6 +1120,9 @@ module: tapi-oam
     |  +--ro output
     |     +--ro oam-service
     |        +--ro oam-service-point* [local-id]
+    |        |  +--ro is-mip?                           boolean
+    |        |  +--ro layer-protocol-name?              tapi-common:layer-protocol-name
+    |        |  +--ro layer-protocol-qualifier?         tapi-common:layer-protocol-qualifier
     |        |  +--ro service-interface-point
     |        |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
     |        |  +--ro connectivity-service-end-point
@@ -1121,15 +1133,12 @@ module: tapi-oam
     |        |  |  +--ro node-uuid?                   -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
     |        |  |  +--ro node-edge-point-uuid?        -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
     |        |  |  +--ro connection-end-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
-    |        |  +--ro layer-protocol-name?              tapi-common:layer-protocol-name
-    |        |  +--ro layer-protocol-qualifier?         tapi-common:layer-protocol-qualifier
     |        |  +--ro mep
     |        |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
     |        |  |  +--ro mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
     |        |  +--ro mip
     |        |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
     |        |  |  +--ro mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
-    |        |  +--ro is-mip?                           boolean
     |        |  +--ro local-id                          string
     |        |  +--ro name* [value-name]
     |        |  |  +--ro value-name    string
@@ -1155,6 +1164,9 @@ module: tapi-oam
     |  +--ro output
     |     +--ro oam-service
     |        +--ro oam-service-point* [local-id]
+    |        |  +--ro is-mip?                           boolean
+    |        |  +--ro layer-protocol-name?              tapi-common:layer-protocol-name
+    |        |  +--ro layer-protocol-qualifier?         tapi-common:layer-protocol-qualifier
     |        |  +--ro service-interface-point
     |        |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
     |        |  +--ro connectivity-service-end-point
@@ -1165,15 +1177,12 @@ module: tapi-oam
     |        |  |  +--ro node-uuid?                   -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
     |        |  |  +--ro node-edge-point-uuid?        -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
     |        |  |  +--ro connection-end-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
-    |        |  +--ro layer-protocol-name?              tapi-common:layer-protocol-name
-    |        |  +--ro layer-protocol-qualifier?         tapi-common:layer-protocol-qualifier
     |        |  +--ro mep
     |        |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
     |        |  |  +--ro mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
     |        |  +--ro mip
     |        |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
     |        |  |  +--ro mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
-    |        |  +--ro is-mip?                           boolean
     |        |  +--ro local-id                          string
     |        |  +--ro name* [value-name]
     |        |  |  +--ro value-name    string
@@ -1194,6 +1203,9 @@ module: tapi-oam
     |  +--ro output
     |     +--ro oam-service* [uuid]
     |        +--ro oam-service-point* [local-id]
+    |        |  +--ro is-mip?                           boolean
+    |        |  +--ro layer-protocol-name?              tapi-common:layer-protocol-name
+    |        |  +--ro layer-protocol-qualifier?         tapi-common:layer-protocol-qualifier
     |        |  +--ro service-interface-point
     |        |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
     |        |  +--ro connectivity-service-end-point
@@ -1204,15 +1216,12 @@ module: tapi-oam
     |        |  |  +--ro node-uuid?                   -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
     |        |  |  +--ro node-edge-point-uuid?        -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
     |        |  |  +--ro connection-end-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
-    |        |  +--ro layer-protocol-name?              tapi-common:layer-protocol-name
-    |        |  +--ro layer-protocol-qualifier?         tapi-common:layer-protocol-qualifier
     |        |  +--ro mep
     |        |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
     |        |  |  +--ro mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
     |        |  +--ro mip
     |        |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
     |        |  |  +--ro mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
-    |        |  +--ro is-mip?                           boolean
     |        |  +--ro local-id                          string
     |        |  +--ro name* [value-name]
     |        |  |  +--ro value-name    string
@@ -1266,6 +1275,9 @@ module: tapi-oam
     |  |  |  +---w value?        string
     |  |  +---w state?               tapi-common:administrative-state
     |  |  +---w oam-service-point* [local-id]
+    |  |     +---w is-mip?                           boolean
+    |  |     +---w layer-protocol-name?              tapi-common:layer-protocol-name
+    |  |     +---w layer-protocol-qualifier?         tapi-common:layer-protocol-qualifier
     |  |     +---w service-interface-point
     |  |     |  +---w service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
     |  |     +---w connectivity-service-end-point
@@ -1276,15 +1288,12 @@ module: tapi-oam
     |  |     |  +---w node-uuid?                   -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
     |  |     |  +---w node-edge-point-uuid?        -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
     |  |     |  +---w connection-end-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
-    |  |     +---w layer-protocol-name?              tapi-common:layer-protocol-name
-    |  |     +---w layer-protocol-qualifier?         tapi-common:layer-protocol-qualifier
     |  |     +---w mep
     |  |     |  +---w meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
     |  |     |  +---w mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
     |  |     +---w mip
     |  |     |  +---w meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
     |  |     |  +---w mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
-    |  |     +---w is-mip?                           boolean
     |  |     +---w local-id                          string
     |  |     +---w name* [value-name]
     |  |     |  +---w value-name    string
@@ -1295,6 +1304,9 @@ module: tapi-oam
     |  +--ro output
     |     +--ro oam-service
     |        +--ro oam-service-point* [local-id]
+    |        |  +--ro is-mip?                           boolean
+    |        |  +--ro layer-protocol-name?              tapi-common:layer-protocol-name
+    |        |  +--ro layer-protocol-qualifier?         tapi-common:layer-protocol-qualifier
     |        |  +--ro service-interface-point
     |        |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
     |        |  +--ro connectivity-service-end-point
@@ -1305,15 +1317,12 @@ module: tapi-oam
     |        |  |  +--ro node-uuid?                   -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
     |        |  |  +--ro node-edge-point-uuid?        -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
     |        |  |  +--ro connection-end-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
-    |        |  +--ro layer-protocol-name?              tapi-common:layer-protocol-name
-    |        |  +--ro layer-protocol-qualifier?         tapi-common:layer-protocol-qualifier
     |        |  +--ro mep
     |        |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
     |        |  |  +--ro mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
     |        |  +--ro mip
     |        |  |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
     |        |  |  +--ro mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
-    |        |  +--ro is-mip?                           boolean
     |        |  +--ro local-id                          string
     |        |  +--ro name* [value-name]
     |        |  |  +--ro value-name    string
@@ -1343,6 +1352,9 @@ module: tapi-oam
     |  |  +---w state?                               tapi-common:administrative-state
     |  +--ro output
     |     +--ro oam-service-point
+    |        +--ro is-mip?                           boolean
+    |        +--ro layer-protocol-name?              tapi-common:layer-protocol-name
+    |        +--ro layer-protocol-qualifier?         tapi-common:layer-protocol-qualifier
     |        +--ro service-interface-point
     |        |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
     |        +--ro connectivity-service-end-point
@@ -1353,15 +1365,12 @@ module: tapi-oam
     |        |  +--ro node-uuid?                   -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
     |        |  +--ro node-edge-point-uuid?        -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
     |        |  +--ro connection-end-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
-    |        +--ro layer-protocol-name?              tapi-common:layer-protocol-name
-    |        +--ro layer-protocol-qualifier?         tapi-common:layer-protocol-qualifier
     |        +--ro mep
     |        |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
     |        |  +--ro mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
     |        +--ro mip
     |        |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
     |        |  +--ro mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
-    |        +--ro is-mip?                           boolean
     |        +--ro local-id?                         string
     |        +--ro name* [value-name]
     |        |  +--ro value-name    string
@@ -1381,6 +1390,9 @@ module: tapi-oam
     |  |  +---w state?   tapi-common:administrative-state
     |  +--ro output
     |     +--ro oam-service-point
+    |        +--ro is-mip?                           boolean
+    |        +--ro layer-protocol-name?              tapi-common:layer-protocol-name
+    |        +--ro layer-protocol-qualifier?         tapi-common:layer-protocol-qualifier
     |        +--ro service-interface-point
     |        |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
     |        +--ro connectivity-service-end-point
@@ -1391,15 +1403,12 @@ module: tapi-oam
     |        |  +--ro node-uuid?                   -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
     |        |  +--ro node-edge-point-uuid?        -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
     |        |  +--ro connection-end-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
-    |        +--ro layer-protocol-name?              tapi-common:layer-protocol-name
-    |        +--ro layer-protocol-qualifier?         tapi-common:layer-protocol-qualifier
     |        +--ro mep
     |        |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
     |        |  +--ro mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
     |        +--ro mip
     |        |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
     |        |  +--ro mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
-    |        +--ro is-mip?                           boolean
     |        +--ro local-id?                         string
     |        +--ro name* [value-name]
     |        |  +--ro value-name    string
@@ -1412,6 +1421,9 @@ module: tapi-oam
     |  |  +---w uuid?   tapi-common:uuid
     |  +--ro output
     |     +--ro oam-service-point
+    |        +--ro is-mip?                           boolean
+    |        +--ro layer-protocol-name?              tapi-common:layer-protocol-name
+    |        +--ro layer-protocol-qualifier?         tapi-common:layer-protocol-qualifier
     |        +--ro service-interface-point
     |        |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
     |        +--ro connectivity-service-end-point
@@ -1422,15 +1434,12 @@ module: tapi-oam
     |        |  +--ro node-uuid?                   -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
     |        |  +--ro node-edge-point-uuid?        -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
     |        |  +--ro connection-end-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/tapi-connectivity:cep-list/connection-end-point/uuid
-    |        +--ro layer-protocol-name?              tapi-common:layer-protocol-name
-    |        +--ro layer-protocol-qualifier?         tapi-common:layer-protocol-qualifier
     |        +--ro mep
     |        |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
     |        |  +--ro mep-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mep/local-id
     |        +--ro mip
     |        |  +--ro meg-uuid?       -> /tapi-common:context/tapi-oam:oam-context/meg/uuid
     |        |  +--ro mip-local-id?   -> /tapi-common:context/tapi-oam:oam-context/meg/mip/local-id
-    |        +--ro is-mip?                           boolean
     |        +--ro local-id?                         string
     |        +--ro name* [value-name]
     |        |  +--ro value-name    string
@@ -1485,12 +1494,13 @@ module: tapi-oam
     |        |  +--ro pm-parameter* [pm-parameter-name]
     |        |  |  +--ro pm-parameter-name    tapi-common:pm
     |        |  |  +--ro threshold-config* [threshold-location threshold-type clear-threshold]
-    |        |  |     +--ro threshold-location    threshold-crossing-qualifier
-    |        |  |     +--ro threshold-type        threshold-type
+    |        |  |     +--ro threshold-location           threshold-crossing-qualifier
+    |        |  |     +--ro threshold-type               threshold-type
     |        |  |     +--ro pm-parameter-value
     |        |  |     |  +--ro pm-parameter-value?   decimal64
     |        |  |     |  +--ro pm-parameter-unit?    string
-    |        |  |     +--ro clear-threshold       boolean
+    |        |  |     +--ro clear-threshold              boolean
+    |        |  |     +--ro thrs-additional-qualifier?   thrs-add-qualif
     |        |  +--ro local-id                     string
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
@@ -1586,12 +1596,13 @@ module: tapi-oam
     |        |  +--ro pm-parameter* [pm-parameter-name]
     |        |  |  +--ro pm-parameter-name    tapi-common:pm
     |        |  |  +--ro threshold-config* [threshold-location threshold-type clear-threshold]
-    |        |  |     +--ro threshold-location    threshold-crossing-qualifier
-    |        |  |     +--ro threshold-type        threshold-type
+    |        |  |     +--ro threshold-location           threshold-crossing-qualifier
+    |        |  |     +--ro threshold-type               threshold-type
     |        |  |     +--ro pm-parameter-value
     |        |  |     |  +--ro pm-parameter-value?   decimal64
     |        |  |     |  +--ro pm-parameter-unit?    string
-    |        |  |     +--ro clear-threshold       boolean
+    |        |  |     +--ro clear-threshold              boolean
+    |        |  |     +--ro thrs-additional-qualifier?   thrs-add-qualif
     |        |  +--ro local-id                     string
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
@@ -1682,12 +1693,13 @@ module: tapi-oam
     |        |  +--ro pm-parameter* [pm-parameter-name]
     |        |  |  +--ro pm-parameter-name    tapi-common:pm
     |        |  |  +--ro threshold-config* [threshold-location threshold-type clear-threshold]
-    |        |  |     +--ro threshold-location    threshold-crossing-qualifier
-    |        |  |     +--ro threshold-type        threshold-type
+    |        |  |     +--ro threshold-location           threshold-crossing-qualifier
+    |        |  |     +--ro threshold-type               threshold-type
     |        |  |     +--ro pm-parameter-value
     |        |  |     |  +--ro pm-parameter-value?   decimal64
     |        |  |     |  +--ro pm-parameter-unit?    string
-    |        |  |     +--ro clear-threshold       boolean
+    |        |  |     +--ro clear-threshold              boolean
+    |        |  |     +--ro thrs-additional-qualifier?   thrs-add-qualif
     |        |  +--ro local-id                     string
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
@@ -1773,12 +1785,13 @@ module: tapi-oam
     |        |  +--ro pm-parameter* [pm-parameter-name]
     |        |  |  +--ro pm-parameter-name    tapi-common:pm
     |        |  |  +--ro threshold-config* [threshold-location threshold-type clear-threshold]
-    |        |  |     +--ro threshold-location    threshold-crossing-qualifier
-    |        |  |     +--ro threshold-type        threshold-type
+    |        |  |     +--ro threshold-location           threshold-crossing-qualifier
+    |        |  |     +--ro threshold-type               threshold-type
     |        |  |     +--ro pm-parameter-value
     |        |  |     |  +--ro pm-parameter-value?   decimal64
     |        |  |     |  +--ro pm-parameter-unit?    string
-    |        |  |     +--ro clear-threshold       boolean
+    |        |  |     +--ro clear-threshold              boolean
+    |        |  |     +--ro thrs-additional-qualifier?   thrs-add-qualif
     |        |  +--ro local-id                     string
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
@@ -1847,12 +1860,13 @@ module: tapi-oam
     |  |     +---w pm-parameter* [pm-parameter-name]
     |  |     |  +---w pm-parameter-name    tapi-common:pm
     |  |     |  +---w threshold-config* [threshold-location threshold-type clear-threshold]
-    |  |     |     +---w threshold-location    threshold-crossing-qualifier
-    |  |     |     +---w threshold-type        threshold-type
+    |  |     |     +---w threshold-location           threshold-crossing-qualifier
+    |  |     |     +---w threshold-type               threshold-type
     |  |     |     +---w pm-parameter-value
     |  |     |     |  +---w pm-parameter-value?   decimal64
     |  |     |     |  +---w pm-parameter-unit?    string
-    |  |     |     +---w clear-threshold       boolean
+    |  |     |     +---w clear-threshold              boolean
+    |  |     |     +---w thrs-additional-qualifier?   thrs-add-qualif
     |  |     +---w local-id?                    string
     |  |     +---w name* [value-name]
     |  |        +---w value-name    string
@@ -1870,12 +1884,13 @@ module: tapi-oam
     |           +--ro pm-parameter* [pm-parameter-name]
     |           |  +--ro pm-parameter-name    tapi-common:pm
     |           |  +--ro threshold-config* [threshold-location threshold-type clear-threshold]
-    |           |     +--ro threshold-location    threshold-crossing-qualifier
-    |           |     +--ro threshold-type        threshold-type
+    |           |     +--ro threshold-location           threshold-crossing-qualifier
+    |           |     +--ro threshold-type               threshold-type
     |           |     +--ro pm-parameter-value
     |           |     |  +--ro pm-parameter-value?   decimal64
     |           |     |  +--ro pm-parameter-unit?    string
-    |           |     +--ro clear-threshold       boolean
+    |           |     +--ro clear-threshold              boolean
+    |           |     +--ro thrs-additional-qualifier?   thrs-add-qualif
     |           +--ro local-id                     string
     |           +--ro name* [value-name]
     |              +--ro value-name    string
@@ -1897,12 +1912,13 @@ module: tapi-oam
     |  |     +---w pm-parameter* [pm-parameter-name]
     |  |     |  +---w pm-parameter-name    tapi-common:pm
     |  |     |  +---w threshold-config* [threshold-location threshold-type clear-threshold]
-    |  |     |     +---w threshold-location    threshold-crossing-qualifier
-    |  |     |     +---w threshold-type        threshold-type
+    |  |     |     +---w threshold-location           threshold-crossing-qualifier
+    |  |     |     +---w threshold-type               threshold-type
     |  |     |     +---w pm-parameter-value
     |  |     |     |  +---w pm-parameter-value?   decimal64
     |  |     |     |  +---w pm-parameter-unit?    string
-    |  |     |     +---w clear-threshold       boolean
+    |  |     |     +---w clear-threshold              boolean
+    |  |     |     +---w thrs-additional-qualifier?   thrs-add-qualif
     |  |     +---w local-id?                    string
     |  |     +---w name* [value-name]
     |  |        +---w value-name    string
@@ -1920,12 +1936,13 @@ module: tapi-oam
     |           +--ro pm-parameter* [pm-parameter-name]
     |           |  +--ro pm-parameter-name    tapi-common:pm
     |           |  +--ro threshold-config* [threshold-location threshold-type clear-threshold]
-    |           |     +--ro threshold-location    threshold-crossing-qualifier
-    |           |     +--ro threshold-type        threshold-type
+    |           |     +--ro threshold-location           threshold-crossing-qualifier
+    |           |     +--ro threshold-type               threshold-type
     |           |     +--ro pm-parameter-value
     |           |     |  +--ro pm-parameter-value?   decimal64
     |           |     |  +--ro pm-parameter-unit?    string
-    |           |     +--ro clear-threshold       boolean
+    |           |     +--ro clear-threshold              boolean
+    |           |     +--ro thrs-additional-qualifier?   thrs-add-qualif
     |           +--ro local-id                     string
     |           +--ro name* [value-name]
     |              +--ro value-name    string
@@ -1949,12 +1966,13 @@ module: tapi-oam
                 +--ro pm-parameter* [pm-parameter-name]
                 |  +--ro pm-parameter-name    tapi-common:pm
                 |  +--ro threshold-config* [threshold-location threshold-type clear-threshold]
-                |     +--ro threshold-location    threshold-crossing-qualifier
-                |     +--ro threshold-type        threshold-type
+                |     +--ro threshold-location           threshold-crossing-qualifier
+                |     +--ro threshold-type               threshold-type
                 |     +--ro pm-parameter-value
                 |     |  +--ro pm-parameter-value?   decimal64
                 |     |  +--ro pm-parameter-unit?    string
-                |     +--ro clear-threshold       boolean
+                |     +--ro clear-threshold              boolean
+                |     +--ro thrs-additional-qualifier?   thrs-add-qualif
                 +--ro local-id                     string
                 +--ro name* [value-name]
                    +--ro value-name    string

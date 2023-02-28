@@ -39,33 +39,47 @@ module tapi-equipment {
         - The ONF TAPI release process does not guarantee backward compatibility of YANG models across major versions of TAPI releases.
         The YANG model backward compatibility criteria are outlined in section 11 of <https://tools.ietf.org/html/rfc7950>.
         YANG models included in this release may not be backward compatible with previous TAPI releases.
-        Copyright (c) 2022 Open Networking Foundation (ONF). All rights reserved.
+        Copyright (c) 2023 Open Networking Foundation (ONF). All rights reserved.
         License: This module is distributed under the Apache License 2.0.";
+    revision 2023-02-28 {
+        description "ONF Transport API version 2.4.1.
+                   Changes included in this TAPI release (v2.4.1) are listed in
+                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2023>";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
+                  <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.4.1/UML>";
+    }
+    revision 2022-12-22 {
+        description "ONF Transport API version 2.4.0.
+                   Changes included in this TAPI release (v2.4.0) are listed in
+                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2023>";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
+                  <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.4.0/UML>";
+    }
     revision 2022-11-21 {
         description "ONF Transport API version 2.4.0 RC1.
                    Changes included in this TAPI release (v2.4.0) are listed in
-                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2022-2023>";
+                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2023>";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
                   <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.4.0-RC1/UML>";
     }
     revision 2021-09-24 {
         description "ONF Transport API version 2.3.1.
                    Changes included in this TAPI release (v2.3.1) are listed in
-                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2021>";
+                   <https://wiki.opennetworking.org/display/OTCC/Archived+Deliveries>";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
                   <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.3.1/UML>";
     }
     revision 2021-08-04 {
         description "ONF Transport API version 2.3.
                    Changes included in this TAPI release (v2.3) are listed in
-                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2021>";
+                   <https://wiki.opennetworking.org/display/OTCC/Archived+Deliveries>";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
                   <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.3/UML>";
     }
     revision 2021-05-24 {
         description "ONF Transport API version 2.3 RC1.
                    Changes included in this TAPI release (v2.3) are listed in
-                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2021>";
+                   <https://wiki.opennetworking.org/display/OTCC/Archived+Deliveries>";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
                   <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.3/UML>";
     }
@@ -960,14 +974,6 @@ module tapi-equipment {
             Represents a field replaceable unit. May include non-field-replaceable details.";
     }
     grouping holder {
-        container occupying-fru {
-            uses equipment-ref;
-            config false;
-            description "The field replaceable unit (FRU) that is occupying the holder. The occupying FRU may be only expectation, only actual or both.
-                A holder may be unoccupied. 
-                An FRU may occupy more than one holder (using or blocking are intentionally not distinguished here).
-                CONDITION: Mandatory where an occupying FRU is to be stated.";
-        }
         container expected-holder {
             config false;
             uses expected-holder;
@@ -979,6 +985,14 @@ module tapi-equipment {
             uses actual-holder;
             description "Details of the contained holder as stated for the actual equipment.
                 CONDITION: Mandatory where an actual holder is to be stated.";
+        }
+        container occupying-fru {
+            uses equipment-ref;
+            config false;
+            description "The field replaceable unit (FRU) that is occupying the holder. The occupying FRU may be only expectation, only actual or both.
+                A holder may be unoccupied. 
+                An FRU may occupy more than one holder (using or blocking are intentionally not distinguished here).
+                CONDITION: Mandatory where an occupying FRU is to be stated.";
         }
         uses tapi-common:global-class;
         description "Represents a space in an equipment in which another equipment can be fitted in the field.
@@ -1019,20 +1033,12 @@ module tapi-equipment {
             This is a physical abstraction.";
     }
     grouping abstract-strand {
-        list adjacent-strand {
-        	uses abstract-strand-ref;
-        	key "physical-span-uuid abstract-strand-local-id";
+        list strand-media-characteristics {
+            key 'value-name';
             config false;
-            description "Allows expression of an ordered list of abstract strands that support this broader span abstract strand where the specific interconnection is not relevant.
-                CONDITION: Mandatory where the sequence of strands in a physical span a is to be expressed but when the specific interconnection is not relevant.";
-        }
-        list spliced-strand {
-        	uses abstract-strand-ref;
-        	key "physical-span-uuid abstract-strand-local-id";
-            config false;
-            max-elements 2;
-            description "References strands that are spliced to this strand where splice properties need not be represented.
-                CONDITION: Mandatory where a simple representation of a splice between strands is required";
+            uses tapi-common:name-and-value;
+            description "Relevant physical properties of the abstract strand.
+                CONDITION: Mandatory where a simple form of strand characteristics is to be conveyed.";
         }
         list connector-pin {
             key 'device-uuid equipment-uuid connector-identification pin-identification';
@@ -1049,12 +1055,20 @@ module tapi-equipment {
                 In some cases it may not be relevant to represent the pin detail and hence the reference is to a connector alone.
                 CONDITION: Mandatory where at least one connector pin detail is to be represented.";
         }
-        list strand-media-characteristics {
-            key 'value-name';
+        list adjacent-strand {
+        	uses abstract-strand-ref;
+        	key "physical-span-uuid abstract-strand-local-id";
             config false;
-            uses tapi-common:name-and-value;
-            description "Relevant physical properties of the abstract strand.
-                CONDITION: Mandatory where a simple form of strand characteristics is to be conveyed.";
+            description "Allows expression of an ordered list of abstract strands that support this broader span abstract strand where the specific interconnection is not relevant.
+                CONDITION: Mandatory where the sequence of strands in a physical span a is to be expressed but when the specific interconnection is not relevant.";
+        }
+        list spliced-strand {
+        	uses abstract-strand-ref;
+        	key "physical-span-uuid abstract-strand-local-id";
+            config false;
+            max-elements 2;
+            description "References strands that are spliced to this strand where splice properties need not be represented.
+                CONDITION: Mandatory where a simple representation of a splice between strands is required";
         }
         list to-strand-joint {
             key "physical-span-uuid abstract-strand-local-id strand-joint-local-id";
@@ -1265,7 +1279,6 @@ module tapi-equipment {
         }
         description "GPS location.";
     }
-
 
     /**************************
     * package interfaces

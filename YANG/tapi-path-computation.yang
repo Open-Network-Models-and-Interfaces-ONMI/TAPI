@@ -36,33 +36,47 @@ module tapi-path-computation {
         - The ONF TAPI release process does not guarantee backward compatibility of YANG models across major versions of TAPI releases.
         The YANG model backward compatibility criteria are outlined in section 11 of <https://tools.ietf.org/html/rfc7950>.
         YANG models included in this release may not be backward compatible with previous TAPI releases.
-        Copyright (c) 2022 Open Networking Foundation (ONF). All rights reserved.
+        Copyright (c) 2023 Open Networking Foundation (ONF). All rights reserved.
         License: This module is distributed under the Apache License 2.0.";
+    revision 2023-02-28 {
+        description "ONF Transport API version 2.4.1.
+                   Changes included in this TAPI release (v2.4.1) are listed in
+                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2023>";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
+                  <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.4.1/UML>";
+    }
+    revision 2022-12-22 {
+        description "ONF Transport API version 2.4.0.
+                   Changes included in this TAPI release (v2.4.0) are listed in
+                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2023>";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
+                  <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.4.0/UML>";
+    }
     revision 2022-11-21 {
         description "ONF Transport API version 2.4.0 RC1.
                    Changes included in this TAPI release (v2.4.0) are listed in
-                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2022-2023>";
+                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2023>";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
                   <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.4.0-RC1/UML>";
     }
     revision 2021-09-24 {
         description "ONF Transport API version 2.3.1.
                    Changes included in this TAPI release (v2.3.1) are listed in
-                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2021>";
+                   <https://wiki.opennetworking.org/display/OTCC/Archived+Deliveries>";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
                   <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.3.1/UML>";
     }
     revision 2021-08-04 {
         description "ONF Transport API version 2.3.
                    Changes included in this TAPI release (v2.3) are listed in
-                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2021>";
+                   <https://wiki.opennetworking.org/display/OTCC/Archived+Deliveries>";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
                   <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.3/UML>";
     }
     revision 2021-05-24 {
         description "ONF Transport API version 2.3 RC1.
                    Changes included in this TAPI release (v2.3) are listed in
-                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2021>";
+                   <https://wiki.opennetworking.org/display/OTCC/Archived+Deliveries>";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
                   <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.3/UML>";
     }
@@ -268,6 +282,16 @@ module tapi-path-computation {
     * package object-classes
     **************************/ 
     grouping path {
+        leaf layer-protocol-name {
+            type tapi-common:layer-protocol-name;
+            config false;
+            description "The layer protocol of the Path.";
+        }
+        leaf direction {
+            type tapi-common:forwarding-direction;
+            config false;
+            description "The forwarding direction of the Path.";
+        }
         list link {
             uses tapi-topology:link-ref;
             key 'topology-uuid link-uuid';
@@ -280,25 +304,11 @@ module tapi-path-computation {
             uses routing-constraint;
             description "The associated routing constraints.";
         }
-        leaf direction {
-            type tapi-common:forwarding-direction;
-            config false;
-            description "The forwarding direction of the Path.";
-        }
-        leaf layer-protocol-name {
-            type tapi-common:layer-protocol-name;
-            config false;
-            description "The layer protocol of the Path.";
-        }
         uses tapi-common:global-class;
         description "The Path is described by an ordered list of (TE) Links. A (TE) Link is conceptually defined by a pair of Node/NodeEdgePoint IDs.
             A Connection is realized by concatenating link resources (associated with a Link) and the lower-level Connections (e.g. cross-connections) in the different Nodes.";
     }
     grouping path-service-end-point {
-        container service-interface-point {
-            uses tapi-common:service-interface-point-ref;
-            description "The supporting ServiceInterfacePoint (SIP) instance.";
-        }
         leaf layer-protocol-name {
             type tapi-common:layer-protocol-name;
             description "The layer protocol of the PathServiceEndPoint (PSEP).";
@@ -319,10 +329,22 @@ module tapi-path-computation {
             type tapi-common:direction;
             description "The direction of the end point.";
         }
+        container service-interface-point {
+            uses tapi-common:service-interface-point-ref;
+            description "The supporting ServiceInterfacePoint (SIP) instance.";
+        }
         uses tapi-common:local-class;
         description "The PathServiceEndPoint (PSEP) encapsulates information related to a PathComputationService at the ingress/egress points of that PathComputationService.";
     }
     grouping path-computation-service {
+        leaf layer-protocol-name {
+            type tapi-common:layer-protocol-name;
+            description "The layer protocol of the PathComputationService.";
+        }
+        leaf direction {
+            type tapi-common:forwarding-direction;
+            description "The forwarding direction of the PathComputationService.";
+        }
         list path {
             uses path-ref;
             key 'path-uuid';
@@ -353,14 +375,6 @@ module tapi-path-computation {
         container optimization-constraint {
             uses path-optimization-constraint;
             description "The associated optimization constraints.";
-        }
-        leaf direction {
-            type tapi-common:forwarding-direction;
-            description "The forwarding direction of the PathComputationService.";
-        }
-        leaf layer-protocol-name {
-            type tapi-common:layer-protocol-name;
-            description "The layer protocol of the PathComputationService.";
         }
         uses tapi-common:global-class;
         description "A PathComputationService represents an 'intent-like' request for connectivity between two or more PathServiceEndPoint (PSEP) instances. The PathComputationService is a container for connectivity request details and is distinct from the Path(s) that realize the request.";

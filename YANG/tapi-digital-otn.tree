@@ -35,6 +35,7 @@ module: tapi-digital-otn
        |  +--ro tributary-port-number?   uint64
        |  +--ro accepted-msi?            string
        |  +--ro odu-mip* []
+       |     +--ro codirectional?    boolean
        |     +--ro otn-oam-common
        |     |  +--ro ex-dapi?            string
        |     |  +--ro ex-sapi?            string
@@ -45,7 +46,6 @@ module: tapi-digital-otn
        |     |  +--ro tim-det-mode?       tim-det-mo
        |     |  +--ro tim-act-disabled?   boolean
        |     |  +--ro deg-m?              uint64
-       |     +--ro codirectional?    boolean
        |     +--ro odu-mip-status
        |        +--ro acti?                                    string
        |        +--ro tcm-fields-in-use*                       uint64
@@ -72,6 +72,8 @@ module: tapi-digital-otn
        |     +--ro tcm-fields-in-use*   uint64
        +--ro otu-mep
        |  +--ro txti?                            string
+       |  +--ro fec-monitoring?                  boolean
+       |  +--ro fec-corrected-error-threshold?   uint64
        |  +--ro otn-oam-common
        |  |  +--ro ex-dapi?            string
        |  |  +--ro ex-sapi?            string
@@ -84,8 +86,6 @@ module: tapi-digital-otn
        |  |  +--ro deg-m?              uint64
        |  +--ro otu-mep-status
        |  |  +--ro acti?   string
-       |  +--ro fec-monitoring?                  boolean
-       |  +--ro fec-corrected-error-threshold?   uint64
        |  +--ro otsia-mep
        |     +--ro total-power-warn-threshold-upper?   decimal64
        |     +--ro total-power-warn-threshold-lower?   decimal64
@@ -110,13 +110,14 @@ module: tapi-digital-otn
           |  +--ro deg-m?              uint64
           +--ro odu-tcm-mep-status
              +--ro tcm-field?           uint64
+             +--ro acti?                string
              +--ro ac-status-source?    tcm-status
              +--ro ac-status-sink?      tcm-status
              +--ro operational-state?   tapi-common:operational-state
-             +--ro acti?                string
   augment /tapi-common:context/tapi-oam:oam-context/tapi-oam:meg/tapi-oam:mip:
     +--ro otn-mip-spec
        +--ro odu-mip
+       |  +--ro codirectional?    boolean
        |  +--ro otn-oam-common
        |  |  +--ro ex-dapi?            string
        |  |  +--ro ex-sapi?            string
@@ -127,7 +128,6 @@ module: tapi-digital-otn
        |  |  +--ro tim-det-mode?       tim-det-mo
        |  |  +--ro tim-act-disabled?   boolean
        |  |  +--ro deg-m?              uint64
-       |  +--ro codirectional?    boolean
        |  +--ro odu-mip-status
        |     +--ro acti?                                    string
        |     +--ro tcm-fields-in-use*                       uint64
@@ -221,6 +221,8 @@ module: tapi-digital-otn
        +--ro otu-ttp-pac
           +--ro otu-mep
           |  +--ro txti?                            string
+          |  +--ro fec-monitoring?                  boolean
+          |  +--ro fec-corrected-error-threshold?   uint64
           |  +--ro otn-oam-common
           |  |  +--ro ex-dapi?            string
           |  |  +--ro ex-sapi?            string
@@ -233,8 +235,6 @@ module: tapi-digital-otn
           |  |  +--ro deg-m?              uint64
           |  +--ro otu-mep-status
           |  |  +--ro acti?   string
-          |  +--ro fec-monitoring?                  boolean
-          |  +--ro fec-corrected-error-threshold?   uint64
           |  +--ro otsia-mep
           |     +--ro total-power-warn-threshold-upper?   decimal64
           |     +--ro total-power-warn-threshold-lower?   decimal64
@@ -256,7 +256,7 @@ module: tapi-digital-otn
        |  |  +--rw tim-det-mode?       tim-det-mo
        |  |  +--rw tim-act-disabled?   boolean
        |  |  +--rw deg-m?              uint64
-       |  +--rw odu-mep-status
+       |  +--ro odu-mep-status
        |     +--ro acti?                string
        |     +--ro tcm-fields-in-use*   uint64
        +--rw odu-tcm-mep
@@ -278,34 +278,35 @@ module: tapi-digital-otn
        |  |  +--rw tim-det-mode?       tim-det-mo
        |  |  +--rw tim-act-disabled?   boolean
        |  |  +--rw deg-m?              uint64
-       |  +--rw odu-tcm-mep-status
-       |     +--rw tcm-field?           uint64
+       |  +--ro odu-tcm-mep-status
+       |     +--ro tcm-field?           uint64
+       |     +--ro acti?                string
        |     +--ro ac-status-source?    tcm-status
        |     +--ro ac-status-sink?      tcm-status
-       |     +--rw operational-state?   tapi-common:operational-state
-       |     +--ro acti?                string
+       |     +--ro operational-state?   tapi-common:operational-state
        +--rw otu-mep
-          +--ro txti?                            string
-          +--ro otn-oam-common
-          |  +--ro ex-dapi?            string
-          |  +--ro ex-sapi?            string
-          |  +--ro deg-thr
-          |  |  +--ro deg-thr-value?            uint64
-          |  |  +--ro deg-thr-type?             deg-thr-type
-          |  |  +--ro percentage-granularity?   percentage-granularity
-          |  +--ro tim-det-mode?       tim-det-mo
-          |  +--ro tim-act-disabled?   boolean
-          |  +--ro deg-m?              uint64
+          +--rw txti?                            string
+          +--rw fec-monitoring?                  boolean
+          +--rw fec-corrected-error-threshold?   uint64
+          +--rw otn-oam-common
+          |  +--rw ex-dapi?            string
+          |  +--rw ex-sapi?            string
+          |  +--rw deg-thr
+          |  |  +--rw deg-thr-value?            uint64
+          |  |  +--rw deg-thr-type?             deg-thr-type
+          |  |  +--rw percentage-granularity?   percentage-granularity
+          |  +--rw tim-det-mode?       tim-det-mo
+          |  +--rw tim-act-disabled?   boolean
+          |  +--rw deg-m?              uint64
           +--ro otu-mep-status
           |  +--ro acti?   string
-          +--ro fec-monitoring?                  boolean
-          +--ro fec-corrected-error-threshold?   uint64
-          +--ro otsia-mep
-             +--ro total-power-warn-threshold-upper?   decimal64
-             +--ro total-power-warn-threshold-lower?   decimal64
+          +--rw otsia-mep
+             +--rw total-power-warn-threshold-upper?   decimal64
+             +--rw total-power-warn-threshold-lower?   decimal64
   augment /tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-service/tapi-oam:oam-service-point:
     +--rw otn-oam-mip-service-point
        +--rw odu-mip
+       |  +--rw codirectional?    boolean
        |  +--rw otn-oam-common
        |  |  +--rw ex-dapi?            string
        |  |  +--rw ex-sapi?            string
@@ -316,8 +317,7 @@ module: tapi-digital-otn
        |  |  +--rw tim-det-mode?       tim-det-mo
        |  |  +--rw tim-act-disabled?   boolean
        |  |  +--rw deg-m?              uint64
-       |  +--rw codirectional?    boolean
-       |  +--rw odu-mip-status
+       |  +--ro odu-mip-status
        |     +--ro acti?                                    string
        |     +--ro tcm-fields-in-use*                       uint64
        |     +--ro odu-current-number-of-tributary-slots?   uint64
@@ -335,7 +335,7 @@ module: tapi-digital-otn
           |  +--rw tim-det-mode?       tim-det-mo
           |  +--rw tim-act-disabled?   boolean
           |  +--rw deg-m?              uint64
-          +--rw odu-tcm-mip-status
+          +--ro odu-tcm-mip-status
              +--ro tcm-field?           uint64
              +--ro operational-state?   tapi-common:operational-state
              +--ro acti?                string
@@ -370,7 +370,7 @@ module: tapi-digital-otn
        |  |  +--rw tim-det-mode?       tim-det-mo
        |  |  +--rw tim-act-disabled?   boolean
        |  |  +--rw deg-m?              uint64
-       |  +--rw odu-mep-status
+       |  +--ro odu-mep-status
        |     +--ro acti?                string
        |     +--ro tcm-fields-in-use*   uint64
        +--rw odu-tcm-mep
@@ -392,34 +392,35 @@ module: tapi-digital-otn
        |  |  +--rw tim-det-mode?       tim-det-mo
        |  |  +--rw tim-act-disabled?   boolean
        |  |  +--rw deg-m?              uint64
-       |  +--rw odu-tcm-mep-status
-       |     +--rw tcm-field?           uint64
+       |  +--ro odu-tcm-mep-status
+       |     +--ro tcm-field?           uint64
+       |     +--ro acti?                string
        |     +--ro ac-status-source?    tcm-status
        |     +--ro ac-status-sink?      tcm-status
-       |     +--rw operational-state?   tapi-common:operational-state
-       |     +--ro acti?                string
+       |     +--ro operational-state?   tapi-common:operational-state
        +--rw otu-mep
-          +--ro txti?                            string
-          +--ro otn-oam-common
-          |  +--ro ex-dapi?            string
-          |  +--ro ex-sapi?            string
-          |  +--ro deg-thr
-          |  |  +--ro deg-thr-value?            uint64
-          |  |  +--ro deg-thr-type?             deg-thr-type
-          |  |  +--ro percentage-granularity?   percentage-granularity
-          |  +--ro tim-det-mode?       tim-det-mo
-          |  +--ro tim-act-disabled?   boolean
-          |  +--ro deg-m?              uint64
+          +--rw txti?                            string
+          +--rw fec-monitoring?                  boolean
+          +--rw fec-corrected-error-threshold?   uint64
+          +--rw otn-oam-common
+          |  +--rw ex-dapi?            string
+          |  +--rw ex-sapi?            string
+          |  +--rw deg-thr
+          |  |  +--rw deg-thr-value?            uint64
+          |  |  +--rw deg-thr-type?             deg-thr-type
+          |  |  +--rw percentage-granularity?   percentage-granularity
+          |  +--rw tim-det-mode?       tim-det-mo
+          |  +--rw tim-act-disabled?   boolean
+          |  +--rw deg-m?              uint64
           +--ro otu-mep-status
           |  +--ro acti?   string
-          +--ro fec-monitoring?                  boolean
-          +--ro fec-corrected-error-threshold?   uint64
-          +--ro otsia-mep
-             +--ro total-power-warn-threshold-upper?   decimal64
-             +--ro total-power-warn-threshold-lower?   decimal64
+          +--rw otsia-mep
+             +--rw total-power-warn-threshold-upper?   decimal64
+             +--rw total-power-warn-threshold-lower?   decimal64
   augment /tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point/tapi-oam:connectivity-oam-service:
     +--rw otn-oam-mip-service-point
        +--rw odu-mip
+       |  +--rw codirectional?    boolean
        |  +--rw otn-oam-common
        |  |  +--rw ex-dapi?            string
        |  |  +--rw ex-sapi?            string
@@ -430,8 +431,7 @@ module: tapi-digital-otn
        |  |  +--rw tim-det-mode?       tim-det-mo
        |  |  +--rw tim-act-disabled?   boolean
        |  |  +--rw deg-m?              uint64
-       |  +--rw codirectional?    boolean
-       |  +--rw odu-mip-status
+       |  +--ro odu-mip-status
        |     +--ro acti?                                    string
        |     +--ro tcm-fields-in-use*                       uint64
        |     +--ro odu-current-number-of-tributary-slots?   uint64
@@ -449,7 +449,7 @@ module: tapi-digital-otn
           |  +--rw tim-det-mode?       tim-det-mo
           |  +--rw tim-act-disabled?   boolean
           |  +--rw deg-m?              uint64
-          +--rw odu-tcm-mip-status
+          +--ro odu-tcm-mip-status
              +--ro tcm-field?           uint64
              +--ro operational-state?   tapi-common:operational-state
              +--ro acti?                string

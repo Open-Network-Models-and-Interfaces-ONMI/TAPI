@@ -39,33 +39,47 @@ module tapi-connectivity {
         - The ONF TAPI release process does not guarantee backward compatibility of YANG models across major versions of TAPI releases.
         The YANG model backward compatibility criteria are outlined in section 11 of <https://tools.ietf.org/html/rfc7950>.
         YANG models included in this release may not be backward compatible with previous TAPI releases.
-        Copyright (c) 2022 Open Networking Foundation (ONF). All rights reserved.
+        Copyright (c) 2023 Open Networking Foundation (ONF). All rights reserved.
         License: This module is distributed under the Apache License 2.0.";
+    revision 2023-02-28 {
+        description "ONF Transport API version 2.4.1.
+                   Changes included in this TAPI release (v2.4.1) are listed in
+                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2023>";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
+                  <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.4.1/UML>";
+    }
+    revision 2022-12-22 {
+        description "ONF Transport API version 2.4.0.
+                   Changes included in this TAPI release (v2.4.0) are listed in
+                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2023>";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
+                  <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.4.0/UML>";
+    }
     revision 2022-11-21 {
         description "ONF Transport API version 2.4.0 RC1.
                    Changes included in this TAPI release (v2.4.0) are listed in
-                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2022-2023>";
+                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2023>";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
                   <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.4.0-RC1/UML>";
     }
     revision 2021-09-24 {
         description "ONF Transport API version 2.3.1.
                    Changes included in this TAPI release (v2.3.1) are listed in
-                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2021>";
+                   <https://wiki.opennetworking.org/display/OTCC/Archived+Deliveries>";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
                   <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.3.1/UML>";
     }
     revision 2021-08-04 {
         description "ONF Transport API version 2.3.
                    Changes included in this TAPI release (v2.3) are listed in
-                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2021>";
+                   <https://wiki.opennetworking.org/display/OTCC/Archived+Deliveries>";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
                   <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.3/UML>";
     }
     revision 2021-05-24 {
         description "ONF Transport API version 2.3 RC1.
                    Changes included in this TAPI release (v2.3) are listed in
-                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2021>";
+                   <https://wiki.opennetworking.org/display/OTCC/Archived+Deliveries>";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
                   <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.3/UML>";
     }
@@ -307,6 +321,13 @@ module tapi-connectivity {
         }
         description "none";
     }
+    augment "/tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service" {
+        container connectivity-protection-service {
+            uses connectivity-protection-service;
+            description "none";
+        }
+        description "none";
+    }
     /**************************
     * definitions of references
     **************************/
@@ -370,6 +391,16 @@ module tapi-connectivity {
         }
         description "none";
     }
+    grouping switch-ref {
+        uses switch-control-ref;
+        leaf switch-local-id {
+            type leafref {
+                path '/tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connection/tapi-connectivity:switch-control/tapi-connectivity:switch/tapi-connectivity:local-id';
+            }
+            description "none";
+        }
+        description "none";
+    }
     grouping route-ref {
         uses connection-ref;
         leaf route-local-id {
@@ -391,6 +422,7 @@ module tapi-connectivity {
         }
         leaf layer-protocol-qualifier {
             type tapi-common:layer-protocol-qualifier;
+            config false;
             description "none";
         }
         leaf direction {
@@ -719,6 +751,7 @@ module tapi-connectivity {
     }
     grouping route {
         container resilience-route {
+            config false;
             uses resilience-route;
             description "Provides optional resilience and state attributes to the Route.";
         }
@@ -753,14 +786,12 @@ module tapi-connectivity {
             uses connection-end-point-ref;
             key 'topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid';
             config false;
-            min-elements 1;
             description "The ConnectionEndPoint (CEP) instance(s) which is (are) currently selected for traffic flow.";
         }
         list selected-route {
             uses route-ref;
             key 'connection-uuid route-local-id';
             config false;
-            min-elements 1;
             description "The Route instance(s) which is (are) currently selected for traffic flow.";
         }
         leaf selection-reason {
@@ -770,6 +801,7 @@ module tapi-connectivity {
         }
         leaf switch-direction {
             type tapi-common:direction;
+            config false;
             description "Sink direction is intended from the unreliable to reliable CEPs. Source direction is the reverse.";
         }
         uses tapi-common:local-class;
@@ -795,10 +827,12 @@ module tapi-connectivity {
         }
         list switch {
             key 'local-id';
+            config false;
             uses switch;
             description "The Switch instances composing the protection scheme.";
         }
         container control-parameters {
+            config false;
             uses resilience-constraint;
             description "The parameters of the protection scheme.";
         }
@@ -960,6 +994,30 @@ module tapi-connectivity {
         uses tapi-common:local-class;
         description "LayerProtocolConstraint allows to specify constraints at any layer, by allowing the technology specific augmentations of the generic CSEP.";
     }
+    grouping connectivity-protection-service {
+        list switch-operation {
+            key 'local-id';
+            uses switch-operation;
+            description "none";
+        }
+        description "none";
+    }
+    grouping switch-operation {
+        leaf operation-type {
+            type selection-control;
+            description "none";
+        }
+        container switch-control {
+            uses switch-control-ref;
+            description "none";
+        }
+        container switch {
+            uses switch-ref;
+            description "none";
+        }
+        uses tapi-common:local-class;
+        description "none";
+    }
 
     /**************************
     * package type-definitions
@@ -1080,18 +1138,27 @@ module tapi-connectivity {
             enum LOCK_OUT {
                 description "The resource is configured to temporarily not be available for use in the protection/restoration scheme(s) it is part of.
                     This overrides all other protection/restoration control states including 'forced'.
+                    The effect is that the resource is either kept or switched to work role.
                     If the item is locked out then it cannot be used under any circumstances.
                     Note: Only relevant when part of a protection/restoration scheme.";
             }
             enum NORMAL {
-                description "Remove of any previous administrative command.";
+                description "Remove of any previous administrative command (CLEAR) or no administrative command currently applied.";
             }
             enum MANUAL {
-                description "The traffic is temporarily switched to the spare/protection resource, unless it is in a fault condition state.
+                description "The traffic is temporarily switched to the spare/protection resource, unless and until it is in a fault condition state.
                     Note: Only relevant when part of a protection/restoration scheme.";
             }
             enum FORCED {
-                description "The traffic is temporarily switched to the spare/protection resource, regardless its fault condition state.
+                description "The traffic is temporarily switched to the spare/protection resource, regardless its fault condition state, current or future.
+                    Note: Only relevant when part of a protection/restoration scheme.";
+            }
+            enum MANUAL_TO_WORK {
+                description "The traffic is temporarily switched to the main/working resource, unless and until it is in a fault condition state.
+                    Note: Only relevant when part of a protection/restoration scheme.";
+            }
+            enum FORCED_TO_WORK {
+                description "The traffic is temporarily switched to the main/working resource, regardless its fault condition state, current or future.
                     Note: Only relevant when part of a protection/restoration scheme.";
             }
         }
@@ -1103,7 +1170,7 @@ module tapi-connectivity {
                 description "A 'lockout' administrative command has been issued.";
             }
             enum NORMAL {
-                description "No administrative command currently issued.";
+                description "No reason to affect the selection.";
             }
             enum MANUAL {
                 description "A 'manual' administrative command has been issued.";

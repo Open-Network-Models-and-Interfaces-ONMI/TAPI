@@ -24,33 +24,47 @@ module tapi-common {
         - The ONF TAPI release process does not guarantee backward compatibility of YANG models across major versions of TAPI releases.
         The YANG model backward compatibility criteria are outlined in section 11 of <https://tools.ietf.org/html/rfc7950>.
         YANG models included in this release may not be backward compatible with previous TAPI releases.
-        Copyright (c) 2022 Open Networking Foundation (ONF). All rights reserved.
+        Copyright (c) 2023 Open Networking Foundation (ONF). All rights reserved.
         License: This module is distributed under the Apache License 2.0.";
+    revision 2023-02-28 {
+        description "ONF Transport API version 2.4.1.
+                   Changes included in this TAPI release (v2.4.1) are listed in
+                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2023>";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
+                  <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.4.1/UML>";
+    }
+    revision 2022-12-22 {
+        description "ONF Transport API version 2.4.0.
+                   Changes included in this TAPI release (v2.4.0) are listed in
+                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2023>";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
+                  <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.4.0/UML>";
+    }
     revision 2022-11-21 {
         description "ONF Transport API version 2.4.0 RC1.
                    Changes included in this TAPI release (v2.4.0) are listed in
-                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2022-2023>";
+                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2023>";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
                   <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.4.0-RC1/UML>";
     }
     revision 2021-09-24 {
         description "ONF Transport API version 2.3.1.
                    Changes included in this TAPI release (v2.3.1) are listed in
-                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2021>";
+                   <https://wiki.opennetworking.org/display/OTCC/Archived+Deliveries>";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
                   <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.3.1/UML>";
     }
     revision 2021-08-04 {
         description "ONF Transport API version 2.3.
                    Changes included in this TAPI release (v2.3) are listed in
-                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2021>";
+                   <https://wiki.opennetworking.org/display/OTCC/Archived+Deliveries>";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
                   <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.3/UML>";
     }
     revision 2021-05-24 {
         description "ONF Transport API version 2.3 RC1.
                    Changes included in this TAPI release (v2.3) are listed in
-                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2021>";
+                   <https://wiki.opennetworking.org/display/OTCC/Archived+Deliveries>";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
                   <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.3/UML>";
     }
@@ -218,11 +232,13 @@ module tapi-common {
     grouping tapi-context {
         list service-interface-point {
             key 'uuid';
+            config false;
             uses service-interface-point;
             description "The ServiceInterfacePoint (SIP) instances belonging to this context.";
         }
         list profile {
             key 'uuid';
+            config false;
             uses profile;
             description "none";
         }
@@ -237,6 +253,13 @@ module tapi-common {
             config false;
             description "The layer protocol of the ServiceInterfacePoint (SIP).
                 Usage of layerProtocolName [>1]  in the ServiceInterfacePoint should be considered experimental.";
+        }
+        leaf direction {
+            type direction;
+            default "UNDEFINED_OR_UNKNOWN";
+            config false;
+            description "The SIP direction. It is intended the 'internal viewpoint', i.e. the source SIP is sending to the network, the sink SIP is sending from the network.
+                If direction attribute is missing the ServiceInterfacePoint (SIP) instance is to be intended as 'BIDIRECTIONAL'.";
         }
         list supported-cep-layer-protocol-qualifier-instances {
             config false;
@@ -258,13 +281,6 @@ module tapi-common {
             config false;
             uses payload-structure;
             description "none";
-        }
-        leaf direction {
-            type direction;
-            default "UNDEFINED_OR_UNKNOWN";
-            config false;
-            description "The SIP direction. It is intended the 'internal viewpoint', i.e. the source SIP is sending to the network, the sink SIP is sending from the network.
-                If direction attribute is missing the ServiceInterfacePoint (SIP) instance is to be intended as 'BIDIRECTIONAL'.";
         }
         list profile {
             uses profile-ref;
@@ -303,6 +319,11 @@ module tapi-common {
         description "Provides capacity related attributes.";
     }
     grouping profile {
+        leaf profile-type {
+            type profile-type;
+            config false;
+            description "none";
+        }
         uses global-class;
         description "none";
     }
@@ -1192,13 +1213,45 @@ module tapi-common {
         base PM;
         description "none";
     }
+    identity PM_CHROM_DISP {
+        base PM;
+        description "Chromatic Dispersion";
+    }
     identity PM_DELAY {
         base PM;
         description "none";
     }
+    identity PM_DIFF_GROUP_DELAY {
+        base PM;
+        description "Differential Group Delay";
+    }
     identity PM_FEC_CORRECTED_ERROR {
         base PM;
         description "none";
+    }
+    identity PM_FREQ_OFFS {
+        base PM;
+        description "Frequency Offset";
+    }
+    identity PM_OPTICAL_GAIN {
+        base PM;
+        description "none";
+    }
+    identity PM_OPTICAL_POWER_INPUT {
+        base PM;
+        description "none";
+    }
+    identity PM_OPTICAL_POWER_OUTPUT {
+        base PM;
+        description "none";
+    }
+    identity PM_OPTICAL_TILT {
+        base PM;
+        description "none";
+    }
+    identity PM_POL_MODE_DISP {
+        base PM;
+        description "Polarization Mode Dispersion";
     }
     identity PM_SES {
         base PM;
@@ -1206,6 +1259,9 @@ module tapi-common {
     }
     identity PM_UAS {
         base PM;
+        description "none";
+    }
+    identity PROFILE_TYPE {
         description "none";
     }
     typedef administrative-state {
@@ -1660,6 +1716,12 @@ module tapi-common {
     typedef pm {
         type identityref {
             base PM;
+        }
+        description "none";
+    }
+    typedef profile-type {
+        type identityref {
+            base PROFILE_TYPE;
         }
         description "none";
     }
