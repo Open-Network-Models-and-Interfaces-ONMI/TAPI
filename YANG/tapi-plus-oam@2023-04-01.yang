@@ -1,0 +1,411 @@
+module tapi-plus-oam {
+    namespace "urn:onf:otcc:yang:tapi-plus-oam";
+    prefix tapi-plus-oam;
+    import tapi-common {
+        prefix tapi-common;
+    }
+    import tapi-connectivity {
+        prefix tapi-connectivity;
+    }
+    import tapi-oam {
+        prefix tapi-oam;
+    }
+    import tapi-notification {
+        prefix tapi-notification;
+    }
+    import tapi-topology {
+        prefix tapi-topology;
+    }
+    organization "ONF OTCC (Open Transport Configuration & Control) Project";
+    contact "
+         Project Web: <https://wiki.opennetworking.org/display/OTCC/TAPI>
+         Project List: <mailto:transport-api@opennetworking.org>
+         Editor: Karthik Sethuraman <mailto:karthik.sethuraman@necam.com>
+         Andrea Mazzini <mailto:andrea.mazzini@nokia.com>
+         Arturo Mayoral <mailto:arturo.mayoral@telefonica.com>
+         Nigel Davis <mailto:ndavis@ciena.com>
+         Ramon Casellas <mailto:ramon.casellas@cttc.es>";
+    description "
+        This module contains extensions to standard 2.1.3 TAPI OAM Model definitions .
+        Source: TapiPlusOam.uml
+        Copyright (c) 2023 Open Networking Foundation (ONF). All rights reserved.
+        License: This module is distributed under the Apache License 2.0.";
+    revision 2023-04-01 {
+        description "ONF Transport API version 2.1.3 plus-oam.";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
+                  <https://github.com/OpenNetworkingFoundation/TAPI/tree/tapi-2.1/UML>";
+    }
+    augment "/tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job" {
+        container monitored-entity {
+            uses monitored-entity;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:pm-current-data" {
+        container odu-delay-performance-data {
+            uses odu-delay-performance-data;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:pm-current-data/tapi-oam:pm-history-data" {
+        container odu-delay-performance-data {
+            uses odu-delay-performance-data;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:pm-current-data" {
+        container otn-error-performance-data {
+            uses otn-error-performance-data;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:pm-current-data/tapi-oam:pm-history-data" {
+        container otn-error-performance-data {
+            uses otn-error-performance-data;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:pm-current-data" {
+        container otu-fec-performance-data {
+            uses otu-fec-performance-data;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:pm-current-data/tapi-oam:pm-history-data" {
+        container otu-fec-performance-data {
+            uses otu-fec-performance-data;
+            description "none";
+        }
+        description "none";
+    }
+
+/*****************************************************************************************************
+    * For the notification of oam-job/pm-current/history-data it could be reused the RIA 1.1 approach
+    * (2.7.1.6 Notification relevant parameters)
+	* Streaming of oam-job/pm-current/history-data is already specified in 2.1.3 tapi-streaming
+    **************************************************************************************************/
+	
+    /**************************
+    * package object-classes
+    **************************/ 
+    grouping monitored-entity {
+        list connection-end-point {
+            uses tapi-connectivity:connection-end-point-ref;
+            key 'topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid';
+            description "The ConnectionEndPoint (CEP) instances involved in the OamJob.";
+        }
+        list node-edge-point {
+            uses tapi-topology:node-edge-point-ref;
+            key 'topology-uuid node-uuid node-edge-point-uuid';
+            description "The NodeEdgePoint (NEP) instances involved in the OamJob.";
+        }
+        list pm-data {
+            key 'local-id';
+            uses pm-data;
+            description "none";
+        }
+        description "This class augments the 2.1.3 oam-job with the list of monitored CEPs/NEPs.";
+    }
+    grouping otn-error-performance-data {
+        container near-end-otn-counters {
+            config false;
+            uses otn-counters;
+            description "none";
+        }
+        container far-end-otn-counters {
+            config false;
+            uses otn-counters;
+            description "none";
+        }
+        leaf bidirectional-uas {
+            type uint64;
+            config false;
+            description "none";
+        }
+        leaf codirectional {
+            type boolean;
+            config false;
+            description "This attribute specifies the directionality of the ODU MIP with respect to the monitored ODU CEP. The value of TRUE means that the MIP receives the same signal direction as the sink part of the ODU CEP. The Source part behaves similarly.
+                This attribute applies only when MIPs are data structures of ODU CEP.";
+        }
+        list otn-cn-error-performance-data {
+            key 'otn-cn-oh-index';
+            config false;
+            uses otn-cn-error-performance-data;
+            description "none";
+        }
+        description "ODU/OTU PM Metrics.";
+    }
+    grouping otn-cn-error-performance-data {
+        container near-end-otn-counters {
+            config false;
+            uses otn-counters;
+            description "none";
+        }
+        container far-end-otn-counters {
+            config false;
+            uses otn-counters;
+            description "none";
+        }
+        leaf bidirectional-uas {
+            type uint64;
+            config false;
+            description "none";
+        }
+        leaf otn-cn-oh-index {
+            type uint64;
+            config false;
+            description "The ODUCn contains n instances of the ODU PM/TCM overhead, numbered 1 to n (PM #1 to PM #n)/(TCMi #1 to TCMi #n)..
+                This index specify the 2..n instance of the ODUCn PM/TCM overhead.";
+        }
+        description "The ODUk contains one instance of ODU PM overhead.
+            The ODUCn contains n instances of the ODU PM overhead, numbered 1 to n (PM #1 to PM #n).
+            The PM #2 to #n fields contain the following subfields:
+            - bit interleaved parity (BIP-8)
+            - backward error indication (BEI)
+            The ODUk contains one instance of ODU TCM1 to TCM6 overhead.
+            The ODUCn contains n instances of the ODU TCM1 to TCM6 overhead, numbered 1 to n (TCMi #1 to TCMi #n).
+            Each TCMi #2 to #n field contains the following subfields (see Figure 15-19): 
+            - bit interleaved parity 8 (BIP-8);
+            - backward error indication and backward incoming alignment error (BEI/BIAE)";
+    }
+    grouping otu-fec-performance-data {
+        leaf fec-corrected-errors-count {
+            type uint64;
+            config false;
+            description "ITU-T G798: The number of bits corrected by the FEC are counted over one second and reported to the MI at the end of the second. For the application of this filter, see the specific atomic functions.
+                During signal fail conditions of the data signal, no corrected bits shall be counted. For details on the signal fail conditions, see the specific atomic functions.";
+        }
+        leaf pre-fec-ber {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "counter: bit error rate before correction by FEC";
+        }
+        leaf post-fec-ber {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "counter: bit error rate after correction by FEC";
+        }
+        leaf uncorrectable-bytes {
+            type uint64;
+            config false;
+            description "Bytes that could not be corrected by FEC";
+        }
+        leaf uncorrectable-bits {
+            type uint64;
+            config false;
+            description "Bits that could not be corrected by FEC";
+        }
+        leaf corrected-bytes {
+            type uint64;
+            config false;
+            description "Bytes corrected between those that were received corrupted";
+        }
+        description "The OTU FEC PM Metrics.";
+    }
+    grouping odu-delay-performance-data {
+        leaf delay-frame-count {
+            type uint64;
+            config false;
+            description "Summation of the number of frames between the DMValue toggle event and the received DMp signal value toggle event. This value is a snapshot value.";
+        }
+        leaf delay-measure-success {
+            type boolean;
+            config false;
+            description "none";
+        }
+        description "none";
+    }
+    grouping pm-data {
+        list pm-parameter {
+            key 'pm-parameter-name';
+            uses pm-parameter;
+            description "The PM metrics and their threshold values.";
+        }
+        container granularity-period {
+            uses tapi-common:time-period;
+            description "The granularity period or measurement interval time. In case of instantaneous measurement this parameter is omitted (e.g. ODU Delay measurement).";
+        }
+        leaf is-transient {
+            type boolean;
+            description "A threshold crossing alert (TCA) is transient when stateless, i.e. an explicit alarm clear notification is not foreseen.
+                MEF 35.1: Thresholds and associated TCAs are specific to a particular performance metric in a given PM Session (or OAM job).
+                There are two types of TCA reporting: stateless and stateful.
+                With stateless reporting, a TCA is generated in each Measurement Interval in which the threshold is crossed.
+                With stateful reporting, a SET TCA is generated in the first Measurement Interval in which the threshold is crossed,
+                and a CLEAR TCA is subsequently generated at the end of the first Measurement Interval in which the threshold is not crossed.
+                Note: In ITU-T G.7710 terminology, stateless TCA reporting corresponds to a transient condition, and stateful TCA reporting corresponds to a standing condition.
+                Note that threshold management for gauges may be more complex (e.g. out of range function for gauge overflow/underflow detection).";
+        }
+        leaf codirectional {
+            type boolean;
+            description "Applicable in case MEP/MIP parameters are included in the CEP.
+                In this case two MIPs on the same CEP can be involved in the same OamJob, hence may be necessary to set different thresholds for codirectional and contradirectional PM Parameters.";
+        }
+        uses tapi-common:local-class;
+        description "The PM threshold information associated to an OamProfile instance.
+            It defines a set of PM metrics, their threshold values, the granularity period or measurement interval time for these PM metrics, the stateful or stateless types of related threshold crossing alert (TCA) reporting.";
+    }
+
+    /**************************
+    * package type-definitions
+    **************************/ 
+    identity THRESHOLD_CROSSING_QUALIFIER {
+        description "none";
+    }
+    identity THRESHOLD_CROSSING_QUALIFIER_NOT_APPLICABLE {
+        base THRESHOLD_CROSSING_QUALIFIER;
+        description "Location or qualifier not applicable.";
+    }
+    identity THRESHOLD_CROSSING_QUALIFIER_NEAR_END {
+        base THRESHOLD_CROSSING_QUALIFIER;
+        description "Near End detection.";
+    }
+    identity THRESHOLD_CROSSING_QUALIFIER_FAR_END {
+        base THRESHOLD_CROSSING_QUALIFIER;
+        description "Far end detection.";
+    }
+    identity THRESHOLD_CROSSING_QUALIFIER_BIDIRECTIONAL {
+        base THRESHOLD_CROSSING_QUALIFIER;
+        description "Composition of near and far end detections.";
+    }
+    identity THRESHOLD_TYPE {
+        description "none";
+    }
+    identity THRESHOLD_TYPE_UPPER {
+        base THRESHOLD_TYPE;
+        description "none";
+    }
+    identity THRESHOLD_TYPE_LOWER {
+        base THRESHOLD_TYPE;
+        description "none";
+    }
+    identity THRESHOLD_TYPE_TIDEMARK {
+        base THRESHOLD_TYPE;
+        description "none";
+    }
+    identity THRESHOLD_TYPE_POSITIVE_DELTA {
+        base THRESHOLD_TYPE;
+        description "none";
+    }
+    identity THRESHOLD_TYPE_NEGATIVE_DELTA {
+        base THRESHOLD_TYPE;
+        description "none";
+    }
+    identity LOOPBACK_OAM_JOB_TYPE {
+        description "none";
+    }
+    identity LOOPBACK_OAM_JOB_TYPE_LOOPBACK_FACILITY {
+        base LOOPBACK_OAM_JOB_TYPE;
+        description "External / Line Loopback.";
+    }
+    identity LOOPBACK_OAM_JOB_TYPE_LOOPBACK_TERMINAL {
+        base LOOPBACK_OAM_JOB_TYPE;
+        description "Internal / Device Loopback.";
+    }
+    identity ODU_OAM_JOB_TYPE {
+        description "none";
+    }
+    identity ODU_OAM_JOB_TYPE_NCM {
+        base ODU_OAM_JOB_TYPE;
+        description "none";
+    }
+    identity ODU_OAM_JOB_TYPE_TCM {
+        base ODU_OAM_JOB_TYPE;
+        description "none";
+    }
+    grouping otn-counters {
+        leaf bbe {
+            type uint64;
+            description "none";
+        }
+        leaf ses {
+            type uint64;
+            description "none";
+        }
+        leaf uas {
+            type uint64;
+            description "none";
+        }
+        description "none";
+    }
+    grouping pm-parameter {
+        leaf pm-parameter-name {
+            type string;
+            description "The name of the PM metric. Technology specific modules may define specific PM metrics.";
+        }
+        list threshold-config {
+            key 'threshold-location threshold-type clear-threshold';
+            uses threshold-config;
+            description "PM metric location.";
+        }
+        description "PM metrics, their locations and threshold values.";
+    }
+    grouping threshold-config {
+        leaf threshold-location {
+            type threshold-crossing-qualifier;
+            description "none";
+        }
+        leaf threshold-type {
+            type threshold-type;
+            description "none";
+        }
+        container pm-parameter-value {
+            uses pm-parameter-value;
+            description "none";
+        }
+        leaf clear-threshold {
+            type boolean;
+            description "none";
+        }
+        description "none";
+    }
+    typedef threshold-crossing-qualifier {
+        type identityref {
+            base THRESHOLD_CROSSING_QUALIFIER;
+        }
+        description "Threshold crossing location or qualifier.";
+    }
+    grouping pm-parameter-value {
+        leaf pm-parameter-value {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            description "The PM Parameter value. The type Real allows the representation of e.g. either gauges or counters.";
+        }
+        leaf pm-parameter-unit {
+            type string;
+            description "The PM Parameter unit.";
+        }
+        description "PM metric value.";
+    }
+    typedef threshold-type {
+        type identityref {
+            base THRESHOLD_TYPE;
+        }
+        description "none";
+    }
+    typedef loopback-oam-job-type {
+        type identityref {
+            base LOOPBACK_OAM_JOB_TYPE;
+        }
+        description "none";
+    }
+    typedef odu-oam-job-type {
+        type identityref {
+            base ODU_OAM_JOB_TYPE;
+        }
+        description "none";
+    }
+
+}

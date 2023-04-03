@@ -1,0 +1,163 @@
+module tapi-plus-eqp {
+    namespace "urn:onf:otcc:yang:tapi-plus-eqp";
+    prefix tapi-plus-eqp;
+    import tapi-common {
+        prefix tapi-common;
+    }
+    import tapi-topology {
+        prefix tapi-topology;
+    }
+    import tapi-notification {
+        prefix tapi-notification;
+    }
+    import tapi-streaming {
+        prefix tapi-streaming;
+    }
+    import tapi-connectivity {
+        prefix tapi-connectivity;
+    }
+    import tapi-equipment {
+        prefix tapi-equipment;
+    }
+    organization "ONF OTCC (Open Transport Configuration & Control) Project";
+    contact "
+         Project Web: <https://wiki.opennetworking.org/display/OTCC/TAPI>
+         Project List: <mailto:transport-api@opennetworking.org>
+         Editor: Karthik Sethuraman <mailto:karthik.sethuraman@necam.com>
+         Andrea Mazzini <mailto:andrea.mazzini@nokia.com>
+         Arturo Mayoral <mailto:arturo.mayoral@telefonica.com>
+         Nigel Davis <mailto:ndavis@ciena.com>
+         Ramon Casellas <mailto:ramon.casellas@cttc.es>";
+    description "
+        This module contains extensions to standard 2.1.3 TAPI Equipment Model definitions .
+        Source: TapiPlusEqp.uml
+        Copyright (c) 2023 Open Networking Foundation (ONF). All rights reserved.
+        License: This module is distributed under the Apache License 2.0.";
+    revision 2023-04-01 {
+        description "ONF Transport API version 2.1.3 plus-eqp.";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
+                  <https://github.com/OpenNetworkingFoundation/TAPI/tree/tapi-2.1/UML>";
+    }
+    augment "/tapi-common:context/tapi-common:service-interface-point" {
+        container access-port-supports-sip {
+            uses access-port-supports-sip;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connection" {
+        container physical-route-list {
+            uses physical-route-list;
+            description "This augment allows Connection to describe its physical route(s) by listing all involved AccessPorts, despite TapiConnectivity model does not import TapiEquipment model.";
+        }
+        description "This augment allows Connection to describe its physical route(s) by listing all involved AccessPorts, despite TapiConnectivity model does not import TapiEquipment model.";
+    }
+    /**************************
+    * definitions of references
+    **************************/
+    grouping device-ref {
+        leaf device-uuid {
+        	type leafref {
+                path '/tapi-common:context/tapi-equipment:physical-context/tapi-equipment:device/tapi-equipment:uuid';
+            }
+            description "none";
+        }
+        description "none";
+    }
+    grouping access-port-ref {
+    	uses device-ref;
+        leaf access-port-uuid {
+        	type leafref {
+                path '/tapi-common:context/tapi-equipment:physical-context/tapi-equipment:device/tapi-equipment:access-port/tapi-equipment:uuid';
+            }
+            description "none";
+        }
+        description "none";
+    }
+    /**************************
+    * package object-classes
+    **************************/ 
+    grouping access-port-supports-sip {
+        container access-port {
+            uses access-port-ref;
+            config false;
+            description "Reference to the AccessPort.
+                CONDITION: Mandatory where the SIP is directly supported by an access port.";
+        }
+        description "The AccessPort supporting this SIP. More SIPs can be supported by the same AccessPort.
+            This augment allows SIP to refer to its AccessPort despite TapiTopology model does not import TapiEquipment model.";
+    }
+    grouping physical-route-list {
+        list physical-route {
+            key 'local-id';
+            config false;
+            uses physical-route;
+            description "List of PhysicalRoutes composing the physical route of the Connection.
+                CONDITION: Mandatory where a physical route is to be conveyed.";
+        }
+        description "The list of the PhysicalRoutes of a Connection.";
+    }
+    grouping physical-route {
+        leaf physical-route-state {
+            type physical-route-state;
+            default "PHYSICAL_ROUTE_STATE_CURRENT";
+            config false;
+            description "Provides optional resilience and state attributes to the PhysicalRoute.
+                CONDITION: Mandatory where not always default.";
+        }
+        list physical-route-element {
+            config false;
+            uses physical-route-element;
+            description "A point in the PhysicalRoute. A PhysicalRoute must have at least one point.";
+        }
+        uses tapi-common:local-class;
+        description "The physical route of a connection is modeled as an ordered sequence of physical route element instances.
+            The physical route is a description dedicated to the connection.";
+    }
+    grouping physical-route-element {
+        container access-port-in-route {
+            uses access-port-ref;
+            config false;
+            description "The AccessPort included in the physical route.
+                CONDITION: Mandatory where AccessPort is used to define physical route.";
+        }
+        list connector-pin-in-route {
+            key 'connector-identification pin-identification equipment-uuid';
+            config false;
+            uses tapi-equipment:connector-pin-address;
+            description "The connectors and pins defining this point in the route where the access port alone is not sufficient or the access port is not provided.
+                CONDITION: Mandatory where AccessPort is not used to define PhysicalRoute or where AccessPort requires clarification as it includes more connectorPins than are used in the route.";
+        }
+        description "A PhysicalRouteElement describes equipment, connectors on those equipments and pins of those connectors that are involved in the physical route of the connection. 
+            The description may be in terms of access port or connector pin in route (at least one of access port or connector pin in route must be provided) or both.
+            Where access port is provided alone, this may be because all pins in the connectors of the access port are used, because the connector pin detail id not known the and to its subset of connectorPins which are involved in the physical route. 
+            An access port may include connectorPins of more Equipments, e.g., in case of bidirectional access port shared by two 'unidirectional'; Equipments.
+            Connector pin details may be provided alone without an access port where there are no access ports modelled.";
+    }
+
+    /**************************
+    * package type-definitions
+    **************************/ 
+    identity PHYSICAL_ROUTE_STATE {
+        description "none";
+    }
+    identity PHYSICAL_ROUTE_STATE_CURRENT {
+        base PHYSICAL_ROUTE_STATE;
+        description "The PhysicalRoute instance identified is the current PhysicalRoute, i.e., is the one that is active and selected to support service.";
+    }
+    identity PHYSICAL_ROUTE_STATE_NOT_CURRENT {
+        base PHYSICAL_ROUTE_STATE;
+        description "The PhysicalRoute instance is not the one supporting the service.";
+    }
+    identity PHYSICAL_ROUTE_STATE_UNKNOWN {
+        base PHYSICAL_ROUTE_STATE;
+        description "The PhysicalRoute state is unknown.";
+    }
+    typedef physical-route-state {
+        type identityref {
+            base PHYSICAL_ROUTE_STATE;
+        }
+        description "Potential PhysicalRoute states concerning the service support.";
+    }
+
+}
