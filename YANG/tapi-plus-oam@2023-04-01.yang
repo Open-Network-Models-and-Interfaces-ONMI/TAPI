@@ -84,6 +84,20 @@ module tapi-plus-oam {
         }
         description "none";
     }
+    augment "/tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-profile/tapi-oam:pm-threshold-data" {
+        container pm-data-profile {
+            uses pm-data-profile;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job/tapi-oam:pm-current-data" {
+        container monitored-point {
+            uses monitored-point;
+            description "none";
+        }
+        description "none";
+    }
 
 /*****************************************************************************************************
     * For the notification of oam-job/pm-current/history-data it could be reused the RIA 1.1 approach
@@ -253,32 +267,39 @@ module tapi-plus-oam {
                 In this case two MIPs on the same CEP can be involved in the same OamJob, hence may be necessary to set different thresholds for codirectional and contradirectional PM Parameters.";
         }
         uses tapi-common:local-class;
-        description "The PM threshold information associated to an OamProfile instance.
+        description "The PM threshold information associated to an OamJob instance.
             It defines a set of PM metrics, their threshold values, the granularity period or measurement interval time for these PM metrics, the stateful or stateless types of related threshold crossing alert (TCA) reporting.";
+    }
+    grouping pm-data-profile {
+        list pm-parameter {
+            key 'pm-parameter-name';
+            uses pm-parameter;
+            description "The PM metrics and their threshold values.";
+        }
+        leaf codirectional {
+            type boolean;
+            description "Applicable in case MEP/MIP parameters are included in the CEP.
+                In this case two MIPs on the same CEP can be involved in the same OamJob, hence may be necessary to set different thresholds for codirectional and contradirectional PM Parameters.";
+        }
+        description "none";
+    }
+    grouping monitored-point {
+        container connection-end-point {
+            uses tapi-connectivity:connection-end-point-ref;
+            config false;
+            description "none";
+        }
+        container node-edge-point {
+            uses tapi-topology:node-edge-point-ref;
+            config false;
+            description "none";
+        }
+        description "none";
     }
 
     /**************************
     * package type-definitions
     **************************/ 
-    identity THRESHOLD_CROSSING_QUALIFIER {
-        description "none";
-    }
-    identity THRESHOLD_CROSSING_QUALIFIER_NOT_APPLICABLE {
-        base THRESHOLD_CROSSING_QUALIFIER;
-        description "Location or qualifier not applicable.";
-    }
-    identity THRESHOLD_CROSSING_QUALIFIER_NEAR_END {
-        base THRESHOLD_CROSSING_QUALIFIER;
-        description "Near End detection.";
-    }
-    identity THRESHOLD_CROSSING_QUALIFIER_FAR_END {
-        base THRESHOLD_CROSSING_QUALIFIER;
-        description "Far end detection.";
-    }
-    identity THRESHOLD_CROSSING_QUALIFIER_BIDIRECTIONAL {
-        base THRESHOLD_CROSSING_QUALIFIER;
-        description "Composition of near and far end detections.";
-    }
     identity THRESHOLD_TYPE {
         description "none";
     }
@@ -371,8 +392,19 @@ module tapi-plus-oam {
         description "none";
     }
     typedef threshold-crossing-qualifier {
-        type identityref {
-            base THRESHOLD_CROSSING_QUALIFIER;
+        type enumeration {
+            enum NOT_APPLICABLE {
+                description "Location or qualifier not applicable.";
+            }
+            enum NEAR_END {
+                description "Near End detection.";
+            }
+            enum FAR_END {
+                description "Far end detection.";
+            }
+            enum BIDIRECTIONAL {
+                description "Composition of near and far end detections.";
+            }
         }
         description "Threshold crossing location or qualifier.";
     }
