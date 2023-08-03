@@ -18,6 +18,10 @@ module: tapi-path-computation
        |  |  +--rw direction?                  tapi-common:direction
        |  |  +--rw service-interface-point
        |  |  |  +--rw service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+       |  |  +--rw node-edge-point
+       |  |  |  +--rw topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |  |  +--rw node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |  |  |  +--rw node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
        |  |  +--rw local-id                    string
        |  |  +--rw name* [value-name]
        |  |     +--rw value-name    string
@@ -50,9 +54,9 @@ module: tapi-path-computation
        |  |     +--rw value?      uint64
        |  |     +--rw priority?   uint64
        |  +--rw topology-constraint* [local-id]
-       |  |  +--rw explicit-route?              boolean
-       |  |  +--rw preferred-transport-layer?   tapi-common:layer-protocol-name
-       |  |  +--rw constraint-weight?           uint64
+       |  |  +--rw explicit-route?               boolean
+       |  |  +--rw preferred-transport-layer?    tapi-common:layer-protocol-name
+       |  |  +--rw constraint-weight?            uint64
        |  |  +--rw include-topology* [topology-uuid]
        |  |  |  +--rw topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
        |  |  +--rw exclude-topology* [topology-uuid]
@@ -67,6 +71,18 @@ module: tapi-path-computation
        |  |  +--rw exclude-link* [topology-uuid link-uuid]
        |  |  |  +--rw topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
        |  |  |  +--rw link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+       |  |  +--rw include-link-and-partition* [index]
+       |  |  |  +--rw index             uint64
+       |  |  |  +--rw partition-type?   partition-type
+       |  |  |  +--rw link
+       |  |  |     +--rw topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |  |     +--rw link-uuid?       -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+       |  |  +--rw exclude-link-and-partition* [index]
+       |  |  |  +--rw index             uint64
+       |  |  |  +--rw partition-type?   partition-type
+       |  |  |  +--rw link
+       |  |  |     +--rw topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |  |     +--rw link-uuid?       -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
        |  |  +--rw include-node* [topology-uuid node-uuid]
        |  |  |  +--rw topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
        |  |  |  +--rw node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
@@ -81,7 +97,21 @@ module: tapi-path-computation
        |  |  |  +--rw topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
        |  |  |  +--rw node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
        |  |  |  +--rw node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
-       |  |  +--rw local-id                     string
+       |  |  +--rw include-nep-and-partition* [index]
+       |  |  |  +--rw index              uint64
+       |  |  |  +--rw partition-type?    partition-type
+       |  |  |  +--rw node-edge-point
+       |  |  |     +--rw topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |  |     +--rw node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |  |  |     +--rw node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+       |  |  +--rw exclude-nep-and-partition* [index]
+       |  |  |  +--rw index              uint64
+       |  |  |  +--rw partition-type?    partition-type
+       |  |  |  +--rw node-edge-point
+       |  |  |     +--rw topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |  |     +--rw node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |  |  |     +--rw node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+       |  |  +--rw local-id                      string
        |  |  +--rw name* [value-name]
        |  |     +--rw value-name    string
        |  |     +--rw value?        string
@@ -101,47 +131,201 @@ module: tapi-path-computation
        |  |  +--rw name* [value-name]
        |  |     +--rw value-name    string
        |  |     +--rw value?        string
+       |  +--rw path-set* [path-set-uuid]
+       |  |  +--rw path-set-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path-set/uuid
+       |  +--rw path-set-constraint
+       |  |  +--rw corouting-policy?   corouting-policy
+       |  |  +--rw diversity-policy?   diversity-policy
+       |  |  +--rw path-constraint* [local-id]
+       |  |     +--rw priority?                       uint64
+       |  |     +--rw routing-constraint
+       |  |     |  +--rw cost-characteristic* [cost-name]
+       |  |     |  |  +--rw cost-name         string
+       |  |     |  |  +--rw cost-value?       string
+       |  |     |  |  +--rw cost-algorithm?   string
+       |  |     |  +--rw latency-characteristic* [traffic-property-name]
+       |  |     |  |  +--rw traffic-property-name             string
+       |  |     |  |  +--ro fixed-latency-characteristic?     string
+       |  |     |  |  +--rw queuing-latency-characteristic?   string
+       |  |     |  |  +--ro jitter-characteristic?            string
+       |  |     |  |  +--ro wander-characteristic?            string
+       |  |     |  +--rw risk-diversity-characteristic* [risk-characteristic-name]
+       |  |     |  |  +--rw risk-characteristic-name    string
+       |  |     |  |  +--rw risk-identifier-list*       string
+       |  |     |  +--rw diversity-policy?                diversity-policy
+       |  |     |  +--rw route-objective-function?        route-objective-function
+       |  |     |  +--rw is-exclusive?                    boolean
+       |  |     |  +--rw tolerable-impact?                grades-of-impact
+       |  |     |  +--rw max-allowed-cost
+       |  |     |  |  +--rw value?      uint64
+       |  |     |  |  +--rw priority?   uint64
+       |  |     |  +--rw max-allowed-hops
+       |  |     |  |  +--rw value?      uint64
+       |  |     |  |  +--rw priority?   uint64
+       |  |     |  +--rw max-allowed-delay
+       |  |     |     +--rw value?      uint64
+       |  |     |     +--rw priority?   uint64
+       |  |     +--rw topology-constraint
+       |  |     |  +--rw explicit-route?               boolean
+       |  |     |  +--rw preferred-transport-layer?    tapi-common:layer-protocol-name
+       |  |     |  +--rw constraint-weight?            uint64
+       |  |     |  +--rw include-topology* [topology-uuid]
+       |  |     |  |  +--rw topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |     |  +--rw exclude-topology* [topology-uuid]
+       |  |     |  |  +--rw topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |     |  +--rw include-path* [path-uuid]
+       |  |     |  |  +--rw path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+       |  |     |  +--rw exclude-path* [path-uuid]
+       |  |     |  |  +--rw path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+       |  |     |  +--rw include-link* [topology-uuid link-uuid]
+       |  |     |  |  +--rw topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |     |  |  +--rw link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+       |  |     |  +--rw exclude-link* [topology-uuid link-uuid]
+       |  |     |  |  +--rw topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |     |  |  +--rw link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+       |  |     |  +--rw include-link-and-partition* [index]
+       |  |     |  |  +--rw index             uint64
+       |  |     |  |  +--rw partition-type?   partition-type
+       |  |     |  |  +--rw link
+       |  |     |  |     +--rw topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |     |  |     +--rw link-uuid?       -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+       |  |     |  +--rw exclude-link-and-partition* [index]
+       |  |     |  |  +--rw index             uint64
+       |  |     |  |  +--rw partition-type?   partition-type
+       |  |     |  |  +--rw link
+       |  |     |  |     +--rw topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |     |  |     +--rw link-uuid?       -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+       |  |     |  +--rw include-node* [topology-uuid node-uuid]
+       |  |     |  |  +--rw topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |     |  |  +--rw node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |  |     |  +--rw exclude-node* [topology-uuid node-uuid]
+       |  |     |  |  +--rw topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |     |  |  +--rw node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |  |     |  +--rw include-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
+       |  |     |  |  +--rw topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |     |  |  +--rw node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |  |     |  |  +--rw node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+       |  |     |  +--rw exclude-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
+       |  |     |  |  +--rw topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |     |  |  +--rw node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |  |     |  |  +--rw node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+       |  |     |  +--rw include-nep-and-partition* [index]
+       |  |     |  |  +--rw index              uint64
+       |  |     |  |  +--rw partition-type?    partition-type
+       |  |     |  |  +--rw node-edge-point
+       |  |     |  |     +--rw topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |     |  |     +--rw node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |  |     |  |     +--rw node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+       |  |     |  +--rw exclude-nep-and-partition* [index]
+       |  |     |  |  +--rw index              uint64
+       |  |     |  |  +--rw partition-type?    partition-type
+       |  |     |  |  +--rw node-edge-point
+       |  |     |  |     +--rw topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |     |  |     +--rw node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |  |     |  |     +--rw node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+       |  |     |  +--rw local-id?                     string
+       |  |     |  +--rw name* [value-name]
+       |  |     |     +--rw value-name    string
+       |  |     |     +--rw value?        string
+       |  |     +--rw path-optimization-constraint
+       |  |     |  +--ro traffic-interruption?   tapi-common:directive-value
+       |  |     |  +--rw local-id?               string
+       |  |     |  +--rw name* [value-name]
+       |  |     |     +--rw value-name    string
+       |  |     |     +--rw value?        string
+       |  |     +--rw path-objective-function
+       |  |     |  +--ro bandwidth-optimization?   tapi-common:directive-value
+       |  |     |  +--ro concurrent-paths?         tapi-common:directive-value
+       |  |     |  +--ro cost-optimization?        tapi-common:directive-value
+       |  |     |  +--ro link-utilization?         tapi-common:directive-value
+       |  |     |  +--ro resource-sharing?         tapi-common:directive-value
+       |  |     |  +--rw local-id?                 string
+       |  |     |  +--rw name* [value-name]
+       |  |     |     +--rw value-name    string
+       |  |     |     +--rw value?        string
+       |  |     +--rw path-as-constraint
+       |  |     |  +--rw include-orphan-path* [path-uuid]
+       |  |     |  |  +--rw path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+       |  |     |  +--rw exclude-path* [path-uuid]
+       |  |     |     +--rw path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+       |  |     +--rw path-service-end-point* [local-id]
+       |  |     |  +--rw layer-protocol-name?        tapi-common:layer-protocol-name
+       |  |     |  +--rw layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
+       |  |     |  +--rw capacity
+       |  |     |  |  +--rw total-size
+       |  |     |  |     +--rw value?   decimal64
+       |  |     |  |     +--rw unit?    capacity-unit
+       |  |     |  +--rw role?                       tapi-common:port-role
+       |  |     |  +--rw direction?                  tapi-common:direction
+       |  |     |  +--rw service-interface-point
+       |  |     |  |  +--rw service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+       |  |     |  +--rw node-edge-point
+       |  |     |  |  +--rw topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |     |  |  +--rw node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |  |     |  |  +--rw node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+       |  |     |  +--rw local-id                    string
+       |  |     |  +--rw name* [value-name]
+       |  |     |     +--rw value-name    string
+       |  |     |     +--rw value?        string
+       |  |     +--rw local-id                        string
+       |  |     +--rw name* [value-name]
+       |  |        +--rw value-name    string
+       |  |        +--rw value?        string
+       |  +--rw adopt-orphan-path
+       |  |  +--rw path* [path-uuid]
+       |  |     +--rw path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
        |  +--rw uuid                       uuid
        |  +--rw name* [value-name]
        |     +--rw value-name    string
        |     +--rw value?        string
        +--ro path* [uuid]
-          +--ro layer-protocol-name?   tapi-common:layer-protocol-name
-          +--ro direction?             tapi-common:forwarding-direction
-          +--ro link* [topology-uuid link-uuid]
-          |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
-          |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
-          +--ro routing-constraint
-          |  +--ro cost-characteristic* [cost-name]
-          |  |  +--ro cost-name         string
-          |  |  +--ro cost-value?       string
-          |  |  +--ro cost-algorithm?   string
-          |  +--ro latency-characteristic* [traffic-property-name]
-          |  |  +--ro traffic-property-name             string
-          |  |  +--ro fixed-latency-characteristic?     string
-          |  |  +--ro queuing-latency-characteristic?   string
-          |  |  +--ro jitter-characteristic?            string
-          |  |  +--ro wander-characteristic?            string
-          |  +--ro risk-diversity-characteristic* [risk-characteristic-name]
-          |  |  +--ro risk-characteristic-name    string
-          |  |  +--ro risk-identifier-list*       string
-          |  +--ro diversity-policy?                diversity-policy
-          |  +--ro route-objective-function?        route-objective-function
-          |  +--ro is-exclusive?                    boolean
-          |  +--ro tolerable-impact?                grades-of-impact
-          |  +--ro max-allowed-cost
-          |  |  +--ro value?      uint64
-          |  |  +--ro priority?   uint64
-          |  +--ro max-allowed-hops
-          |  |  +--ro value?      uint64
-          |  |  +--ro priority?   uint64
-          |  +--ro max-allowed-delay
-          |     +--ro value?      uint64
-          |     +--ro priority?   uint64
-          +--ro uuid                   uuid
-          +--ro name* [value-name]
-             +--ro value-name    string
-             +--ro value?        string
+       |  +--ro layer-protocol-name?   tapi-common:layer-protocol-name
+       |  +--ro direction?             tapi-common:forwarding-direction
+       |  +--ro link* [topology-uuid link-uuid]
+       |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+       |  +--ro node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
+       |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+       |  +--ro routing-constraint
+       |  |  +--ro cost-characteristic* [cost-name]
+       |  |  |  +--ro cost-name         string
+       |  |  |  +--ro cost-value?       string
+       |  |  |  +--ro cost-algorithm?   string
+       |  |  +--ro latency-characteristic* [traffic-property-name]
+       |  |  |  +--ro traffic-property-name             string
+       |  |  |  +--ro fixed-latency-characteristic?     string
+       |  |  |  +--ro queuing-latency-characteristic?   string
+       |  |  |  +--ro jitter-characteristic?            string
+       |  |  |  +--ro wander-characteristic?            string
+       |  |  +--ro risk-diversity-characteristic* [risk-characteristic-name]
+       |  |  |  +--ro risk-characteristic-name    string
+       |  |  |  +--ro risk-identifier-list*       string
+       |  |  +--ro diversity-policy?                diversity-policy
+       |  |  +--ro route-objective-function?        route-objective-function
+       |  |  +--ro is-exclusive?                    boolean
+       |  |  +--ro tolerable-impact?                grades-of-impact
+       |  |  +--ro max-allowed-cost
+       |  |  |  +--ro value?      uint64
+       |  |  |  +--ro priority?   uint64
+       |  |  +--ro max-allowed-hops
+       |  |  |  +--ro value?      uint64
+       |  |  |  +--ro priority?   uint64
+       |  |  +--ro max-allowed-delay
+       |  |     +--ro value?      uint64
+       |  |     +--ro priority?   uint64
+       |  +--ro uuid                   uuid
+       |  +--ro name* [value-name]
+       |     +--ro value-name    string
+       |     +--ro value?        string
+       +--rw path-set* [uuid]
+          +--ro path* [path-uuid]
+          |  +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+          +--rw uuid    uuid
+          +--rw name* [value-name]
+             +--rw value-name    string
+             +--rw value?        string
   augment /tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body:
     +--ro path
        +--ro layer-protocol-name?   tapi-common:layer-protocol-name
@@ -149,6 +333,10 @@ module: tapi-path-computation
        +--ro link* [topology-uuid link-uuid]
        |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
        |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+       +--ro node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
+       |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
        +--ro routing-constraint
        |  +--ro cost-characteristic* [cost-name]
        |  |  +--ro cost-name         string
@@ -197,6 +385,10 @@ module: tapi-path-computation
        |  +--ro direction?                  tapi-common:direction
        |  +--ro service-interface-point
        |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+       |  +--ro node-edge-point
+       |  |  +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |  +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |  |  +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
        |  +--ro local-id                    string
        |  +--ro name* [value-name]
        |     +--ro value-name    string
@@ -229,9 +421,9 @@ module: tapi-path-computation
        |     +--ro value?      uint64
        |     +--ro priority?   uint64
        +--ro topology-constraint* [local-id]
-       |  +--ro explicit-route?              boolean
-       |  +--ro preferred-transport-layer?   tapi-common:layer-protocol-name
-       |  +--ro constraint-weight?           uint64
+       |  +--ro explicit-route?               boolean
+       |  +--ro preferred-transport-layer?    tapi-common:layer-protocol-name
+       |  +--ro constraint-weight?            uint64
        |  +--ro include-topology* [topology-uuid]
        |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
        |  +--ro exclude-topology* [topology-uuid]
@@ -246,6 +438,18 @@ module: tapi-path-computation
        |  +--ro exclude-link* [topology-uuid link-uuid]
        |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
        |  |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+       |  +--ro include-link-and-partition* [index]
+       |  |  +--ro index             uint64
+       |  |  +--ro partition-type?   partition-type
+       |  |  +--ro link
+       |  |     +--ro topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |     +--ro link-uuid?       -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+       |  +--ro exclude-link-and-partition* [index]
+       |  |  +--ro index             uint64
+       |  |  +--ro partition-type?   partition-type
+       |  |  +--ro link
+       |  |     +--ro topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |     +--ro link-uuid?       -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
        |  +--ro include-node* [topology-uuid node-uuid]
        |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
        |  |  +--ro node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
@@ -260,7 +464,21 @@ module: tapi-path-computation
        |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
        |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
        |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
-       |  +--ro local-id                     string
+       |  +--ro include-nep-and-partition* [index]
+       |  |  +--ro index              uint64
+       |  |  +--ro partition-type?    partition-type
+       |  |  +--ro node-edge-point
+       |  |     +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |     +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |  |     +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+       |  +--ro exclude-nep-and-partition* [index]
+       |  |  +--ro index              uint64
+       |  |  +--ro partition-type?    partition-type
+       |  |  +--ro node-edge-point
+       |  |     +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |     +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |  |     +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+       |  +--ro local-id                      string
        |  +--ro name* [value-name]
        |     +--ro value-name    string
        |     +--ro value?        string
@@ -280,6 +498,149 @@ module: tapi-path-computation
        |  +--ro name* [value-name]
        |     +--ro value-name    string
        |     +--ro value?        string
+       +--ro path-set* [path-set-uuid]
+       |  +--ro path-set-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path-set/uuid
+       +--ro path-set-constraint
+       |  +--ro corouting-policy?   corouting-policy
+       |  +--ro diversity-policy?   diversity-policy
+       |  +--ro path-constraint* [local-id]
+       |     +--ro priority?                       uint64
+       |     +--ro routing-constraint
+       |     |  +--ro cost-characteristic* [cost-name]
+       |     |  |  +--ro cost-name         string
+       |     |  |  +--ro cost-value?       string
+       |     |  |  +--ro cost-algorithm?   string
+       |     |  +--ro latency-characteristic* [traffic-property-name]
+       |     |  |  +--ro traffic-property-name             string
+       |     |  |  +--ro fixed-latency-characteristic?     string
+       |     |  |  +--ro queuing-latency-characteristic?   string
+       |     |  |  +--ro jitter-characteristic?            string
+       |     |  |  +--ro wander-characteristic?            string
+       |     |  +--ro risk-diversity-characteristic* [risk-characteristic-name]
+       |     |  |  +--ro risk-characteristic-name    string
+       |     |  |  +--ro risk-identifier-list*       string
+       |     |  +--ro diversity-policy?                diversity-policy
+       |     |  +--ro route-objective-function?        route-objective-function
+       |     |  +--ro is-exclusive?                    boolean
+       |     |  +--ro tolerable-impact?                grades-of-impact
+       |     |  +--ro max-allowed-cost
+       |     |  |  +--ro value?      uint64
+       |     |  |  +--ro priority?   uint64
+       |     |  +--ro max-allowed-hops
+       |     |  |  +--ro value?      uint64
+       |     |  |  +--ro priority?   uint64
+       |     |  +--ro max-allowed-delay
+       |     |     +--ro value?      uint64
+       |     |     +--ro priority?   uint64
+       |     +--ro topology-constraint
+       |     |  +--ro explicit-route?               boolean
+       |     |  +--ro preferred-transport-layer?    tapi-common:layer-protocol-name
+       |     |  +--ro constraint-weight?            uint64
+       |     |  +--ro include-topology* [topology-uuid]
+       |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  +--ro exclude-topology* [topology-uuid]
+       |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  +--ro include-path* [path-uuid]
+       |     |  |  +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+       |     |  +--ro exclude-path* [path-uuid]
+       |     |  |  +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+       |     |  +--ro include-link* [topology-uuid link-uuid]
+       |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+       |     |  +--ro exclude-link* [topology-uuid link-uuid]
+       |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+       |     |  +--ro include-link-and-partition* [index]
+       |     |  |  +--ro index             uint64
+       |     |  |  +--ro partition-type?   partition-type
+       |     |  |  +--ro link
+       |     |  |     +--ro topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  |     +--ro link-uuid?       -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+       |     |  +--ro exclude-link-and-partition* [index]
+       |     |  |  +--ro index             uint64
+       |     |  |  +--ro partition-type?   partition-type
+       |     |  |  +--ro link
+       |     |  |     +--ro topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  |     +--ro link-uuid?       -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+       |     |  +--ro include-node* [topology-uuid node-uuid]
+       |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  |  +--ro node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |     |  +--ro exclude-node* [topology-uuid node-uuid]
+       |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  |  +--ro node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |     |  +--ro include-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
+       |     |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |     |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+       |     |  +--ro exclude-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
+       |     |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |     |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+       |     |  +--ro include-nep-and-partition* [index]
+       |     |  |  +--ro index              uint64
+       |     |  |  +--ro partition-type?    partition-type
+       |     |  |  +--ro node-edge-point
+       |     |  |     +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  |     +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |     |  |     +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+       |     |  +--ro exclude-nep-and-partition* [index]
+       |     |  |  +--ro index              uint64
+       |     |  |  +--ro partition-type?    partition-type
+       |     |  |  +--ro node-edge-point
+       |     |  |     +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  |     +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |     |  |     +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+       |     |  +--ro local-id?                     string
+       |     |  +--ro name* [value-name]
+       |     |     +--ro value-name    string
+       |     |     +--ro value?        string
+       |     +--ro path-optimization-constraint
+       |     |  +--ro traffic-interruption?   tapi-common:directive-value
+       |     |  +--ro local-id?               string
+       |     |  +--ro name* [value-name]
+       |     |     +--ro value-name    string
+       |     |     +--ro value?        string
+       |     +--ro path-objective-function
+       |     |  +--ro bandwidth-optimization?   tapi-common:directive-value
+       |     |  +--ro concurrent-paths?         tapi-common:directive-value
+       |     |  +--ro cost-optimization?        tapi-common:directive-value
+       |     |  +--ro link-utilization?         tapi-common:directive-value
+       |     |  +--ro resource-sharing?         tapi-common:directive-value
+       |     |  +--ro local-id?                 string
+       |     |  +--ro name* [value-name]
+       |     |     +--ro value-name    string
+       |     |     +--ro value?        string
+       |     +--ro path-as-constraint
+       |     |  +--ro include-orphan-path* [path-uuid]
+       |     |  |  +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+       |     |  +--ro exclude-path* [path-uuid]
+       |     |     +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+       |     +--ro path-service-end-point* [local-id]
+       |     |  +--ro layer-protocol-name?        tapi-common:layer-protocol-name
+       |     |  +--ro layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
+       |     |  +--ro capacity
+       |     |  |  +--ro total-size
+       |     |  |     +--ro value?   decimal64
+       |     |  |     +--ro unit?    capacity-unit
+       |     |  +--ro role?                       tapi-common:port-role
+       |     |  +--ro direction?                  tapi-common:direction
+       |     |  +--ro service-interface-point
+       |     |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+       |     |  +--ro node-edge-point
+       |     |  |  +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  |  +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |     |  |  +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+       |     |  +--ro local-id                    string
+       |     |  +--ro name* [value-name]
+       |     |     +--ro value-name    string
+       |     |     +--ro value?        string
+       |     +--ro local-id                        string
+       |     +--ro name* [value-name]
+       |        +--ro value-name    string
+       |        +--ro value?        string
+       +--ro adopt-orphan-path
+       |  +--ro path* [path-uuid]
+       |     +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
        +--ro uuid?                      uuid
        +--ro name* [value-name]
           +--ro value-name    string
@@ -296,6 +657,10 @@ module: tapi-path-computation
        +--ro direction?                  tapi-common:direction
        +--ro service-interface-point
        |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+       +--ro node-edge-point
+       |  +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |  +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
        +--ro local-id?                   string
        +--ro name* [value-name]
           +--ro value-name    string
@@ -335,6 +700,10 @@ module: tapi-path-computation
        |  +--ro direction?                  tapi-common:direction
        |  +--ro service-interface-point
        |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+       |  +--ro node-edge-point
+       |  |  +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |  +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |  |  +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
        |  +--ro local-id                    string
        |  +--ro name* [value-name]
        |     +--ro value-name    string
@@ -367,9 +736,9 @@ module: tapi-path-computation
        |     +--ro value?      uint64
        |     +--ro priority?   uint64
        +--ro topology-constraint* [local-id]
-       |  +--ro explicit-route?              boolean
-       |  +--ro preferred-transport-layer?   tapi-common:layer-protocol-name
-       |  +--ro constraint-weight?           uint64
+       |  +--ro explicit-route?               boolean
+       |  +--ro preferred-transport-layer?    tapi-common:layer-protocol-name
+       |  +--ro constraint-weight?            uint64
        |  +--ro include-topology* [topology-uuid]
        |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
        |  +--ro exclude-topology* [topology-uuid]
@@ -384,6 +753,18 @@ module: tapi-path-computation
        |  +--ro exclude-link* [topology-uuid link-uuid]
        |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
        |  |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+       |  +--ro include-link-and-partition* [index]
+       |  |  +--ro index             uint64
+       |  |  +--ro partition-type?   partition-type
+       |  |  +--ro link
+       |  |     +--ro topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |     +--ro link-uuid?       -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+       |  +--ro exclude-link-and-partition* [index]
+       |  |  +--ro index             uint64
+       |  |  +--ro partition-type?   partition-type
+       |  |  +--ro link
+       |  |     +--ro topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |     +--ro link-uuid?       -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
        |  +--ro include-node* [topology-uuid node-uuid]
        |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
        |  |  +--ro node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
@@ -398,7 +779,21 @@ module: tapi-path-computation
        |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
        |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
        |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
-       |  +--ro local-id                     string
+       |  +--ro include-nep-and-partition* [index]
+       |  |  +--ro index              uint64
+       |  |  +--ro partition-type?    partition-type
+       |  |  +--ro node-edge-point
+       |  |     +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |     +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |  |     +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+       |  +--ro exclude-nep-and-partition* [index]
+       |  |  +--ro index              uint64
+       |  |  +--ro partition-type?    partition-type
+       |  |  +--ro node-edge-point
+       |  |     +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |     +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |  |     +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+       |  +--ro local-id                      string
        |  +--ro name* [value-name]
        |     +--ro value-name    string
        |     +--ro value?        string
@@ -418,6 +813,149 @@ module: tapi-path-computation
        |  +--ro name* [value-name]
        |     +--ro value-name    string
        |     +--ro value?        string
+       +--ro path-set* [path-set-uuid]
+       |  +--ro path-set-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path-set/uuid
+       +--ro path-set-constraint
+       |  +--ro corouting-policy?   corouting-policy
+       |  +--ro diversity-policy?   diversity-policy
+       |  +--ro path-constraint* [local-id]
+       |     +--ro priority?                       uint64
+       |     +--ro routing-constraint
+       |     |  +--ro cost-characteristic* [cost-name]
+       |     |  |  +--ro cost-name         string
+       |     |  |  +--ro cost-value?       string
+       |     |  |  +--ro cost-algorithm?   string
+       |     |  +--ro latency-characteristic* [traffic-property-name]
+       |     |  |  +--ro traffic-property-name             string
+       |     |  |  +--ro fixed-latency-characteristic?     string
+       |     |  |  +--ro queuing-latency-characteristic?   string
+       |     |  |  +--ro jitter-characteristic?            string
+       |     |  |  +--ro wander-characteristic?            string
+       |     |  +--ro risk-diversity-characteristic* [risk-characteristic-name]
+       |     |  |  +--ro risk-characteristic-name    string
+       |     |  |  +--ro risk-identifier-list*       string
+       |     |  +--ro diversity-policy?                diversity-policy
+       |     |  +--ro route-objective-function?        route-objective-function
+       |     |  +--ro is-exclusive?                    boolean
+       |     |  +--ro tolerable-impact?                grades-of-impact
+       |     |  +--ro max-allowed-cost
+       |     |  |  +--ro value?      uint64
+       |     |  |  +--ro priority?   uint64
+       |     |  +--ro max-allowed-hops
+       |     |  |  +--ro value?      uint64
+       |     |  |  +--ro priority?   uint64
+       |     |  +--ro max-allowed-delay
+       |     |     +--ro value?      uint64
+       |     |     +--ro priority?   uint64
+       |     +--ro topology-constraint
+       |     |  +--ro explicit-route?               boolean
+       |     |  +--ro preferred-transport-layer?    tapi-common:layer-protocol-name
+       |     |  +--ro constraint-weight?            uint64
+       |     |  +--ro include-topology* [topology-uuid]
+       |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  +--ro exclude-topology* [topology-uuid]
+       |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  +--ro include-path* [path-uuid]
+       |     |  |  +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+       |     |  +--ro exclude-path* [path-uuid]
+       |     |  |  +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+       |     |  +--ro include-link* [topology-uuid link-uuid]
+       |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+       |     |  +--ro exclude-link* [topology-uuid link-uuid]
+       |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+       |     |  +--ro include-link-and-partition* [index]
+       |     |  |  +--ro index             uint64
+       |     |  |  +--ro partition-type?   partition-type
+       |     |  |  +--ro link
+       |     |  |     +--ro topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  |     +--ro link-uuid?       -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+       |     |  +--ro exclude-link-and-partition* [index]
+       |     |  |  +--ro index             uint64
+       |     |  |  +--ro partition-type?   partition-type
+       |     |  |  +--ro link
+       |     |  |     +--ro topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  |     +--ro link-uuid?       -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+       |     |  +--ro include-node* [topology-uuid node-uuid]
+       |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  |  +--ro node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |     |  +--ro exclude-node* [topology-uuid node-uuid]
+       |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  |  +--ro node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |     |  +--ro include-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
+       |     |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |     |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+       |     |  +--ro exclude-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
+       |     |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |     |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+       |     |  +--ro include-nep-and-partition* [index]
+       |     |  |  +--ro index              uint64
+       |     |  |  +--ro partition-type?    partition-type
+       |     |  |  +--ro node-edge-point
+       |     |  |     +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  |     +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |     |  |     +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+       |     |  +--ro exclude-nep-and-partition* [index]
+       |     |  |  +--ro index              uint64
+       |     |  |  +--ro partition-type?    partition-type
+       |     |  |  +--ro node-edge-point
+       |     |  |     +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  |     +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |     |  |     +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+       |     |  +--ro local-id?                     string
+       |     |  +--ro name* [value-name]
+       |     |     +--ro value-name    string
+       |     |     +--ro value?        string
+       |     +--ro path-optimization-constraint
+       |     |  +--ro traffic-interruption?   tapi-common:directive-value
+       |     |  +--ro local-id?               string
+       |     |  +--ro name* [value-name]
+       |     |     +--ro value-name    string
+       |     |     +--ro value?        string
+       |     +--ro path-objective-function
+       |     |  +--ro bandwidth-optimization?   tapi-common:directive-value
+       |     |  +--ro concurrent-paths?         tapi-common:directive-value
+       |     |  +--ro cost-optimization?        tapi-common:directive-value
+       |     |  +--ro link-utilization?         tapi-common:directive-value
+       |     |  +--ro resource-sharing?         tapi-common:directive-value
+       |     |  +--ro local-id?                 string
+       |     |  +--ro name* [value-name]
+       |     |     +--ro value-name    string
+       |     |     +--ro value?        string
+       |     +--ro path-as-constraint
+       |     |  +--ro include-orphan-path* [path-uuid]
+       |     |  |  +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+       |     |  +--ro exclude-path* [path-uuid]
+       |     |     +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+       |     +--ro path-service-end-point* [local-id]
+       |     |  +--ro layer-protocol-name?        tapi-common:layer-protocol-name
+       |     |  +--ro layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
+       |     |  +--ro capacity
+       |     |  |  +--ro total-size
+       |     |  |     +--ro value?   decimal64
+       |     |  |     +--ro unit?    capacity-unit
+       |     |  +--ro role?                       tapi-common:port-role
+       |     |  +--ro direction?                  tapi-common:direction
+       |     |  +--ro service-interface-point
+       |     |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+       |     |  +--ro node-edge-point
+       |     |  |  +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  |  +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |     |  |  +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+       |     |  +--ro local-id                    string
+       |     |  +--ro name* [value-name]
+       |     |     +--ro value-name    string
+       |     |     +--ro value?        string
+       |     +--ro local-id                        string
+       |     +--ro name* [value-name]
+       |        +--ro value-name    string
+       |        +--ro value?        string
+       +--ro adopt-orphan-path
+       |  +--ro path* [path-uuid]
+       |     +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
        +--ro uuid?                      uuid
        +--ro name* [value-name]
           +--ro value-name    string
@@ -434,6 +972,10 @@ module: tapi-path-computation
        +--ro direction?                  tapi-common:direction
        +--ro service-interface-point
        |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+       +--ro node-edge-point
+       |  +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |  +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
        +--ro local-id?                   string
        +--ro name* [value-name]
           +--ro value-name    string
@@ -445,6 +987,10 @@ module: tapi-path-computation
        +--ro link* [topology-uuid link-uuid]
        |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
        |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+       +--ro node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
+       |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
        +--ro routing-constraint
        |  +--ro cost-characteristic* [cost-name]
        |  |  +--ro cost-name         string
@@ -511,6 +1057,10 @@ module: tapi-path-computation
        |  +--ro direction?                  tapi-common:direction
        |  +--ro service-interface-point
        |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+       |  +--ro node-edge-point
+       |  |  +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |  +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |  |  +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
        |  +--ro local-id                    string
        |  +--ro name* [value-name]
        |     +--ro value-name    string
@@ -543,9 +1093,9 @@ module: tapi-path-computation
        |     +--ro value?      uint64
        |     +--ro priority?   uint64
        +--ro topology-constraint* [local-id]
-       |  +--ro explicit-route?              boolean
-       |  +--ro preferred-transport-layer?   tapi-common:layer-protocol-name
-       |  +--ro constraint-weight?           uint64
+       |  +--ro explicit-route?               boolean
+       |  +--ro preferred-transport-layer?    tapi-common:layer-protocol-name
+       |  +--ro constraint-weight?            uint64
        |  +--ro include-topology* [topology-uuid]
        |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
        |  +--ro exclude-topology* [topology-uuid]
@@ -560,6 +1110,18 @@ module: tapi-path-computation
        |  +--ro exclude-link* [topology-uuid link-uuid]
        |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
        |  |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+       |  +--ro include-link-and-partition* [index]
+       |  |  +--ro index             uint64
+       |  |  +--ro partition-type?   partition-type
+       |  |  +--ro link
+       |  |     +--ro topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |     +--ro link-uuid?       -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+       |  +--ro exclude-link-and-partition* [index]
+       |  |  +--ro index             uint64
+       |  |  +--ro partition-type?   partition-type
+       |  |  +--ro link
+       |  |     +--ro topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |     +--ro link-uuid?       -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
        |  +--ro include-node* [topology-uuid node-uuid]
        |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
        |  |  +--ro node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
@@ -574,7 +1136,21 @@ module: tapi-path-computation
        |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
        |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
        |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
-       |  +--ro local-id                     string
+       |  +--ro include-nep-and-partition* [index]
+       |  |  +--ro index              uint64
+       |  |  +--ro partition-type?    partition-type
+       |  |  +--ro node-edge-point
+       |  |     +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |     +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |  |     +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+       |  +--ro exclude-nep-and-partition* [index]
+       |  |  +--ro index              uint64
+       |  |  +--ro partition-type?    partition-type
+       |  |  +--ro node-edge-point
+       |  |     +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  |     +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |  |     +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+       |  +--ro local-id                      string
        |  +--ro name* [value-name]
        |     +--ro value-name    string
        |     +--ro value?        string
@@ -594,6 +1170,149 @@ module: tapi-path-computation
        |  +--ro name* [value-name]
        |     +--ro value-name    string
        |     +--ro value?        string
+       +--ro path-set* [path-set-uuid]
+       |  +--ro path-set-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path-set/uuid
+       +--ro path-set-constraint
+       |  +--ro corouting-policy?   corouting-policy
+       |  +--ro diversity-policy?   diversity-policy
+       |  +--ro path-constraint* [local-id]
+       |     +--ro priority?                       uint64
+       |     +--ro routing-constraint
+       |     |  +--ro cost-characteristic* [cost-name]
+       |     |  |  +--ro cost-name         string
+       |     |  |  +--ro cost-value?       string
+       |     |  |  +--ro cost-algorithm?   string
+       |     |  +--ro latency-characteristic* [traffic-property-name]
+       |     |  |  +--ro traffic-property-name             string
+       |     |  |  +--ro fixed-latency-characteristic?     string
+       |     |  |  +--ro queuing-latency-characteristic?   string
+       |     |  |  +--ro jitter-characteristic?            string
+       |     |  |  +--ro wander-characteristic?            string
+       |     |  +--ro risk-diversity-characteristic* [risk-characteristic-name]
+       |     |  |  +--ro risk-characteristic-name    string
+       |     |  |  +--ro risk-identifier-list*       string
+       |     |  +--ro diversity-policy?                diversity-policy
+       |     |  +--ro route-objective-function?        route-objective-function
+       |     |  +--ro is-exclusive?                    boolean
+       |     |  +--ro tolerable-impact?                grades-of-impact
+       |     |  +--ro max-allowed-cost
+       |     |  |  +--ro value?      uint64
+       |     |  |  +--ro priority?   uint64
+       |     |  +--ro max-allowed-hops
+       |     |  |  +--ro value?      uint64
+       |     |  |  +--ro priority?   uint64
+       |     |  +--ro max-allowed-delay
+       |     |     +--ro value?      uint64
+       |     |     +--ro priority?   uint64
+       |     +--ro topology-constraint
+       |     |  +--ro explicit-route?               boolean
+       |     |  +--ro preferred-transport-layer?    tapi-common:layer-protocol-name
+       |     |  +--ro constraint-weight?            uint64
+       |     |  +--ro include-topology* [topology-uuid]
+       |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  +--ro exclude-topology* [topology-uuid]
+       |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  +--ro include-path* [path-uuid]
+       |     |  |  +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+       |     |  +--ro exclude-path* [path-uuid]
+       |     |  |  +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+       |     |  +--ro include-link* [topology-uuid link-uuid]
+       |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+       |     |  +--ro exclude-link* [topology-uuid link-uuid]
+       |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+       |     |  +--ro include-link-and-partition* [index]
+       |     |  |  +--ro index             uint64
+       |     |  |  +--ro partition-type?   partition-type
+       |     |  |  +--ro link
+       |     |  |     +--ro topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  |     +--ro link-uuid?       -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+       |     |  +--ro exclude-link-and-partition* [index]
+       |     |  |  +--ro index             uint64
+       |     |  |  +--ro partition-type?   partition-type
+       |     |  |  +--ro link
+       |     |  |     +--ro topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  |     +--ro link-uuid?       -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+       |     |  +--ro include-node* [topology-uuid node-uuid]
+       |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  |  +--ro node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |     |  +--ro exclude-node* [topology-uuid node-uuid]
+       |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  |  +--ro node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |     |  +--ro include-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
+       |     |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |     |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+       |     |  +--ro exclude-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
+       |     |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |     |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+       |     |  +--ro include-nep-and-partition* [index]
+       |     |  |  +--ro index              uint64
+       |     |  |  +--ro partition-type?    partition-type
+       |     |  |  +--ro node-edge-point
+       |     |  |     +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  |     +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |     |  |     +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+       |     |  +--ro exclude-nep-and-partition* [index]
+       |     |  |  +--ro index              uint64
+       |     |  |  +--ro partition-type?    partition-type
+       |     |  |  +--ro node-edge-point
+       |     |  |     +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  |     +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |     |  |     +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+       |     |  +--ro local-id?                     string
+       |     |  +--ro name* [value-name]
+       |     |     +--ro value-name    string
+       |     |     +--ro value?        string
+       |     +--ro path-optimization-constraint
+       |     |  +--ro traffic-interruption?   tapi-common:directive-value
+       |     |  +--ro local-id?               string
+       |     |  +--ro name* [value-name]
+       |     |     +--ro value-name    string
+       |     |     +--ro value?        string
+       |     +--ro path-objective-function
+       |     |  +--ro bandwidth-optimization?   tapi-common:directive-value
+       |     |  +--ro concurrent-paths?         tapi-common:directive-value
+       |     |  +--ro cost-optimization?        tapi-common:directive-value
+       |     |  +--ro link-utilization?         tapi-common:directive-value
+       |     |  +--ro resource-sharing?         tapi-common:directive-value
+       |     |  +--ro local-id?                 string
+       |     |  +--ro name* [value-name]
+       |     |     +--ro value-name    string
+       |     |     +--ro value?        string
+       |     +--ro path-as-constraint
+       |     |  +--ro include-orphan-path* [path-uuid]
+       |     |  |  +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+       |     |  +--ro exclude-path* [path-uuid]
+       |     |     +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+       |     +--ro path-service-end-point* [local-id]
+       |     |  +--ro layer-protocol-name?        tapi-common:layer-protocol-name
+       |     |  +--ro layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
+       |     |  +--ro capacity
+       |     |  |  +--ro total-size
+       |     |  |     +--ro value?   decimal64
+       |     |  |     +--ro unit?    capacity-unit
+       |     |  +--ro role?                       tapi-common:port-role
+       |     |  +--ro direction?                  tapi-common:direction
+       |     |  +--ro service-interface-point
+       |     |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+       |     |  +--ro node-edge-point
+       |     |  |  +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |     |  |  +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |     |  |  +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+       |     |  +--ro local-id                    string
+       |     |  +--ro name* [value-name]
+       |     |     +--ro value-name    string
+       |     |     +--ro value?        string
+       |     +--ro local-id                        string
+       |     +--ro name* [value-name]
+       |        +--ro value-name    string
+       |        +--ro value?        string
+       +--ro adopt-orphan-path
+       |  +--ro path* [path-uuid]
+       |     +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
        +--ro uuid?                      uuid
        +--ro name* [value-name]
           +--ro value-name    string
@@ -610,6 +1329,10 @@ module: tapi-path-computation
        +--ro direction?                  tapi-common:direction
        +--ro service-interface-point
        |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+       +--ro node-edge-point
+       |  +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |  +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
        +--ro local-id?                   string
        +--ro name* [value-name]
           +--ro value-name    string
@@ -621,6 +1344,10 @@ module: tapi-path-computation
        +--ro link* [topology-uuid link-uuid]
        |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
        |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+       +--ro node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
+       |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+       |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+       |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
        +--ro routing-constraint
        |  +--ro cost-characteristic* [cost-name]
        |  |  +--ro cost-name         string
@@ -706,9 +1433,9 @@ module: tapi-path-computation
     |  |  |     +---w value?      uint64
     |  |  |     +---w priority?   uint64
     |  |  +---w topology-constraint
-    |  |  |  +---w explicit-route?              boolean
-    |  |  |  +---w preferred-transport-layer?   tapi-common:layer-protocol-name
-    |  |  |  +---w constraint-weight?           uint64
+    |  |  |  +---w explicit-route?               boolean
+    |  |  |  +---w preferred-transport-layer?    tapi-common:layer-protocol-name
+    |  |  |  +---w constraint-weight?            uint64
     |  |  |  +---w include-topology* [topology-uuid]
     |  |  |  |  +---w topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
     |  |  |  +---w exclude-topology* [topology-uuid]
@@ -723,6 +1450,18 @@ module: tapi-path-computation
     |  |  |  +---w exclude-link* [topology-uuid link-uuid]
     |  |  |  |  +---w topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
     |  |  |  |  +---w link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+    |  |  |  +---w include-link-and-partition* [index]
+    |  |  |  |  +---w index             uint64
+    |  |  |  |  +---w partition-type?   partition-type
+    |  |  |  |  +---w link
+    |  |  |  |     +---w topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |  |  |  |     +---w link-uuid?       -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+    |  |  |  +---w exclude-link-and-partition* [index]
+    |  |  |  |  +---w index             uint64
+    |  |  |  |  +---w partition-type?   partition-type
+    |  |  |  |  +---w link
+    |  |  |  |     +---w topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |  |  |  |     +---w link-uuid?       -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
     |  |  |  +---w include-node* [topology-uuid node-uuid]
     |  |  |  |  +---w topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
     |  |  |  |  +---w node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
@@ -737,7 +1476,21 @@ module: tapi-path-computation
     |  |  |  |  +---w topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
     |  |  |  |  +---w node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
     |  |  |  |  +---w node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
-    |  |  |  +---w local-id?                    string
+    |  |  |  +---w include-nep-and-partition* [index]
+    |  |  |  |  +---w index              uint64
+    |  |  |  |  +---w partition-type?    partition-type
+    |  |  |  |  +---w node-edge-point
+    |  |  |  |     +---w topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |  |  |  |     +---w node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |  |  |  |     +---w node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+    |  |  |  +---w exclude-nep-and-partition* [index]
+    |  |  |  |  +---w index              uint64
+    |  |  |  |  +---w partition-type?    partition-type
+    |  |  |  |  +---w node-edge-point
+    |  |  |  |     +---w topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |  |  |  |     +---w node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |  |  |  |     +---w node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+    |  |  |  +---w local-id?                     string
     |  |  |  +---w name* [value-name]
     |  |  |     +---w value-name    string
     |  |  |     +---w value?        string
@@ -762,6 +1515,10 @@ module: tapi-path-computation
     |  |     +---w direction?                  tapi-common:direction
     |  |     +---w service-interface-point
     |  |     |  +---w service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+    |  |     +---w node-edge-point
+    |  |     |  +---w topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |  |     |  +---w node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |  |     |  +---w node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
     |  |     +---w local-id                    string
     |  |     +---w name* [value-name]
     |  |        +---w value-name    string
@@ -783,6 +1540,10 @@ module: tapi-path-computation
     |        |  +--ro direction?                  tapi-common:direction
     |        |  +--ro service-interface-point
     |        |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro node-edge-point
+    |        |  |  +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  |  +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |  |  +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
     |        |  +--ro local-id                    string
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
@@ -815,9 +1576,9 @@ module: tapi-path-computation
     |        |     +--ro value?      uint64
     |        |     +--ro priority?   uint64
     |        +--ro topology-constraint* [local-id]
-    |        |  +--ro explicit-route?              boolean
-    |        |  +--ro preferred-transport-layer?   tapi-common:layer-protocol-name
-    |        |  +--ro constraint-weight?           uint64
+    |        |  +--ro explicit-route?               boolean
+    |        |  +--ro preferred-transport-layer?    tapi-common:layer-protocol-name
+    |        |  +--ro constraint-weight?            uint64
     |        |  +--ro include-topology* [topology-uuid]
     |        |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
     |        |  +--ro exclude-topology* [topology-uuid]
@@ -832,6 +1593,18 @@ module: tapi-path-computation
     |        |  +--ro exclude-link* [topology-uuid link-uuid]
     |        |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
     |        |  |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+    |        |  +--ro include-link-and-partition* [index]
+    |        |  |  +--ro index             uint64
+    |        |  |  +--ro partition-type?   partition-type
+    |        |  |  +--ro link
+    |        |  |     +--ro topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  |     +--ro link-uuid?       -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+    |        |  +--ro exclude-link-and-partition* [index]
+    |        |  |  +--ro index             uint64
+    |        |  |  +--ro partition-type?   partition-type
+    |        |  |  +--ro link
+    |        |  |     +--ro topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  |     +--ro link-uuid?       -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
     |        |  +--ro include-node* [topology-uuid node-uuid]
     |        |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
     |        |  |  +--ro node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
@@ -846,7 +1619,21 @@ module: tapi-path-computation
     |        |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
     |        |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
     |        |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
-    |        |  +--ro local-id                     string
+    |        |  +--ro include-nep-and-partition* [index]
+    |        |  |  +--ro index              uint64
+    |        |  |  +--ro partition-type?    partition-type
+    |        |  |  +--ro node-edge-point
+    |        |  |     +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  |     +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |  |     +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+    |        |  +--ro exclude-nep-and-partition* [index]
+    |        |  |  +--ro index              uint64
+    |        |  |  +--ro partition-type?    partition-type
+    |        |  |  +--ro node-edge-point
+    |        |  |     +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  |     +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |  |     +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+    |        |  +--ro local-id                      string
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
@@ -866,6 +1653,149 @@ module: tapi-path-computation
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
+    |        +--ro path-set* [path-set-uuid]
+    |        |  +--ro path-set-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path-set/uuid
+    |        +--ro path-set-constraint
+    |        |  +--ro corouting-policy?   corouting-policy
+    |        |  +--ro diversity-policy?   diversity-policy
+    |        |  +--ro path-constraint* [local-id]
+    |        |     +--ro priority?                       uint64
+    |        |     +--ro routing-constraint
+    |        |     |  +--ro cost-characteristic* [cost-name]
+    |        |     |  |  +--ro cost-name         string
+    |        |     |  |  +--ro cost-value?       string
+    |        |     |  |  +--ro cost-algorithm?   string
+    |        |     |  +--ro latency-characteristic* [traffic-property-name]
+    |        |     |  |  +--ro traffic-property-name             string
+    |        |     |  |  +--ro fixed-latency-characteristic?     string
+    |        |     |  |  +--ro queuing-latency-characteristic?   string
+    |        |     |  |  +--ro jitter-characteristic?            string
+    |        |     |  |  +--ro wander-characteristic?            string
+    |        |     |  +--ro risk-diversity-characteristic* [risk-characteristic-name]
+    |        |     |  |  +--ro risk-characteristic-name    string
+    |        |     |  |  +--ro risk-identifier-list*       string
+    |        |     |  +--ro diversity-policy?                diversity-policy
+    |        |     |  +--ro route-objective-function?        route-objective-function
+    |        |     |  +--ro is-exclusive?                    boolean
+    |        |     |  +--ro tolerable-impact?                grades-of-impact
+    |        |     |  +--ro max-allowed-cost
+    |        |     |  |  +--ro value?      uint64
+    |        |     |  |  +--ro priority?   uint64
+    |        |     |  +--ro max-allowed-hops
+    |        |     |  |  +--ro value?      uint64
+    |        |     |  |  +--ro priority?   uint64
+    |        |     |  +--ro max-allowed-delay
+    |        |     |     +--ro value?      uint64
+    |        |     |     +--ro priority?   uint64
+    |        |     +--ro topology-constraint
+    |        |     |  +--ro explicit-route?               boolean
+    |        |     |  +--ro preferred-transport-layer?    tapi-common:layer-protocol-name
+    |        |     |  +--ro constraint-weight?            uint64
+    |        |     |  +--ro include-topology* [topology-uuid]
+    |        |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |     |  +--ro exclude-topology* [topology-uuid]
+    |        |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |     |  +--ro include-path* [path-uuid]
+    |        |     |  |  +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+    |        |     |  +--ro exclude-path* [path-uuid]
+    |        |     |  |  +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+    |        |     |  +--ro include-link* [topology-uuid link-uuid]
+    |        |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |     |  |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+    |        |     |  +--ro exclude-link* [topology-uuid link-uuid]
+    |        |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |     |  |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+    |        |     |  +--ro include-link-and-partition* [index]
+    |        |     |  |  +--ro index             uint64
+    |        |     |  |  +--ro partition-type?   partition-type
+    |        |     |  |  +--ro link
+    |        |     |  |     +--ro topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |     |  |     +--ro link-uuid?       -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+    |        |     |  +--ro exclude-link-and-partition* [index]
+    |        |     |  |  +--ro index             uint64
+    |        |     |  |  +--ro partition-type?   partition-type
+    |        |     |  |  +--ro link
+    |        |     |  |     +--ro topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |     |  |     +--ro link-uuid?       -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+    |        |     |  +--ro include-node* [topology-uuid node-uuid]
+    |        |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |     |  |  +--ro node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |     |  +--ro exclude-node* [topology-uuid node-uuid]
+    |        |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |     |  |  +--ro node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |     |  +--ro include-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
+    |        |     |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |     |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |     |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+    |        |     |  +--ro exclude-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
+    |        |     |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |     |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |     |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+    |        |     |  +--ro include-nep-and-partition* [index]
+    |        |     |  |  +--ro index              uint64
+    |        |     |  |  +--ro partition-type?    partition-type
+    |        |     |  |  +--ro node-edge-point
+    |        |     |  |     +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |     |  |     +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |     |  |     +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+    |        |     |  +--ro exclude-nep-and-partition* [index]
+    |        |     |  |  +--ro index              uint64
+    |        |     |  |  +--ro partition-type?    partition-type
+    |        |     |  |  +--ro node-edge-point
+    |        |     |  |     +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |     |  |     +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |     |  |     +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+    |        |     |  +--ro local-id?                     string
+    |        |     |  +--ro name* [value-name]
+    |        |     |     +--ro value-name    string
+    |        |     |     +--ro value?        string
+    |        |     +--ro path-optimization-constraint
+    |        |     |  +--ro traffic-interruption?   tapi-common:directive-value
+    |        |     |  +--ro local-id?               string
+    |        |     |  +--ro name* [value-name]
+    |        |     |     +--ro value-name    string
+    |        |     |     +--ro value?        string
+    |        |     +--ro path-objective-function
+    |        |     |  +--ro bandwidth-optimization?   tapi-common:directive-value
+    |        |     |  +--ro concurrent-paths?         tapi-common:directive-value
+    |        |     |  +--ro cost-optimization?        tapi-common:directive-value
+    |        |     |  +--ro link-utilization?         tapi-common:directive-value
+    |        |     |  +--ro resource-sharing?         tapi-common:directive-value
+    |        |     |  +--ro local-id?                 string
+    |        |     |  +--ro name* [value-name]
+    |        |     |     +--ro value-name    string
+    |        |     |     +--ro value?        string
+    |        |     +--ro path-as-constraint
+    |        |     |  +--ro include-orphan-path* [path-uuid]
+    |        |     |  |  +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+    |        |     |  +--ro exclude-path* [path-uuid]
+    |        |     |     +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+    |        |     +--ro path-service-end-point* [local-id]
+    |        |     |  +--ro layer-protocol-name?        tapi-common:layer-protocol-name
+    |        |     |  +--ro layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
+    |        |     |  +--ro capacity
+    |        |     |  |  +--ro total-size
+    |        |     |  |     +--ro value?   decimal64
+    |        |     |  |     +--ro unit?    capacity-unit
+    |        |     |  +--ro role?                       tapi-common:port-role
+    |        |     |  +--ro direction?                  tapi-common:direction
+    |        |     |  +--ro service-interface-point
+    |        |     |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+    |        |     |  +--ro node-edge-point
+    |        |     |  |  +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |     |  |  +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |     |  |  +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+    |        |     |  +--ro local-id                    string
+    |        |     |  +--ro name* [value-name]
+    |        |     |     +--ro value-name    string
+    |        |     |     +--ro value?        string
+    |        |     +--ro local-id                        string
+    |        |     +--ro name* [value-name]
+    |        |        +--ro value-name    string
+    |        |        +--ro value?        string
+    |        +--ro adopt-orphan-path
+    |        |  +--ro path* [path-uuid]
+    |        |     +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
     |        +--ro uuid?                      uuid
     |        +--ro name* [value-name]
     |           +--ro value-name    string
@@ -936,6 +1866,10 @@ module: tapi-path-computation
     |        |  +--ro direction?                  tapi-common:direction
     |        |  +--ro service-interface-point
     |        |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+    |        |  +--ro node-edge-point
+    |        |  |  +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  |  +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |  |  +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
     |        |  +--ro local-id                    string
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
@@ -968,9 +1902,9 @@ module: tapi-path-computation
     |        |     +--ro value?      uint64
     |        |     +--ro priority?   uint64
     |        +--ro topology-constraint* [local-id]
-    |        |  +--ro explicit-route?              boolean
-    |        |  +--ro preferred-transport-layer?   tapi-common:layer-protocol-name
-    |        |  +--ro constraint-weight?           uint64
+    |        |  +--ro explicit-route?               boolean
+    |        |  +--ro preferred-transport-layer?    tapi-common:layer-protocol-name
+    |        |  +--ro constraint-weight?            uint64
     |        |  +--ro include-topology* [topology-uuid]
     |        |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
     |        |  +--ro exclude-topology* [topology-uuid]
@@ -985,6 +1919,18 @@ module: tapi-path-computation
     |        |  +--ro exclude-link* [topology-uuid link-uuid]
     |        |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
     |        |  |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+    |        |  +--ro include-link-and-partition* [index]
+    |        |  |  +--ro index             uint64
+    |        |  |  +--ro partition-type?   partition-type
+    |        |  |  +--ro link
+    |        |  |     +--ro topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  |     +--ro link-uuid?       -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+    |        |  +--ro exclude-link-and-partition* [index]
+    |        |  |  +--ro index             uint64
+    |        |  |  +--ro partition-type?   partition-type
+    |        |  |  +--ro link
+    |        |  |     +--ro topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  |     +--ro link-uuid?       -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
     |        |  +--ro include-node* [topology-uuid node-uuid]
     |        |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
     |        |  |  +--ro node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
@@ -999,7 +1945,21 @@ module: tapi-path-computation
     |        |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
     |        |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
     |        |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
-    |        |  +--ro local-id                     string
+    |        |  +--ro include-nep-and-partition* [index]
+    |        |  |  +--ro index              uint64
+    |        |  |  +--ro partition-type?    partition-type
+    |        |  |  +--ro node-edge-point
+    |        |  |     +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  |     +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |  |     +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+    |        |  +--ro exclude-nep-and-partition* [index]
+    |        |  |  +--ro index              uint64
+    |        |  |  +--ro partition-type?    partition-type
+    |        |  |  +--ro node-edge-point
+    |        |  |     +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |  |     +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |  |     +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+    |        |  +--ro local-id                      string
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
@@ -1019,6 +1979,149 @@ module: tapi-path-computation
     |        |  +--ro name* [value-name]
     |        |     +--ro value-name    string
     |        |     +--ro value?        string
+    |        +--ro path-set* [path-set-uuid]
+    |        |  +--ro path-set-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path-set/uuid
+    |        +--ro path-set-constraint
+    |        |  +--ro corouting-policy?   corouting-policy
+    |        |  +--ro diversity-policy?   diversity-policy
+    |        |  +--ro path-constraint* [local-id]
+    |        |     +--ro priority?                       uint64
+    |        |     +--ro routing-constraint
+    |        |     |  +--ro cost-characteristic* [cost-name]
+    |        |     |  |  +--ro cost-name         string
+    |        |     |  |  +--ro cost-value?       string
+    |        |     |  |  +--ro cost-algorithm?   string
+    |        |     |  +--ro latency-characteristic* [traffic-property-name]
+    |        |     |  |  +--ro traffic-property-name             string
+    |        |     |  |  +--ro fixed-latency-characteristic?     string
+    |        |     |  |  +--ro queuing-latency-characteristic?   string
+    |        |     |  |  +--ro jitter-characteristic?            string
+    |        |     |  |  +--ro wander-characteristic?            string
+    |        |     |  +--ro risk-diversity-characteristic* [risk-characteristic-name]
+    |        |     |  |  +--ro risk-characteristic-name    string
+    |        |     |  |  +--ro risk-identifier-list*       string
+    |        |     |  +--ro diversity-policy?                diversity-policy
+    |        |     |  +--ro route-objective-function?        route-objective-function
+    |        |     |  +--ro is-exclusive?                    boolean
+    |        |     |  +--ro tolerable-impact?                grades-of-impact
+    |        |     |  +--ro max-allowed-cost
+    |        |     |  |  +--ro value?      uint64
+    |        |     |  |  +--ro priority?   uint64
+    |        |     |  +--ro max-allowed-hops
+    |        |     |  |  +--ro value?      uint64
+    |        |     |  |  +--ro priority?   uint64
+    |        |     |  +--ro max-allowed-delay
+    |        |     |     +--ro value?      uint64
+    |        |     |     +--ro priority?   uint64
+    |        |     +--ro topology-constraint
+    |        |     |  +--ro explicit-route?               boolean
+    |        |     |  +--ro preferred-transport-layer?    tapi-common:layer-protocol-name
+    |        |     |  +--ro constraint-weight?            uint64
+    |        |     |  +--ro include-topology* [topology-uuid]
+    |        |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |     |  +--ro exclude-topology* [topology-uuid]
+    |        |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |     |  +--ro include-path* [path-uuid]
+    |        |     |  |  +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+    |        |     |  +--ro exclude-path* [path-uuid]
+    |        |     |  |  +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+    |        |     |  +--ro include-link* [topology-uuid link-uuid]
+    |        |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |     |  |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+    |        |     |  +--ro exclude-link* [topology-uuid link-uuid]
+    |        |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |     |  |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+    |        |     |  +--ro include-link-and-partition* [index]
+    |        |     |  |  +--ro index             uint64
+    |        |     |  |  +--ro partition-type?   partition-type
+    |        |     |  |  +--ro link
+    |        |     |  |     +--ro topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |     |  |     +--ro link-uuid?       -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+    |        |     |  +--ro exclude-link-and-partition* [index]
+    |        |     |  |  +--ro index             uint64
+    |        |     |  |  +--ro partition-type?   partition-type
+    |        |     |  |  +--ro link
+    |        |     |  |     +--ro topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |     |  |     +--ro link-uuid?       -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+    |        |     |  +--ro include-node* [topology-uuid node-uuid]
+    |        |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |     |  |  +--ro node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |     |  +--ro exclude-node* [topology-uuid node-uuid]
+    |        |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |     |  |  +--ro node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |     |  +--ro include-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
+    |        |     |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |     |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |     |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+    |        |     |  +--ro exclude-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
+    |        |     |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |     |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |     |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+    |        |     |  +--ro include-nep-and-partition* [index]
+    |        |     |  |  +--ro index              uint64
+    |        |     |  |  +--ro partition-type?    partition-type
+    |        |     |  |  +--ro node-edge-point
+    |        |     |  |     +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |     |  |     +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |     |  |     +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+    |        |     |  +--ro exclude-nep-and-partition* [index]
+    |        |     |  |  +--ro index              uint64
+    |        |     |  |  +--ro partition-type?    partition-type
+    |        |     |  |  +--ro node-edge-point
+    |        |     |  |     +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |     |  |     +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |     |  |     +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+    |        |     |  +--ro local-id?                     string
+    |        |     |  +--ro name* [value-name]
+    |        |     |     +--ro value-name    string
+    |        |     |     +--ro value?        string
+    |        |     +--ro path-optimization-constraint
+    |        |     |  +--ro traffic-interruption?   tapi-common:directive-value
+    |        |     |  +--ro local-id?               string
+    |        |     |  +--ro name* [value-name]
+    |        |     |     +--ro value-name    string
+    |        |     |     +--ro value?        string
+    |        |     +--ro path-objective-function
+    |        |     |  +--ro bandwidth-optimization?   tapi-common:directive-value
+    |        |     |  +--ro concurrent-paths?         tapi-common:directive-value
+    |        |     |  +--ro cost-optimization?        tapi-common:directive-value
+    |        |     |  +--ro link-utilization?         tapi-common:directive-value
+    |        |     |  +--ro resource-sharing?         tapi-common:directive-value
+    |        |     |  +--ro local-id?                 string
+    |        |     |  +--ro name* [value-name]
+    |        |     |     +--ro value-name    string
+    |        |     |     +--ro value?        string
+    |        |     +--ro path-as-constraint
+    |        |     |  +--ro include-orphan-path* [path-uuid]
+    |        |     |  |  +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+    |        |     |  +--ro exclude-path* [path-uuid]
+    |        |     |     +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+    |        |     +--ro path-service-end-point* [local-id]
+    |        |     |  +--ro layer-protocol-name?        tapi-common:layer-protocol-name
+    |        |     |  +--ro layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
+    |        |     |  +--ro capacity
+    |        |     |  |  +--ro total-size
+    |        |     |  |     +--ro value?   decimal64
+    |        |     |  |     +--ro unit?    capacity-unit
+    |        |     |  +--ro role?                       tapi-common:port-role
+    |        |     |  +--ro direction?                  tapi-common:direction
+    |        |     |  +--ro service-interface-point
+    |        |     |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+    |        |     |  +--ro node-edge-point
+    |        |     |  |  +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+    |        |     |  |  +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+    |        |     |  |  +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+    |        |     |  +--ro local-id                    string
+    |        |     |  +--ro name* [value-name]
+    |        |     |     +--ro value-name    string
+    |        |     |     +--ro value?        string
+    |        |     +--ro local-id                        string
+    |        |     +--ro name* [value-name]
+    |        |        +--ro value-name    string
+    |        |        +--ro value?        string
+    |        +--ro adopt-orphan-path
+    |        |  +--ro path* [path-uuid]
+    |        |     +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
     |        +--ro uuid?                      uuid
     |        +--ro name* [value-name]
     |           +--ro value-name    string
@@ -1043,6 +2146,10 @@ module: tapi-path-computation
              |  +--ro direction?                  tapi-common:direction
              |  +--ro service-interface-point
              |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+             |  +--ro node-edge-point
+             |  |  +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+             |  |  +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+             |  |  +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
              |  +--ro local-id                    string
              |  +--ro name* [value-name]
              |     +--ro value-name    string
@@ -1075,9 +2182,9 @@ module: tapi-path-computation
              |     +--ro value?      uint64
              |     +--ro priority?   uint64
              +--ro topology-constraint* [local-id]
-             |  +--ro explicit-route?              boolean
-             |  +--ro preferred-transport-layer?   tapi-common:layer-protocol-name
-             |  +--ro constraint-weight?           uint64
+             |  +--ro explicit-route?               boolean
+             |  +--ro preferred-transport-layer?    tapi-common:layer-protocol-name
+             |  +--ro constraint-weight?            uint64
              |  +--ro include-topology* [topology-uuid]
              |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
              |  +--ro exclude-topology* [topology-uuid]
@@ -1092,6 +2199,18 @@ module: tapi-path-computation
              |  +--ro exclude-link* [topology-uuid link-uuid]
              |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
              |  |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+             |  +--ro include-link-and-partition* [index]
+             |  |  +--ro index             uint64
+             |  |  +--ro partition-type?   partition-type
+             |  |  +--ro link
+             |  |     +--ro topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+             |  |     +--ro link-uuid?       -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+             |  +--ro exclude-link-and-partition* [index]
+             |  |  +--ro index             uint64
+             |  |  +--ro partition-type?   partition-type
+             |  |  +--ro link
+             |  |     +--ro topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+             |  |     +--ro link-uuid?       -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
              |  +--ro include-node* [topology-uuid node-uuid]
              |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
              |  |  +--ro node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
@@ -1106,7 +2225,21 @@ module: tapi-path-computation
              |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
              |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
              |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
-             |  +--ro local-id                     string
+             |  +--ro include-nep-and-partition* [index]
+             |  |  +--ro index              uint64
+             |  |  +--ro partition-type?    partition-type
+             |  |  +--ro node-edge-point
+             |  |     +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+             |  |     +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+             |  |     +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+             |  +--ro exclude-nep-and-partition* [index]
+             |  |  +--ro index              uint64
+             |  |  +--ro partition-type?    partition-type
+             |  |  +--ro node-edge-point
+             |  |     +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+             |  |     +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+             |  |     +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+             |  +--ro local-id                      string
              |  +--ro name* [value-name]
              |     +--ro value-name    string
              |     +--ro value?        string
@@ -1126,6 +2259,149 @@ module: tapi-path-computation
              |  +--ro name* [value-name]
              |     +--ro value-name    string
              |     +--ro value?        string
+             +--ro path-set* [path-set-uuid]
+             |  +--ro path-set-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path-set/uuid
+             +--ro path-set-constraint
+             |  +--ro corouting-policy?   corouting-policy
+             |  +--ro diversity-policy?   diversity-policy
+             |  +--ro path-constraint* [local-id]
+             |     +--ro priority?                       uint64
+             |     +--ro routing-constraint
+             |     |  +--ro cost-characteristic* [cost-name]
+             |     |  |  +--ro cost-name         string
+             |     |  |  +--ro cost-value?       string
+             |     |  |  +--ro cost-algorithm?   string
+             |     |  +--ro latency-characteristic* [traffic-property-name]
+             |     |  |  +--ro traffic-property-name             string
+             |     |  |  +--ro fixed-latency-characteristic?     string
+             |     |  |  +--ro queuing-latency-characteristic?   string
+             |     |  |  +--ro jitter-characteristic?            string
+             |     |  |  +--ro wander-characteristic?            string
+             |     |  +--ro risk-diversity-characteristic* [risk-characteristic-name]
+             |     |  |  +--ro risk-characteristic-name    string
+             |     |  |  +--ro risk-identifier-list*       string
+             |     |  +--ro diversity-policy?                diversity-policy
+             |     |  +--ro route-objective-function?        route-objective-function
+             |     |  +--ro is-exclusive?                    boolean
+             |     |  +--ro tolerable-impact?                grades-of-impact
+             |     |  +--ro max-allowed-cost
+             |     |  |  +--ro value?      uint64
+             |     |  |  +--ro priority?   uint64
+             |     |  +--ro max-allowed-hops
+             |     |  |  +--ro value?      uint64
+             |     |  |  +--ro priority?   uint64
+             |     |  +--ro max-allowed-delay
+             |     |     +--ro value?      uint64
+             |     |     +--ro priority?   uint64
+             |     +--ro topology-constraint
+             |     |  +--ro explicit-route?               boolean
+             |     |  +--ro preferred-transport-layer?    tapi-common:layer-protocol-name
+             |     |  +--ro constraint-weight?            uint64
+             |     |  +--ro include-topology* [topology-uuid]
+             |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+             |     |  +--ro exclude-topology* [topology-uuid]
+             |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+             |     |  +--ro include-path* [path-uuid]
+             |     |  |  +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+             |     |  +--ro exclude-path* [path-uuid]
+             |     |  |  +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+             |     |  +--ro include-link* [topology-uuid link-uuid]
+             |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+             |     |  |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+             |     |  +--ro exclude-link* [topology-uuid link-uuid]
+             |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+             |     |  |  +--ro link-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+             |     |  +--ro include-link-and-partition* [index]
+             |     |  |  +--ro index             uint64
+             |     |  |  +--ro partition-type?   partition-type
+             |     |  |  +--ro link
+             |     |  |     +--ro topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+             |     |  |     +--ro link-uuid?       -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+             |     |  +--ro exclude-link-and-partition* [index]
+             |     |  |  +--ro index             uint64
+             |     |  |  +--ro partition-type?   partition-type
+             |     |  |  +--ro link
+             |     |  |     +--ro topology-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+             |     |  |     +--ro link-uuid?       -> /tapi-common:context/tapi-topology:topology-context/topology/link/uuid
+             |     |  +--ro include-node* [topology-uuid node-uuid]
+             |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+             |     |  |  +--ro node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+             |     |  +--ro exclude-node* [topology-uuid node-uuid]
+             |     |  |  +--ro topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+             |     |  |  +--ro node-uuid        -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+             |     |  +--ro include-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
+             |     |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+             |     |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+             |     |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+             |     |  +--ro exclude-node-edge-point* [topology-uuid node-uuid node-edge-point-uuid]
+             |     |  |  +--ro topology-uuid           -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+             |     |  |  +--ro node-uuid               -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+             |     |  |  +--ro node-edge-point-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+             |     |  +--ro include-nep-and-partition* [index]
+             |     |  |  +--ro index              uint64
+             |     |  |  +--ro partition-type?    partition-type
+             |     |  |  +--ro node-edge-point
+             |     |  |     +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+             |     |  |     +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+             |     |  |     +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+             |     |  +--ro exclude-nep-and-partition* [index]
+             |     |  |  +--ro index              uint64
+             |     |  |  +--ro partition-type?    partition-type
+             |     |  |  +--ro node-edge-point
+             |     |  |     +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+             |     |  |     +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+             |     |  |     +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+             |     |  +--ro local-id?                     string
+             |     |  +--ro name* [value-name]
+             |     |     +--ro value-name    string
+             |     |     +--ro value?        string
+             |     +--ro path-optimization-constraint
+             |     |  +--ro traffic-interruption?   tapi-common:directive-value
+             |     |  +--ro local-id?               string
+             |     |  +--ro name* [value-name]
+             |     |     +--ro value-name    string
+             |     |     +--ro value?        string
+             |     +--ro path-objective-function
+             |     |  +--ro bandwidth-optimization?   tapi-common:directive-value
+             |     |  +--ro concurrent-paths?         tapi-common:directive-value
+             |     |  +--ro cost-optimization?        tapi-common:directive-value
+             |     |  +--ro link-utilization?         tapi-common:directive-value
+             |     |  +--ro resource-sharing?         tapi-common:directive-value
+             |     |  +--ro local-id?                 string
+             |     |  +--ro name* [value-name]
+             |     |     +--ro value-name    string
+             |     |     +--ro value?        string
+             |     +--ro path-as-constraint
+             |     |  +--ro include-orphan-path* [path-uuid]
+             |     |  |  +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+             |     |  +--ro exclude-path* [path-uuid]
+             |     |     +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
+             |     +--ro path-service-end-point* [local-id]
+             |     |  +--ro layer-protocol-name?        tapi-common:layer-protocol-name
+             |     |  +--ro layer-protocol-qualifier?   tapi-common:layer-protocol-qualifier
+             |     |  +--ro capacity
+             |     |  |  +--ro total-size
+             |     |  |     +--ro value?   decimal64
+             |     |  |     +--ro unit?    capacity-unit
+             |     |  +--ro role?                       tapi-common:port-role
+             |     |  +--ro direction?                  tapi-common:direction
+             |     |  +--ro service-interface-point
+             |     |  |  +--ro service-interface-point-uuid?   -> /tapi-common:context/service-interface-point/uuid
+             |     |  +--ro node-edge-point
+             |     |  |  +--ro topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
+             |     |  |  +--ro node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
+             |     |  |  +--ro node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
+             |     |  +--ro local-id                    string
+             |     |  +--ro name* [value-name]
+             |     |     +--ro value-name    string
+             |     |     +--ro value?        string
+             |     +--ro local-id                        string
+             |     +--ro name* [value-name]
+             |        +--ro value-name    string
+             |        +--ro value?        string
+             +--ro adopt-orphan-path
+             |  +--ro path* [path-uuid]
+             |     +--ro path-uuid    -> /tapi-common:context/tapi-path-computation:path-computation-context/path/uuid
              +--ro uuid?                      uuid
              +--ro name* [value-name]
                 +--ro value-name    string

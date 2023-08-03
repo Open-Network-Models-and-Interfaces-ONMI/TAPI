@@ -33,7 +33,7 @@ module tapi-oam {
         - The YANG specifications have been generated from the corresponding UML model using the [ONF EAGLE UML2YANG mapping tool]
         <https://github.com/OpenNetworkingFoundation/EagleUmlYang>
         and further edited manually to comply with the [ONF IISOMI UML2YANG mapping guidelines]
-        <https://wiki.opennetworking.org/display/OIMT/UML+-+YANG+Guidelines>
+        <https://wiki.opennetworking.org/display/OIMT/IISOMI+Deliverables>
         - Status of YANG model artifacts can be determined by referring to the corresponding UML artifacts.
         As described in the UML models, some artifacts are considered *experimental*, and thus the corresponding YANG artifacts.
         - The ONF TAPI release process does not guarantee backward compatibility of YANG models across major versions of TAPI releases.
@@ -41,6 +41,13 @@ module tapi-oam {
         YANG models included in this release may not be backward compatible with previous TAPI releases.
         Copyright (c) 2023 Open Networking Foundation (ONF). All rights reserved.
         License: This module is distributed under the Apache License 2.0.";
+    revision 2023-09-01 {
+        description "ONF Transport API version 2.5.
+                   Changes included in this TAPI release (v2.5) are listed in
+                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2023>";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
+                  <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.5/UML>";
+    }
     revision 2023-03-21 {
         description "ONF Transport API version 2.4.1.
                    Changes included in this TAPI release (v2.4.1) are listed in
@@ -399,6 +406,13 @@ module tapi-oam {
         }
         description "none";
     }
+    augment "/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point" {
+        container oam-pm-data {
+            uses oam-pm-data;
+            description "none";
+        }
+        description "none";
+    }
     /**************************
     * definitions of references
     **************************/
@@ -493,6 +507,42 @@ module tapi-oam {
         leaf pm-threshold-data-local-id {
             type leafref {
                 path '/tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-profile/tapi-oam:pm-threshold-data/tapi-oam:local-id';
+            }
+            description "none";
+        }
+        description "none";
+    }
+    grouping cep-pm-data-ref {
+        leaf cep-pm-data-uuid {
+            type leafref {
+                path '/tapi-common:context/tapi-oam:oam-context/tapi-oam:cep-pm-data/tapi-oam:uuid';
+            }
+            description "none";
+        }
+        description "none";
+    }
+    grouping mep-pm-data-ref {
+        leaf mep-pm-data-uuid {
+            type leafref {
+                path '/tapi-common:context/tapi-oam:oam-context/tapi-oam:mep-pm-data/tapi-oam:uuid';
+            }
+            description "none";
+        }
+        description "none";
+    }
+    grouping mip-pm-data-ref {
+        leaf mip-pm-data-uuid {
+            type leafref {
+                path '/tapi-common:context/tapi-oam:oam-context/tapi-oam:mip-pm-data/tapi-oam:uuid';
+            }
+            description "none";
+        }
+        description "none";
+    }
+    grouping oam-job-descriptor-ref {
+        leaf oam-job-descriptor-uuid {
+            type leafref {
+                path '/tapi-common:context/tapi-oam:oam-context/tapi-oam:oam-job-descriptor/tapi-oam:uuid';
             }
             description "none";
         }
@@ -649,6 +699,40 @@ module tapi-oam {
             config false;
             uses meg;
             description "The included Meg instances.";
+        }
+        list fm-data-of-monitored-point {
+            key 'uuid';
+            config false;
+            uses cep-fm-data;
+            description "none";
+        }
+        list mip-pm-data {
+            key 'uuid';
+            config false;
+            uses mip-pm-data;
+            description "none";
+        }
+        list mep-pm-data {
+            key 'uuid';
+            config false;
+            uses mep-pm-data;
+            description "none";
+        }
+        list cep-pm-data {
+            key 'uuid';
+            config false;
+            uses cep-pm-data;
+            description "none";
+        }
+        list oam-job-service {
+            key 'uuid';
+            uses oam-job-service;
+            description "none";
+        }
+        list oam-job-descriptor {
+            key 'uuid';
+            uses oam-job-descriptor;
+            description "none";
         }
         description "This object class represents the scope of control that a particular SDN controller has with respect to a particular network, specifically regarding the OAM description.
             An instance of this class includes its OamService, OamJob and Meg object instances.";
@@ -874,6 +958,10 @@ module tapi-oam {
             uses connectivity-oam-service-point;
             description "none";
         }
+        container connectivity-oam-service-parameters {
+            uses connectivity-oam-service-parameters;
+            description "none";
+        }
         description "This class augments the ConnectivityServiceEndPoint (CSEP) class to associate OAM service provisioning to ConnectivityService provisioning.";
     }
     grouping connectivity-oam-service-point {
@@ -891,6 +979,184 @@ module tapi-oam {
         }
         uses tapi-common:local-class;
         uses tapi-common:admin-state-pac;
+        description "none";
+    }
+    grouping connectivity-oam-service-parameters {
+        description "none";
+    }
+    grouping cep-fm-data {
+        uses tapi-common:global-class;
+        description "none";
+    }
+    grouping oam-pm-data {
+        container cep-pm-data {
+            uses  cep-pm-data-ref;
+            config false;
+            description "none";
+        }
+        description "none";
+    }
+    grouping pm-parameter-config {
+        leaf-list applicable-job-type {
+            type oam-job-type;
+            description "This attribute allows an PmThresholdData instance to be constrained to specific job types. If a PmThresholdData instance is so configured to be applicable to more than one job type (worst case ALL), only the parameters relevant for the job instance will be used (non-applicable profile parameters will be ignored).";
+        }
+        container granularity-period {
+            uses tapi-common:time-period;
+            description "The granularity period or measurement interval time. In case of instantaneous measurement this parameter is omitted (e.g. ODU Delay measurement).";
+        }
+        leaf time-of-the-day-alignment {
+            type boolean;
+            default "true";
+            description "none";
+        }
+        leaf is-transient {
+            type boolean;
+            description "A threshold crossing alert (TCA) is transient when stateless, i.e. an explicit alarm clear notification is not foreseen.
+                MEF 35.1: Thresholds and associated TCAs are specific to a particular performance metric in a given PM Session (or OAM job).
+                There are two types of TCA reporting: stateless and stateful.
+                With stateless reporting, a TCA is generated in each Measurement Interval in which the threshold is crossed.
+                With stateful reporting, a SET TCA is generated in the first Measurement Interval in which the threshold is crossed,
+                and a CLEAR TCA is subsequently generated at the end of the first Measurement Interval in which the threshold is not crossed.
+                Note: In ITU-T G.7710 terminology, stateless TCA reporting corresponds to a transient condition, and stateful TCA reporting corresponds to a standing condition.
+                Note that threshold management for gauges may be more complex (e.g. out of range function for gauge overflow/underflow detection).";
+        }
+        leaf codirectional {
+            type boolean;
+            description "Applicable in case of embedded provisioning through ConnectivityOamJob. 
+                In this case two MIPs on the same CEP can be involved in the same OamJob, hence may be necessary to set different thresholds for codirectional and contradirectional PM Parameters.";
+        }
+        list pm-parameter {
+            key 'pm-parameter-name';
+            uses pm-parameter;
+            description "The PM metrics and their threshold values.";
+        }
+        uses tapi-common:local-class;
+        description "none";
+    }
+    grouping cep-pm-data {
+        list history-data {
+            key 'local-id';
+            config false;
+            uses history-data;
+            description "none";
+        }
+        container connection-end-point {
+            uses tapi-connectivity:connection-end-point-ref;
+            config false;
+            description "none";
+        }
+        container oam-job-descriptor {
+            uses oam-job-descriptor-ref;
+            config false;
+            description "none";
+        }
+        uses tapi-common:global-class;
+        description "none";
+    }
+    grouping mep-pm-data {
+        list history-data {
+            key 'local-id';
+            config false;
+            uses history-data;
+            description "none";
+        }
+        container mep {
+            uses mep-ref;
+            config false;
+            description "none";
+        }
+        container oam-job-descriptor {
+            uses oam-job-descriptor-ref;
+            config false;
+            description "none";
+        }
+        uses tapi-common:global-class;
+        description "none";
+    }
+    grouping mip-pm-data {
+        list history-data {
+            key 'local-id';
+            config false;
+            uses history-data;
+            description "none";
+        }
+        container mip {
+            uses mip-ref;
+            config false;
+            description "none";
+        }
+        container oam-job-descriptor {
+            uses oam-job-descriptor-ref;
+            config false;
+            description "none";
+        }
+        uses tapi-common:global-class;
+        description "none";
+    }
+    grouping oam-job-service {
+        leaf oam-job-type {
+            type oam-job-type;
+            description "The OamJob type.";
+        }
+        container schedule {
+            uses tapi-common:time-range;
+            description "The OamJob schedule.";
+        }
+        list pm-parameter-config {
+            key 'local-id';
+            uses pm-parameter-config;
+            description "none";
+        }
+        list oam-service-point {
+          	key 'local-id';
+            uses oam-service-point;
+            description "none";
+            }
+        list connection-end-point {
+            uses tapi-connectivity:connection-end-point-ref;
+            key 'topology-uuid node-uuid node-edge-point-uuid connection-end-point-uuid';
+            description "none";
+        }
+        container oam-job-descriptor {
+            uses oam-job-descriptor-ref;
+            description "none";
+        }
+        list connection {
+            uses tapi-connectivity:connection-ref;
+            key 'connection-uuid';
+            description "none";
+        }
+        uses tapi-common:global-class;
+        description "none";
+    }
+    grouping oam-job-descriptor {
+        leaf oam-job-type {
+            type oam-job-type;
+            config false;
+            description "The OamJob type.";
+        }
+        leaf oam-job-state {
+            type oam-job-state;
+            config false;
+            description "none";
+        }
+        leaf creation-time {
+            type tapi-common:date-and-time;
+            config false;
+            description "The OamJob creation time.";
+        }
+        container schedule {
+            config false;
+            uses tapi-common:time-range;
+            description "The OamJob schedule.";
+        }
+        leaf results {
+            type string;
+            config false;
+            description "Information allowing to retrieve the OAM job results by other means., e.g. file name.";
+        }
+        uses tapi-common:global-class;
         description "none";
     }
 
