@@ -26,7 +26,7 @@ module tapi-common {
         YANG models included in this release may not be backward compatible with previous TAPI releases.
         Copyright (c) 2023 Open Networking Foundation (ONF). All rights reserved.
         License: This module is distributed under the Apache License 2.0.";
-    revision 2023-09-01 {
+    revision 2023-10-10 {
         description "ONF Transport API version 2.5.
                    Changes included in this TAPI release (v2.5) are listed in
                    <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2023>";
@@ -992,7 +992,7 @@ module tapi-common {
         base PM;
         description "Chromatic Dispersion";
     }
-    identity PM_DELAY {
+    identity PM_DELAY_FRAME_COUNT {
         base PM;
         description "none";
     }
@@ -1023,7 +1023,7 @@ module tapi-common {
             - 100 GE: IEEE802.3-2018 sections 91.6.9 (FEC_corrected_cw_counter), 45.2.1.112 (MDIO)
             - 400 GE: IEEE802.3-2018 sections 119.3.1 (FEC_corrected_cw_counter), 45.2.3.61 (MDIO)";
     }
-    identity PM_FEC_CORRECTED_ERROR {
+    identity PM_FEC_CORRECTED_ERRORS {
         base PM;
         description "ITU-T G798: The number of bits corrected by the FEC are counted over one second and reported to the MI at the end of the second. For the application of this filter, see the specific atomic functions.
             During signal fail conditions of the data signal, no corrected bits shall be counted. For details on the signal fail conditions, see the specific atomic functions.
@@ -1081,19 +1081,27 @@ module tapi-common {
         base PM;
         description "Frequency Offset";
     }
-    identity PM_OPTICAL_GAIN {
+    identity PM_OPT_GAIN {
         base PM;
         description "none";
     }
-    identity PM_OPTICAL_POWER_INPUT {
+    identity PM_OPT_PWR_SPECTR_DENS_INPUT {
         base PM;
         description "none";
     }
-    identity PM_OPTICAL_POWER_OUTPUT {
+    identity PM_OPT_PWR_SPECTR_DENS_OUTPUT {
         base PM;
         description "none";
     }
-    identity PM_OPTICAL_TILT {
+    identity PM_OPT_TOTAL_PWR_INPUT {
+        base PM;
+        description "none";
+    }
+    identity PM_OPT_TOTAL_PWR_OUTPUT {
+        base PM;
+        description "none";
+    }
+    identity PM_OPT_TILT {
         base PM;
         description "none";
     }
@@ -1109,7 +1117,38 @@ module tapi-common {
         base PM;
         description "none";
     }
+    identity PM_VOA_INPUT {
+        base PM;
+        description "none";
+    }
+    identity PM_VOA_OUTPUT {
+        base PM;
+        description "none";
+    }
     identity PROFILE_TYPE {
+        description "none";
+    }
+    identity METRIC_VALUE_TYPE {
+        description "none";
+    }
+    identity METRIC_VALUE_TYPE_AVERAGE {
+        base METRIC_VALUE_TYPE;
+        description "none";
+    }
+    identity METRIC_VALUE_TYPE_MIN {
+        base METRIC_VALUE_TYPE;
+        description "none";
+    }
+    identity METRIC_VALUE_TYPE_MAX {
+        base METRIC_VALUE_TYPE;
+        description "none";
+    }
+    identity METRIC_VALUE_TYPE_MIN_TIME {
+        base METRIC_VALUE_TYPE;
+        description "none";
+    }
+    identity METRIC_VALUE_TYPE_MAX_TIME {
+        base METRIC_VALUE_TYPE;
         description "none";
     }
     typedef administrative-state {
@@ -1464,6 +1503,10 @@ module tapi-common {
             type string;
             description "The PM Parameter unit.";
         }
+        leaf pm-parameter-value-type {
+            type metric-value-type;
+            description "none";
+        }
         description "PM metric value.";
     }
     grouping pm-parameter {
@@ -1471,7 +1514,8 @@ module tapi-common {
             type pm;
             description "The name of the PM metric. Technology specific modules may define specific PM metrics.";
         }
-        container pm-parameter-value {
+        list pm-parameter-value {
+            key 'pm-parameter-value-type';
             uses pm-parameter-value;
             description "The value of the PM metric.";
         }
@@ -1610,57 +1654,19 @@ module tapi-common {
         }
         description "none";
     }
-
-    /**************************
-    * package interfaces
-    **************************/ 
-    rpc get-service-interface-point-details {
+    grouping metric-values {
+        list metric-values {
+            key 'pm-parameter-value-type';
+            uses pm-parameter-value;
+            description "none";
+        }
         description "none";
-        input {
-            leaf uuid {
-                type uuid;
-                description "UUID of the ServiceInterfacePoint (SIP) instance.
-                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
-                    An UUID carries no semantics with respect to the purpose or state of the entity.
-                    UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
-                    Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
-                    Example of a UUID in string representation: f81d4fae-7dec-11d0-a765-00a0c91e6bf6";
-            }
-        }
-        output {
-            container sip {
-                uses service-interface-point;
-                description "The requested SIP instance.";
-            }
-        }
     }
-    rpc get-service-interface-point-list {
-        description "none";
-        output {
-            list sip {
-                key 'uuid';
-                uses service-interface-point;
-                description "The requested list of SIP instances.";
-            }
+    typedef metric-value-type {
+        type identityref {
+            base METRIC_VALUE_TYPE;
         }
-    }
-    rpc update-service-interface-point {
         description "none";
-        input {
-            leaf uuid {
-                type uuid;
-                description "UUID of the ServiceInterfacePoint (SIP) instance.
-                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
-                    An UUID carries no semantics with respect to the purpose or state of the entity.
-                    UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
-                    Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
-                    Example of a UUID in string representation: f81d4fae-7dec-11d0-a765-00a0c91e6bf6";
-            }
-            leaf state {
-                type administrative-state;
-                description "The requested update of Administrative State.";
-            }
-        }
     }
 
 }

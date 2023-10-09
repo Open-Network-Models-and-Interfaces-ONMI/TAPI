@@ -35,7 +35,7 @@ module tapi-topology {
         YANG models included in this release may not be backward compatible with previous TAPI releases.
         Copyright (c) 2023 Open Networking Foundation (ONF). All rights reserved.
         License: This module is distributed under the Apache License 2.0.";
-    revision 2023-09-01 {
+    revision 2023-10-10 {
         description "ONF Transport API version 2.5.
                    Changes included in this TAPI release (v2.5) are listed in
                    <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2023>";
@@ -623,7 +623,6 @@ module tapi-topology {
     grouping risk-parameter-pac {
         list risk-characteristic {
             key 'risk-characteristic-name';
-            config false;
             min-elements 1;
             uses risk-characteristic;
             description "A list of risk characteristics for consideration in an analysis of shared risk. Each element of the list represents a specific risk consideration.";
@@ -644,7 +643,6 @@ module tapi-topology {
     grouping transfer-cost-pac {
         list cost-characteristic {
             key 'cost-name';
-            config false;
             min-elements 1;
             uses cost-characteristic;
             description "The list of costs where each cost relates to some aspect of the topological entity.";
@@ -657,36 +655,30 @@ module tapi-topology {
     grouping transfer-integrity-pac {
         leaf error-characteristic {
             type string;
-            config false;
             description "Describes the degree to which the signal propagated can be errored. 
                 Applies to TDM systems as the errored signal will be propagated and not to packet as errored packets will be discarded.";
         }
         leaf loss-characteristic {
             type string;
-            config false;
             description "Describes the acceptable characteristic of lost packets where loss may result from discard due to errors or overflow.
                 Applies to packet systems and not to TDM (as for TDM errored signals are propagated unless grossly errored and overflow/underflow turns into timing slips).";
         }
         leaf repeat-delivery-characteristic {
             type string;
-            config false;
             description "Primarily applies to packet systems where a packet may be delivered more than once (in fault recovery for example). 
                 It can also apply to TDM where several frames may be received twice due to switching in a system with a large differential propagation delay.";
         }
         leaf delivery-order-characteristic {
             type string;
-            config false;
             description "Describes the degree to which packets will be delivered out of sequence.
                 Does not apply to TDM as the TDM protocols maintain strict order.";
         }
         leaf unavailable-time-characteristic {
             type string;
-            config false;
             description "Describes the duration for which there may be no valid signal propagated.";
         }
         leaf server-integrity-process-characteristic {
             type string;
-            config false;
             description "Describes the effect of any server integrity enhancement process on the characteristics of the topological entity.";
         }
         description "Transfer integrity characteristic covers expected/specified/acceptable characteristic of degradation of the transfered signal.
@@ -696,7 +688,6 @@ module tapi-topology {
     grouping transfer-timing-pac {
         list latency-characteristic {
             key 'traffic-property-name';
-            config false;
             min-elements 1;
             uses latency-characteristic;
             description "The effect on the latency of a queuing process. This only has significant effect for packet based systems and has a complex characteristic.";
@@ -1277,136 +1268,6 @@ module tapi-topology {
             base TOPOLOGY_PROFILE_TYPE;
         }
         description "none";
-    }
-
-    /**************************
-    * package interfaces
-    **************************/ 
-    rpc get-topology-details {
-        description "none";
-        input {
-            leaf topology-id {
-                type tapi-common:uuid;
-                description "UUID of the Topology instance.
-                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
-                    An UUID carries no semantics with respect to the purpose or state of the entity.
-                    UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
-                    Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
-                    Example of a UUID in string representation: f81d4fae-7dec-11d0-a765-00a0c91e6bf6";
-            }
-        }
-        output {
-            container topology {
-                uses topology;
-                description "The requested Topology instance.";
-            }
-        }
-    }
-    rpc get-node-details {
-        description "none";
-        input {
-            leaf topology-id {
-                type tapi-common:uuid;
-                description "UUID of the parent Topology instance.
-                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
-                    An UUID carries no semantics with respect to the purpose or state of the entity.
-                    UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
-                    Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
-                    Example of a UUID in string representation: f81d4fae-7dec-11d0-a765-00a0c91e6bf6";
-            }
-            leaf node-id {
-                type tapi-common:uuid;
-                description "UUID of the Node instance.
-                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
-                    An UUID carries no semantics with respect to the purpose or state of the entity.
-                    UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
-                    Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
-                    Example of a UUID in string representation: f81d4fae-7dec-11d0-a765-00a0c91e6bf6";
-            }
-        }
-        output {
-            container node {
-                uses node;
-                description "The requested Node instance.";
-            }
-        }
-    }
-    rpc get-node-edge-point-details {
-        description "none";
-        input {
-            leaf topology-id {
-                type tapi-common:uuid;
-                description "UUID of the parent Node's Topology instance.
-                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
-                    An UUID carries no semantics with respect to the purpose or state of the entity.
-                    UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
-                    Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
-                    Example of a UUID in string representation: f81d4fae-7dec-11d0-a765-00a0c91e6bf6";
-            }
-            leaf node-id {
-                type tapi-common:uuid;
-                description "UUID of the parent Node instance.
-                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
-                    An UUID carries no semantics with respect to the purpose or state of the entity.
-                    UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
-                    Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
-                    Example of a UUID in string representation: f81d4fae-7dec-11d0-a765-00a0c91e6bf6";
-            }
-            leaf node-edge-point-id {
-                type tapi-common:uuid;
-                description "UUID of the NodeEdgePoint (NEP) instance.
-                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
-                    An UUID carries no semantics with respect to the purpose or state of the entity.
-                    UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
-                    Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
-                    Example of a UUID in string representation: f81d4fae-7dec-11d0-a765-00a0c91e6bf6";
-            }
-        }
-        output {
-            container node-edge-point {
-                uses node-edge-point;
-                description "The requested NodeEdgePoint (NEP) instance.";
-            }
-        }
-    }
-    rpc get-link-details {
-        description "none";
-        input {
-            leaf topology-id {
-                type tapi-common:uuid;
-                description "UUID of the parent Topology instance.
-                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
-                    An UUID carries no semantics with respect to the purpose or state of the entity.
-                    UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
-                    Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
-                    Example of a UUID in string representation: f81d4fae-7dec-11d0-a765-00a0c91e6bf6";
-            }
-            leaf link-id {
-                type tapi-common:uuid;
-                description "UUID of the Link instance.
-                    UUID: An identifier that is universally unique within an identifier space, where the identifier space is itself globally unique, and immutable.
-                    An UUID carries no semantics with respect to the purpose or state of the entity.
-                    UUID here uses string representation as defined in RFC 4122.  The canonical representation uses lowercase characters.
-                    Pattern: [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-' + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12} 
-                    Example of a UUID in string representation: f81d4fae-7dec-11d0-a765-00a0c91e6bf6";
-            }
-        }
-        output {
-            container link {
-                uses link;
-                description "The requested Link instance.";
-            }
-        }
-    }
-    rpc get-topology-list {
-        description "none";
-        output {
-            list topology {
-                key 'uuid';
-                uses topology;
-                description "The requested list of Topology instances.";
-            }
-        }
     }
 
 }
