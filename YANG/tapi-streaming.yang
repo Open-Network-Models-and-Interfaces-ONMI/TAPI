@@ -29,7 +29,7 @@ module tapi-streaming {
         YANG models included in this release may not be backward compatible with previous TAPI releases.
         Copyright (c) 2023 Open Networking Foundation (ONF). All rights reserved.
         License: This module is distributed under the Apache License 2.0.";
-    revision 2023-09-01 {
+    revision 2023-10-10 {
         description "ONF Transport API version 2.5.
                    Changes included in this TAPI release (v2.5) are listed in
                    <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2023>";
@@ -140,18 +140,18 @@ module tapi-streaming {
     feature tapi-streaming-admin {
         description "Support for monitoring of active connections to available streams. Through augmentation of context with stream-admin-context, allows the admin client to get details from monitors of active connections to provide a view of whether the client of the monitored stream is having difficult absorbing the stream. Will usually be used in a tapi context for a stream admin client. Will usually be used together with the tapi-streaming feature so that the stream monitors from one stream could be provided through another stream .";
     }
-    augment "/tapi-common:context/tapi-streaming:stream-context/tapi-streaming:supported-stream-type" {
+    augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body/tapi-streaming:condition-detector" {
         if-feature tapi-streaming;
-        container compacted-log-details {
-            uses compacted-log-details;
+        container alarm-condition-detector-detail {
+            uses alarm-condition-detector-detail;
             description "none";
         }
         description "none";
     }
-    augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
-        when 'derived-from-or-self(tapi-streaming:record-content, "OBJECT_TYPE_PROFILE")';
-            container profile {
-            uses tapi-common:profile;
+    augment "/tapi-common:context/tapi-streaming:stream-context/tapi-streaming:supported-stream-type" {
+        if-feature tapi-streaming;
+        container compacted-log-details {
+            uses compacted-log-details;
             description "none";
         }
         description "none";
@@ -242,10 +242,11 @@ module tapi-streaming {
         }
         description "none";
     }
-    augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body/tapi-streaming:condition-detector" {
+    augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
+        when 'derived-from-or-self(tapi-streaming:record-content, "OBJECT_TYPE_PROFILE")';
         if-feature tapi-streaming;
-        container alarm-condition-detector-detail {
-            uses alarm-condition-detector-detail;
+        container profile {
+            uses tapi-common:profile;
             description "none";
         }
         description "none";

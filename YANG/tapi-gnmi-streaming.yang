@@ -1,0 +1,671 @@
+module tapi-gnmi-streaming {
+    yang-version "1.1";
+    namespace "urn:onf:otcc:yang:tapi-gnmi-streaming";
+    prefix tapi-gnmi-streaming;
+    import tapi-common {
+        prefix tapi-common;
+    }
+    import tapi-streaming {
+        prefix tapi-streaming;
+    }
+    import tapi-oam {
+        prefix tapi-oam;
+    }
+    import tapi-connectivity {
+        prefix tapi-connectivity;
+    }
+    import tapi-topology {
+        prefix tapi-topology;
+    }
+    organization "ONF OTCC (Open Transport Configuration & Control) Project";
+    contact "
+         Project Web: <https://wiki.opennetworking.org/display/OTCC/TAPI>
+         Project List: <mailto:transport-api@opennetworking.org>
+         Editor: Karthik Sethuraman <mailto:karthik.sethuraman@necam.com>
+         Andrea Mazzini <mailto:andrea.mazzini@nokia.com>
+         Arturo Mayoral <mailto:arturo.mayoral@telefonica.com>
+         Nigel Davis <mailto:ndavis@ciena.com>
+         Ramon Casellas <mailto:ramon.casellas@cttc.es>";
+    description "
+        This module contains TAPI Streaming gNMI Model definitions.
+        Source: TapiStreamingGnmi.uml
+        - The TAPI YANG models included in this TAPI release are a *normative* part of the TAPI SDK.
+        - The YANG specifications have been generated from the corresponding UML model using the [ONF EAGLE UML2YANG mapping tool]
+        <https://github.com/OpenNetworkingFoundation/EagleUmlYang>
+        and further edited manually to comply with the [ONF IISOMI UML2YANG mapping guidelines]
+        <https://wiki.opennetworking.org/display/OIMT/IISOMI+Deliverables>
+        - Status of YANG model artifacts can be determined by referring to the corresponding UML artifacts.
+        As described in the UML models, some artifacts are considered *experimental*, and thus the corresponding YANG artifacts.
+        - The ONF TAPI release process does not guarantee backward compatibility of YANG models across major versions of TAPI releases.
+        The YANG model backward compatibility criteria are outlined in section 11 of <https://tools.ietf.org/html/rfc7950>.
+        YANG models included in this release may not be backward compatible with previous TAPI releases.
+        Copyright (c) 2023 Open Networking Foundation (ONF). All rights reserved.
+        License: This module is distributed under the Apache License 2.0.";
+    revision 2023-10-10 {
+        description "ONF Transport API version 2.5.
+                   Changes included in this TAPI release (v2.5) are listed in
+                   <https://wiki.opennetworking.org/display/OTCC/TAPI+Roadmap+2023>";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
+                  <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.5/UML>";
+    }
+    augment "/tapi-streaming:stream-record" {
+        container subscribe-response {
+            uses subscribe-response;
+            description "none";
+        }
+        description "none";
+    }
+    /**************************
+    * package type-definitions
+    **************************/ 
+    typedef value-qualifier {
+        type enumeration {
+            enum INVALID {
+                description "This indicates that although there was a value provided by the measured system, it was clearly invalid. 
+                    The value should be stated unless this is not possible in the value field (e.g., because a string was reported in place of a numeric value).";
+            }
+            enum SUSPECT {
+                description "This indicates that although there was a value provided by the measured system, it does not seem correct. 
+                    The value must be stated (along with units etc. as necessary).";
+            }
+            enum MISSING {
+                description "This indicates there should have been a measured value provided by the measured system, but the value was no provided. 
+                    The value field must be omitted (as there is no value).
+                    The units field should also be omitted. 
+                    Note: The measurement value may appear in a later report allowing the client to recover the data.
+                    ";
+            }
+            enum PARTIAL {
+                description "This indicates that although there was a value provided by the measured system, it does not cover the entire period of measurement or has some parts missing.
+                    Covers the case where the sample start time was delayed and hence the measurement was potentially not over the normal interval. In this case, providing the measurementStartTime is beneficial.  
+                    The value must be stated.";
+            }
+        }
+        description "none";
+    }
+    typedef sample-qualifier {
+        type enumeration {
+            enum DELAYED {
+                description "The report about the sample is (significantly) delayed.
+                    It may be that this is a late report of a value that was previously missing.
+                    Where it is not known, the sample can be unqualified.
+                    If this is a final report, then that it is delayed is ignored and it is stated as FINAL.
+                    If this is an initial report, then that it is delayed is ignored and it is stated as FIRST.
+                    It is assumed that a BASELINE will never be delayed.";
+            }
+            enum FINAL {
+                description "Where this is the final measurement for a particular detector. 
+                    The detector has been turned off after the measurement was taken and no further measurements will be provided.
+                    Where it is not known, the sample can be unqualified.";
+            }
+            enum FIRST {
+                description "Where this is the first measurement reported for the detector.
+                    Where it is not known, the sample can be unqualified.";
+            }
+            enum BASELINE {
+                description "Used for measurements where the report is normally of change since previous measurement (and where no report is made if there has been no change). 
+                    This report provides the absolute value. 
+                    This would be provided on initial subscription to the stream and potentially upon request.
+                    The baseline samples must be qualified.";
+            }
+        }
+        description "The sample qualifiers.
+            The value qualifiers.";
+    }
+    typedef relative-position {
+        type enumeration {
+            enum NEAR_END {
+                description "The measurement is about the point against which it is reported.";
+            }
+            enum FAR_END {
+                description "The measurement is about the point that is at the other end of the trail (represented by a top level connection) in which the point is participating.";
+            }
+            enum NOT_APPLICABLE {
+                description "The measurement about a property that has no ends, e.g., fan speed.
+                    It is acceptable to set NEAR_END when the value should be NOT_APPLICABLE as NEAR_END carries the same essential semantic.
+                    Where NEAR_END is the default, it is acceptable to not set NOT_APPLICABLE.";
+            }
+            enum ALL_LOCATIONS {
+                description "The measurement is about a property that applies everywhere in a multi-pointed connection.";
+            }
+        }
+        description "Position of the measurement relative to the point against which the measurement was reported.";
+    }
+    typedef direction-of-measured-signal {
+        type enumeration {
+            enum NO_DIRECTION {
+                description "Where the measurement has no directionality, e.g., Temperature.";
+            }
+            enum RECEIVE {
+                description "Where the measurement is against a flow that is considered received with respect to the points directional model.";
+            }
+            enum TRANSMIT {
+                description "where the measurement is against a flow that is considered received with respect to the points directional model.";
+            }
+            enum RECEIVE_AND_TRANSMIT {
+                description "Where the measurement is against both the receive and transmit flows.";
+            }
+            enum CONTRA_RECEIVE {
+                description "Where the measurement is against a flow that is considered 'contra receive' with respect to the points directional model.
+                    To clarify, consider the CEP.
+                    A CEP direction relates to the layer stack orientation. The transmit direction is down the layer stack and the receive is up the layer stack. The direction is stated with respect to the lower face of the CEP.
+                    The CEP has two faces, and each has two directions. The upper face of the CEP (and the face of the CEP facing a connection where that CEP is set to carry traffic down the layer stack) is not normally measured.
+                    The signal received on the upper face of the CEP is in the CEP transmit direction.
+                    Stating transmit for a measurement of a signal received is counter-intuitive.
+                    The contra-directional terminology allows the correct measurement direction to be stated.
+                    CONTRA_RECEIVE is the receive aspect of the upper face of the CEP (or the face taking signal from the connection to then go down the layer stack)
+                    CONTRA_TRANSMIT is the transmit aspect of the upper face (or the face passing signal to the connection where that signal has just passed up the layer stack).
+                    Note that a CEP taking signal from a connection to pass up the layer stack uses normal directionality as the signal reaches the CEP at its lower face.";
+            }
+            enum CONTRA_TRANSMIT {
+                description "Where the measurement is against a flow that is considered 'contra transmit' with respect to the points directional model.
+                    See CONTRA_RECEIVE for more details.";
+            }
+            enum CONTRA_RECEIVE_AND_CONTRA_TRANSMIT {
+                description "Where the measurement is against both the contra receive and contra transmit flows.";
+            }
+        }
+        description "Flow directions.";
+    }
+    grouping qualified-measured-value {
+        leaf value {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "The measured value (provided when available).
+                CONDITION: Mandatory where the value is available.";
+        }
+        leaf value-qualifier {
+            type value-qualifier;
+            config false;
+            description "Qualifies the measurment. 
+                Provides an explanation for an absent value and indicates the quality of the value.
+                When this property is not present, the value can be assumed to be valid.
+                CONDITION: Mandatory as identified in the description above.";
+        }
+        leaf units {
+            type string;
+            config false;
+            description "Provided where the units of the value may be different from measurement to measurement the units must be stated. 
+                Where the units are defined by the type, the units should not be stated
+                States the system and scale of the measurement (e.g., metric system 'cm'). 
+                Note that the units of a measure would normally be defined in a specification (ideally machine readable and referenced from the measurement point) and would be fixed for all measurements.
+                It is possible that the scale may differ from measurement to measurement (e.g., some measurements in in cm and some in mm) or the system may differ (e.g., some measurements are in Celcius and some in Farenheit).
+                CONDITION: Mandatory as identified in the description above.";
+        }
+        leaf qualified-value-name {
+            type string;
+            config false;
+            description "Used where the measurement type (elsewhere in the structure) is not sufficient to distinguish the measurement.
+                This field will normally be omitted.
+                Deals with the case where there is a set of values related to one measurement type where each value in the set needs to be named.
+                For example, there may be a min, max and mean value. 
+                Note that this may require further formalization in a later release of this model.
+                This can be used when using qualified measured value set where this attribute distinguished each member of the set.
+                CONDITION: Mandatory as identified in the description above.";
+        }
+        leaf qualified-location-name {
+            type string;
+            config false;
+            description "Used where the measurement location (e.g., a CEP) is not sufficient to distinguish the measurement.
+                This field will normally be omitted.
+                Deals with the case where there are two or more measurements with the same Measurement Type on a single Resource that therefore need to be distinguished.
+                For example, the resource may encapsulate several signals where each signal can have an SES measurement such that the signal name needs to be provided.
+                This name corresponds to a functional location in the resource.
+                This field is used to provide the additional signal name.
+                CONDITION: Mandatory as identified in the description above.";
+        }
+        leaf qualified-measurement-type {
+            type string;
+            config false;
+            description "Used where the measurement type (elsewhere in the structure) is not sufficient to distinguish the measurement.
+                This field will normally be omitted.
+                Deals with the case where there is a set of values of different types related to one measurement where each value type in the set needs to be named.
+                For example, there may be a power value and a spectral density value. 
+                Note that this may require further formalization in a later release of this model.
+                This can be used when using qualified measured value set where this attribute distinguished each member of the set.
+                CONDITION: Mandatory as identified in the description above.";
+        }
+        description "This structure allows for various value qualifications:
+            - Where the value is valid and is for the complete period, then only the value will be provided (valueQualifier will not be present). 
+            - Where there are issues with the value, then the valueQualifier will be provided and there may be no value depending upon the valueQualifier.
+            ";
+    }
+    grouping path-elem {
+        leaf name {
+            type string;
+            config false;
+            description "Extract from https://github.com/openconfig/gnmi/blob/master/proto/gnmi/gnmi.proto
+                // The name of the element in the path.";
+        }
+        container key {
+            config false;
+            uses tapi-common:name-and-value;
+            description "Extract from https://github.com/openconfig/gnmi/blob/master/proto/gnmi/gnmi.proto
+                // Map of key (attribute) name to value.
+                Hence the YANG should convert into a protobuf map.";
+        }
+        description "Extract from https://github.com/openconfig/gnmi/blob/master/proto/gnmi/gnmi.proto
+            // PathElem encodes an element of a gNMI path, along with any attributes (keys)
+            // that may be associated with it.
+            // Reference: gNMI Specification Section 2.2.2.";
+    }
+    typedef normalized-measurement-type {
+        type enumeration {
+            enum BBE {
+                description "none";
+            }
+            enum CHROM_DISP {
+                description "Chromatic Dispersion";
+            }
+            enum DELAY {
+                description "none";
+            }
+            enum DIFF_GROUP_DELAY {
+                description "Differential Group Delay";
+            }
+            enum FEC_CORRECTABLE_BLOCKS {
+                description "FEC Correctable Blocks.
+                    Reference: OpenROADM.";
+            }
+            enum FEC_CORRECTED_BITS {
+                description "The number of bits that were corrected by the FEC.
+                    Reference: OpenConfig.";
+            }
+            enum FEC_CORRECTED_BYTES {
+                description "Bytes corrected between those that were received corrupted.
+                    Reference: OpenConfig.";
+            }
+            enum FEC_CORRECTED_CODEWORDS {
+                description "FEC Corrected Codewords Counter.
+                    References:
+                    - OpenROADM
+                    - 100 GE: IEEE802.3-2018 sections 91.6.9 (FEC_corrected_cw_counter), 45.2.1.112 (MDIO)
+                    - 400 GE: IEEE802.3-2018 sections 119.3.1 (FEC_corrected_cw_counter), 45.2.3.61 (MDIO)";
+            }
+            enum FEC_CORRECTED_ERROR {
+                description "ITU-T G798: The number of bits corrected by the FEC are counted over one second and reported to the MI at the end of the second. For the application of this filter, see the specific atomic functions.
+                    During signal fail conditions of the data signal, no corrected bits shall be counted. For details on the signal fail conditions, see the specific atomic functions.
+                    Other reference: OpenROADM.";
+            }
+            enum FEC_POST_FEC_BER {
+                description "Bit error rate after correction by FEC.
+                    Reference: OpenConfig.";
+            }
+            enum FEC_PRE_FEC_BER {
+                description "Bit error rate before correction by FEC.
+                    References:
+                    - OpenConfig
+                    - OpenROADM";
+            }
+            enum FEC_SYMBOL_ERRORS {
+                description "FEC Symbol Error Counter.
+                    references:
+                    - OpenROADM
+                    - 100 GE: IEEE802.3-2018 sections 91.6.12 (FEC_symbol_error_counter_i), 45.2.1.115/116 (MDIO)
+                    - 400 GE: IEEE802.3-2018 sections 119.3.1 (FEC_symbol_error_counter_i), 45.2.3.57/58 (MDIO)";
+            }
+            enum FEC_UNCORRECTABLE_BITS {
+                description "Bits that could not be corrected by FEC.";
+            }
+            enum FEC_UNCORRECTABLE_BLOCKS {
+                description "FEC Uncorrectable Blocks.
+                    References:
+                    - OpenConfig
+                    - OpenROADM";
+            }
+            enum FEC_UNCORRECTABLE_BYTES {
+                description "Bytes that could not be corrected by FEC.";
+            }
+            enum FEC_UNCORRECTABLE_WORDS {
+                description "The number of words that were uncorrectable by the FEC.
+                    Reference: OpenConfig.";
+            }
+            enum FEC_UNCORRECTED_CODEWORDS {
+                description "FEC Uncorrected Codewords Counter.
+                    references:
+                    - OpenROADM
+                    - 100 GE: IEEE802.3-2018 sections 91.6.10 (FEC_uncorrected_cw_counter), 45.2.1.113 (MDIO)
+                    - 400 GE: IEEE802.3-2018 sections 119.3.1 (FEC_uncorrected_cw_counter), 45.2.3.62 (MDIO)";
+            }
+            enum FREQ_OFFS {
+                description "Frequency Offset";
+            }
+            enum OPTICAL_GAIN {
+                description "none";
+            }
+            enum OPTICAL_POWER_INPUT {
+                description "none";
+            }
+            enum OPTICAL_POWER_OUTPUT {
+                description "none";
+            }
+            enum OPTICAL_TILT {
+                description "none";
+            }
+            enum POL_MODE_DISP {
+                description "Polarization Mode Dispersion";
+            }
+            enum SES {
+                description "none";
+            }
+            enum UAS {
+                description "none";
+            }
+        }
+        description "none";
+    }
+
+    /**************************
+    * package object-classes
+    **************************/ 
+    grouping measurement-details {
+        list qualified-measurement {
+            key 'list-index';
+            config false;
+            uses qualified-measurement;
+            description "Used where multiple independent measurements are being reported in one record.
+                CONDITION: Mandatory where multiple measures are to be reported.";
+        }
+        uses qualified-measurement-common-1-to-10;
+        uses qualified-measurement-common-12-onward;
+        description "Allows:
+            o    a single measurement record to be conveyed via the QualifiedMeasurementCommon structure
+            o    multiple measurements records to be conveyed via QualifiedMeasurement.
+            When QualifiedMeasurement is used, multiple measurements can be conveyed in one stream record. 
+            Any properties, that have the same value across all measurements in the stream records, may be conveyed in the single measurement fields of the QualifiedMeasurementCommon augment of MeasurementDetails.
+            Where at least one of the measurements to be conveyed in the stream record has a different value from others, the value for each measurment should be conveyed in its dedicated QualifiedMeasurement.
+            If a value is provided for a field is provided in QualifiedMeasurementCommon and a value for the same field is provided in QualifiedMeasurement, the value in QualifiedMeasurement applies for that specific measurement (i.e., it overrides the common value).";
+    }
+    grouping qualified-measurement-common-12-onward {
+        container connection-end-point {
+            uses tapi-connectivity:connection-end-point-ref;
+            config false;
+            description "The path to the CEP that represents the resources against which the measures were made (where the path includes topology-uuid etc.).
+                CONDITION: Mandatory where abstract resource ref is not being used and a CEP is being measured.";
+        }
+        container maintenance-intermediate-point {
+            uses tapi-oam:mip-ref;
+            config false;
+            description "The path to the MIP that represents the resources against which the measures were made (where the path includes topology-uuid etc.).
+                CONDITION: Mandatory where abstract resource ref is not being used and a MIP is being measured.";
+        }
+        container maintenance-end-point {
+            uses tapi-oam:mep-ref;
+            config false;
+            description "The path to the MEP that represents the resources against which the measures were made (where the path includes topology-uuid etc.).
+                CONDITION: Mandatory where abstract resource ref is not being used and a MEP is being measured.";
+        }
+        leaf measurement-start-time {
+            type uint64;
+            config false;
+            description "The time the measurement started.
+                This will usually be the time a moment, after the last measurement sample opportunity (i.e., essentially the previous timeMeasurementWasSampled).
+                Where this is essentially a moment after the last sample opportunity, the field may be omitted.
+                Where the measurementStartTime can be derived from the profile, the field may be omitted.
+                Where the measurement started an an unexpected or unusual time, the field should be included.
+                CONDITION: Mandatory as identified in the description above.";
+        }
+        list qualified-measured-value-set {
+            config false;
+            uses qualified-measured-value;
+            description "A separate measurment as part of a list of related 
+                Provides a simple list of values where there are multiple measurement values available in one measurement. In this case, each value must have a qualified value name to distinguish each member of the set.
+                An example could be where mean, max and min are considered as multiple measurement values for the same measurement.
+                CONDITION: Mandatory where a list of values is to be provided.";
+        }
+        list additional-info {
+            key 'value-name';
+            uses tapi-common:name-and-value;
+            description "Named properties that add to the measurement data as a map of name to value (string, string).
+                Hence the YANG should convert into a protobuf map.";
+        }
+        description "Provides the details of the measurement(s) being streamed from protobufEnumeration 12 onwards.";
+    }
+    grouping qualified-measurement {
+        leaf list-index {
+            type uint64;
+            config false;
+            description "Index to the list of measurements.";
+        }
+        uses qualified-measurement-common-1-to-10;
+        uses qualified-measurement-common-12-onward;
+        description "none";
+    }
+    grouping subscribe-response {
+        container notification {
+            config false;
+            uses notification;
+            description "Extract from https://github.com/openconfig/gnmi/blob/master/proto/gnmi/gnmi.proto
+                // Changed or sampled value for a path.";
+        }
+        description "Extract from https://github.com/openconfig/gnmi/blob/master/proto/gnmi/gnmi.proto
+            // SubscribeResponse is the message used by the target within a Subscribe RPC.
+            // The target includes a Notification message which is used to transmit values
+            // of the path(s) that are associated with the subscription. The same message
+            // is to indicate that the target has sent all data values once (is
+            // synchronized).
+            // Reference: gNMI Specification Section 3.5.1.4";
+    }
+    grouping notification {
+        leaf timestamp {
+            type uint64;
+            config false;
+            description "Extract from https://github.com/openconfig/gnmi/blob/master/proto/gnmi/gnmi.proto
+                // Timestamp in nanoseconds since Epoch.";
+        }
+        container prefix {
+            config false;
+            uses path;
+            description "Extract from https://github.com/openconfig/gnmi/blob/master/proto/gnmi/gnmi.proto
+                // Prefix used for paths in the message.";
+        }
+        list update {
+            config false;
+            uses update;
+            description "Extract from https://github.com/openconfig/gnmi/blob/master/proto/gnmi/gnmi.proto
+                // Data elements that have changed values.";
+        }
+        description "Extract from https://github.com/openconfig/gnmi/blob/master/proto/gnmi/gnmi.proto
+            // Notification is a re-usable message that is used to encode data from the
+            // target to the client.
+            ....
+            // Reference: gNMI Specification Section 2.1";
+    }
+    grouping typed-value {
+        uses stream-structure;
+        description "Extract from https://github.com/openconfig/gnmi/blob/master/proto/gnmi/gnmi.proto
+            // TypedValue is used to encode a value being sent between the client and
+            // target (originated by either entity).
+            Extract from https://github.com/openconfig/gnmi/blob/master/proto/gnmi/gnmi.proto
+            // One of the fields within the val oneof is populated with the value
+            // of the update. The type of the value being included in the Update
+            // determines which field should be populated. In the case that the
+            // encoding is a particular form of the base protobuf type, a specific
+            // field is used to store the value (e.g., json_val).
+            TAPI only uses, via augmentation,
+            bytes proto_bytes = 13;
+            Which is defined as
+            Extract from https://github.com/openconfig/gnmi/blob/master/proto/gnmi/gnmi.proto
+            // Protobuf binary encoded bytes. The message type is not included.
+            // See the specification at
+            // github.com/openconfig/reference/blob/master/rpc/gnmi/protobuf-vals.md
+            // for a complete specification. [Experimental]
+            ";
+    }
+    grouping stream-structure {
+        container proto-bytes {
+            config false;
+            uses stream-details;
+            description "This is substituted for 'bytes proto_bytes = 13;' in message typed value.
+                (see https://github.com/openconfig/gnmi/blob/master/proto/gnmi/gnmi.proto)
+                CONDITION: Mandatory where stream details is being used.";
+        }
+        description "TAPI Augmentation of proto_bytes adding TAPI structured content to the TypedValue protobuf message.
+            This model fragment defines the structure.";
+    }
+    grouping update {
+        container path {
+            config false;
+            uses path;
+            description "Extract from https://github.com/openconfig/gnmi/blob/master/proto/gnmi/gnmi.proto
+                // The path (key) for the update.";
+        }
+        container val {
+            config false;
+            uses typed-value;
+            description "Extract from https://github.com/openconfig/gnmi/blob/master/proto/gnmi/gnmi.proto
+                // The explicitly typed update value.";
+        }
+        description "Extract from https://github.com/openconfig/gnmi/blob/master/proto/gnmi/gnmi.proto
+            // Update is a re-usable message that is used to store a particular Path,
+            // Value pair.
+            // Reference: gNMI Specification Section 2.1";
+    }
+    grouping path {
+        leaf origin {
+            type string;
+            config false;
+            description "Extract from https://github.com/openconfig/gnmi/blob/master/proto/gnmi/gnmi.proto
+                // Label to disambiguate path.";
+        }
+        list elem {
+            config false;
+            uses path-elem;
+            description "Extract from https://github.com/openconfig/gnmi/blob/master/proto/gnmi/gnmi.proto
+                // Elements of the path.";
+        }
+        leaf target {
+            type string;
+            config false;
+            description "Extract from https://github.com/openconfig/gnmi/blob/master/proto/gnmi/gnmi.proto
+                // The name of the target
+                Note that target is essentially the provider as other documentation notes that
+                // Notification is a re-usable message that is used to encode data from the
+                // target to the client.";
+        }
+        description "Extract from https://github.com/openconfig/gnmi/blob/master/proto/gnmi/gnmi.proto
+            // Elements of the path are no longer encoded as a string, but rather within
+            // the elem field as a PathElem message.";
+    }
+    grouping stream-details {
+        container measurement-details {
+            config false;
+            uses measurement-details;
+            description "Measurement details.
+                CONDITION: Mandatory where stream is being used for measurment data.";
+        }
+        description "Defines the protobuf structures for the stream of measurement data.";
+    }
+    grouping qualified-measurement-common-1-to-10 {
+        leaf time-measurement-was-sampled {
+            type uint64;
+            config false;
+            description "The time at which the measurement was sampled.
+                In a single measurement, this field is mandatory. 
+                In a list of measurements, the field must be present either in the direct augment of MeasurementDetails or in every member of the qualifierMeasurement list.
+                This could be the time of a snapshots of an ongoing measure or the time at which the measurement was taken and the counter reset.
+                The precise definition depends upon the specification of the measurement.
+                CONDITION: Mandatory as identified in the description above.";
+        }
+        container qualified-measured-value {
+            config false;
+            uses qualified-measured-value;
+            description "The value result of the measurement.
+                In a single measurement case, this field is mandatory.
+                In a list of measurements, it is assumed that in most cases each measurement will be different and hence it is most likely to be provided in every member of the qualifierMeasurement list in MeasurementDetails.
+                In the case where there are multiple qualified measurements identified against one point the qualifiedMeasuredValuSet field should be used.
+                CONDITION: Mandatory as identified in the description above.";
+        }
+        leaf native-resource-id {
+            type string;
+            config false;
+            description "The name of the resource that was measured used by the owner of the resource (e.g., the device) to identify the resource. 
+                CONDITION: Mandatory under most circumstances (should be provided unless not available from the owner of the resource).";
+        }
+        leaf sample-qualifier {
+            type sample-qualifier;
+            config false;
+            description "A qualifier indicating how the measurement should be interpreted. 
+                CONDITION: Mandatory where the measurement is not a 'normal' measurement. ";
+        }
+        leaf relative-position-of-measurement {
+            type relative-position;
+            config false;
+            description "Indicates whether the measurement was taken for signal/propertiesat the resource point against which it is reported or at a remote location related to the resource identified in the report.
+                The default is NEAR_END. The property is conditional and must be stated unless the value is NEAR_END. 
+                CONDITION: Mandatory where the value is not NEAR_END.";
+        }
+        leaf direction-of-measured-signal {
+            type direction-of-measured-signal;
+            config false;
+            description "Relevant to measurements related to signal flow. Indicates the flow which the measurement relates to. 
+                The property is conditional and need not be stated where the measurement type clearly indicates the directionality.
+                The property intentionally has no default as the absence of the property means interpret using measurement type.
+                CONDITION: Mandatory as identified in the description above.";
+        }
+        leaf sample-interval {
+            type uint64;
+            config false;
+            description "The period since the last measurement. 
+                This is a conditional property that may indicate a period of:
+                - accumulation (up to the end of the period)
+                - no information (where there is no measurement available)
+                Unless stated elsewhere the assumption is that for:
+                - an accumulating measurement, the accumulation has taken place over the entire period
+                - sample measurement the sample is taken exactly at the end of the period (timeMeasurementWasSampled)
+                No cases have yet been identified that do not require this parameter.This is the time from the previous sample.
+                This will usually be the same from sample to sample of the same Measurement Type against the same Resource.
+                There may be variation from sample to sample in the sample Interval due to:
+                - measurement policy.
+                - a specific change in the Sample Interval.
+                - where an additional sample was inserted.
+                - where the sampling is rephased.
+                - where there is some fluctuation in the sampling process (perhaps due to load on the measurement device causing it to operate slowly).
+                The Sample Interval may also not be the same as the normal ongoing interval that is explained by the Sample Qualifier:
+                - FIRST: the first sample where the time is from start of the measurement which may not be the normal interval for the measurement.
+                - FINAL: the final sample which may be taken with less than the normal interval.
+                - DELAYED: if the reporting delay was due to a delay in sampling (as opposed to simply a delay in reporting).
+                - BASELINE: where a special sample has been made to set a baseline against which to assess following samples.
+                The Sample Interval may be not provided when the interval is as expected or when there is another indication of the interval.
+                Where the measurement was not running for some part of the time since the previous sample, the Measured Value will be qualified to indicate this.
+                Note that some measurement devices:
+                - reset on sampling.
+                - run continually independent of the sampling process.
+                - reset on some other basis within a sample interval.
+                Note that any type of measurement etc. may be sampled including:
+                - an incrementing counter
+                - a varying value
+                - a statistical report with multiple values
+                CONDITION: Mandatory as identified in the description above.";
+        }
+        leaf abstract-resource-ref {
+            type string;
+            config false;
+            description "An identifier that is independent of the identifier of the resource being measured that is recorded in model entity representing the resource being measured and is used in the PM stream (via this attribute).
+                This allows correlation without full normalization of resource identifiers and resource modelling.
+                A resource may have a list of abstractResourceIds. 
+                If measurement that states a value for abstractResourceId that appears in a list in an entity representing a resource (and does not appear in any entity representing any other resource) then the measurement is against the resource represented by that entity.
+                A specific value for abstractResourceId may appear in more than one entity. 
+                In this case a measurement stating that value will be for one of the resources that list the specific abstractResourceId. 
+                Other aspects of the entity can be used, in conjunction with the properties of the measure itself, to determine which one the measurement is against.
+                This is a conditional property that is required if an abstractResourceId method is being used to identify the resource measured.";
+        }
+        leaf native-measurement-type {
+            type string;
+            config false;
+            description "The name used for the type of measurement at the sources/originator of the measurement.
+                CONDITION: Mandatory where a normalized measurement type is not available.";
+        }
+        leaf normalized-measurement-type {
+            type normalized-measurement-type;
+            config false;
+            description "The standard name used for the type of measurement, i.e., the type of the measurement as identified in the TAPI normalized scheme. 
+                This is a conditional property. 
+                CONDITION: Mandatory where a normalized measurement type is available.";
+        }
+        description "Provides the details of the measurement(s) being streamed from protobufEnumeration 1 to 10.";
+    }
+
+}
