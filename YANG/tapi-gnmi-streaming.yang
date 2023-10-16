@@ -58,6 +58,13 @@ module tapi-gnmi-streaming {
     /**************************
     * package type-definitions
     **************************/ 
+    identity GNMI_STREAMING_OBJECT_TYPE {
+        description "none";
+    }
+    identity GNMI_STREAMING_OBJECT_TYPE_MEASUREMENT_DETAILS {
+        base GNMI_STREAMING_OBJECT_TYPE;
+        description "none";
+    }
     typedef value-qualifier {
         type enumeration {
             enum INVALID {
@@ -356,83 +363,16 @@ module tapi-gnmi-streaming {
         }
         description "none";
     }
+    typedef gnmi-streaming-object-type {
+        type identityref {
+            base GNMI_STREAMING_OBJECT_TYPE;
+        }
+        description "none";
+    }
 
     /**************************
     * package object-classes
     **************************/ 
-    grouping measurement-details {
-        list qualified-measurement {
-            key 'list-index';
-            config false;
-            uses qualified-measurement;
-            description "Used where multiple independent measurements are being reported in one record.
-                CONDITION: Mandatory where multiple measures are to be reported.";
-        }
-        uses qualified-measurement-common-1-to-10;
-        uses qualified-measurement-common-12-onward;
-        description "Allows:
-            o    a single measurement record to be conveyed via the QualifiedMeasurementCommon structure
-            o    multiple measurements records to be conveyed via QualifiedMeasurement.
-            When QualifiedMeasurement is used, multiple measurements can be conveyed in one stream record. 
-            Any properties, that have the same value across all measurements in the stream records, may be conveyed in the single measurement fields of the QualifiedMeasurementCommon augment of MeasurementDetails.
-            Where at least one of the measurements to be conveyed in the stream record has a different value from others, the value for each measurment should be conveyed in its dedicated QualifiedMeasurement.
-            If a value is provided for a field is provided in QualifiedMeasurementCommon and a value for the same field is provided in QualifiedMeasurement, the value in QualifiedMeasurement applies for that specific measurement (i.e., it overrides the common value).";
-    }
-    grouping qualified-measurement-common-12-onward {
-        container connection-end-point {
-            uses tapi-connectivity:connection-end-point-ref;
-            config false;
-            description "The path to the CEP that represents the resources against which the measures were made (where the path includes topology-uuid etc.).
-                CONDITION: Mandatory where abstract resource ref is not being used and a CEP is being measured.";
-        }
-        container maintenance-intermediate-point {
-            uses tapi-oam:mip-ref;
-            config false;
-            description "The path to the MIP that represents the resources against which the measures were made (where the path includes topology-uuid etc.).
-                CONDITION: Mandatory where abstract resource ref is not being used and a MIP is being measured.";
-        }
-        container maintenance-end-point {
-            uses tapi-oam:mep-ref;
-            config false;
-            description "The path to the MEP that represents the resources against which the measures were made (where the path includes topology-uuid etc.).
-                CONDITION: Mandatory where abstract resource ref is not being used and a MEP is being measured.";
-        }
-        leaf measurement-start-time {
-            type uint64;
-            config false;
-            description "The time the measurement started.
-                This will usually be the time a moment, after the last measurement sample opportunity (i.e., essentially the previous timeMeasurementWasSampled).
-                Where this is essentially a moment after the last sample opportunity, the field may be omitted.
-                Where the measurementStartTime can be derived from the profile, the field may be omitted.
-                Where the measurement started an an unexpected or unusual time, the field should be included.
-                CONDITION: Mandatory as identified in the description above.";
-        }
-        list qualified-measured-value-set {
-            config false;
-            uses qualified-measured-value;
-            description "A separate measurment as part of a list of related 
-                Provides a simple list of values where there are multiple measurement values available in one measurement. In this case, each value must have a qualified value name to distinguish each member of the set.
-                An example could be where mean, max and min are considered as multiple measurement values for the same measurement.
-                CONDITION: Mandatory where a list of values is to be provided.";
-        }
-        list additional-info {
-            key 'value-name';
-            uses tapi-common:name-and-value;
-            description "Named properties that add to the measurement data as a map of name to value (string, string).
-                Hence the YANG should convert into a protobuf map.";
-        }
-        description "Provides the details of the measurement(s) being streamed from protobufEnumeration 12 onwards.";
-    }
-    grouping qualified-measurement {
-        leaf list-index {
-            type uint64;
-            config false;
-            description "Index to the list of measurements.";
-        }
-        uses qualified-measurement-common-1-to-10;
-        uses qualified-measurement-common-12-onward;
-        description "none";
-    }
     grouping subscribe-response {
         container notification {
             config false;
@@ -666,6 +606,79 @@ module tapi-gnmi-streaming {
                 CONDITION: Mandatory where a normalized measurement type is available.";
         }
         description "Provides the details of the measurement(s) being streamed from protobufEnumeration 1 to 10.";
+    }
+    grouping qualified-measurement {
+        uses qualified-measurement-common-1-to-10;/** keep this first **/
+        leaf list-index {
+            type uint64;
+            config false;
+            description "Index to the list of measurements.";
+        }
+        uses qualified-measurement-common-12-onward;
+        description "none";
+    }
+    grouping measurement-details {
+        uses qualified-measurement-common-1-to-10;/** keep this first **/
+        list qualified-measurement {
+            key 'list-index';
+            config false;
+            uses qualified-measurement;
+            description "Used where multiple independent measurements are being reported in one record.
+                CONDITION: Mandatory where multiple measures are to be reported.";
+        }
+        uses qualified-measurement-common-12-onward;
+        description "Allows:
+            o    a single measurement record to be conveyed via the QualifiedMeasurementCommon structure
+            o    multiple measurements records to be conveyed via QualifiedMeasurement.
+            When QualifiedMeasurement is used, multiple measurements can be conveyed in one stream record. 
+            Any properties, that have the same value across all measurements in the stream records, may be conveyed in the single measurement fields of the QualifiedMeasurementCommon augment of MeasurementDetails.
+            Where at least one of the measurements to be conveyed in the stream record has a different value from others, the value for each measurment should be conveyed in its dedicated QualifiedMeasurement.
+            If a value is provided for a field is provided in QualifiedMeasurementCommon and a value for the same field is provided in QualifiedMeasurement, the value in QualifiedMeasurement applies for that specific measurement (i.e., it overrides the common value).";
+    }
+    grouping qualified-measurement-common-12-onward {
+        container connection-end-point {
+            uses tapi-connectivity:connection-end-point-ref;
+            config false;
+            description "The path to the CEP that represents the resources against which the measures were made (where the path includes topology-uuid etc.).
+                CONDITION: Mandatory where abstract resource ref is not being used and a CEP is being measured.";
+        }
+        container maintenance-intermediate-point {
+            uses tapi-oam:mip-ref;
+            config false;
+            description "The path to the MIP that represents the resources against which the measures were made (where the path includes topology-uuid etc.).
+                CONDITION: Mandatory where abstract resource ref is not being used and a MIP is being measured.";
+        }
+        container maintenance-end-point {
+            uses tapi-oam:mep-ref;
+            config false;
+            description "The path to the MEP that represents the resources against which the measures were made (where the path includes topology-uuid etc.).
+                CONDITION: Mandatory where abstract resource ref is not being used and a MEP is being measured.";
+        }
+        leaf measurement-start-time {
+            type uint64;
+            config false;
+            description "The time the measurement started.
+                This will usually be the time a moment, after the last measurement sample opportunity (i.e., essentially the previous timeMeasurementWasSampled).
+                Where this is essentially a moment after the last sample opportunity, the field may be omitted.
+                Where the measurementStartTime can be derived from the profile, the field may be omitted.
+                Where the measurement started an an unexpected or unusual time, the field should be included.
+                CONDITION: Mandatory as identified in the description above.";
+        }
+        list qualified-measured-value-set {
+            config false;
+            uses qualified-measured-value;
+            description "A separate measurment as part of a list of related 
+                Provides a simple list of values where there are multiple measurement values available in one measurement. In this case, each value must have a qualified value name to distinguish each member of the set.
+                An example could be where mean, max and min are considered as multiple measurement values for the same measurement.
+                CONDITION: Mandatory where a list of values is to be provided.";
+        }
+        list additional-info {
+            key 'value-name';
+            uses tapi-common:name-and-value;
+            description "Named properties that add to the measurement data as a map of name to value (string, string).
+                Hence the YANG should convert into a protobuf map.";
+        }
+        description "Provides the details of the measurement(s) being streamed from protobufEnumeration 12 onwards.";
     }
 
 }
