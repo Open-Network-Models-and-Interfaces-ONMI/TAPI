@@ -39,11 +39,11 @@ The SDK includes the following components:
   
   - The OAS have been generated from the YANG data models included in this release using the [ONF EAGLE YANG2OAS](https://github.com/OpenNetworkingFoundation/EagleYangOpenAPI) tool following the RESTConf protocol specification (https://tools.ietf.org/html/rfc8040). This specification makes no assessment as to the level of RESTConf compliance of the TAPI REST APIs.
 
-- [**_TAPI Reference Implementation Agreement (RIA TR-547 3.0)_**](https://github.com/OpenNetworkingFoundation/TAPI/blob/v2.5.0/TR-547-TAPI%20Reference%20Implementation%20Agreement_v3.1.pdf)
+- [**_TAPI Reference Implementation Agreement (RIA TR-547 3.1)_**](https://github.com/OpenNetworkingFoundation/TAPI/blob/v2.5.0/TR-547-TAPI%20Reference%20Implementation%20Agreement_v3.1.pdf)
   
   - This ONF Technical Recommendation (TR) provides a set of ***guidelines and recommendations*** for a standard use of the TAPI models in combination with the RESTCONF protocol for the implementation of the interface between network systems in charge of the control/management of networks based on WDM/OTN technologies.
 
-- [**_TAPI Reference Implementation Agreement for Streaming (RIA TR-548 3.0)_**](https://github.com/OpenNetworkingFoundation/TAPI/blob/v2.5.0/TR-548-TAPI_ReferenceImplementationAgreement-Streaming_v3.1.pdf)
+- [**_TAPI Reference Implementation Agreement for Streaming (RIA TR-548 3.1)_**](https://github.com/OpenNetworkingFoundation/TAPI/blob/v2.5.0/TR-548-TAPI_ReferenceImplementationAgreement-Streaming_v3.1.pdf)
   
   - This document is a supplement to the TR-547, to explain TAPI streaming and provide a set of ***guidelines and recommendations*** for use of TAPI streaming.
 
