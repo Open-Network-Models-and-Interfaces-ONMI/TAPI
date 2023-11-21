@@ -39,23 +39,23 @@ The SDK includes the following components:
   
   - The OAS have been generated from the YANG data models included in this release using the [ONF EAGLE YANG2OAS](https://github.com/OpenNetworkingFoundation/EagleYangOpenAPI) tool following the RESTConf protocol specification (https://tools.ietf.org/html/rfc8040). This specification makes no assessment as to the level of RESTConf compliance of the TAPI REST APIs.
 
-- [**_TAPI Reference Implementation Agreement (RIA TR-547 3.0)_**](https://github.com/OpenNetworkingFoundation/TAPI/blob/develop/TR-547-TAPI%20Reference%20Implementation%20Agreement_v3.0.pdf)
+- [**_TAPI Reference Implementation Agreement (RIA TR-547 3.1)_**](https://github.com/OpenNetworkingFoundation/TAPI/blob/v2.5.0/TR-547-TAPI%20Reference%20Implementation%20Agreement_v3.1.pdf)
   
   - This ONF Technical Recommendation (TR) provides a set of ***guidelines and recommendations*** for a standard use of the TAPI models in combination with the RESTCONF protocol for the implementation of the interface between network systems in charge of the control/management of networks based on WDM/OTN technologies.
 
-- [**_TAPI Reference Implementation Agreement for Streaming (RIA TR-548 3.0)_**](https://github.com/OpenNetworkingFoundation/TAPI/blob/develop/TR-548-TAPI_ReferenceImplementationAgreement-Streaming_v3.0.pdf)
+- [**_TAPI Reference Implementation Agreement for Streaming (RIA TR-548 3.1)_**](https://github.com/OpenNetworkingFoundation/TAPI/blob/v2.5.0/TR-548-TAPI_ReferenceImplementationAgreement-Streaming_v3.1.pdf)
   
   - This document is a supplement to the TR-547, to explain TAPI streaming and provide a set of ***guidelines and recommendations*** for use of TAPI streaming.
 
-The Reference Implementation Agreements are supported by two associated documents [(TAPI RIA Associated Documents):](https://wiki.opennetworking.org/display/OTCC/TAPI+RIA+Associated+Documents)
+The Reference Implementation Agreements are supported by two associated documents:
 
-- [**_TAPI Alarm TCA List v2.2.0.xlsx_**](https://wiki.opennetworking.org/download/attachments/766218066/TAPI_Alarm_TCA_List_v2.2.0.xlsx?api=v2) 
-- [**_TAPI Notification and Streaming Sequences_**](https://wiki.opennetworking.org/download/attachments/766218066/TAPI_Notification_and_Streaming_Sequences.xlsx?api=v2)
+- [**_TAPI Alarm TCA List v3.0.0.xlsx_**](https://github.com/OpenNetworkingFoundation/TAPI/blob/v2.5.0/TAPI_Alarm_TCA_List_v3.0.0.pdf) 
+- [**_TAPI Notification and Streaming Sequences_**](https://github.com/OpenNetworkingFoundation/TAPI/blob/v2.5.0/TAPI_Notification_and_Streaming_Sequences.pdf)
 
 As the most deployed release of TAPI at this point is TAPI 2.1.3 a detailed differences between 2.1.3 and 2.5.0 can be obtained using
 
 - [v2.1.3...v2.5.0](https://github.com/OpenNetworkingFoundation/TAPI/compare/v2.1.3...v2.5.0)
 
-See also  [**_changelog_**](https://github.com/OpenNetworkingFoundation/TAPI/blob/develop/changelog.txt)
+See also  [**_changelog_**](https://github.com/OpenNetworkingFoundation/TAPI/blob/v2.5.0/changelog.txt)
 
-[**_HighLevelDiff Tapi2.1.3To2.5.0.pdf_**](https://github.com/OpenNetworkingFoundation/TAPI/blob/develop/HighLevelDiff_Tapi2.1.3To2.4.1.pdf)  highlights the key changes from 2.1.3 to 2.5.0
+[**_HighLevelDiff Tapi2.1.3To2.5.0.pdf_**](https://github.com/OpenNetworkingFoundation//TAPI/blob/v2.5.0/HighLevelDiff_Tapi2.1.3To2.5.0.pdf)  highlights the key changes from 2.1.3 to 2.5.0
