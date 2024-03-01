@@ -1,0 +1,284 @@
+module tapi-photonic-media-patch1 {
+    yang-version "1.1";
+    namespace "urn:onf:otcc:yang:tapi-photonic-media-patch1";
+    prefix tapi-photonic-media-patch1;
+    import tapi-common {
+        prefix tapi-common;
+    }
+    import tapi-connectivity {
+        prefix tapi-connectivity;
+    }
+    import tapi-topology {
+        prefix tapi-topology;
+    }
+	import tapi-photonic-media {
+        prefix tapi-photonic-media;
+    }
+    organization "ONF OTCC (Open Transport Configuration & Control) Project";
+    contact "
+         Project Web: <https://wiki.opennetworking.org/display/OTCC/TAPI>
+         Project List: <mailto:transport-api@opennetworking.org>
+         Editor: Karthik Sethuraman <mailto:karthik.sethuraman@necam.com>
+         Andrea Mazzini <mailto:andrea.mazzini@nokia.com>
+         Arturo Mayoral <mailto:arturo.mayoral@telefonica.com>
+         Nigel Davis <mailto:ndavis@ciena.com>
+         Ramon Casellas <mailto:ramon.casellas@cttc.es>";
+    description "
+        This module contains TAPI Photonic Media Model definitions regarding patch 1.
+        Copyright (c) 2023 Open Networking Foundation (ONF). All rights reserved.
+        License: This module is distributed under the Apache License 2.0.";
+    revision 2024-03-01 {
+        description "ONF Transport API version 2.5.0.
+                   Patch 1 described in
+                   <https://github.com/OpenNetworkingFoundation/TAPI/tree/tapi-2_5_0-fixes>";
+        reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and ONF TAPI UML model
+                  <https://github.com/OpenNetworkingFoundation/TAPI/tree/v2.5.0/UML>";
+    }
+    /**************************
+    * Photonic CSEP augment
+    **************************/ 
+    augment "/tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point/tapi-connectivity:layer-protocol-constraint" {
+        container otsia-connectivity-service-end-point-spec {
+            uses otsia-connectivity-service-end-point-spec;
+            description "none";
+        }
+        description "none";
+    }
+    grouping otsia-connectivity-service-end-point-spec {
+        list otsi-config {
+            key 'local-id';
+            uses otsi-termination-config-pac;
+            description "none";
+        }
+        leaf number-of-otsi {
+            type uint64;
+            default "1";
+            description "none";
+        }
+        description "This class allows the provisioning of OTSiA (*) ConnectivityService.
+            It is possible to either 
+            1) delegate the choice of all OTSi characteristics to the server controller (zero OtsiTerminationConfigPac instances), or
+            2) specify one, more or all OtsiTerminationConfigPac parameters.
+            (*) Note that that assembly related Layer Protocol Qualifiers (OTSiA, MCA, OTSiMCA) are not used, as the assembly is modeled through associations between objects.";
+    }
+    grouping otsi-termination-config-pac {
+        container central-frequency {
+            uses central-frequency;
+            description "The central frequency of the laser. It is the oscillation frequency of the corresponding electromagnetic wave";
+        }
+        container spectrum {
+            uses tapi-photonic-media:spectrum-band;
+            description "none";
+        }
+        container application-identifier {
+            uses application-identifier;
+            description "This attribute indicates the selected Application Identifier.";
+        }
+        leaf modulation {
+            type modulation-technique;
+            description "The modulation techniqu selected at the source.";
+        }
+        leaf laser-control {
+            type tapi-photonic-media:laser-control-type;
+            description "Laser control can be FORCED-ON, FORCED-OFF or LASER-SHUTDOWN";
+        }
+        container transmit-power {
+            uses power-properties-pac;
+            description "Transmit power as requested.";
+        }
+        leaf total-power-warn-threshold-upper {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            description "Allows to configure the Upper power threshold which is expected to be different from Default, but within the Min and Max values specified as OTSi SIP capability.";
+        }
+        leaf total-power-warn-threshold-lower {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            description "Allows to configure the Lowerpower threshold which is expected to be different from Default, but within the Min and Max values specified as OTSi SIP capability.";
+        }
+        uses tapi-common:local-class;
+        description "This class allows the provisioning of the parameters of a single OTSi.
+            In case it is not instantiated (see [0..*] with OtsiAConnectivityServiceEndPointSpec), it is intended that the choice of the parameter values is fully delegated to the server controller.";
+    }
+	grouping central-frequency {
+        container frequency-constraint {
+            uses tapi-photonic-media:frequency-constraint;
+            description "none";
+        }
+        leaf central-frequency {
+            type uint64;
+            description "The central frequency of the laser specified in MHz. It is the oscillation frequency of the corresponding electromagnetic wave. ";
+        }
+        description "This data-type holds the central frequency information as well frequency constraints in terms of GridType ( FIXED grid (DWDM or CWDM) or FLEX grid) and AdjustmentGranularity.";
+    }
+	grouping application-identifier {
+        leaf application-identifier-type {
+            type application-identifier-type;
+            description "The ITU-T recommendation which defines the application code format.";
+        }
+        leaf application-code {
+            type string;
+            description "none";
+        }
+        description "The syntax of ApplicationIdentifier is a pair {ApplicationIdentifierType, PrintableString}. The value of ApplicationIdentifierType is either STANDARD or PROPRIETARY. The value of PrintableString represents the standard application code as defined in the ITU-T Recommendations or a vendor-specific proprietary code. If the ApplicationIdentifierType is STANDARD the value of PrintableString represents a standard application code as defined in the ITU-T Recommendations. If the ApplicationIdentifierType is PROPRIETARY, the first six characters of the PrintableString must contain the Hexadecimal representation of an OUI assigned to the vendor whose implementation generated the Application Identifier; the remaining octets of the PrintableString are unspecified. The value of this attribute of an object instance has to be one of the values identified in the attribute SupportableApplicationIdentifierList of the same object instance. The values and value ranges of the optical interface parameters of a standard application code must be consistent with those values specified in the ITU-T Recommendation for that application code.";
+    }
+	typedef application-identifier-type {
+        type enumeration {
+            enum PROPRIETARY {
+                description "none";
+            }
+            enum ITUT_G959_1 {
+                description "none";
+            }
+            enum ITUT_G698_1 {
+                description "none";
+            }
+            enum ITUT_G698_2 {
+                description "none";
+            }
+            enum ITUT_G696_1 {
+                description "none";
+            }
+            enum ITUT_G695 {
+                description "none";
+            }
+        }
+        description "none";
+    }
+	grouping power-properties-pac {
+        leaf total-power {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            description "The total power at any point in a channel specified in dBm.";
+        }
+        leaf power-spectral-density {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "This describes how power of a signal  is distributed over frequency specified in nW/MHz";
+        }
+        description "Indication with severity warning raised when a total power value measured is above the threshold.";
+    }
+    /**************************
+    * Photonic CEP augment
+    **************************/ 
+    augment "/tapi-common:context/tapi-topology:topology-context/tapi-topology:topology/tapi-topology:node/tapi-topology:owned-node-edge-point/tapi-connectivity:cep-list/tapi-connectivity:connection-end-point" {
+        container otsi-connection-end-point-spec {
+            uses otsi-connection-end-point-spec;
+            description "Augments the base CEP with OTSiMC specific information.";
+        }
+        description "Augments the base CEP with OTSiMC specific information.";
+    }
+    grouping otsi-connection-end-point-spec {
+        container otsi-termination {
+            config false;
+            uses otsi-termination-pac;
+            description "none";
+        }
+        description "none";
+    }
+    grouping otsi-termination-pac {
+        container selected-central-frequency {
+            config false;
+            uses central-frequency;
+            description "none";
+        }
+        container selected-application-identifier {
+            config false;
+            uses application-identifier;
+            description "This attribute indicates the selected Application Identifier that is used by the OCh trail termination function. The syntax of ApplicationIdentifier is a pair {ApplicationIdentifierType, PrintableString}. The value of ApplicationIdentifierType is either STANDARD or PROPRIETARY. The value of PrintableString represents the standard application code as defined in the ITU-T Recommendations or a vendor-specific proprietary code. If the ApplicationIdentifierType is STANDARD the value of PrintableString represents a standard application code as defined in the ITU-T Recommendations. If the ApplicationIdentifierType is PROPRIETARY, the first six characters of the PrintableString must contain the Hexadecimal representation of an OUI assigned to the vendor whose implementation generated the Application Identifier; the remaining octets of the PrintableString are unspecified. The value of this attribute of an object instance has to be one of the values identified in the attribute SupportableApplicationIdentifierList of the same object instance. The values and value ranges of the optical interface parameters of a standard application code must be consistent with those values specified in the ITU-T Recommendation for that application code.";
+        }
+        leaf selected-modulation {
+            type modulation-technique;
+            default "UNDEFINED";
+            config false;
+            description "This parameter defines the modulation used at the source";
+        }
+        container selected-spectrum {
+            config false;
+            uses tapi-photonic-media:spectrum-band;
+            description "none";
+        }
+        container transmited-power {
+            config false;
+            uses power-properties-pac;
+            description "Measured power at the Transmitter.";
+        }
+        container received-power {
+            uses power-properties-pac;
+            description "none";
+        }
+        container laser-properties {
+            config false;
+            uses laser-properties-pac;
+            description "Laser properties.";
+        }
+        description "Provides status information only.";
+    }
+    grouping laser-properties-pac {
+        leaf laser-status {
+            type tapi-photonic-media:laser-control-status-type;
+            config false;
+            description "none";
+        }
+        leaf laser-application-type {
+            type tapi-photonic-media:laser-type;
+            config false;
+            description "The type of laser, its operational wavelengths, and its applications. String size 255.";
+        }
+        leaf laser-bias-current {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "The Bias current of the laser that is the medium polarization current of the laser.";
+        }
+        leaf laser-temperature {
+            type decimal64 {
+                fraction-digits 7;
+            }
+            config false;
+            description "The temperature of the laser";
+        }
+        description "none";
+    }
+    typedef modulation-technique {
+        type enumeration {
+            enum RZ {
+                description "none";
+            }
+            enum NRZ {
+                description "none";
+            }
+            enum BPSK {
+                description "none";
+            }
+            enum DPSK {
+                description "none";
+            }
+            enum QPSK {
+                description "none";
+            }
+            enum 8QAM {
+                description "none";
+            }
+            enum 16QAM {
+                description "none";
+            }
+            enum PAM4 {
+                description "none";
+            }
+            enum PAM8 {
+                description "none";
+            }
+            enum UNDEFINED {
+                description "none";
+            }
+        }
+        description "none";
+    }
+}
