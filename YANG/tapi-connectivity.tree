@@ -106,9 +106,9 @@ module: tapi-connectivity
        |  |     +--rw value?      uint64
        |  |     +--rw priority?   uint64
        |  +--rw topology-constraint* [local-id]
-       |  |  +--rw explicit-route?                    boolean
-       |  |  +--rw preferred-transport-layer?         tapi-common:layer-protocol-name
-       |  |  +--rw constraint-weight?                 uint64
+       |  |  +--rw explicit-route?                        boolean
+       |  |  +--rw preferred-transport-layer?             tapi-common:layer-protocol-name
+       |  |  +--rw constraint-weight?                     uint64
        |  |  +--rw include-topology* [topology-uuid]
        |  |  |  +--rw topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
        |  |  +--rw exclude-topology* [topology-uuid]
@@ -163,23 +163,36 @@ module: tapi-connectivity
        |  |  |     +--rw topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
        |  |  |     +--rw node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
        |  |  |     +--rw node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
-       |  |  +--rw local-id                           string
+       |  |  +--rw local-id                               string
        |  |  +--rw name* [value-name]
        |  |  |  +--rw value-name    string
        |  |  |  +--rw value?        string
        |  |  +--rw connection-and-route-constraint
-       |  |     +--rw include-connection-and-route
+       |  |  |  +--rw include-connection-and-route* [index]
+       |  |  |  |  +--rw index         uint64
+       |  |  |  |  +--rw connection
+       |  |  |  |  |  +--rw connection-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/uuid
+       |  |  |  |  +--rw route
+       |  |  |  |     +--rw connection-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/uuid
+       |  |  |  |     +--rw route-local-id?    -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/route/local-id
+       |  |  |  +--rw exclude-connection-and-route* [index]
+       |  |  |     +--rw index         uint64
+       |  |  |     +--rw connection
+       |  |  |     |  +--rw connection-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/uuid
+       |  |  |     +--rw route
+       |  |  |        +--rw connection-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/uuid
+       |  |  |        +--rw route-local-id?    -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/route/local-id
+       |  |  +--rw connection-and-partition-constraint
+       |  |     +--rw include-connection-and-partition
+       |  |     |  +--rw index?            uint64
+       |  |     |  +--rw partition-type?   tapi-path-computation:partition-type
        |  |     |  +--rw connection
-       |  |     |  |  +--rw connection-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/uuid
-       |  |     |  +--rw route
        |  |     |     +--rw connection-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/uuid
-       |  |     |     +--rw route-local-id?    -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/route/local-id
-       |  |     +--rw exclude-connection-and-route
+       |  |     +--rw exclude-connection-and-partition
+       |  |        +--rw index?            uint64
+       |  |        +--rw partition-type?   tapi-path-computation:partition-type
        |  |        +--rw connection
-       |  |        |  +--rw connection-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/uuid
-       |  |        +--rw route
        |  |           +--rw connection-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/uuid
-       |  |           +--rw route-local-id?    -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/route/local-id
        |  +--rw resilience-constraint
        |  |  +--rw resilience-type
        |  |  |  +--rw restoration-policy?   restoration-policy
@@ -229,9 +242,9 @@ module: tapi-connectivity
        |  |     |     +--rw value?      uint64
        |  |     |     +--rw priority?   uint64
        |  |     +--rw topology-constraint
-       |  |     |  +--rw explicit-route?               boolean
-       |  |     |  +--rw preferred-transport-layer?    tapi-common:layer-protocol-name
-       |  |     |  +--rw constraint-weight?            uint64
+       |  |     |  +--rw explicit-route?                        boolean
+       |  |     |  +--rw preferred-transport-layer?             tapi-common:layer-protocol-name
+       |  |     |  +--rw constraint-weight?                     uint64
        |  |     |  +--rw include-topology* [topology-uuid]
        |  |     |  |  +--rw topology-uuid    -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
        |  |     |  +--rw exclude-topology* [topology-uuid]
@@ -286,10 +299,36 @@ module: tapi-connectivity
        |  |     |  |     +--rw topology-uuid?          -> /tapi-common:context/tapi-topology:topology-context/topology/uuid
        |  |     |  |     +--rw node-uuid?              -> /tapi-common:context/tapi-topology:topology-context/topology/node/uuid
        |  |     |  |     +--rw node-edge-point-uuid?   -> /tapi-common:context/tapi-topology:topology-context/topology/node/owned-node-edge-point/uuid
-       |  |     |  +--rw local-id?                     string
+       |  |     |  +--rw local-id?                              string
        |  |     |  +--rw name* [value-name]
-       |  |     |     +--rw value-name    string
-       |  |     |     +--rw value?        string
+       |  |     |  |  +--rw value-name    string
+       |  |     |  |  +--rw value?        string
+       |  |     |  +--rw connection-and-partition-constraint
+       |  |     |  |  +--rw include-connection-and-partition
+       |  |     |  |  |  +--rw index?            uint64
+       |  |     |  |  |  +--rw partition-type?   tapi-path-computation:partition-type
+       |  |     |  |  |  +--rw connection
+       |  |     |  |  |     +--rw connection-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/uuid
+       |  |     |  |  +--rw exclude-connection-and-partition
+       |  |     |  |     +--rw index?            uint64
+       |  |     |  |     +--rw partition-type?   tapi-path-computation:partition-type
+       |  |     |  |     +--rw connection
+       |  |     |  |        +--rw connection-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/uuid
+       |  |     |  +--rw connection-and-route-constraint
+       |  |     |     +--rw include-connection-and-route* [index]
+       |  |     |     |  +--rw index         uint64
+       |  |     |     |  +--rw connection
+       |  |     |     |  |  +--rw connection-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/uuid
+       |  |     |     |  +--rw route
+       |  |     |     |     +--rw connection-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/uuid
+       |  |     |     |     +--rw route-local-id?    -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/route/local-id
+       |  |     |     +--rw exclude-connection-and-route* [index]
+       |  |     |        +--rw index         uint64
+       |  |     |        +--rw connection
+       |  |     |        |  +--rw connection-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/uuid
+       |  |     |        +--rw route
+       |  |     |           +--rw connection-uuid?   -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/uuid
+       |  |     |           +--rw route-local-id?    -> /tapi-common:context/tapi-connectivity:connectivity-context/connection/route/local-id
        |  |     +--rw local-id               string
        |  |     +--rw name* [value-name]
        |  |        +--rw value-name    string

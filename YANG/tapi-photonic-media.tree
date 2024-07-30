@@ -54,15 +54,25 @@ module: tapi-photonic-media
        |     |     +--ro pm-parameter-value-type    metric-value-type
        |     +--ro power-spectral-density?   decimal64
        +--ro total-power-threshold-pac* []
-          +--ro spectrum
+       |  +--ro spectrum
+       |  |  +--ro upper-frequency?   uint64
+       |  |  +--ro lower-frequency?   uint64
+       |  +--ro total-power-upper-warn-threshold-default?   decimal64
+       |  +--ro total-power-upper-warn-threshold-min?       decimal64
+       |  +--ro total-power-upper-warn-threshold-max?       decimal64
+       |  +--ro total-power-lower-warn-threshold-default?   decimal64
+       |  +--ro total-power-lower-warn-threshold-min?       decimal64
+       |  +--ro total-power-lower-warn-threshold-max?       decimal64
+       +--ro transceiver-capability-occurrence* [local-id]
+          +--ro frequency-range
           |  +--ro upper-frequency?   uint64
           |  +--ro lower-frequency?   uint64
-          +--ro total-power-upper-warn-threshold-default?   decimal64
-          +--ro total-power-upper-warn-threshold-min?       decimal64
-          +--ro total-power-upper-warn-threshold-max?       decimal64
-          +--ro total-power-lower-warn-threshold-default?   decimal64
-          +--ro total-power-lower-warn-threshold-min?       decimal64
-          +--ro total-power-lower-warn-threshold-max?       decimal64
+          +--ro transceiver-supported-mode* [profile-uuid]
+          |  +--ro profile-uuid    -> /tapi-common:context/profile/uuid
+          +--ro local-id                      string
+          +--ro name* [value-name]
+             +--ro value-name    string
+             +--ro value?        string
   augment /tapi-common:context/tapi-common:service-interface-point:
     +--ro photonic-media-service-interface-point-spec
        +--ro spectrum-capability-pac
@@ -133,6 +143,12 @@ module: tapi-photonic-media
        |  +--ro selected-spectrum
        |  |  +--ro upper-frequency?   uint64
        |  |  +--ro lower-frequency?   uint64
+       |  +--ro application-identifier
+       |  |  +--ro standard-application-code?    standard-application-code-rec
+       |  |  +--ro proprietary-application-id?   string
+       |  +--ro modulation
+       |  |  +--ro standard-modulation-technique?      mt
+       |  |  +--ro proprietary-modulation-technique?   string
        |  +--ro laser-properties
        |  |  +--ro laser-status?             laser-control-status-type
        |  |  +--ro laser-application-type?   laser-type
@@ -314,8 +330,15 @@ module: tapi-photonic-media
   augment /tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point/tapi-connectivity:layer-protocol-constraint:
     +--rw otsia-connectivity-service-end-point-spec
        +--rw otsi-config* [local-id]
-       |  +--rw central-frequency?                uint64
-       |  +--rw laser-control?                    laser-control-type
+       |  +--rw central-frequency?             uint64
+       |  +--rw channel-output-power?          decimal64
+       |  +--rw application-identifier
+       |  |  +--rw standard-application-code?    standard-application-code-rec
+       |  |  +--rw proprietary-application-id?   string
+       |  +--rw modulation
+       |  |  +--rw standard-modulation-technique?      mt
+       |  |  +--rw proprietary-modulation-technique?   string
+       |  +--rw laser-control?                 laser-control-type
        |  +--rw otsi-threshold-power-config
        |  |  +--rw total-power-warn-threshold-upper?   decimal64
        |  |  +--rw total-power-warn-threshold-lower?   decimal64
@@ -348,43 +371,7 @@ module: tapi-photonic-media
        |  |     |     +--rw pm-parameter-unit?         string
        |  |     |     +--rw pm-parameter-value-type    metric-value-type
        |  |     +--ro power-spectral-density?   decimal64
-       |  +--rw common-explicit
-       |  |  +--rw line-coding-bitrate?                             line-coding
-       |  |  +--rw max-polarization-mode-dispersion?                decimal64
-       |  |  +--rw max-chromatic-dispersion?                        decimal64
-       |  |  +--rw chromatic-and-polarization-dispersion-penalty* [index]
-       |  |  |  +--rw index                           uint64
-       |  |  |  +--rw chromatic-dispersion?           decimal64
-       |  |  |  +--rw polarization-mode-dispersion?   decimal64
-       |  |  |  +--rw penalty?                        decimal64
-       |  |  +--rw max-diff-group-delay?                            decimal64
-       |  |  +--rw max-polarization-dependent-loss-penalty* [index]
-       |  |  |  +--rw index                              uint64
-       |  |  |  +--rw max-polarization-dependent-loss?   decimal64
-       |  |  |  +--rw penalty?                           decimal64
-       |  |  +--rw standard-modulation-type?                        standard-modulation-technique
-       |  |  +--rw min-osnr?                                        decimal64
-       |  |  +--rw min-qfactor?                                     decimal64
-       |  |  +--rw baud-rate?                                       uint64
-       |  |  +--rw roll-off?                                        decimal64
-       |  |  +--rw min-carrier-spacing?                             uint64
-       |  |  +--rw fec-type?                                        fec-type
-       |  |  +--rw fec-code-rate?                                   decimal64
-       |  |  +--rw fec-threshold?                                   decimal64
-       |  |  +--rw other-properties* [value-name]
-       |  |     +--rw value-name    string
-       |  |     +--rw value?        string
-       |  +--rw common-organizational-explicit
-       |  |  +--rw frequency-range
-       |  |  |  +--rw upper-frequency?   uint64
-       |  |  |  +--rw lower-frequency?   uint64
-       |  |  +--rw central-frequency-step?   uint64
-       |  |  +--rw tx-channel-power-min?     decimal64
-       |  |  +--rw tx-channel-power-max?     decimal64
-       |  |  +--rw rx-channel-power-min?     decimal64
-       |  |  +--rw rx-channel-power-max?     decimal64
-       |  |  +--rw rx-total-power-max?       decimal64
-       |  +--rw local-id                          string
+       |  +--rw local-id                       string
        |  +--rw name* [value-name]
        |     +--rw value-name    string
        |     +--rw value?        string
@@ -400,62 +387,109 @@ module: tapi-photonic-media
   augment /tapi-common:context/tapi-common:profile:
     +--ro transceiver-profile
        +--ro transceiver-standard-profile
-       |  +--ro application-code-rec?   standard-application-code-rec
-       |  +--ro application-code?       string
-       +--ro transceiver-organizational-profile
-       |  +--ro operational-mode?                 string
-       |  +--ro organization-identifier?          string
-       |  +--ro common-organizational-explicit
-       |     +--ro frequency-range
+       |  +--ro application-code-rec?            standard-application-code-rec
+       |  +--ro application-code?                string
+       |  +--ro common-transceiver-parameters
+       |     +--ro line-coding-bitrate?       line-coding
+       |     +--ro central-frequency-range
        |     |  +--ro upper-frequency?   uint64
        |     |  +--ro lower-frequency?   uint64
-       |     +--ro central-frequency-step?   uint64
-       |     +--ro tx-channel-power-min?     decimal64
-       |     +--ro tx-channel-power-max?     decimal64
-       |     +--ro rx-channel-power-min?     decimal64
-       |     +--ro rx-channel-power-max?     decimal64
-       |     +--ro rx-total-power-max?       decimal64
+       |     +--ro tunability?                uint64
+       |     +--ro tx-channel-power-min?      decimal64
+       |     +--ro tx-channel-power-max?      decimal64
+       |     +--ro rx-channel-power-min?      decimal64
+       |     +--ro rx-channel-power-max?      decimal64
+       |     +--ro rx-total-power-max?        decimal64
+       |     +--ro local-id?                  string
+       |     +--ro name* [value-name]
+       |        +--ro value-name    string
+       |        +--ro value?        string
+       +--ro transceiver-organizational-profile
+       |  +--ro operational-mode?                  string
+       |  +--ro organization-identifier?           string
+       |  +--ro common-transceiver-parameters
+       |  |  +--ro line-coding-bitrate?       line-coding
+       |  |  +--ro central-frequency-range
+       |  |  |  +--ro upper-frequency?   uint64
+       |  |  |  +--ro lower-frequency?   uint64
+       |  |  +--ro tunability?                uint64
+       |  |  +--ro tx-channel-power-min?      decimal64
+       |  |  +--ro tx-channel-power-max?      decimal64
+       |  |  +--ro rx-channel-power-min?      decimal64
+       |  |  +--ro rx-channel-power-max?      decimal64
+       |  |  +--ro rx-total-power-max?        decimal64
+       |  |  +--ro local-id?                  string
+       |  |  +--ro name* [value-name]
+       |  |     +--ro value-name    string
+       |  |     +--ro value?        string
+       |  +--ro external-transceiver-parameters
+       |     +--ro fec-type?          fec-type
+       |     +--ro baud-rate?         uint64
+       |     +--ro modulation-type
+       |        +--ro standard-modulation-technique?      mt
+       |        +--ro proprietary-modulation-technique?   string
        +--ro transceiver-explicit-profile
-          +--ro common-organizational-explicit
-          |  +--ro frequency-range
+          +--ro common-transceiver-parameters
+          |  +--ro line-coding-bitrate?       line-coding
+          |  +--ro central-frequency-range
           |  |  +--ro upper-frequency?   uint64
           |  |  +--ro lower-frequency?   uint64
-          |  +--ro central-frequency-step?   uint64
-          |  +--ro tx-channel-power-min?     decimal64
-          |  +--ro tx-channel-power-max?     decimal64
-          |  +--ro rx-channel-power-min?     decimal64
-          |  +--ro rx-channel-power-max?     decimal64
-          |  +--ro rx-total-power-max?       decimal64
+          |  +--ro tunability?                uint64
+          |  +--ro tx-channel-power-min?      decimal64
+          |  +--ro tx-channel-power-max?      decimal64
+          |  +--ro rx-channel-power-min?      decimal64
+          |  +--ro rx-channel-power-max?      decimal64
+          |  +--ro rx-total-power-max?        decimal64
+          |  +--ro local-id?                  string
+          |  +--ro name* [value-name]
+          |     +--ro value-name    string
+          |     +--ro value?        string
           +--ro common-explicit
-          |  +--ro line-coding-bitrate?                             line-coding
-          |  +--ro max-polarization-mode-dispersion?                decimal64
-          |  +--ro max-chromatic-dispersion?                        decimal64
-          |  +--ro chromatic-and-polarization-dispersion-penalty* [index]
-          |  |  +--ro index                           uint64
-          |  |  +--ro chromatic-dispersion?           decimal64
+          |  +--ro line-coding-bitrate?                    line-coding
+          |  +--ro bit-rate?                               decimal64
+          |  +--ro max-diff-group-delay?                   uint64
+          |  +--ro max-chromatic-dispersion?               decimal64
+          |  +--ro chromatic-dispersion-penalty* []
+          |  |  +--ro index?                  uint64
+          |  |  +--ro chromatic-dispersion?   decimal64
+          |  |  +--ro penalty?                decimal64
+          |  +--ro max-polarization-mode-dispersion?       decimal64
+          |  +--ro polarization-mode-dispersion-penalty* []
+          |  |  +--ro index?                          uint64
           |  |  +--ro polarization-mode-dispersion?   decimal64
           |  |  +--ro penalty?                        decimal64
-          |  +--ro max-diff-group-delay?                            decimal64
-          |  +--ro max-polarization-dependent-loss-penalty* [index]
-          |  |  +--ro index                              uint64
-          |  |  +--ro max-polarization-dependent-loss?   decimal64
-          |  |  +--ro penalty?                           decimal64
-          |  +--ro standard-modulation-type?                        standard-modulation-technique
-          |  +--ro min-osnr?                                        decimal64
-          |  +--ro min-qfactor?                                     decimal64
-          |  +--ro baud-rate?                                       uint64
-          |  +--ro roll-off?                                        decimal64
-          |  +--ro min-carrier-spacing?                             uint64
-          |  +--ro fec-type?                                        fec-type
-          |  +--ro fec-code-rate?                                   decimal64
-          |  +--ro fec-threshold?                                   decimal64
+          |  +--ro max-polarization-dependent-loss?        uint64
+          |  +--ro polarization-dependent-loss-penalty* []
+          |  |  +--ro index?                         uint64
+          |  |  +--ro polarization-dependent-loss?   decimal64
+          |  |  +--ro penalty?                       decimal64
+          |  +--ro modulation-type
+          |  |  +--ro standard-modulation-technique?      mt
+          |  |  +--ro proprietary-modulation-technique?   string
+          |  +--ro min-osnr?                               decimal64
+          |  +--ro rx-reference-channel-power?             decimal64
+          |  +--ro rx-channel-power-penalty* []
+          |  |  +--ro index?              uint64
+          |  |  +--ro rx-channel-power?   decimal64
+          |  |  +--ro penalty?            decimal64
+          |  +--ro min-qfactor?                            decimal64
+          |  +--ro baud-rate?                              uint64
+          |  +--ro roll-off?                               decimal64
+          |  +--ro min-carrier-spacing?                    uint64
+          |  +--ro fec-type?                               fec-type
+          |  +--ro fec-code-rate?                          decimal64
+          |  +--ro fec-threshold?                          decimal64
+          |  +--ro in-band-osnr?                           decimal64
+          |  +--ro out-of-band-osnr?                       decimal64
+          |  +--ro tx-polarization-power-difference?       decimal64
+          |  +--ro polarization-skew?                      uint64
           |  +--ro other-properties* [value-name]
           |     +--ro value-name    string
           |     +--ro value?        string
-          +--ro supported-standard-application-code
-          |  +--ro profile-uuid?   -> /tapi-common:context/profile/uuid
-          +--ro supported-organizational-mode
-             +--ro profile-uuid?   -> /tapi-common:context/profile/uuid
+          +--ro compatible-standard-mode* [profile-uuid]
+          |  +--ro profile-uuid    -> /tapi-common:context/profile/uuid
+          +--ro compatible-organizational-mode* [profile-uuid]
+             +--ro profile-uuid    -> /tapi-common:context/profile/uuid
   augment /tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connectivity-service/tapi-connectivity:end-point/tapi-connectivity:layer-protocol-constraint:
     +--rw otsi-mcg-connectivity-service-end-point-spec
        +--rw number-of-otsi-mc?               uint64
