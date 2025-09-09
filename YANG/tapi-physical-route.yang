@@ -1,14 +1,15 @@
 module tapi-physical-route {
+    yang-version "1.1";
     namespace "urn:onf:otcc:yang:tapi-physical-route";
     prefix tapi-physical-route;
     import tapi-common {
         prefix tapi-common;
     }
+    import tapi-streaming {
+        prefix tapi-streaming;
+    }
     import tapi-connectivity {
         prefix tapi-connectivity;
-    }
-    import tapi-equipment {
-        prefix tapi-equipment;
     }
     organization "Linux Foundation ONMI (Open Network Modeling and Interfaces) Project";
     contact "
@@ -18,16 +19,14 @@ module tapi-physical-route {
          Arturo Mayoral <mailto:amayoral@telecominfraproject.com>
          Ramon Casellas <mailto:ramon.casellas@cttc.es>";
     description "
-        This module contains TAPI Physical Route definitions used to augment TAPI 2.1.3.
+        This module contains TAPI physical route extensions Model definitions.
         Source: TapiPhysicalRoute.uml
         - The TAPI YANG models included in this TAPI release are a *normative* part of the TAPI SDK.
         - The YANG specifications have been generated from the corresponding UML model using the [EAGLE UML2YANG mapping tool]
         <https://github.com/Open-Network-Models-and-Interfaces-ONMI/onmi-iisomi-uml-yang>
         and further edited manually to comply with the [ONMI IISOMI UML2YANG mapping guidelines]
         <https://github.com/Open-Network-Models-and-Interfaces-ONMI/onmi-iisomi-home>
-
 	with further details available at <https://github.com/Open-Network-Models-and-Interfaces-ONMI/TAPI-Documentation/tree/v2.6.0/ToolingGuidelines>
-
         - Status of YANG model artifacts can be determined by referring to the corresponding UML artifacts.
         As described in the UML models, some artifacts are considered *experimental*, and thus the corresponding YANG artifacts.
         - The LF ONMI TAPI release process does not guarantee backward compatibility of YANG models across major versions of TAPI releases.
@@ -38,17 +37,16 @@ module tapi-physical-route {
         each significant revision is found at https://github.com/Open-Network-Models-and-Interfaces-ONMI/TAPI-Documentation under the
         appropriate tag and, where relevant, fixes to those revisions can be found under the corresponding branches.
         License: This module is distributed under the Apache License 2.0.";
-    revision 2025-04-24 {
-        description "LF ONMI Transport API version 2.1.3 +.
-
-
-                   Changes included in this TAPI release (v2.1.3 +) are listed in
-                   <https://github.com/Open-Network-Models-and-Interfaces-ONMI/TAPI-Documentation/tree/v2.6.0/DeltaDocument>";
+    revision 2025-12-xx {
+        description "LF ONMI Transport API version 2.5.2
+                   Changes included in this TAPI release (v2.5.2) are listed in
+                   <https://github.com/Open-Network-Models-and-Interfaces-ONMI/TAPI-Documentation/tree/v2.5.2/DeltaDocument>";
         reference "ONF-TR-527, ONF-TR-512, ONF-TR-531, RFC 7950, RFC 6087 and LF ONMI TAPI UML model
-                  <https://github.com/Open-Network-Models-and-Interfaces-ONMI/TAPI/tree/v2.6.0/UML>";
+                  <https://github.com/Open-Network-Models-and-Interfaces-ONMI/TAPI/tree/v2.5.2.0/UML>";
     }
- 
 
+	
+	
     augment "/tapi-common:context/tapi-connectivity:connectivity-context/tapi-connectivity:connection" {
         container physical-route-list {
             uses physical-route-list;
@@ -56,9 +54,80 @@ module tapi-physical-route {
         }
         description "This augment allows Connection to describe its physical route(s) by listing all involved AccessPorts, despite TapiConnectivity model does not import TapiEquipment model.";
     }
+    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification" {
+        when 'derived-from-or-self(tapi-notification:target-object-type, "EQUIPMENT_OBJECT_TYPE_PHYSICAL_ROUTE")';
+        container physical-route {
+            uses physical-route;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
+        when 'derived-from-or-self(tapi-streaming:record-content, "EQUIPMENT_OBJECT_TYPE_PHYSICAL_ROUTE")';
+        container physical-route {
+            uses physical-route;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification" {
+        when 'derived-from-or-self(tapi-notification:target-object-type, "EQUIPMENT_OBJECT_TYPE_PHYSICAL_ROUTE_ELEMENT")';
+        container physical-route-element {
+            uses physical-route-element;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-streaming:stream-record/tapi-streaming:log-record/tapi-streaming:log-record-body" {
+        when 'derived-from-or-self(tapi-streaming:record-content, "EQUIPMENT_OBJECT_TYPE_PHYSICAL_ROUTE_ELEMENT")';
+        container physical-route-element {
+            uses physical-route-element;
+            description "none";
+        }
+        description "none";
+    }
+ 
+
+
+    augment "/tapi-notification:event-notification" {
+        when 'derived-from-or-self(tapi-notification:target-object-type, "EQUIPMENT_OBJECT_TYPE_PHYSICAL_ROUTE")';
+        container physical-route {
+            uses physical-route;
+            description "none";
+        }
+        description "none";
+    }
+    augment "/tapi-notification:event-notification" {
+        when 'derived-from-or-self(tapi-notification:target-object-type, "EQUIPMENT_OBJECT_TYPE_PHYSICAL_ROUTE_ELEMENT")';
+        container physical-route-element {
+            uses physical-route-element;
+            description "none";
+        }
+        description "none";
+    }
+
+
+
+
+    /**************************
+    * definitions of references
+    **************************/
+
+
     /**************************
     * package type-definitions
     **************************/ 
+
+    identity EQUIPMENT_OBJECT_TYPE_PHYSICAL_ROUTE {
+        base EQUIPMENT_OBJECT_TYPE;
+        description "none";
+    }
+    identity EQUIPMENT_OBJECT_TYPE_PHYSICAL_ROUTE_ELEMENT {
+        base EQUIPMENT_OBJECT_TYPE;
+        description "none";
+    }
+
+
     identity PHYSICAL_ROUTE_STATE {
         description "none";
     }
@@ -80,9 +149,12 @@ module tapi-physical-route {
         }
         description "Potential PhysicalRoute states concerning the service support.";
     }
+
+
     /**************************
     * package object-classes
     **************************/ 
+
     grouping physical-route {
         list physical-route-element {
             config false;
@@ -110,19 +182,20 @@ module tapi-physical-route {
         }
         description "The list of the PhysicalRoutes of a Connection.";
     }
+
     grouping physical-route-element {
         container access-port-in-route {
-            uses tapi-equipment:access-port-ref;
+            uses access-port-ref;
             config false;
             description "The AccessPort included in the physical route.
                 CONDITION: Mandatory where AccessPort is used to define physical route.";
         }
         list connector-pin-in-route {
-            /* key 'device-uuid equipment-uuid connector-identification pin-identification';
-            A key is not necessary for  config-false list... The reference to equipment is used as a key, but the key statement does not accept container, but only leafs.
+            key 'device-uuid equipment-uuid connector-identification pin-identification';
+            /* the reference to equipment is used as a key, but the key statement does not accept container, but only leafs.
             Hence the two leafs of the equipment-ref have been explicitly specified.*/
             config false;
-            uses tapi-equipment:connector-pin-address;
+            uses connector-pin-address;
             description "The connectors and pins defining this point in the route where the access port alone is not sufficient or the access port is not provided.
                 CONDITION: Mandatory where AccessPort is not used to define PhysicalRoute or where AccessPort requires clarification as it includes more connectorPins than are used in the route.";
         }
@@ -132,4 +205,5 @@ module tapi-physical-route {
             An access port may include connectorPins of more Equipments, e.g., in case of bidirectional access port shared by two 'unidirectional'; Equipments.
             Connector pin details may be provided alone without an access port where there are no access ports modelled.";
     }
+ 
 }
