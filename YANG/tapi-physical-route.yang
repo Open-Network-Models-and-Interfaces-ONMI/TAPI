@@ -5,11 +5,17 @@ module tapi-physical-route {
     import tapi-common {
         prefix tapi-common;
     }
+    import tapi-notification {
+        prefix tapi-notification;
+    }
     import tapi-streaming {
         prefix tapi-streaming;
     }
     import tapi-connectivity {
         prefix tapi-connectivity;
+    }
+    import tapi-equipment {
+        prefix tapi-equipment;
     }
     organization "Linux Foundation ONMI (Open Network Modeling and Interfaces) Project";
     contact "
@@ -36,7 +42,7 @@ module tapi-physical-route {
         each significant revision is found at https://github.com/Open-Network-Models-and-Interfaces-ONMI/TAPI-Documentation under the
         appropriate tag and, where relevant, fixes to those revisions can be found under the corresponding branches.
         License: This module is distributed under the Apache License 2.0.";
-    revision 2025-12-xx {
+    revision 2025-12-31 {
         description "LF ONMI Transport API version 2.1.5
                    Changes included in this TAPI release (v2.1.5) are listed in
                    <https://github.com/Open-Network-Models-and-Interfaces-ONMI/TAPI-Documentation/tree/v2.1.5/DeltaDocument>";
@@ -53,7 +59,7 @@ module tapi-physical-route {
         }
         description "This augment allows Connection to describe its physical route(s) by listing all involved AccessPorts, despite TapiConnectivity model does not import TapiEquipment model.";
     }
-    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification" {
+    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:notification" {
         when 'derived-from-or-self(tapi-notification:target-object-type, "EQUIPMENT_OBJECT_TYPE_PHYSICAL_ROUTE")';
         container physical-route {
             uses physical-route;
@@ -69,7 +75,7 @@ module tapi-physical-route {
         }
         description "none";
     }
-    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:event-notification" {
+    augment "/tapi-common:context/tapi-notification:notification-context/tapi-notification:notification" {
         when 'derived-from-or-self(tapi-notification:target-object-type, "EQUIPMENT_OBJECT_TYPE_PHYSICAL_ROUTE_ELEMENT")';
         container physical-route-element {
             uses physical-route-element;
@@ -88,7 +94,7 @@ module tapi-physical-route {
  
 
 
-    augment "/tapi-notification:event-notification" {
+    augment "/tapi-notification:notification" {
         when 'derived-from-or-self(tapi-notification:target-object-type, "EQUIPMENT_OBJECT_TYPE_PHYSICAL_ROUTE")';
         container physical-route {
             uses physical-route;
@@ -96,7 +102,7 @@ module tapi-physical-route {
         }
         description "none";
     }
-    augment "/tapi-notification:event-notification" {
+    augment "/tapi-notification:notification" {
         when 'derived-from-or-self(tapi-notification:target-object-type, "EQUIPMENT_OBJECT_TYPE_PHYSICAL_ROUTE_ELEMENT")';
         container physical-route-element {
             uses physical-route-element;
@@ -118,11 +124,11 @@ module tapi-physical-route {
     **************************/ 
 
     identity EQUIPMENT_OBJECT_TYPE_PHYSICAL_ROUTE {
-        base EQUIPMENT_OBJECT_TYPE;
+        base tapi-equipment:EQUIPMENT_OBJECT_TYPE;
         description "none";
     }
     identity EQUIPMENT_OBJECT_TYPE_PHYSICAL_ROUTE_ELEMENT {
-        base EQUIPMENT_OBJECT_TYPE;
+        base tapi-equipment:EQUIPMENT_OBJECT_TYPE;
         description "none";
     }
 
@@ -184,17 +190,17 @@ module tapi-physical-route {
 
     grouping physical-route-element {
         container access-port-in-route {
-            uses access-port-ref;
+            uses tapi-equipment:access-port-ref;
             config false;
             description "The AccessPort included in the physical route.
                 CONDITION: Mandatory where AccessPort is used to define physical route.";
         }
         list connector-pin-in-route {
-            key 'device-uuid equipment-uuid connector-identification pin-identification';
+            key 'tapi-equipment:device-uuid equipment-uuid connector-identification pin-identification';
             /* the reference to equipment is used as a key, but the key statement does not accept container, but only leafs.
             Hence the two leafs of the equipment-ref have been explicitly specified.*/
             config false;
-            uses connector-pin-address;
+            uses tapi-equipment:connector-pin-address;
             description "The connectors and pins defining this point in the route where the access port alone is not sufficient or the access port is not provided.
                 CONDITION: Mandatory where AccessPort is not used to define PhysicalRoute or where AccessPort requires clarification as it includes more connectorPins than are used in the route.";
         }
