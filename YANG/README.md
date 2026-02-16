@@ -11,14 +11,15 @@ The following TAPI YANG models are generated from the TAPI [UML models](https://
 - [tapi-oam.yang](tapi-oam.yang)
 - [tapi-virtual-network.yang](tapi-virtual-network.yang)
 - [tapi-notification.yang](tapi-notification.yang)
-- [tapi-equipment.yang] (tapi-equipment.yang)
-- [tapi-streaming.yang] (tapi-streaming.yang)
+- [tapi-equipment.yang](tapi-equipment.yang)
+- [tapi-streaming.yang](tapi-streaming.yang)
+- [tapi-physical-route.yang](tapi-physical-route.yang) (New)
 
 ## T-API extensions
 - [tapi-odu.yang](tapi-odu.yang)
 - [tapi-otsi.yang](tapi-otsi.yang)
 - [tapi-eth.yang](tapi-eth.yang)
-- [tapi-photonic-media.yang] (tapi-photonic-media.yang)
+- [tapi-photonic-media.yang](tapi-photonic-media.yang)
 
 ## TREE files (tree)
 The YANG tree files are obtained from [pyang](https://github.com/mbj4668/pyang).
@@ -26,4 +27,5 @@ The YANG tree files are obtained from [pyang](https://github.com/mbj4668/pyang).
 ## UML diagrams (pyang_uml)
 The YANG tree files are obtained from [pyang](https://github.com/mbj4668/pyang) and plantuml. 
 A description of the generation process can be found in [pyang github](https://github.com/mbj4668/pyang/wiki/UMLOutput).
+
 
