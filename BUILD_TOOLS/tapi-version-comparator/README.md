@@ -86,6 +86,8 @@ python3 compare_tapi_versions.py \
   --output-dir ./output-comparison
 ```
 
+**Note**: The tool clones the repository to a temporary directory (e.g., `/tmp/tapi_repo_xxxxxx`) which is automatically deleted after the comparison completes.
+
 ### Verify Dependencies
 
 ```bash

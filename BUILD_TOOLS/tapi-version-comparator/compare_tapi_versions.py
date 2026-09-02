@@ -243,6 +243,12 @@ class TAPIVersionComparator:
             import traceback
             traceback.print_exc()
             sys.exit(1)
+        finally:
+            # Clean up temporary repository
+            if self.temp_repo and self.temp_repo.exists():
+                print("Cleaning up temporary files...")
+                shutil.rmtree(self.temp_repo)
+                print(f"Removed temporary repository: {self.temp_repo}")
     
     def _setup_output_dirs(self):
         """Create output directory structure."""
